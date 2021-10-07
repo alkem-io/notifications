@@ -23,5 +23,6 @@
       "@core/*": ["src/core/*"]
     }
   },
-  "exclude": ["node_modules", "dist", ".build/synapse"]
+  "exclude": ["node_modules", "dist"],
+  "typeRoots": ["./src/types"]
 }
