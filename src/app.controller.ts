@@ -13,6 +13,7 @@ export class AppController {
   @MessagePattern()
   async getNotifications(@Payload() data: any, @Ctx() context: RmqContext) {
     try {
+      console.log('1');
       await this.notificationService.sendNotification(data);
     } catch (error) {}
 

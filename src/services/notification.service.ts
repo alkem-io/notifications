@@ -9,10 +9,29 @@ export class NotificationService {
   ) {}
 
   async sendNotification(payload: any): Promise<any> {
+    console.log('2');
     const notifmeSdk = new NotifmeSdk({
-      channels: [],
+      channels: {
+        email: {
+          providers: [
+            {
+              type: 'smtp',
+              host: 'localhost',
+              port: 1025,
+              secure: true,
+              auth: {
+                user: 'test',
+                pass: 'test',
+              },
+              tls: {
+                rejectUnauthorized: false,
+              },
+            },
+          ],
+        },
+      },
     });
-
+    console.log('3');
     const notificationRequest = {
       email: {
         from: 'info@alkem.io',
@@ -21,7 +40,7 @@ export class NotificationService {
         html: `<b>${payload}</b>`,
       },
     };
-
+    console.log('4');
     notifmeSdk.send(notificationRequest).then(console.log);
     // return {};
   }

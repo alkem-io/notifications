@@ -76,7 +76,7 @@ declare module 'notifme-sdk' {
     | {
         // General options (Doc: https://nodemailer.com/smtp/)
         type: 'smtp';
-        port?: 25 | 465 | 587; // Defaults to 587
+        port?: 25 | 465 | 587 | 1025; // Defaults to 587
         host?: string; // Defaults to 'localhost'
         auth:
           | {

@@ -5,7 +5,6 @@ FROM node:14.17.3-alpine
 WORKDIR /usr/src/app
 
 # Define graphql server port
-ARG GRAPHQL_ENDPOINT_PORT_ARG=4000
 ARG ENV_ARG=production
 
 # Install app dependencies
@@ -23,10 +22,10 @@ RUN npm install
 COPY ./src ./src
 COPY ./tsconfig.json .
 COPY ./tsconfig.build.json .
+COPY ./notifications.yml .
 
 RUN npm run build
 
-ENV GRAPHQL_ENDPOINT_PORT=${GRAPHQL_ENDPOINT_PORT_ARG}
 ENV NODE_ENV=${ENV_ARG}
 
 EXPOSE ${GRAPHQL_ENDPOINT_PORT_ARG}
