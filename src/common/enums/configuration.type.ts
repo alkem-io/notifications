@@ -1,11 +1,6 @@
 export enum ConfigurationTypes {
-  Hosting = 'hosting',
-  Bootstrap = 'bootstrap',
-  Monitoring = 'monitoring',
-  Security = 'security',
-  Identity = 'identity',
-  Communications = 'communications',
-  Storage = 'storage',
-  Platform = 'platform',
-  Notifications = 'notifications',
+  MONITORING = 'monitoring',
+  RABBIT_MQ = 'rabbitmq',
+  HOSTING = 'hosting',
+  NOTIFICATION_PROVIDERS = 'notification_providers',
 }

@@ -11,7 +11,7 @@ export class WinstonConfigService {
 
   async createWinstonModuleOptions() {
     const consoleEnabled: boolean = this.configService.get(
-      ConfigurationTypes.Monitoring
+      ConfigurationTypes.MONITORING
     )?.logging?.consoleLoggingEnabled;
     const transports: any[] = [
       new winston.transports.Console({
@@ -20,38 +20,38 @@ export class WinstonConfigService {
           nestWinstonModuleUtilities.format.nestLike()
         ),
         level: this.configService
-          .get(ConfigurationTypes.Monitoring)
+          .get(ConfigurationTypes.MONITORING)
           ?.logging?.level.toLowerCase(),
         silent: !consoleEnabled,
       }),
     ];
 
     if (
-      this.configService.get(ConfigurationTypes.Monitoring)?.elastic?.enabled
+      this.configService.get(ConfigurationTypes.MONITORING)?.elastic?.enabled
     ) {
       transports.push(
         new WinstonElasticsearch.ElasticsearchTransport({
-          level: this.configService.get(ConfigurationTypes.Monitoring)?.elastic
+          level: this.configService.get(ConfigurationTypes.MONITORING)?.elastic
             ?.loggingLevel,
           transformer: logData => {
             return {
               '@timestamp': new Date().getTime(),
               severity: logData.level,
               message: `[${logData.level}] LOG Message: ${logData.message}`,
-              environment: this.configService.get(ConfigurationTypes.Hosting)
+              environment: this.configService.get(ConfigurationTypes.HOSTING)
                 ?.environment as string,
               fields: { ...logData.meta },
             };
           },
           clientOpts: {
             cloud: {
-              id: this.configService.get(ConfigurationTypes.Monitoring)?.elastic
+              id: this.configService.get(ConfigurationTypes.MONITORING)?.elastic
                 ?.cloud?.id,
             },
             auth: {
-              username: this.configService.get(ConfigurationTypes.Monitoring)
+              username: this.configService.get(ConfigurationTypes.MONITORING)
                 ?.elastic?.cloud?.username,
-              password: this.configService.get(ConfigurationTypes.Monitoring)
+              password: this.configService.get(ConfigurationTypes.MONITORING)
                 ?.elastic?.cloud?.password,
             },
           },

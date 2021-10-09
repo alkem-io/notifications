@@ -10,6 +10,11 @@ services:
     container_name: alkemio_notifications
     image: alkemio_notifications
     build: .
+    environment:
+      - EMAIL_SMTP_HOST
+      - RABBITMQ_HOST
+      - LOGGING_CONSOLE_ENABLED
+      - LOGGING_LEVEL_CONSOLE
     networks:
       - alkemio_notifications_net
     restart: always

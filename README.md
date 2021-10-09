@@ -8,7 +8,7 @@ Alkemio out-of-band notifications service.
 2. Start mailslurper:
 
 ```
-docker-compose -f quickstart-mailslurper.yml -f quickstart-notifications.yml up --build --force-recreate
+docker-compose -f quickstart-mailslurper.yml -f quickstart-notifications.yml --env-file .env.docker up --build --force-recreate
 ```
 
 3. Go to http://localhost:15672/#/queues/%2F/alkemio-notifications.

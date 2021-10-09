@@ -1,29 +1,46 @@
 import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk from 'notifme-sdk';
+import { ConfigService } from '@nestjs/config';
+import { ConfigurationTypes } from '@src/common';
 
 @Injectable()
 export class NotificationService {
   constructor(
-    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
+    private configService: ConfigService
   ) {}
 
   async sendNotification(payload: any): Promise<any> {
+    this.logger.log('MASTER OF DISASTER');
     const notifmeSdk = new NotifmeSdk({
       channels: {
         email: {
           providers: [
             {
               type: 'smtp',
-              host: 'host.docker.internal',
-              port: 1025,
-              secure: true,
+              host: this.configService.get(
+                ConfigurationTypes.NOTIFICATION_PROVIDERS
+              )?.email?.smtp?.host,
+              port: this.configService.get(
+                ConfigurationTypes.NOTIFICATION_PROVIDERS
+              )?.email?.smtp?.port,
+              secure: this.configService.get(
+                ConfigurationTypes.NOTIFICATION_PROVIDERS
+              )?.email?.smtp?.secure,
               auth: {
-                user: 'test',
-                pass: 'test',
+                user: this.configService.get(
+                  ConfigurationTypes.NOTIFICATION_PROVIDERS
+                )?.email?.smtp?.auth?.user,
+                pass: this.configService.get(
+                  ConfigurationTypes.NOTIFICATION_PROVIDERS
+                )?.email?.smtp?.auth?.pass,
               },
               tls: {
-                rejectUnauthorized: false,
+                rejectUnauthorized: this.configService.get(
+                  ConfigurationTypes.NOTIFICATION_PROVIDERS
+                )?.email?.smtp?.tls?.rejectUnauthorized,
               },
             },
           ],

@@ -10,19 +10,6 @@ import { NotificationService } from './services/notification.service';
 
 @Module({
   imports: [
-    // ClientsModule.register([
-    //   {
-    //     name: 'ALKEMIO_NOTIFICATIONS_SERVICE',
-    //     transport: Transport.RMQ,
-    //     options: {
-    //       urls: ['amqp://user:bitnami@localhost:5672?heartbeat=30'],
-    //       queue: 'alkemio-notifications',
-    //       queueOptions: {
-    //         durable: true,
-    //       },
-    //     },
-    //   },
-    // ]),
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,
