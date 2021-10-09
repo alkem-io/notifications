@@ -9,14 +9,13 @@ export class NotificationService {
   ) {}
 
   async sendNotification(payload: any): Promise<any> {
-    console.log('2');
     const notifmeSdk = new NotifmeSdk({
       channels: {
         email: {
           providers: [
             {
               type: 'smtp',
-              host: 'localhost',
+              host: 'host.docker.internal',
               port: 1025,
               secure: true,
               auth: {
@@ -31,7 +30,6 @@ export class NotificationService {
         },
       },
     });
-    console.log('3');
     const notificationRequest = {
       email: {
         from: 'info@alkem.io',
@@ -40,7 +38,6 @@ export class NotificationService {
         html: `<b>${payload}</b>`,
       },
     };
-    console.log('4');
     notifmeSdk.send(notificationRequest).then(console.log);
     // return {};
   }

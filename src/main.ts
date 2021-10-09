@@ -11,7 +11,7 @@ const bootstrap = async () => {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
     options: {
-      urls: ['amqp://user:bitnami@localhost:5672?heartbeat=30'],
+      urls: ['amqp://user:bitnami@host.docker.internal:5672?heartbeat=30'],
       queue: 'alkemio-notifications',
       queueOptions: {
         durable: true,
