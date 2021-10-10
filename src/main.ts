@@ -16,8 +16,6 @@ const bootstrap = async () => {
   )?.connection;
 
   const amqpEndpoint = `amqp://${connectionOptions.user}:${connectionOptions.password}@${connectionOptions.host}:${connectionOptions.port}?heartbeat=30`;
-  logger.log(amqpEndpoint);
-  // console.log(amqpEndpoint);
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
@@ -29,7 +27,7 @@ const bootstrap = async () => {
       },
     },
   });
-  app.startAllMicroservices();
+  await app.startAllMicroservices();
 };
 
 bootstrap();

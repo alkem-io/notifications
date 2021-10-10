@@ -10,6 +10,7 @@ export class WinstonConfigService {
   constructor(private configService: ConfigService) {}
 
   async createWinstonModuleOptions() {
+    debugger;
     const consoleEnabled: boolean = this.configService.get(
       ConfigurationTypes.MONITORING
     )?.logging?.consoleLoggingEnabled;

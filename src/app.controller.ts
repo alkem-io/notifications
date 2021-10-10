@@ -14,7 +14,9 @@ export class AppController {
   async getNotifications(@Payload() data: any, @Ctx() context: RmqContext) {
     try {
       await this.notificationService.sendNotification(data);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
 
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();

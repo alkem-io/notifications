@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk from 'notifme-sdk';
 import { ConfigService } from '@nestjs/config';
-import { ConfigurationTypes } from '@src/common';
+import { ConfigurationTypes, LogContext } from '@src/common';
 
 @Injectable()
 export class NotificationService {
@@ -13,7 +14,7 @@ export class NotificationService {
   ) {}
 
   async sendNotification(payload: any): Promise<any> {
-    this.logger.log('MASTER OF DISASTER');
+    this.logger.error?.('MASTER OF DISASTER', LogContext.NOTIFICATIONS);
     const notifmeSdk = new NotifmeSdk({
       channels: {
         email: {
@@ -47,15 +48,13 @@ export class NotificationService {
         },
       },
     });
-    const notificationRequest = {
-      email: {
-        from: 'info@alkem.io',
-        to: 'valentin@alkem.io',
-        subject: 'Test',
-        html: `<b>${payload}</b>`,
-      },
-    };
-    notifmeSdk.send(notificationRequest).then(console.log);
+
+    const nunjucks = require('nunjucks');
+    const getRenderer = require('notifme-template');
+    const render = getRenderer(nunjucks.renderString, './src/templates');
+
+    const notification = await render('welcome', payload, 'en-US');
+    await notifmeSdk.send(notification.channels).then(console.log);
     // return {};
   }
 }
