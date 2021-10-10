@@ -15,7 +15,7 @@ rabbitmq:
 
 ## MONITORING ##
 # This section defines settings used for DevOps - MONITORING providers, endpoints, logging configuration.
-MONITORING:
+monitoring:
   # logging & profiling section.
   logging:
     # A flag setting whether Winston Console transport will be enabled.

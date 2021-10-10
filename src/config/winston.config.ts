@@ -10,10 +10,9 @@ export class WinstonConfigService {
   constructor(private configService: ConfigService) {}
 
   async createWinstonModuleOptions() {
-    debugger;
     const consoleEnabled: boolean = this.configService.get(
       ConfigurationTypes.MONITORING
-    )?.logging?.consoleLoggingEnabled;
+    )?.logging?.console_logging_enabled;
     const transports: any[] = [
       new winston.transports.Console({
         format: winston.format.combine(
@@ -33,7 +32,7 @@ export class WinstonConfigService {
       transports.push(
         new WinstonElasticsearch.ElasticsearchTransport({
           level: this.configService.get(ConfigurationTypes.MONITORING)?.elastic
-            ?.loggingLevel,
+            ?.logging_level,
           transformer: logData => {
             return {
               '@timestamp': new Date().getTime(),
