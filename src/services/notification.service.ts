@@ -15,7 +15,6 @@ export class NotificationService {
   ) {}
 
   async sendNotification(payload: any): Promise<any> {
-    this.logger.error?.('MASTER OF DISASTER', LogContext.NOTIFICATIONS);
     const notifmeSdk = new NotifmeSdk({
       channels: {
         email: {
@@ -54,7 +53,9 @@ export class NotificationService {
     const render = getRenderer(renderString, './src/templates');
 
     const notification = await render('welcome', payload, 'en-US');
-    await notifmeSdk.send(notification.channels).then(console.log);
-    // return {};
+    const notificationStatus = await notifmeSdk.send(notification.channels);
+    this.logger.verbose?.('Notification status:', LogContext.NOTIFICATIONS);
+    this.logger.verbose?.(notificationStatus, LogContext.NOTIFICATIONS);
+    return notificationStatus;
   }
 }
