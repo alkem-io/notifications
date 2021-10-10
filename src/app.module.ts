@@ -7,6 +7,7 @@ import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import { NotificationService } from './services/notification.service';
+import { NotifmeModule } from './wrappers/notifme.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { NotificationService } from './services/notification.service';
     WinstonModule.forRootAsync({
       useClass: WinstonConfigService,
     }),
+    NotifmeModule,
   ],
   providers: [
     {
