@@ -4,6 +4,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk from 'notifme-sdk';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes, LogContext } from '@src/common';
+import { renderString } from 'nunjucks';
 
 @Injectable()
 export class NotificationService {
@@ -49,9 +50,8 @@ export class NotificationService {
       },
     });
 
-    const nunjucks = require('nunjucks');
     const getRenderer = require('notifme-template');
-    const render = getRenderer(nunjucks.renderString, './src/templates');
+    const render = getRenderer(renderString, './src/templates');
 
     const notification = await render('welcome', payload, 'en-US');
     await notifmeSdk.send(notification.channels).then(console.log);
