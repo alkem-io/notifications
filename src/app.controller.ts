@@ -16,7 +16,7 @@ export class AppController {
     private readonly logger: LoggerService
   ) {}
   @MessagePattern()
-  async getNotifications(@Payload() data: any, @Ctx() context: RmqContext) {
+  async sendNotification(@Payload() data: any, @Ctx() context: RmqContext) {
     try {
       await this.notificationService.sendNotification(data);
     } catch (error) {

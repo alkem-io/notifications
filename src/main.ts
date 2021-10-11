@@ -15,7 +15,7 @@ const bootstrap = async () => {
     ConfigurationTypes.RABBIT_MQ
   )?.connection;
 
-  const amqpEndpoint = `amqp://${connectionOptions.user}:${connectionOptions.password}@${connectionOptions.host}:${connectionOptions.port}`;
+  const amqpEndpoint = `amqp://${connectionOptions.user}:${connectionOptions.password}@${connectionOptions.host}:${connectionOptions.port}?heartbeat=30`;
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,
