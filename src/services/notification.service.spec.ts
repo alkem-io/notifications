@@ -1,6 +1,12 @@
 import { NotificationService } from './notification.service';
 import { Test } from '@nestjs/testing';
 import NotifMeSdk, { NotificationStatus } from 'notifme-sdk';
+import { WinstonConfigService } from '@src/config';
+import { WinstonModule } from 'nest-winston';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import configuration from '@src/config/configuration';
+import { NotifmeModule } from '@src/wrappers/notifme.module';
+import { NOTIFICATIONS } from '@common/enums';
 
 describe('AppController', () => {
   let notificationService: NotificationService;
@@ -8,11 +14,23 @@ describe('AppController', () => {
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [NotificationService],
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ['.env'],
+          isGlobal: true,
+          load: [configuration],
+        }),
+        WinstonModule.forRootAsync({
+          useClass: WinstonConfigService,
+        }),
+        NotifmeModule,
+      ],
+      providers: [NotificationService, ConfigService],
     }).compile();
 
     notificationService =
       moduleRef.get<NotificationService>(NotificationService);
+    notifmeSDK = moduleRef.get<NotifMeSdk>(NOTIFICATIONS);
   });
 
   describe('sendNotification', () => {
