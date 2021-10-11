@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import NotifmeSdk from 'notifme-sdk';
+import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { ConfigService } from '@nestjs/config';
 import { LogContext, NOTIFICATIONS } from '@src/common';
 import { renderString } from 'nunjucks';
@@ -16,7 +16,7 @@ export class NotificationService {
     private readonly notifmeService: NotifmeSdk
   ) {}
 
-  async sendNotification(payload: any): Promise<any> {
+  async sendNotification(payload: any): Promise<NotificationStatus> {
     const getRenderer = require('notifme-template');
     const render = getRenderer(renderString, './src/templates');
 
@@ -24,8 +24,11 @@ export class NotificationService {
     const notificationStatus = await this.notifmeService.send(
       notification.channels
     );
-    this.logger.verbose?.('Notification status:', LogContext.NOTIFICATIONS);
-    this.logger.verbose?.(notificationStatus, LogContext.NOTIFICATIONS);
+    this.logger.verbose?.(
+      `Notification status: ${notificationStatus.status}`,
+      LogContext.NOTIFICATIONS
+    );
+
     return notificationStatus;
   }
 }
