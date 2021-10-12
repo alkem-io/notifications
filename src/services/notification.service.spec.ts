@@ -10,7 +10,7 @@ const data = {
   emailFrom: 'info@alkem.io',
   user: {
     firstname: 'Valentin',
-    email: 'valentin@alkem.io',
+    email: 'valentin@alkem.io1',
   },
 };
 
