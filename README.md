@@ -48,14 +48,14 @@ await notifmeSdk.send(notification.channels).then(console.log);
 
 To test the welcome (sample) template, you can use the following payload in RabbitMQ Management UI
 
+```json
 {
-"data":
-{
-"emailFrom": "info@alkem.io",
-"user":
-{
-"firstname": "Valentin",
-"email": "valentin@alkem.io"
+  "data": {
+    "emailFrom": "info@alkem.io",
+    "user": {
+      "firstname": "Valentin",
+      "email": "valentin@alkem.io"
+    }
+  }
 }
-}
-}
+```

@@ -1,16 +1,23 @@
 import { NotificationService } from './notification.service';
 import { Test } from '@nestjs/testing';
-import NotifMeSdk, { NotificationStatus } from 'notifme-sdk';
 import { WinstonConfigService } from '@src/config';
 import { WinstonModule } from 'nest-winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
 import { NotifmeModule } from '@src/wrappers/notifme.module';
-import { NOTIFICATIONS } from '@common/enums';
+
+const data = {
+  emailFrom: 'info@alkem.io',
+  user: {
+    firstname: 'Valentin',
+    email: 'valentin@alkem.io',
+  },
+};
 
 describe('AppController', () => {
   let notificationService: NotificationService;
-  let notifmeSDK: NotifMeSdk;
+  // let notifmeSDK: NotifMeSdk;
+  // let notificationTemplateService: NotificationTemplateService;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -30,27 +37,25 @@ describe('AppController', () => {
 
     notificationService =
       moduleRef.get<NotificationService>(NotificationService);
-    notifmeSDK = moduleRef.get<NotifMeSdk>(NOTIFICATIONS);
+    // notifmeSDK = moduleRef.get<NotifMeSdk>(NOTIFICATIONS_PROVIDER);
+    // notificationTemplateService =
+    //   moduleRef.get<NotificationTemplateService>(TEMPLATE_PROVIDER);
   });
 
   describe('sendNotification', () => {
     it('Should send notification', async () => {
-      const result: NotificationStatus = {
-        status: 'success',
-      };
-      const data = {
-        emailFrom: 'info@alkem.io',
-        user: {
-          firstname: 'Valentin',
-          email: 'valentin@alkem.io',
-        },
-      };
-
-      jest
-        .spyOn(notifmeSDK, 'send')
-        .mockImplementation(() => Promise.resolve(result));
-
-      expect(await notificationService.sendNotification(data)).toBe(result);
+      const res = await notificationService.sendNotification(data);
+      expect(res.status).toBe('success');
     });
   });
+
+  //vyanakiev toDo - add more tests
+
+  // it('Should throw error', async () => {
+  //   jest
+  //     .spyOn(notificationTemplateService, 'renderTemplate')
+  //     .mockImplementation(() => Promise.reject());
+
+  //   expect(await notificationService.sendNotification(data)).toThrow();
+  // });
 });

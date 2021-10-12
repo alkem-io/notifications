@@ -1,15 +1,20 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Global, LoggerService, Module } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { ConfigurationTypes, LogContext, NOTIFICATIONS } from '@common/enums';
+import {
+  ConfigurationTypes,
+  LogContext,
+  NOTIFICATIONS_PROVIDER,
+  TEMPLATE_PROVIDER,
+} from '@common/enums';
 import NotifmeSdk from 'notifme-sdk';
-
+import { NotificationTemplateService } from './notifme.templates.service';
 @Global()
 @Module({
   imports: [ConfigModule],
   providers: [
     {
-      provide: NOTIFICATIONS,
+      provide: NOTIFICATIONS_PROVIDER,
       useFactory: async (
         logger: LoggerService,
         configService: ConfigService
@@ -18,6 +23,7 @@ import NotifmeSdk from 'notifme-sdk';
           const notifmeSdk = new NotifmeSdk({
             channels: {
               email: {
+                multiProviderStrategy: 'no-fallback',
                 providers: [
                   {
                     type: 'smtp',
@@ -44,6 +50,9 @@ import NotifmeSdk from 'notifme-sdk';
                       )?.email?.smtp?.tls?.rejectUnauthorized,
                     },
                   },
+                  {
+                    type: 'logger',
+                  },
                 ],
               },
             },
@@ -58,7 +67,21 @@ import NotifmeSdk from 'notifme-sdk';
       },
       inject: [WINSTON_MODULE_NEST_PROVIDER, ConfigService],
     },
+    {
+      provide: TEMPLATE_PROVIDER,
+      useFactory: async (logger: LoggerService) => {
+        try {
+          return new NotificationTemplateService();
+        } catch (error) {
+          logger.error(
+            `Could not get notifme-template renderer: ${error}`,
+            LogContext.NOTIFICATIONS
+          );
+        }
+      },
+      inject: [WINSTON_MODULE_NEST_PROVIDER],
+    },
   ],
-  exports: [NOTIFICATIONS],
+  exports: [NOTIFICATIONS_PROVIDER, TEMPLATE_PROVIDER],
 })
 export class NotifmeModule {}

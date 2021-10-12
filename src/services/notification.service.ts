@@ -1,34 +1,42 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
-import { ConfigService } from '@nestjs/config';
-import { LogContext, NOTIFICATIONS } from '@src/common';
-import { renderString } from 'nunjucks';
+import {
+  LogContext,
+  NOTIFICATIONS_PROVIDER,
+  TEMPLATE_PROVIDER,
+} from '@src/common';
+import { NotificationTemplateService } from '@src/wrappers/notifme.templates.service';
 
 @Injectable()
 export class NotificationService {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    private configService: ConfigService,
-    @Inject(NOTIFICATIONS)
-    private readonly notifmeService: NotifmeSdk
+    @Inject(NOTIFICATIONS_PROVIDER)
+    private readonly notifmeService: NotifmeSdk,
+    @Inject(TEMPLATE_PROVIDER)
+    private readonly templateService: NotificationTemplateService
   ) {}
 
   async sendNotification(payload: any): Promise<NotificationStatus> {
-    const getRenderer = require('notifme-template');
-    const render = getRenderer(renderString, './src/templates');
-
-    const notification = await render('welcome', payload, 'en-US');
-    const notificationStatus = await this.notifmeService.send(
-      notification.channels
-    );
-    this.logger.verbose?.(
-      `Notification status: ${notificationStatus.status}`,
-      LogContext.NOTIFICATIONS
+    const notification = await this.templateService.renderTemplate(
+      'welcome',
+      payload
     );
 
-    return notificationStatus;
+    try {
+      const notificationStatus = await this.notifmeService.send(
+        notification.channels
+      );
+      this.logger.verbose?.(
+        `Notification status: ${notificationStatus.status}`,
+        LogContext.NOTIFICATIONS
+      );
+
+      return notificationStatus;
+    } catch (error) {
+      throw error;
+    }
   }
 }

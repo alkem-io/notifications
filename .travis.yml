@@ -9,5 +9,6 @@ install:
 services:
   - mysql
 before_install:
-  - npm i -g npm@latest
-script: '.scripts/run-tests.sh'
+  - npm i -g npm@7.5.6
+script:
+  - npm run test:ci
