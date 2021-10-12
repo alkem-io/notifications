@@ -1,0 +1,74 @@
+rabbitmq:
+  # Connection in the form of 'amqp://[user]:[password]@[host]:[port]?heartbeat=30'
+  connection:
+    # RabbitMQ host
+    host: ${RABBITMQ_HOST}:localhost
+
+    # RabbitMQ AMQP port. Used by AMQP 0-9-1 and 1.0 clients without and with TLS
+    port: ${RABBITMQ_PORT}:5672
+
+    # RabbitMQ user
+    user: ${RABBITMQ_USER}:user
+
+    # RabbitMQ password
+    password: ${RABBITMQ_PASSWORD}:bitnami
+
+## MONITORING ##
+# This section defines settings used for DevOps - MONITORING providers, endpoints, logging configuration.
+monitoring:
+  # logging & profiling section.
+  logging:
+    # A flag setting whether Winston Console transport will be enabled.
+    # If the flag is set to true logs of the appropriate level (see below) will be outputted to the console
+    # after the application has been bootstrapped.
+    # The NestJS bootstrap process is handled by the internal NestJS logging.
+    console_logging_enabled: ${LOGGING_CONSOLE_ENABLED}:true
+
+    # Logging level for outputs to console.
+    # Valid values are log|error|warn|debug|verbose.
+    level: ${LOGGING_LEVEL_CONSOLE}:verbose
+
+  # Elastic logging configuration
+  elastic:
+    # A flag setting whether Winston Elastic transport will be enabled.
+    # If the flag is set to true logs of the appropriate level (see below) will be outputted to Elastic
+    # given a correct Elastic Cloud endpoints are provided.
+    enabled: ${LOGGING_ELK_ENABLED}:false
+
+    # Logging level for outputs to elastic.
+    # Valid values are log|error|warn|debug|verbose.
+    logging_level: ${LOGGING_LEVEL_ELK}:Error
+
+    # Elastic Cloud configuration
+    cloud:
+      # Elastic Cloud ID. Typically it will look like (e.g., this is not a valid value):
+      # elastic-observability-deployment-dev:d2VzdGV1cm9wZS5henVyZS5lbGFzdGljLWNsb3VkLVfBcTo5MjQzJGMyZjJiYTM4ZmM0ZTQyZjY5N2Q5MDU2YjIxYzkyNzY3JDRjMDAxNjYzZTQzMDQzNThhNTkwMzY2MWI2ZDU5MTVl
+      id: ${ELASTIC_CLOUD_ID}
+
+      # Elastic Cloud username. Defaults to 'elastic'.
+      username: ${ELASTIC_CLOUD_USERNAME}
+
+      # Elastic Cloud password.
+      password: ${ELASTIC_CLOUD_PASSWORD}
+
+notification_providers:
+  email:
+    smtp:
+      host: ${EMAIL_SMTP_HOST}:localhost
+      port: ${EMAIL_SMTP_PORT}:1025
+      secure: ${EMAIL_SMTP_SECURE}:true
+      auth:
+        user: ${EMAIL_SMTP_USER}:test
+        pass: ${EMAIL_SMTP_PASSWORD}:test
+      tls:
+        rejectUnauthorized: ${EMAIL_SMTP_REJECT_UNAUTHORIZED}:false
+
+## hosting ##
+# The hosting configuration for the Alkemio Server
+hosting:
+  # The type of environment is used in multiple places to determine whether dev tooling is enabled.
+  # The tyoe of environment can also be used for monitoring / logging / analysis in an ELK cluster / ElasticCloud instance.
+  # For production deployments it should be set to Prod.
+  #
+  # Options: Dev, Prod
+  environment: ${ENVIRONMENT}:Dev

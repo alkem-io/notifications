@@ -1,26 +1,33 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import helmet from 'helmet';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
+import { ConfigurationTypes } from './common';
 import './config/aliases';
-import { useContainer } from 'class-validator';
-import { HttpExceptionsFilter } from './core';
 
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
   const logger = app.get(WINSTON_MODULE_NEST_PROVIDER);
-
+  const configService: ConfigService = app.get(ConfigService);
   app.useLogger(logger);
-  app.useGlobalFilters(new HttpExceptionsFilter(logger));
-  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  const connectionOptions = configService.get(
+    ConfigurationTypes.RABBIT_MQ
+  )?.connection;
 
-  app.use(
-    helmet({
-      contentSecurityPolicy: false,
-    })
-  );
+  const amqpEndpoint = `amqp://${connectionOptions.user}:${connectionOptions.password}@${connectionOptions.host}:${connectionOptions.port}?heartbeat=30`;
 
-  await app.listen(4001);
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.RMQ,
+    options: {
+      urls: [amqpEndpoint],
+      queue: 'alkemio-notifications',
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+  await app.startAllMicroservices();
 };
 
 bootstrap();

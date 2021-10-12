@@ -19,11 +19,6 @@ export class HttpExceptionsFilter implements ExceptionFilter {
   ) {}
 
   catch(exception: BaseException, _host: ArgumentsHost) {
-    // toDo vyanakiev - discuss the contextual information provided in the logged unhandled exceptions
-    // const gqlHost = GqlArgumentsHost.create(host);
-    // const req = gqlHost.getContext().req;
-    // const url = req.originalUrl;
-
     let context = LogContext.UNSPECIFIED;
 
     if (exception.getContext) context = exception.getContext();
