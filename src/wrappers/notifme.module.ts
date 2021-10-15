@@ -23,7 +23,7 @@ import { NotificationTemplateService } from './notifme.templates.service';
           const notifmeSdk = new NotifmeSdk({
             channels: {
               email: {
-                multiProviderStrategy: 'no-fallback',
+                multiProviderStrategy: 'fallback',
                 providers: [
                   {
                     type: 'smtp',

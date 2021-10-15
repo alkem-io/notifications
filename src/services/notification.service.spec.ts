@@ -47,6 +47,17 @@ describe('AppController', () => {
       const res = await notificationService.sendNotification(data);
       expect(res.status).toBe('success');
     });
+
+    // ToDo - enable when have strategy for integration tests
+    it.skip('Should fail to send notification', async () => {
+      const res = await notificationService.sendNotification({
+        user: {
+          firstname: 'Valentin',
+          email: 'valentin@alkem.io',
+        },
+      });
+      expect(res.status).toBe('error');
+    });
   });
 
   //vyanakiev toDo - add more tests
