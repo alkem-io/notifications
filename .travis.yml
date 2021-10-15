@@ -11,4 +11,4 @@ services:
 before_install:
   - npm i -g npm@7.5.6
 script:
-  - npm run test:ci
+  - npm run test:ci:coverages
