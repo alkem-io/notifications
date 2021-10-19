@@ -1,0 +1,21 @@
+version: '3.7'
+
+networks:
+  alkemio_notifications_net:
+
+services:
+  alkemio_notifications:
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    container_name: alkemio_notifications
+    image: alkemio_notifications
+    build: .
+    environment:
+      - EMAIL_SMTP_HOST
+      - RABBITMQ_HOST
+      - LOGGING_CONSOLE_ENABLED
+      - LOGGING_LEVEL_CONSOLE
+    networks:
+      - alkemio_notifications_net
+    restart: always
+    command: npm run start

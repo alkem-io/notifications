@@ -1,0 +1,15 @@
+version: '3.7'
+
+networks:
+  alkemio_notifications_net:
+
+services:
+  mailslurper:
+    container_name: alkemio_notifications_mailslurper
+    image: oryd/mailslurper:latest-smtps
+    ports:
+      - 4436
+      - 5051:4437
+      - 1025:1025
+    networks:
+      - alkemio_notifications_net
