@@ -5,7 +5,7 @@ Alkemio out-of-band notifications service.
 [![Build Status](https://app.travis-ci.com/alkem-io/notifications.svg?branch=develop)](https://app.travis-ci.com/alkem-io/notifications.svg?branch=develop)
 [![Coverage Status](https://coveralls.io/repos/github/alkem-io/notifications/badge.svg?branch=develop)](https://coveralls.io/github/alkem-io/notifications?branch=develop)
 [![BCH compliance](https://bettercodehub.com/edge/badge/alkem-io/notifications?branch=develop)](https://bettercodehub.com/)
-[![Coverage Status](https://github.com/alkem-io/notifications/workflows/Docker%20Image%20CI/badge.svg?branch=develop)](https://github.com/alkem-io/notifications/workflows/Docker%20Image%20CI/badge.svg?branch=develop)
+[![Docker Image CI](https://github.com/alkem-io/notifications/workflows/Docker%20Image%20CI/badge.svg?branch=develop)](https://github.com/alkem-io/notifications/workflows/Docker%20Image%20CI/badge.svg?branch=develop)
 
 ## To test
 
