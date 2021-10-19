@@ -38,7 +38,7 @@ jobs:
           container-registry-url: ${{ secrets.REGISTRY_LOGIN_SERVER }}
           container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
           container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-          secret-name: ???
+          secret-name: alkemio-notifications-secret
 
       - uses: Azure/k8s-deploy@v1
         with:
