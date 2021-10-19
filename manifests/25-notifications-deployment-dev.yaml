@@ -1,0 +1,47 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: alkemio-notifications-deployment
+  labels:
+    app: alkemio-notifications
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alkemio-notifications
+  template:
+    metadata:
+      labels:
+        app: alkemio-notifications
+    spec:
+      containers:
+        - name: alkemio-notifications
+          image: ctdev.azurecr.io/alkemio-notifications:latest
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: host
+            - name: RABBITMQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: port
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: password
+          envFrom:
+            - secretRef:
+                name: alkemio-secrets
+            - configMapRef:
+                name: alkemio-config
