@@ -1,15 +1,13 @@
-import { NotificationService } from './notification.service';
-import { Test } from '@nestjs/testing';
-import { WinstonConfigService } from '@src/config';
-import { WinstonModule } from 'nest-winston';
+import { AlkemioClient } from '@alkemio/client-lib';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Test } from '@nestjs/testing';
+import { ALKEMIO_CLIENT_ADAPTER, ALKEMIO_CLIENT_PROVIDER } from '@src/common';
+import { WinstonConfigService } from '@src/config';
 import configuration from '@src/config/configuration';
-import { NotifmeModule } from '@src/wrappers/notifme/notifme.module';
-import { ApplicationNotificationBuilder } from './application.notification.builder';
-import { AlkemioClientModule } from '@src/wrappers/alkemio-client/alkemio.client.module';
-import { INotifiedUsersProvider, IUser } from '@src/types';
-import { AlkemioAdapterModule } from '@src/wrappers/alkemio-adapter/alkemio.adapter.module';
-import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
+import { IUser, INotifiedUsersProvider } from '@src/types';
+import { WinstonModule } from 'nest-winston';
+import { AlkemioClientModule } from '../alkemio-client/alkemio.client.module';
+import { AlkemioAdapterModule } from './alkemio.adapter.module';
 
 const data = {
   pattern: {
@@ -65,9 +63,9 @@ const opportunityAdmins = [
     email: 'Kathern@Keira.com',
   },
 ];
-describe('NotificationService', () => {
-  let notificationService: NotificationService;
+describe('AlkemioAdapter', () => {
   let alkemioAdapter: INotifiedUsersProvider;
+  let alkemioClient: AlkemioClient;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -80,25 +78,19 @@ describe('NotificationService', () => {
         WinstonModule.forRootAsync({
           useClass: WinstonConfigService,
         }),
-        NotifmeModule,
         AlkemioClientModule,
         AlkemioAdapterModule,
       ],
-      providers: [
-        NotificationService,
-        ApplicationNotificationBuilder,
-        ConfigService,
-      ],
+      providers: [ConfigService],
     }).compile();
 
-    notificationService =
-      moduleRef.get<NotificationService>(NotificationService);
     alkemioAdapter = moduleRef.get<INotifiedUsersProvider>(
       ALKEMIO_CLIENT_ADAPTER
     );
+    alkemioClient = moduleRef.get<AlkemioClient>(ALKEMIO_CLIENT_PROVIDER);
   });
 
-  describe('Application Notifications', () => {
+  describe('Getting Alkemio Users', () => {
     it('Should send application notification', async () => {
       jest.spyOn(alkemioAdapter, 'getApplicant').mockResolvedValue(adminUser);
 
@@ -111,24 +103,39 @@ describe('NotificationService', () => {
       jest
         .spyOn(alkemioAdapter, 'getOpportunityAdmins')
         .mockResolvedValue(opportunityAdmins);
-
-      const res = await notificationService.sendApplicationNotifications(
-        data.data
-      );
-      for (const notificationStatus of res) {
-        expect(notificationStatus.status).toBe('success');
-      }
     });
 
-    // ToDo - enable when have strategy for integration tests
-    it.skip('Should fail to send notification', async () => {
-      const res = await notificationService.sendNotification({
-        user: {
-          firstname: 'Valentin',
-          email: 'valentin@alkem.io',
-        },
-      });
-      expect(res.status).toBe('error');
+    it('Should get hub admins', async () => {
+      jest
+        .spyOn(alkemioClient, 'usersWithAuthorizationCredential')
+        .mockResolvedValue(hubAdmins);
+
+      const res = await alkemioAdapter.getHubAdmins(data.data.hub.id);
+      expect(res.length === 0);
+    });
+
+    it('Should get opportunity admins', async () => {
+      jest
+        .spyOn(alkemioClient, 'usersWithAuthorizationCredential')
+        .mockResolvedValue(opportunityAdmins);
+
+      const res = await alkemioAdapter.getOpportunityAdmins(data.data.hub.id);
+      expect(res.length === 1);
+    });
+
+    it('Should get challenge admins', async () => {
+      jest
+        .spyOn(alkemioClient, 'usersWithAuthorizationCredential')
+        .mockResolvedValue(challengeAdmins);
+
+      const res = await alkemioAdapter.getChallengeAdmins(data.data.hub.id);
+      expect(res.length === 1);
+    });
+
+    it('Should throw an error', async () => {
+      jest.spyOn(alkemioClient, 'user').mockResolvedValue(undefined);
+
+      expect(alkemioAdapter.getApplicant(data.data)).rejects.toThrow();
     });
   });
 });

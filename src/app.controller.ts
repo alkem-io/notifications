@@ -15,16 +15,42 @@ export class AppController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService
   ) {}
-  @MessagePattern()
-  async sendNotification(@Payload() data: any, @Ctx() context: RmqContext) {
-    try {
-      await this.notificationService.sendNotification(data);
-    } catch (error) {
-      this.logger.error(error);
-    }
+  // @MessagePattern()
+  // async sendNotification(@Payload() data: any, @Ctx() context: RmqContext) {
+  //   const channel = context.getChannelRef();
+  //   const originalMsg = context.getMessage();
 
+  //   try {
+  //     await this.notificationService.sendNotification(data);
+  //   } catch (error) {
+  //     this.logger.error(error);
+
+  //     //toDo check how to reject a message
+  //     // channel.reject(originalMsg);
+  //     return;
+  //   }
+
+  //   channel.ack(originalMsg);
+  // }
+
+  @MessagePattern({ event: 'userApplicationReceived' })
+  async sendApplicationNotification(
+    @Payload() data: any,
+    @Ctx() context: RmqContext
+  ) {
     const channel = context.getChannelRef();
     const originalMsg = context.getMessage();
+
+    try {
+      await this.notificationService.sendApplicationNotifications(data);
+    } catch (error) {
+      this.logger.error(error);
+
+      //toDo check how to reject a message
+      // channel.reject(originalMsg);
+      return;
+    }
+
     channel.ack(originalMsg);
   }
 }
