@@ -6,8 +6,8 @@ import { WinstonConfigService } from '@src/config';
 import configuration from '@src/config/configuration';
 import { IUser, INotifiedUsersProvider } from '@src/types';
 import { WinstonModule } from 'nest-winston';
-import { AlkemioClientModule } from '../alkemio-client/alkemio.client.module';
-import { AlkemioAdapterModule } from './alkemio.adapter.module';
+import { AlkemioClientAdapterModule } from './alkemio.client.adapter.module';
+// import * as challengeAdmins from '@test/data/challenge.admins.json';
 
 const data = {
   pattern: {
@@ -32,14 +32,14 @@ const data = {
   },
 };
 
-const adminUser = {
-  id: 'f0a47bad-eca5-4942-84ac-4dc9f085b7b8',
-  nameID: 'admin_alkemio',
-  displayName: 'admin alkemio',
-  firstName: 'admin',
-  lastName: 'alkemio',
-  email: 'admin@alkem.io',
-};
+// const adminUser = {
+//   id: 'f0a47bad-eca5-4942-84ac-4dc9f085b7b8',
+//   nameID: 'admin_alkemio',
+//   displayName: 'admin alkemio',
+//   firstName: 'admin',
+//   lastName: 'alkemio',
+//   email: 'admin@alkem.io',
+// };
 
 const hubAdmins: IUser[] | Promise<IUser[]> = [];
 const challengeAdmins = [
@@ -63,6 +63,16 @@ const opportunityAdmins = [
     email: 'Kathern@Keira.com',
   },
 ];
+
+const mockAlkemioClient = {
+  usersWithAuthorizationCredential() {
+    return {};
+  },
+  user() {
+    return {};
+  },
+};
+
 describe('AlkemioAdapter', () => {
   let alkemioAdapter: INotifiedUsersProvider;
   let alkemioClient: AlkemioClient;
@@ -78,11 +88,13 @@ describe('AlkemioAdapter', () => {
         WinstonModule.forRootAsync({
           useClass: WinstonConfigService,
         }),
-        AlkemioClientModule,
-        AlkemioAdapterModule,
+        AlkemioClientAdapterModule,
       ],
       providers: [ConfigService],
-    }).compile();
+    })
+      .overrideProvider(ALKEMIO_CLIENT_PROVIDER)
+      .useValue(mockAlkemioClient)
+      .compile();
 
     alkemioAdapter = moduleRef.get<INotifiedUsersProvider>(
       ALKEMIO_CLIENT_ADAPTER
@@ -91,20 +103,6 @@ describe('AlkemioAdapter', () => {
   });
 
   describe('Getting Alkemio Users', () => {
-    it('Should send application notification', async () => {
-      jest.spyOn(alkemioAdapter, 'getApplicant').mockResolvedValue(adminUser);
-
-      jest.spyOn(alkemioAdapter, 'getHubAdmins').mockResolvedValue(hubAdmins);
-
-      jest
-        .spyOn(alkemioAdapter, 'getChallengeAdmins')
-        .mockResolvedValue(challengeAdmins);
-
-      jest
-        .spyOn(alkemioAdapter, 'getOpportunityAdmins')
-        .mockResolvedValue(opportunityAdmins);
-    });
-
     it('Should get hub admins', async () => {
       jest
         .spyOn(alkemioClient, 'usersWithAuthorizationCredential')

@@ -4,7 +4,7 @@ import { INotifiedUsersProvider, IUser } from '@src/types';
 import { ALKEMIO_CLIENT_PROVIDER } from '@src/common';
 
 @Injectable()
-export class AlkemioAdapter implements INotifiedUsersProvider {
+export class AlkemioClientAdapter implements INotifiedUsersProvider {
   constructor(
     @Inject(ALKEMIO_CLIENT_PROVIDER)
     private alkemioClient: AlkemioClient
@@ -13,7 +13,7 @@ export class AlkemioAdapter implements INotifiedUsersProvider {
     const applicant = await this.alkemioClient.user(payload.applicantID);
     if (!applicant) throw new Error('Applicant not found!');
 
-    return applicant as IUser;
+    return applicant;
   }
 
   async getApplicationCreator(payload: any): Promise<IUser> {
@@ -23,7 +23,7 @@ export class AlkemioAdapter implements INotifiedUsersProvider {
     if (!applicationCreator)
       throw new Error('The creator of the application was  not found!');
 
-    return applicationCreator as IUser;
+    return applicationCreator;
   }
 
   async getOpportunityAdmins(opportunityID: string): Promise<IUser[]> {

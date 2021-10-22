@@ -8,8 +8,8 @@ export interface IUser {
 }
 
 export interface INotifiedUsersProvider {
-  getHubAdmins(hubID: string): Promise<IUser[]>;
-  getChallengeAdmins(challengeID: string): Promise<IUser[]>;
-  getOpportunityAdmins(opportunityID: string): Promise<IUser[]>;
-  getApplicant(payload: any): Promise<IUser>;
+  getHubAdmins(hubID: string): Promise<IUser[]> | IUser[];
+  getChallengeAdmins(challengeID: string): Promise<IUser[]> | IUser[];
+  getOpportunityAdmins(opportunityID: string): Promise<IUser[]> | IUser[];
+  getApplicant(payload: any): Promise<IUser> | IUser;
 }

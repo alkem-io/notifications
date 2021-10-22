@@ -6,9 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
 import { NotifmeModule } from '@src/wrappers/notifme/notifme.module';
 import { ApplicationNotificationBuilder } from './application.notification.builder';
-import { AlkemioClientModule } from '@src/wrappers/alkemio-client/alkemio.client.module';
 import { INotifiedUsersProvider, IUser } from '@src/types';
-import { AlkemioAdapterModule } from '@src/wrappers/alkemio-adapter/alkemio.adapter.module';
 import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
 
 const data = {
@@ -81,13 +79,21 @@ describe('NotificationService', () => {
           useClass: WinstonConfigService,
         }),
         NotifmeModule,
-        AlkemioClientModule,
-        AlkemioAdapterModule,
       ],
       providers: [
         NotificationService,
         ApplicationNotificationBuilder,
         ConfigService,
+        {
+          provide: ALKEMIO_CLIENT_ADAPTER,
+          useValue: {
+            getApplicant: jest.fn(),
+            getApplicationCreator: jest.fn(),
+            getOpportunityAdmins: jest.fn(),
+            getHubAdmins: jest.fn(),
+            getChallengeAdmins: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
@@ -120,15 +126,13 @@ describe('NotificationService', () => {
       }
     });
 
-    // ToDo - enable when have strategy for integration tests
-    it.skip('Should fail to send notification', async () => {
-      const res = await notificationService.sendNotification({
-        user: {
-          firstname: 'Valentin',
-          email: 'valentin@alkem.io',
-        },
-      });
-      expect(res.status).toBe('error');
+    it('Should fail to send notification', async () => {
+      jest
+        .spyOn(alkemioAdapter, 'getApplicant')
+        .mockRejectedValue(new Error('Applicant not found!'));
+      expect(
+        notificationService.sendApplicationNotifications(data.data)
+      ).rejects.toThrow();
     });
   });
 });

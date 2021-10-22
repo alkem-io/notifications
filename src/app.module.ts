@@ -8,7 +8,7 @@ import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import { ApplicationNotificationBuilder } from './services/application.notification.builder';
 import { NotificationService } from './services/notification.service';
-import { AlkemioAdapterModule } from './wrappers/alkemio-adapter/alkemio.adapter.module';
+import { AlkemioClientAdapterModule } from './wrappers/alkemio-client-adapter/alkemio.client.adapter.module';
 import { AlkemioClientModule } from './wrappers/alkemio-client/alkemio.client.module';
 import { NotifmeModule } from './wrappers/notifme/notifme.module';
 
@@ -24,7 +24,7 @@ import { NotifmeModule } from './wrappers/notifme/notifme.module';
     }),
     NotifmeModule,
     AlkemioClientModule,
-    AlkemioAdapterModule,
+    AlkemioClientAdapterModule,
   ],
   providers: [
     {
