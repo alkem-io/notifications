@@ -1,10 +1,5 @@
 import { Controller, Inject, LoggerService } from '@nestjs/common';
-import {
-  Ctx,
-  MessagePattern,
-  Payload,
-  RmqContext,
-} from '@nestjs/microservices';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { NotificationService } from './services/notification/notification.service';
 
@@ -15,25 +10,8 @@ export class AppController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService
   ) {}
-  // @MessagePattern()
-  // async sendNotification(@Payload() data: any, @Ctx() context: RmqContext) {
-  //   const channel = context.getChannelRef();
-  //   const originalMsg = context.getMessage();
 
-  //   try {
-  //     await this.notificationService.sendNotification(data);
-  //   } catch (error) {
-  //     this.logger.error(error);
-
-  //     //toDo check how to reject a message
-  //     // channel.reject(originalMsg);
-  //     return;
-  //   }
-
-  //   channel.ack(originalMsg);
-  // }
-
-  @MessagePattern({ event: 'communityApplicationCreated' })
+  @EventPattern('communityApplicationCreated')
   async sendApplicationNotification(
     @Payload() data: any,
     @Ctx() context: RmqContext
