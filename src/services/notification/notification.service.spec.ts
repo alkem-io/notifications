@@ -5,7 +5,7 @@ import { WinstonModule } from 'nest-winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
 import { NotifmeModule } from '@src/wrappers/notifme/notifme.module';
-import { ApplicationNotificationBuilder } from './application.notification.builder';
+import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
 import { INotifiedUsersProvider } from '@src/types';
 import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';

@@ -6,11 +6,11 @@ import { AppController } from './app.controller';
 import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
-import { ApplicationNotificationBuilder } from './services/application.notification.builder';
-import { NotificationService } from './services/notification.service';
-import { AlkemioClientAdapterModule } from './wrappers/alkemio-client-adapter/alkemio.client.adapter.module';
+import { ApplicationNotificationBuilder } from './services/application-notification-builder/application.notification.builder';
+import { AlkemioClientAdapterModule } from './services/alkemio-client-adapter/alkemio.client.adapter.module';
 import { AlkemioClientModule } from './wrappers/alkemio-client/alkemio.client.module';
 import { NotifmeModule } from './wrappers/notifme/notifme.module';
+import { NotificationService } from './services/notification/notification.service';
 
 @Module({
   imports: [

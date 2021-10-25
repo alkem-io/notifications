@@ -1,8 +1,8 @@
 import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ALKEMIO_CLIENT_ADAPTER, TEMPLATE_PROVIDER } from '@src/common';
-import { NotificationTemplateService } from '@src/wrappers/notifme/notifme.templates.service';
 import { INotifiedUsersProvider, IUser } from '@src/types';
+import { NotificationTemplateBuilder } from '@src/wrappers/notifme/notification.templates.builder';
 
 @Injectable()
 export class ApplicationNotificationBuilder {
@@ -10,15 +10,15 @@ export class ApplicationNotificationBuilder {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly alkemioAdapter: INotifiedUsersProvider,
+    private readonly notifiedUsersService: INotifiedUsersProvider,
     @Inject(TEMPLATE_PROVIDER)
-    private readonly templateService: NotificationTemplateService
+    private readonly notificationTemplateBuilder: NotificationTemplateBuilder
   ) {}
 
   async buildNotifications(payload: any): Promise<any> {
     const notifications = [];
 
-    const applicant = await this.alkemioAdapter.getApplicant(payload);
+    const applicant = await this.notifiedUsersService.getApplicant(payload);
     const notification = await this.buildUserNotification(payload, applicant);
     notifications.push(notification);
 
@@ -58,7 +58,9 @@ export class ApplicationNotificationBuilder {
     applicant: IUser,
     notifications: any
   ) {
-    const hubAdmins = await this.alkemioAdapter.getHubAdmins(payload.hub.id);
+    const hubAdmins = await this.notifiedUsersService.getHubAdmins(
+      payload.hub.id
+    );
 
     await this.buildAdminsNotifications(
       applicant,
@@ -73,7 +75,7 @@ export class ApplicationNotificationBuilder {
     applicant: IUser,
     notifications: any
   ) {
-    const challengeAdmins = await this.alkemioAdapter.getChallengeAdmins(
+    const challengeAdmins = await this.notifiedUsersService.getChallengeAdmins(
       payload.hub.challenge.id
     );
 
@@ -90,9 +92,10 @@ export class ApplicationNotificationBuilder {
     applicant: IUser,
     notifications: any
   ) {
-    const opportunityAdmins = await this.alkemioAdapter.getOpportunityAdmins(
-      payload.hub.challenge.opportunity.id
-    );
+    const opportunityAdmins =
+      await this.notifiedUsersService.getOpportunityAdmins(
+        payload.hub.challenge.opportunity.id
+      );
 
     await this.buildAdminsNotifications(
       applicant,
@@ -145,7 +148,7 @@ export class ApplicationNotificationBuilder {
   }
 
   async buildNotification(payload: any, templateName: string) {
-    const notification = await this.templateService.renderTemplate(
+    const notification = await this.notificationTemplateBuilder.buildTemplate(
       templateName,
       payload
     );

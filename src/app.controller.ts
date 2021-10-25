@@ -6,7 +6,7 @@ import {
   RmqContext,
 } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { NotificationService } from './services/notification.service';
+import { NotificationService } from './services/notification/notification.service';
 
 @Controller()
 export class AppController {
@@ -33,7 +33,7 @@ export class AppController {
   //   channel.ack(originalMsg);
   // }
 
-  @MessagePattern({ event: 'userApplicationReceived' })
+  @MessagePattern({ event: 'communityApplicationCreated' })
   async sendApplicationNotification(
     @Payload() data: any,
     @Ctx() context: RmqContext
