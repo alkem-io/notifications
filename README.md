@@ -55,9 +55,7 @@ To test the welcome (sample) template, you can use the following payload in Rabb
 
 ```json
 {
-  "pattern": {
-    "event": "userApplicationReceived"
-  },
+  "pattern": "communityApplicationCreated",
   "data": {
     "applicantionCreatorID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
     "applicantID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
