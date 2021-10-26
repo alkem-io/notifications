@@ -75,3 +75,35 @@ To test the welcome (sample) template, you can use the following payload in Rabb
   }
 }
 ```
+
+Note: replace applicantionCreatorID, applicantID, and hub + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
+
+```gql
+query {
+  ecoverses {
+    id
+    displayName
+    challenges {
+      id
+      displayName
+      nameID
+      community {
+        id
+        displayName
+      }
+      opportunities {
+        displayName
+        id
+      }
+    }
+  }
+}
+```
+
+```gql
+query {
+  me {
+    id
+  }
+}
+```
