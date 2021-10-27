@@ -22,24 +22,20 @@ export class NotificationService {
       await this.applicationNotificationBuilder.buildNotifications(payload);
 
     for (const notification of notifications) {
-      notificationStatuses.push(
-        await this.sendApplicationNotification(notification)
-      );
+      notificationStatuses.push(this.sendApplicationNotification(notification));
     }
-    return notificationStatuses;
+    return Promise.all(notificationStatuses);
   }
 
   private async sendApplicationNotification(
     notification: any
   ): Promise<NotificationStatus> {
-    const notificationStatus = await this.notifmeService.send(
-      notification.channels
-    );
-    this.logger.verbose?.(
-      `Notification status: ${notificationStatus.status}`,
-      LogContext.NOTIFICATIONS
-    );
-
-    return notificationStatus;
+    return this.notifmeService.send(notification.channels).then(res => {
+      this.logger.verbose?.(
+        `Notification status: ${res.status}`,
+        LogContext.NOTIFICATIONS
+      );
+      return res;
+    });
   }
 }
