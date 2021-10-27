@@ -13,3 +13,7 @@ export interface INotifiedUsersProvider {
   getOpportunityAdmins(opportunityID: string): Promise<IUser[]> | IUser[];
   getApplicant(payload: any): Promise<IUser> | IUser;
 }
+
+export interface IFeatureFlagProvider {
+  areNotificationsEnabled(): Promise<boolean>;
+}

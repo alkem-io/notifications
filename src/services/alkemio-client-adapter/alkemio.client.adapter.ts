@@ -1,14 +1,30 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AlkemioClient, AuthorizationCredential } from '@alkemio/client-lib';
-import { INotifiedUsersProvider, IUser } from '@src/types';
+import {
+  IFeatureFlagProvider,
+  INotifiedUsersProvider,
+  IUser,
+} from '@src/types';
 import { ALKEMIO_CLIENT_PROVIDER } from '@src/common';
 
 @Injectable()
-export class AlkemioClientAdapter implements INotifiedUsersProvider {
+export class AlkemioClientAdapter
+  implements INotifiedUsersProvider, IFeatureFlagProvider
+{
   constructor(
     @Inject(ALKEMIO_CLIENT_PROVIDER)
     private alkemioClient: AlkemioClient
   ) {}
+
+  async areNotificationsEnabled(): Promise<boolean> {
+    const featureFlags = await this.alkemioClient.featureFlags();
+    if (
+      featureFlags?.find(x => x.name === 'notifications' && x.enabled === true)
+    )
+      return true;
+    return false;
+  }
+
   async getApplicant(payload: any): Promise<IUser> {
     const applicant = await this.alkemioClient.user(payload.applicantID);
     if (!applicant) throw new Error('Applicant not found!');
