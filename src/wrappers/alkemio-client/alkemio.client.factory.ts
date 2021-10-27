@@ -9,24 +9,24 @@ export async function alkemioClientFactory(
 ): Promise<AlkemioClient | undefined> {
   try {
     const server = configService.get(ConfigurationTypes.ALKEMIO)?.endpoint;
-    const ctClient = new AlkemioClient({
+    const alkemioClient = new AlkemioClient({
       graphqlEndpoint: server,
+      authInfo: {
+        credentials: {
+          email: configService.get(ConfigurationTypes.ALKEMIO)?.service_account
+            ?.username,
+          password: configService.get(ConfigurationTypes.ALKEMIO)
+            ?.service_account?.password,
+        },
+        apiEndpointFactory: () => {
+          return configService.get(ConfigurationTypes.KRATOS)?.public_endpoint;
+        },
+      },
     });
-    ctClient.config.authInfo = {
-      credentials: {
-        email: configService.get(ConfigurationTypes.ALKEMIO)?.service_account
-          ?.username,
-        password: configService.get(ConfigurationTypes.ALKEMIO)?.service_account
-          ?.password,
-      },
-      apiEndpointFactory: () => {
-        return configService.get(ConfigurationTypes.KRATOS)?.public_endpoint;
-      },
-    };
 
-    await ctClient.enableAuthentication();
+    await alkemioClient.enableAuthentication();
 
-    return ctClient;
+    return alkemioClient;
   } catch (error) {
     logger.error(
       `Could not create Alkemio Client instance: ${error}`,
