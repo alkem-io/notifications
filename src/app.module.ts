@@ -6,8 +6,11 @@ import { AppController } from './app.controller';
 import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
-import { NotificationService } from './services/notification.service';
-import { NotifmeModule } from './wrappers/notifme.module';
+import { ApplicationNotificationBuilder } from './services/application-notification-builder/application.notification.builder';
+import { AlkemioClientAdapterModule } from './services/alkemio-client-adapter/alkemio.client.adapter.module';
+import { AlkemioClientModule } from './wrappers/alkemio-client/alkemio.client.module';
+import { NotifmeModule } from './wrappers/notifme/notifme.module';
+import { NotificationService } from './services/notification/notification.service';
 
 @Module({
   imports: [
@@ -20,6 +23,8 @@ import { NotifmeModule } from './wrappers/notifme.module';
       useClass: WinstonConfigService,
     }),
     NotifmeModule,
+    AlkemioClientModule,
+    AlkemioClientAdapterModule,
   ],
   providers: [
     {
@@ -27,6 +32,7 @@ import { NotifmeModule } from './wrappers/notifme.module';
       useClass: HttpExceptionsFilter,
     },
     NotificationService,
+    ApplicationNotificationBuilder,
   ],
   controllers: [AppController],
 })

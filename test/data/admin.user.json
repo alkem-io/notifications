@@ -1,0 +1,10 @@
+{
+  "adminUser": {
+    "id": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
+    "nameID": "admin_alkemio",
+    "displayName": "admin alkemio",
+    "firstName": "admin",
+    "lastName": "alkemio",
+    "email": "admin@alkem.io"
+  }
+}

@@ -55,12 +55,55 @@ To test the welcome (sample) template, you can use the following payload in Rabb
 
 ```json
 {
+  "pattern": "communityApplicationCreated",
   "data": {
-    "emailFrom": "info@alkem.io",
-    "user": {
-      "firstname": "Valentin",
-      "email": "valentin@alkem.io"
+    "applicantionCreatorID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
+    "applicantID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
+    "community": {
+      "name": "02 Zero Hunger",
+      "type": "challenge"
+    },
+    "hub": {
+      "id": "32818605-ef2f-4395-bb49-1dc2835c23de",
+      "challenge": {
+        "id": "7b86f954-d8c3-4fac-a652-b922c80e5c20",
+        "opportunity": {
+          "id": "636be60f-b64a-4742-8b50-69e608601935"
+        }
+      }
     }
+  }
+}
+```
+
+Note: replace applicantionCreatorID, applicantID, and hub + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
+
+```gql
+query {
+  ecoverses {
+    id
+    displayName
+    challenges {
+      id
+      displayName
+      nameID
+      community {
+        id
+        displayName
+      }
+      opportunities {
+        displayName
+        id
+      }
+    }
+  }
+}
+```
+
+```gql
+query {
+  me {
+    id
   }
 }
 ```

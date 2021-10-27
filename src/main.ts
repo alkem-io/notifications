@@ -25,6 +25,8 @@ const bootstrap = async () => {
       queueOptions: {
         durable: true,
       },
+      //be careful with this flag, if set to true, message acknowledgment will be automatic. Double acknowledgment throws an error and disconnects the queue.
+      noAck: false,
     },
   });
   await app.startAllMicroservices();

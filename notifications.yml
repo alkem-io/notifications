@@ -72,3 +72,32 @@ hosting:
   #
   # Options: Dev, Prod
   environment: ${ENVIRONMENT}:Dev
+
+alkemio:
+  endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/admin/graphql
+  service_account:
+    username: ${SERVICE_ACCOUNT_USERNAME}:admin@alkem.io
+    password: ${SERVICE_ACCOUNT_PASSWORD}:@lk3m10!
+
+kratos:
+  public_endpoint: ${KRATOS_API_PUBLIC_ENDPOINT}:http://localhost:3000/identity/ory/kratos/public
+
+templates:
+  user_application_admin_template:
+    - rule:
+        type: ChallengeAdmin
+        resource_id: <challengeID>
+    - rule:
+        type: OpportunityAdmin
+        resource_id: <opportunityID>
+    - rule:
+        type: EcoverseAdmin
+        resource_id: <ecoverseID>
+    - rule:
+        type: GlobalAdmin
+        resource_id: <>
+
+  user_application_applicant_template:
+    - rule:
+        type: UserSelfManagement
+        resource_id: <applicantID>
