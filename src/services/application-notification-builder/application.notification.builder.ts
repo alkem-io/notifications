@@ -1,12 +1,19 @@
 import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ALKEMIO_CLIENT_ADAPTER, TEMPLATE_PROVIDER } from '@src/common';
-import { INotifiedUsersProvider, IUser } from '@src/types';
 import { NotificationTemplateBuilder } from '@src/wrappers/notifme/notification.templates.builder';
+import {
+  INotificationRecipientProvider,
+  INotifiedUsersProvider,
+} from '@core/contracts';
+import { NotificationReceiversYml } from '../notification-receiver-yml/notification.receivers.yml';
+import { User } from '@core/models';
 
 @Injectable()
 export class ApplicationNotificationBuilder {
   constructor(
+    @Inject(NotificationReceiversYml)
+    private readonly notificationReceiverYaml: INotificationRecipientProvider,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
@@ -38,12 +45,12 @@ export class ApplicationNotificationBuilder {
   }
 
   async buildAdminsNotifications(
-    applicant: IUser,
-    admins: IUser[],
+    applicant: User,
+    admins: User[],
     community: any,
     notifications: any
   ) {
-    for (const admin of admins as []) {
+    for (const admin of admins) {
       const notification = await this.buildAdminNotification({
         admin: admin,
         applicant: applicant,
@@ -55,7 +62,7 @@ export class ApplicationNotificationBuilder {
 
   async buildHubAdminsNotifications(
     payload: any,
-    applicant: IUser,
+    applicant: User,
     notifications: any
   ) {
     const hubAdmins = await this.notifiedUsersService.getHubAdmins(
@@ -72,7 +79,7 @@ export class ApplicationNotificationBuilder {
 
   async buildChallengeAdminsNotifications(
     payload: any,
-    applicant: IUser,
+    applicant: User,
     notifications: any
   ) {
     const challengeAdmins = await this.notifiedUsersService.getChallengeAdmins(
@@ -89,7 +96,7 @@ export class ApplicationNotificationBuilder {
 
   async buildOpportunityAdminsNotifications(
     payload: any,
-    applicant: IUser,
+    applicant: User,
     notifications: any
   ) {
     const opportunityAdmins =
@@ -105,7 +112,7 @@ export class ApplicationNotificationBuilder {
     );
   }
 
-  async buildUserNotification(payload: any, applicant: IUser) {
+  async buildUserNotification(payload: any, applicant: User) {
     const mergedUserPayload = {
       emailFrom: '<info@alkem.io>',
       applicant: {

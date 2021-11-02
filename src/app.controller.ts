@@ -3,7 +3,7 @@ import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ALKEMIO_CLIENT_ADAPTER } from './common';
 import { NotificationService } from './services/notification/notification.service';
-import { IFeatureFlagProvider } from './types';
+import { IFeatureFlagProvider } from '@core/contracts';
 
 @Controller()
 export class AppController {

@@ -1,11 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AlkemioClient, AuthorizationCredential } from '@alkemio/client-lib';
-import {
-  IFeatureFlagProvider,
-  INotifiedUsersProvider,
-  IUser,
-} from '@src/types';
 import { ALKEMIO_CLIENT_PROVIDER } from '@src/common';
+import { IFeatureFlagProvider, INotifiedUsersProvider } from '@core/contracts';
+import { User } from '@core/models';
 
 @Injectable()
 export class AlkemioClientAdapter
@@ -25,14 +22,14 @@ export class AlkemioClientAdapter
     return false;
   }
 
-  async getApplicant(payload: any): Promise<IUser> {
+  async getApplicant(payload: any): Promise<User> {
     const applicant = await this.alkemioClient.user(payload.applicantID);
     if (!applicant) throw new Error('Applicant not found!');
 
     return applicant;
   }
 
-  async getApplicationCreator(payload: any): Promise<IUser> {
+  async getApplicationCreator(payload: any): Promise<User> {
     const applicationCreator = await this.alkemioClient.user(
       payload.applicationCreatorID
     );
@@ -42,21 +39,21 @@ export class AlkemioClientAdapter
     return applicationCreator;
   }
 
-  async getOpportunityAdmins(opportunityID: string): Promise<IUser[]> {
+  async getOpportunityAdmins(opportunityID: string): Promise<User[]> {
     return await this.getAdmins(
       AuthorizationCredential.OpportunityAdmin,
       opportunityID
     );
   }
 
-  async getHubAdmins(ecoverseID: string): Promise<IUser[]> {
+  async getHubAdmins(ecoverseID: string): Promise<User[]> {
     return await this.getAdmins(
       AuthorizationCredential.EcoverseAdmin,
       ecoverseID
     );
   }
 
-  async getChallengeAdmins(challengeID: string): Promise<IUser[]> {
+  async getChallengeAdmins(challengeID: string): Promise<User[]> {
     return await this.getAdmins(
       AuthorizationCredential.OpportunityAdmin,
       challengeID
@@ -66,11 +63,11 @@ export class AlkemioClientAdapter
   private async getAdmins(
     credential: AuthorizationCredential,
     resourceID?: string
-  ): Promise<IUser[]> {
+  ): Promise<User[]> {
     const admins = (await this.alkemioClient.usersWithAuthorizationCredential(
       credential,
       resourceID
-    )) as IUser[];
+    )) as User[];
     return admins;
   }
 }
