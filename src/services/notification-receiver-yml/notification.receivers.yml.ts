@@ -6,7 +6,7 @@ import {
   RecipientCredential,
   TemplateRule,
 } from '@core/contracts';
-import { NotificationRecipientsYmlTemplate } from '@src/services';
+import { NotificationRecipientsYmlTemplate } from '@src/services/notification-receivers-template-yml/notification.receivers.template.yml';
 import { AuthorizationCredential } from '@alkemio/client-lib';
 
 // todo tests
