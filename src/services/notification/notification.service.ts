@@ -14,18 +14,13 @@ export class NotificationService {
     private readonly applicationNotificationBuilder: ApplicationNotificationBuilder
   ) {}
 
-  async sendApplicationNotifications(
+  sendApplicationNotifications(
     payload: any
-  ): Promise<NotificationStatus[]> {
-    const notifications =
-      await this.applicationNotificationBuilder.buildNotifications(payload);
-
-    const notificationStatuses = notifications.map(x =>
-      this.sendApplicationNotification(x)
-    );
-
-    // will resolve on the first rejection or when all are resolved normally
-    return Promise.all(notificationStatuses);
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.applicationNotificationBuilder
+      .buildNotifications(payload)
+      .then(x => x.map(x => this.sendApplicationNotification(x)))
+      .then(x => Promise.allSettled(x));
   }
 
   private sendApplicationNotification(

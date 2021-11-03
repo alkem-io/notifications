@@ -1,6 +1,10 @@
 import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { ALKEMIO_CLIENT_ADAPTER, TEMPLATE_PROVIDER } from '@src/common';
+import {
+  ALKEMIO_CLIENT_ADAPTER,
+  LogContext,
+  TEMPLATE_PROVIDER,
+} from '@src/common';
 import { NotificationTemplateBuilder } from '@src/wrappers/notifme/notification.templates.builder';
 import {
   INotificationRecipientProvider,
@@ -28,16 +32,25 @@ export class ApplicationNotificationBuilder {
 
     const applicant = await this.notifiedUsersService.getApplicant(payload);
 
-    const adminUsers: User[] = [];
-    receiverCredentials
+    const adminRequests = receiverCredentials
       .filter(x => x.isAdmin)
-      .forEach(async ({ role, resourceID }) => {
-        const users = await this.notifiedUsersService.getUsersWithCredentials(
-          role,
-          resourceID
+      .map(({ role, resourceID }) =>
+        this.notifiedUsersService.getUsersWithCredentials(role, resourceID)
+      );
+
+    const settledAdminUsers = await Promise.allSettled(adminRequests);
+
+    const adminUsers: User[] = [];
+    settledAdminUsers.forEach(x => {
+      if (x.status === 'fulfilled') {
+        adminUsers.push(...x.value);
+      } else {
+        this.logger.error(
+          `Could not fetch admin users: ${x.reason}`,
+          LogContext.NOTIFICATIONS
         );
-        adminUsers.concat(users);
-      });
+      }
+    });
 
     const adminNotifications = adminUsers.map(x =>
       this.buildAdminNotification(payload, applicant, x)

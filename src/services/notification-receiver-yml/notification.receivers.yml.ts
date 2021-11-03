@@ -106,18 +106,27 @@ const getResourceId = (
 const getResourceIdByRole = (
   role: AuthorizationCredential,
   payload: any
-): string | undefined | null => {
+): string | undefined | null | never => {
+  const hubId = payload?.hub?.id;
+  const challengeId = payload?.hub?.challenge?.id ?? null;
+  const opportunityId = payload?.hub?.challenge?.opportunity?.id ?? null;
+  const applicantId = payload?.applicantID ?? null;
+
+  if (!hubId) {
+    throw new Error('"id" field of "hub" not found in the payload');
+  }
+
   switch (role) {
     case AuthorizationCredential.EcoverseAdmin:
-      return payload.hub.id;
+      return hubId;
     case AuthorizationCredential.ChallengeAdmin:
-      return payload.hub.challenge.id;
+      return challengeId;
     case AuthorizationCredential.OpportunityAdmin:
-      return payload.hub.challenge.opportunity.id;
+      return opportunityId;
     case AuthorizationCredential.GlobalAdmin:
       return undefined;
     case AuthorizationCredential.UserSelfManagement:
-      return payload.applicantID;
+      return applicantId;
     default:
       return null;
   }
