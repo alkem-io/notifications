@@ -19,19 +19,4 @@ module.exports = () => ({
         {% endblock %}`,
     },
   },
-  sampleData: {
-    emailFrom: '<info@alkem.io>',
-    admin: {
-      firstname: 'Valentin',
-      email: 'valentin@alkem.io',
-    },
-    applicant: {
-      name: 'Neil Smyth',
-      email: 'neil@alkem.io',
-    },
-    community: {
-      name: '01 Save The Oceans',
-      type: 'challenge',
-    },
-  },
 });
