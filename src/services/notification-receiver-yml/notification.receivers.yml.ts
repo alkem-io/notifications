@@ -8,6 +8,7 @@ import {
 } from '@core/contracts';
 import { NotificationRecipientsYmlTemplate } from '@src/services/notification-receivers-template-yml/notification.receivers.template.yml';
 import { AuthorizationCredential } from '@alkemio/client-lib';
+import { ApplicationCreatedEventPayload } from '@src/types';
 
 // todo tests
 @Injectable()
@@ -21,7 +22,9 @@ export class NotificationReceiversYml
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 
-  public getApplicationCreatedRecipients(payload: any): RecipientCredential[] {
+  public getApplicationCreatedRecipients(
+    payload: ApplicationCreatedEventPayload
+  ): RecipientCredential[] {
     const template = this.recipientTemplateProvider.getTemplate();
 
     if (!template.application_created) {
@@ -47,7 +50,7 @@ export class NotificationReceiversYml
  */
 const ruleToCredential = (
   templateRule: TemplateRule,
-  payload: any,
+  payload: ApplicationCreatedEventPayload,
   isAdmin = false
 ): RecipientCredential | undefined => {
   const { rule } = templateRule;
@@ -78,7 +81,7 @@ const ruleToCredential = (
 const getResourceId = (
   role: AuthorizationCredential,
   resourceIdPattern: string,
-  payload: any
+  payload: ApplicationCreatedEventPayload
 ): string | undefined | null => {
   const fillPattern = new RegExp(/^<\w*>$/g);
   const resourceIdFromPayload = getResourceIdByRole(role, payload);
@@ -105,7 +108,7 @@ const getResourceId = (
  */
 const getResourceIdByRole = (
   role: AuthorizationCredential,
-  payload: any
+  payload: ApplicationCreatedEventPayload
 ): string | undefined | null | never => {
   const hubId = payload?.hub?.id;
   const challengeId = payload?.hub?.challenge?.id ?? null;

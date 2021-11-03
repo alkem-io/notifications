@@ -1,4 +1,5 @@
 import { AuthorizationCredential } from '@alkemio/client-lib';
+import { ApplicationCreatedEventPayload } from '@src/types';
 
 export type RecipientCredential = {
   role: AuthorizationCredential;
@@ -7,6 +8,7 @@ export type RecipientCredential = {
 };
 
 export interface INotificationRecipientProvider {
-  // todo: define payload type
-  getApplicationCreatedRecipients(payload: any): RecipientCredential[];
+  getApplicationCreatedRecipients(
+    payload: ApplicationCreatedEventPayload
+  ): RecipientCredential[];
 }

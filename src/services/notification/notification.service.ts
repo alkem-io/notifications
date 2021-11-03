@@ -3,6 +3,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { LogContext, NOTIFICATIONS_PROVIDER } from '@src/common';
 import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
+import { ApplicationCreatedEventPayload } from '@src/types';
 
 @Injectable()
 export class NotificationService {
@@ -15,7 +16,7 @@ export class NotificationService {
   ) {}
 
   sendApplicationNotifications(
-    payload: any
+    payload: ApplicationCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.applicationNotificationBuilder
       .buildNotifications(payload)

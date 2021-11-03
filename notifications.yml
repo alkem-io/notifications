@@ -77,7 +77,7 @@ alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/admin/graphql
   service_account:
     username: ${SERVICE_ACCOUNT_USERNAME}:admin@alkem.io
-    password: ${SERVICE_ACCOUNT_PASSWORD}:@lk3m10!
+    password: ${SERVICE_ACCOUNT_PASSWORD}:obichamazis
 
 kratos:
   public_endpoint: ${KRATOS_API_PUBLIC_ENDPOINT}:http://localhost:3000/identity/ory/kratos/public
