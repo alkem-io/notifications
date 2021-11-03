@@ -17,25 +17,35 @@ export class NotificationService {
   async sendApplicationNotifications(
     payload: any
   ): Promise<NotificationStatus[]> {
-    const notificationStatuses = [];
     const notifications =
       await this.applicationNotificationBuilder.buildNotifications(payload);
 
-    for (const notification of notifications) {
-      notificationStatuses.push(this.sendApplicationNotification(notification));
-    }
+    const notificationStatuses = notifications.map(x =>
+      this.sendApplicationNotification(x)
+    );
+
+    // will resolve on the first rejection or when all are resolved normally
     return Promise.all(notificationStatuses);
   }
 
-  private async sendApplicationNotification(
+  private sendApplicationNotification(
     notification: any
   ): Promise<NotificationStatus> {
-    return this.notifmeService.send(notification.channels).then(res => {
-      this.logger.verbose?.(
-        `Notification status: ${res.status}`,
-        LogContext.NOTIFICATIONS
-      );
-      return res;
-    });
+    return this.notifmeService.send(notification.channels).then(
+      res => {
+        this.logger.verbose?.(
+          `Notification status: ${res.status}`,
+          LogContext.NOTIFICATIONS
+        );
+        return res;
+      },
+      reason => {
+        this.logger.verbose?.(
+          `Notification rejected with reason: ${reason}`,
+          LogContext.NOTIFICATIONS
+        );
+        return reason;
+      }
+    );
   }
 }

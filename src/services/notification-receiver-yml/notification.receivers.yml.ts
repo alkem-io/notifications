@@ -30,14 +30,11 @@ export class NotificationReceiversYml
 
     const { admin = [], applicant = [] } = template.application_created;
 
-    const recipients = [...admin, ...applicant];
+    const admins = admin.map(x => ruleToCredential(x, payload, true));
+    const applicants = applicant.map(x => ruleToCredential(x, payload));
 
-    return (
-      recipients
-        .map(x => ruleToCredential(x, payload))
-        // filter out the mismatches
-        .filter(x => x) as RecipientCredential[]
-    );
+    // and filter out the mismatches
+    return [...admins, ...applicants].filter(x => x) as RecipientCredential[];
   }
 }
 
@@ -45,11 +42,13 @@ export class NotificationReceiversYml
  * Returns a credential from the payload based on the rule provided
  * @param templateRule
  * @param payload
+ * @param isAdmin
  * @returns Credential if matched with the payload, *undefined* otherwise
  */
 const ruleToCredential = (
   templateRule: TemplateRule,
-  payload: any
+  payload: any,
+  isAdmin = false
 ): RecipientCredential | undefined => {
   const { rule } = templateRule;
   const resourceID = getResourceId(rule.type, rule.resource_id, payload);
@@ -61,6 +60,7 @@ const ruleToCredential = (
   return {
     role: templateRule.rule.type,
     resourceID,
+    isAdmin,
   };
 };
 

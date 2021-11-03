@@ -13,7 +13,7 @@ import { User } from '@core/models';
 export class ApplicationNotificationBuilder {
   constructor(
     @Inject(NotificationReceiversYml)
-    private readonly notificationReceiverYaml: INotificationRecipientProvider,
+    private readonly notificationReceivers: INotificationRecipientProvider,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
@@ -22,143 +22,69 @@ export class ApplicationNotificationBuilder {
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder
   ) {}
 
-  async buildNotifications(payload: any): Promise<any> {
-    const notifications = [];
+  async buildNotifications(payload: any): Promise<any[]> {
+    const receiverCredentials =
+      this.notificationReceivers.getApplicationCreatedRecipients(payload);
 
     const applicant = await this.notifiedUsersService.getApplicant(payload);
-    const notification = await this.buildUserNotification(payload, applicant);
-    notifications.push(notification);
 
-    await this.buildHubAdminsNotifications(payload, applicant, notifications);
-    await this.buildChallengeAdminsNotifications(
-      payload,
-      applicant,
-      notifications
-    );
-    await this.buildOpportunityAdminsNotifications(
-      payload,
-      applicant,
-      notifications
-    );
-
-    return notifications;
-  }
-
-  async buildAdminsNotifications(
-    applicant: User,
-    admins: User[],
-    community: any,
-    notifications: any
-  ) {
-    for (const admin of admins) {
-      const notification = await this.buildAdminNotification({
-        admin: admin,
-        applicant: applicant,
-        community: community,
+    const adminUsers: User[] = [];
+    receiverCredentials
+      .filter(x => x.isAdmin)
+      .forEach(async ({ role, resourceID }) => {
+        const users = await this.notifiedUsersService.getUsersWithCredentials(
+          role,
+          resourceID
+        );
+        adminUsers.concat(users);
       });
-      notifications.push(notification);
-    }
+
+    const adminNotifications = adminUsers.map(x =>
+      this.buildAdminNotification(payload, applicant, x)
+    );
+
+    // todo what to do with the applicant field in the template??
+
+    const applicantNotification = this.buildUserNotification(
+      payload,
+      applicant
+    );
+
+    // will resolve on the first rejection or when all are resolved normally
+    return Promise.all([...adminNotifications, applicantNotification]);
   }
 
-  async buildHubAdminsNotifications(
-    payload: any,
-    applicant: User,
-    notifications: any
-  ) {
-    const hubAdmins = await this.notifiedUsersService.getHubAdmins(
-      payload.hub.id
-    );
+  buildUserNotification(payload: any, applicant: User) {
+    const mergedUserPayload = getBaseNotification(payload, applicant);
 
-    await this.buildAdminsNotifications(
-      applicant,
-      hubAdmins,
-      payload.community,
-      notifications
-    );
-  }
-
-  async buildChallengeAdminsNotifications(
-    payload: any,
-    applicant: User,
-    notifications: any
-  ) {
-    const challengeAdmins = await this.notifiedUsersService.getChallengeAdmins(
-      payload.hub.challenge.id
-    );
-
-    await this.buildAdminsNotifications(
-      applicant,
-      challengeAdmins,
-      payload.community,
-      notifications
-    );
-  }
-
-  async buildOpportunityAdminsNotifications(
-    payload: any,
-    applicant: User,
-    notifications: any
-  ) {
-    const opportunityAdmins =
-      await this.notifiedUsersService.getOpportunityAdmins(
-        payload.hub.challenge.opportunity.id
-      );
-
-    await this.buildAdminsNotifications(
-      applicant,
-      opportunityAdmins,
-      payload.community,
-      notifications
-    );
-  }
-
-  async buildUserNotification(payload: any, applicant: User) {
-    const mergedUserPayload = {
-      emailFrom: '<info@alkem.io>',
-      applicant: {
-        name: applicant.displayName,
-        email: applicant.email,
-      },
-      community: {
-        name: payload.community.name,
-        type: payload.community.type,
-      },
-    };
-
-    return await this.buildNotification(
+    return this.buildNotification(
       mergedUserPayload,
       'user.application.applicant'
     );
   }
 
-  async buildAdminNotification(payload: any) {
-    const mergedAdminPayload = {
-      emailFrom: '<info@alkem.io>',
-      admin: {
-        firstname: payload.admin.firstName,
-        email: payload.admin.email,
-      },
-      applicant: {
-        name: payload.applicant.displayName,
-        email: payload.applicant.email,
-      },
-      community: {
-        name: payload.community.name,
-        type: payload.community.type,
-      },
+  buildAdminNotification(payload: any, applicant: User, admin: User) {
+    const mergedAdminPayload = getBaseNotification(payload, applicant) as any;
+    mergedAdminPayload.admin = {
+      firstname: admin.firstName,
+      email: admin.email,
     };
 
-    return await this.buildNotification(
-      mergedAdminPayload,
-      'user.application.admin'
-    );
+    return this.buildNotification(mergedAdminPayload, 'user.application.admin');
   }
 
-  async buildNotification(payload: any, templateName: string) {
-    const notification = await this.notificationTemplateBuilder.buildTemplate(
-      templateName,
-      payload
-    );
-    return notification;
-  }
+  buildNotification = (payload: any, templateName: string) =>
+    this.notificationTemplateBuilder.buildTemplate(templateName, payload);
 }
+
+const getBaseNotification = (payload: any, applicant: User) => ({
+  emailFrom: '<info@alkem.io>',
+  applicant: {
+    name: applicant.displayName,
+    email: applicant.email,
+  },
+  community: {
+    name: payload.community.name,
+    type: payload.community.type,
+  },
+});

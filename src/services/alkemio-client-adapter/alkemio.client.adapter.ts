@@ -34,40 +34,38 @@ export class AlkemioClientAdapter
       payload.applicationCreatorID
     );
     if (!applicationCreator)
-      throw new Error('The creator of the application was  not found!');
+      throw new Error('The creator of the application was not found!');
 
     return applicationCreator;
   }
 
   async getOpportunityAdmins(opportunityID: string): Promise<User[]> {
-    return await this.getAdmins(
+    return await this.getUsersWithCredentials(
       AuthorizationCredential.OpportunityAdmin,
       opportunityID
     );
   }
 
   async getHubAdmins(ecoverseID: string): Promise<User[]> {
-    return await this.getAdmins(
+    return await this.getUsersWithCredentials(
       AuthorizationCredential.EcoverseAdmin,
       ecoverseID
     );
   }
 
   async getChallengeAdmins(challengeID: string): Promise<User[]> {
-    return await this.getAdmins(
-      AuthorizationCredential.OpportunityAdmin,
+    return await this.getUsersWithCredentials(
+      AuthorizationCredential.ChallengeAdmin,
       challengeID
     );
   }
 
-  private async getAdmins(
+  getUsersWithCredentials = async (
     credential: AuthorizationCredential,
     resourceID?: string
-  ): Promise<User[]> {
-    const admins = (await this.alkemioClient.usersWithAuthorizationCredential(
+  ): Promise<User[]> =>
+    this.alkemioClient.usersWithAuthorizationCredential(
       credential,
       resourceID
-    )) as User[];
-    return admins;
-  }
+    ) as Promise<User[]>;
 }
