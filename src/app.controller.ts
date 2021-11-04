@@ -27,26 +27,22 @@ export class AppController {
     const originalMsg = context.getMessage() as Message;
 
     if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
-      //toDo make this nack
       channel.ack(originalMsg);
     }
 
     this.notificationService
       .sendApplicationNotifications(payload)
       .then(x => {
-        const shouldNack = x.some(y => y.status === 'rejected');
+        const nacked = x.filter(y => y.status === 'rejected');
 
-        if (shouldNack) {
-          //toDo make this nack
-          channel.ack(originalMsg);
+        if (nacked.length === 0) {
+          this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
         } else {
-          channel.ack(originalMsg);
+          this.logger.verbose?.(`${nacked.length} messages failed to be sent!`);
         }
       })
       .catch(err => {
         this.logger.error(err);
-        // toDo check how to reject a message
-        // channel.reject(originalMsg);
       });
   }
 }

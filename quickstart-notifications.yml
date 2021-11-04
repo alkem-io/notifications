@@ -15,6 +15,10 @@ services:
       - RABBITMQ_HOST
       - LOGGING_CONSOLE_ENABLED
       - LOGGING_LEVEL_CONSOLE
+      - ENVIRONMENT=dev
+      - ALKEMIO_SERVER_ENDPOINT
+      - KRATOS_API_PUBLIC_ENDPOINT
+      - SERVICE_ACCOUNT_PASSWORD
     networks:
       - alkemio_notifications_net
     restart: always
