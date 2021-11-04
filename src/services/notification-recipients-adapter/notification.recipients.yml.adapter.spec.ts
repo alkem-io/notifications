@@ -1,21 +1,21 @@
 import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
-import { NotificationRecipientsYmlTemplate } from '@src/services';
+import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { MockConfigServiceProvider } from '@test/mocks';
 
-describe('NotificationRecipientsYmlTemplate', () => {
+describe('NotificationRecipientsYmlAdapter', () => {
   let configService: ConfigService;
   let recipientTemplateProvider: INotificationRecipientTemplateProvider;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [MockConfigServiceProvider, NotificationRecipientsYmlTemplate],
+      providers: [MockConfigServiceProvider, NotificationRecipientsYmlAdapter],
     }).compile();
 
     recipientTemplateProvider =
       moduleRef.get<INotificationRecipientTemplateProvider>(
-        NotificationRecipientsYmlTemplate
+        NotificationRecipientsYmlAdapter
       );
     configService = moduleRef.get<ConfigService>(ConfigService);
   });

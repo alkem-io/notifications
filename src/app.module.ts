@@ -9,8 +9,8 @@ import { HttpExceptionsFilter } from './core';
 import {
   ApplicationNotificationBuilder,
   NotificationService,
-  NotificationReceiversYml,
-  NotificationRecipientsYmlTemplate,
+  TemplateToCredentialMapper,
+  NotificationRecipientsYmlAdapter,
   AlkemioClientAdapterModule,
 } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/wrappers';
@@ -36,8 +36,8 @@ import { AlkemioClientModule, NotifmeModule } from '@src/wrappers';
     },
     NotificationService,
     ApplicationNotificationBuilder,
-    NotificationReceiversYml,
-    NotificationRecipientsYmlTemplate,
+    TemplateToCredentialMapper,
+    NotificationRecipientsYmlAdapter,
   ],
   controllers: [AppController],
 })

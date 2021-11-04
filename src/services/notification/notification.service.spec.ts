@@ -16,8 +16,8 @@ import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
 import {
-  NotificationReceiversYml,
-  NotificationRecipientsYmlTemplate,
+  TemplateToCredentialMapper,
+  NotificationRecipientsYmlAdapter,
 } from '@src/services';
 
 const testData = {
@@ -46,8 +46,8 @@ describe('NotificationService', () => {
         NotifmeModule,
       ],
       providers: [
-        NotificationReceiversYml,
-        NotificationRecipientsYmlTemplate,
+        TemplateToCredentialMapper,
+        NotificationRecipientsYmlAdapter,
         NotificationService,
         ApplicationNotificationBuilder,
         ConfigService,
