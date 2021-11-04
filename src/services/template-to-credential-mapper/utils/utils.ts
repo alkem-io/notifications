@@ -1,5 +1,5 @@
 import { RecipientCredential, TemplateRule } from '@core/contracts';
-import { ApplicationCreatedEventPayload } from '@src/types';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { AuthorizationCredential } from '@alkemio/client-lib';
 
 /***

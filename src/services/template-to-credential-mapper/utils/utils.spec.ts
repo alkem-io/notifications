@@ -1,5 +1,5 @@
 import { AuthorizationCredential } from '@alkemio/client-lib';
-import { ApplicationCreatedEventPayload } from '@src/types';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { getResourceId, getResourceIdByRole, ruleToCredential } from './utils';
 
 describe('ruleToCredential', () => {

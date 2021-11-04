@@ -5,7 +5,7 @@ import {
   INotificationRecipientTemplateProvider,
   RecipientCredential,
 } from '@core/contracts';
-import { ApplicationCreatedEventPayload } from '@src/types';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@src/common';
 import { ruleToCredential } from './utils/utils';
 

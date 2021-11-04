@@ -1,3 +1,4 @@
+import { AuthorizationCredential } from '@alkemio/client-lib';
 import { Test } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
@@ -7,13 +8,12 @@ import {
   RecipientCredential,
 } from '@core/contracts';
 import { WinstonConfigService } from '@src/config';
-import { NotificationRecipientsYmlAdapter } from '@src/services';
-import { AuthorizationCredential } from '@alkemio/client-lib';
 import { ApplicationCreatedEventPayload } from '@src/types';
 import configuration from '@config/configuration';
 import { MockNotificationRecipientsYmlProvider } from '@test/mocks';
+import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@src/common';
 import { TemplateToCredentialMapper } from './';
-import { NotificationRecipientsAdapterModule } from '@src/services';
+import { MockNotificationRecipientsAdapterModule } from '@test/mocks/notification.recipiens.adapter.module.mock';
 
 describe('TemplateToCredentialMapper', () => {
   let notificationReceivers: INotificationRecipientProvider;
@@ -30,7 +30,7 @@ describe('TemplateToCredentialMapper', () => {
         WinstonModule.forRootAsync({
           useClass: WinstonConfigService,
         }),
-        NotificationRecipientsAdapterModule,
+        MockNotificationRecipientsAdapterModule,
       ],
       providers: [
         MockNotificationRecipientsYmlProvider,
@@ -43,7 +43,7 @@ describe('TemplateToCredentialMapper', () => {
     );
     recipientTemplateProvider =
       moduleRef.get<INotificationRecipientTemplateProvider>(
-        NotificationRecipientsYmlAdapter
+        NOTIFICATION_RECIPIENTS_YML_ADAPTER
       );
   });
 
@@ -96,7 +96,7 @@ describe('TemplateToCredentialMapper', () => {
       const res =
         notificationReceivers.getApplicationCreatedRecipients(payload);
       // assert
-      expect(res).toContainEqual(expectedResponse);
+      expect(res).toEqual(expect.arrayContaining(expectedResponse));
     });
   });
 });
