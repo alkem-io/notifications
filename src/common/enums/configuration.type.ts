@@ -5,4 +5,5 @@ export enum ConfigurationTypes {
   NOTIFICATION_PROVIDERS = 'notification_providers',
   ALKEMIO = 'alkemio',
   KRATOS = 'kratos',
+  NOTIFICATION_RECIPIENTS = 'recipients',
 }

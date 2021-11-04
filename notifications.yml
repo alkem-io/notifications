@@ -67,7 +67,7 @@ notification_providers:
 # The hosting configuration for the Alkemio Server
 hosting:
   # The type of environment is used in multiple places to determine whether dev tooling is enabled.
-  # The tyoe of environment can also be used for monitoring / logging / analysis in an ELK cluster / ElasticCloud instance.
+  # The type of environment can also be used for monitoring / logging / analysis in an ELK cluster / ElasticCloud instance.
   # For production deployments it should be set to Prod.
   #
   # Options: Dev, Prod
@@ -77,27 +77,27 @@ alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/admin/graphql
   service_account:
     username: ${SERVICE_ACCOUNT_USERNAME}:admin@alkem.io
-    password: ${SERVICE_ACCOUNT_PASSWORD}:@lk3m10!
+    password: ${SERVICE_ACCOUNT_PASSWORD}:obichamazis
 
 kratos:
   public_endpoint: ${KRATOS_API_PUBLIC_ENDPOINT}:http://localhost:3000/identity/ory/kratos/public
 
-templates:
-  user_application_admin_template:
-    - rule:
-        type: ChallengeAdmin
-        resource_id: <challengeID>
-    - rule:
-        type: OpportunityAdmin
-        resource_id: <opportunityID>
-    - rule:
-        type: EcoverseAdmin
-        resource_id: <ecoverseID>
-    - rule:
-        type: GlobalAdmin
-        resource_id: <>
-
-  user_application_applicant_template:
-    - rule:
-        type: UserSelfManagement
-        resource_id: <applicantID>
+recipients:
+  application_created:
+    admin:
+      - rule:
+          type: CHALLENGE_ADMIN
+          resource_id: <challengeID>
+      - rule:
+          type: OPPORTUNITY_ADMIN
+          resource_id: <opportunityID>
+      - rule:
+          type: ECOVERSE_ADMIN
+          resource_id: <ecoverseID>
+      - rule:
+          type: GLOBAL_ADMIN
+          resource_id: <>
+    applicant:
+      - rule:
+          type: USER_SELF_MANAGEMENT
+          resource_id: <applicantID>

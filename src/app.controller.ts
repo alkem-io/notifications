@@ -1,9 +1,11 @@
 import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Channel, Message } from 'amqplib';
 import { ALKEMIO_CLIENT_ADAPTER } from './common';
-import { NotificationService } from './services/notification/notification.service';
-import { IFeatureFlagProvider } from './types';
+import { NotificationService } from '@src/services';
+import { IFeatureFlagProvider } from '@core/contracts';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 
 @Controller()
 export class AppController {
@@ -17,26 +19,34 @@ export class AppController {
 
   @EventPattern('communityApplicationCreated')
   async sendApplicationNotification(
-    @Payload() data: any,
+    // todo is auto validation possible
+    @Payload() payload: ApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    const channel = context.getChannelRef();
-    const originalMsg = context.getMessage();
+    const channel: Channel = context.getChannelRef();
+    const originalMsg = context.getMessage() as Message;
 
-    if (await this.featureFlagProvider.areNotificationsEnabled()) {
-      try {
-        await this.notificationService.sendApplicationNotifications(data);
-        channel.ack(originalMsg);
-      } catch (error) {
-        this.logger.error(error);
-
-        //toDo check how to reject a message
-        // channel.reject(originalMsg);
-        return;
-      }
-    } else {
+    if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
       //toDo make this nack
       channel.ack(originalMsg);
     }
+
+    this.notificationService
+      .sendApplicationNotifications(payload)
+      .then(x => {
+        const shouldNack = x.some(y => y.status === 'rejected');
+
+        if (shouldNack) {
+          //toDo make this nack
+          channel.ack(originalMsg);
+        } else {
+          channel.ack(originalMsg);
+        }
+      })
+      .catch(err => {
+        this.logger.error(err);
+        // toDo check how to reject a message
+        // channel.reject(originalMsg);
+      });
   }
 }

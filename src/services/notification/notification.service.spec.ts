@@ -1,18 +1,25 @@
-import { NotificationService } from './notification.service';
 import { Test } from '@nestjs/testing';
 import { WinstonConfigService } from '@src/config';
 import { WinstonModule } from 'nest-winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
 import { NotifmeModule } from '@src/wrappers/notifme/notifme.module';
-import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
-import { INotifiedUsersProvider } from '@src/types';
 import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
 import * as hubAdminsData from '@test/data/hub.admins.json';
 import * as eventPayload from '@test/data/event.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
+import { INotifiedUsersProvider } from '@core/contracts';
+import { ApplicationCreatedEventPayload } from '@src/types';
+import { NotificationStatus } from 'notifme-sdk';
+import { NotificationService } from './notification.service';
+import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
+import {
+  TemplateToCredentialMapper,
+  NotificationRecipientsYmlAdapter,
+} from '@src/services';
+import { NotificationRecipientsAdapterModule } from '../notification-recipients-adapter/notification.recipients.adapter.module';
 
 const testData = {
   ...challengeAdminsData,
@@ -38,8 +45,11 @@ describe('NotificationService', () => {
           useClass: WinstonConfigService,
         }),
         NotifmeModule,
+        NotificationRecipientsAdapterModule,
       ],
       providers: [
+        TemplateToCredentialMapper,
+        NotificationRecipientsYmlAdapter,
         NotificationService,
         ApplicationNotificationBuilder,
         ConfigService,
@@ -51,6 +61,7 @@ describe('NotificationService', () => {
             getOpportunityAdmins: jest.fn(),
             getHubAdmins: jest.fn(),
             getChallengeAdmins: jest.fn(),
+            getUsersWithCredentials: jest.fn(),
           },
         },
       ],
@@ -65,6 +76,10 @@ describe('NotificationService', () => {
 
   describe('Application Notifications', () => {
     it('Should send application notification', async () => {
+      jest
+        .spyOn(alkemioAdapter, 'getUsersWithCredentials')
+        .mockResolvedValue(testData.hubAdmins);
+
       jest
         .spyOn(alkemioAdapter, 'getApplicant')
         .mockResolvedValue(testData.adminUser);
@@ -82,10 +97,13 @@ describe('NotificationService', () => {
         .mockResolvedValue(testData.opportunityAdmins);
 
       const res = await notificationService.sendApplicationNotifications(
-        testData.eventPayload.data
+        testData.eventPayload.data as ApplicationCreatedEventPayload
       );
       for (const notificationStatus of res) {
-        expect(notificationStatus.status).toBe('success');
+        expect(
+          (notificationStatus as PromiseFulfilledResult<NotificationStatus>)
+            .value.status
+        ).toBe('success');
       }
     });
 
@@ -95,7 +113,7 @@ describe('NotificationService', () => {
         .mockRejectedValue(new Error('Applicant not found!'));
       expect(
         notificationService.sendApplicationNotifications(
-          testData.eventPayload.data
+          testData.eventPayload.data as ApplicationCreatedEventPayload
         )
       ).rejects.toThrow();
     });
