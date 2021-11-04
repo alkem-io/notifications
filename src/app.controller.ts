@@ -29,6 +29,7 @@ export class AppController {
     if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
       //toDo make this nack
       channel.ack(originalMsg);
+      return;
     }
 
     this.notificationService
