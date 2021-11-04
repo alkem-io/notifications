@@ -1,21 +1,22 @@
 import { Test } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
 import { WinstonModule } from 'nest-winston';
 import {
-  INotificationRecipientTemplateProvider,
+  INotificationRecipientProvider,
   INotificationRecipientTemplateProvider,
   RecipientCredential,
 } from '@core/contracts';
 import { WinstonConfigService } from '@src/config';
-import { MockNotificationRecipientsYmlTemplateProvider } from '@test/mocks';
-import { TemplateToCredentialMapper } from './';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { AuthorizationCredential } from '@alkemio/client-lib';
 import { ApplicationCreatedEventPayload } from '@src/types';
-import { ConfigModule } from '@nestjs/config';
 import configuration from '@config/configuration';
+import { MockNotificationRecipientsYmlProvider } from '@test/mocks';
+import { TemplateToCredentialMapper } from './';
+import { NotificationRecipientsAdapterModule } from '@src/services';
 
 describe('TemplateToCredentialMapper', () => {
-  let notificationReceivers: INotificationRecipientTemplateProvider;
+  let notificationReceivers: INotificationRecipientProvider;
   let recipientTemplateProvider: INotificationRecipientTemplateProvider;
 
   beforeAll(async () => {
@@ -29,9 +30,10 @@ describe('TemplateToCredentialMapper', () => {
         WinstonModule.forRootAsync({
           useClass: WinstonConfigService,
         }),
+        NotificationRecipientsAdapterModule,
       ],
       providers: [
-        MockNotificationRecipientsYmlTemplateProvider,
+        MockNotificationRecipientsYmlProvider,
         TemplateToCredentialMapper,
       ],
     }).compile();
@@ -70,13 +72,13 @@ describe('TemplateToCredentialMapper', () => {
 
       const expectedResponse: RecipientCredential[] = [
         {
-          role: AuthorizationCredential.GlobalAdmin,
-          resourceID: undefined,
+          role: AuthorizationCredential.EcoverseAdmin,
+          resourceID: 'hub',
           isAdmin: true,
         },
         {
-          role: AuthorizationCredential.EcoverseAdmin,
-          resourceID: 'hub',
+          role: AuthorizationCredential.GlobalAdmin,
+          resourceID: undefined,
           isAdmin: true,
         },
         {
@@ -94,7 +96,7 @@ describe('TemplateToCredentialMapper', () => {
       const res =
         notificationReceivers.getApplicationCreatedRecipients(payload);
       // assert
-      expect(res).toStrictEqual(expectedResponse);
+      expect(res).toContainEqual(expectedResponse);
     });
   });
 });
@@ -104,13 +106,13 @@ const templateMock = {
     admin: [
       {
         rule: {
-          type: AuthorizationCredential.GlobalAdmin,
+          type: AuthorizationCredential.EcoverseAdmin,
           resource_id: '<>',
         },
       },
       {
         rule: {
-          type: AuthorizationCredential.EcoverseAdmin,
+          type: AuthorizationCredential.GlobalAdmin,
           resource_id: '<>',
         },
       },

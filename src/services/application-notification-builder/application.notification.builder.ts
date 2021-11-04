@@ -10,8 +10,8 @@ import {
   INotificationRecipientProvider,
   INotifiedUsersProvider,
 } from '@core/contracts';
-import { TemplateToCredentialMapper } from '../template-to-credential-mapper/template.to.credential.mapper';
 import { User } from '@core/models';
+import { TemplateToCredentialMapper } from '../template-to-credential-mapper';
 
 @Injectable()
 export class ApplicationNotificationBuilder {

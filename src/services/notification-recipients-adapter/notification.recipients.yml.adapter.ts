@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   INotificationRecipientTemplateProvider,
   TemplateConfig,
-} from '@core/contracts/notification.recipient.template.provider.interface';
+} from '@core/contracts';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common';
 

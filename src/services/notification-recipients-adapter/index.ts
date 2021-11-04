@@ -1,1 +1,2 @@
-export * from './notification.recipient.yml.adapter';
+export * from './notification.recipients.yml.adapter';
+export * from './notification.recipients.adapter.module';

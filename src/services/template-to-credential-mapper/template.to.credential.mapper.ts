@@ -6,7 +6,7 @@ import {
   RecipientCredential,
 } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types';
-import { NotificationRecipientsYmlAdapter } from '../notification-recipients-adapter';
+import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@src/common';
 import { ruleToCredential } from './utils/utils';
 
 // todo tests
@@ -17,7 +17,7 @@ export class TemplateToCredentialMapper
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    @Inject(NotificationRecipientsYmlAdapter)
+    @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 

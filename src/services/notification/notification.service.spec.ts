@@ -19,6 +19,7 @@ import {
   TemplateToCredentialMapper,
   NotificationRecipientsYmlAdapter,
 } from '@src/services';
+import { NotificationRecipientsAdapterModule } from '../notification-recipients-adapter/notification.recipients.adapter.module';
 
 const testData = {
   ...challengeAdminsData,
@@ -44,6 +45,7 @@ describe('NotificationService', () => {
           useClass: WinstonConfigService,
         }),
         NotifmeModule,
+        NotificationRecipientsAdapterModule,
       ],
       providers: [
         TemplateToCredentialMapper,
