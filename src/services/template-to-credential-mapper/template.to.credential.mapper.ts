@@ -6,7 +6,7 @@ import {
   RecipientCredential,
 } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types';
-import { NotificationRecipientsYmlTemplate } from '../notification-receivers-template-yml';
+import { NotificationRecipientsYmlTemplate } from '../notification-recipients-adapter';
 import { ruleToCredential } from './utils/utils';
 
 // todo tests

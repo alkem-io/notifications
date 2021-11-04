@@ -10,7 +10,7 @@ import {
   INotificationRecipientProvider,
   INotifiedUsersProvider,
 } from '@core/contracts';
-import { NotificationReceiversYml } from '../notification-receiver-yml/notification.receivers.yml.service';
+import { NotificationReceiversYml } from '../template-to-credential-mapper/template.to.credential.mapper';
 import { User } from '@core/models';
 
 @Injectable()
