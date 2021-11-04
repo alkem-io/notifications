@@ -1,24 +1,22 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
-  INotificationRecipientProvider,
-  INotificationRecipientTemplateProvider,
+  INotificationRecipientProvider as ITemplateToCredentialMapper,
+  INotificationRecipientTemplateProvider as INotificationRecipientTemplateProvider,
   RecipientCredential,
   TemplateRule,
 } from '@core/contracts';
-import { NotificationRecipientsYmlTemplate } from '@src/services/notification-receivers-template-yml/notification.receivers.template.yml';
 import { AuthorizationCredential } from '@alkemio/client-lib';
-import { ApplicationCreatedEventPayload } from '@src/types';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
+import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@src/common';
 
 // todo tests
 @Injectable()
-export class NotificationReceiversYml
-  implements INotificationRecipientProvider
-{
+export class TemlateToCredentialMapper implements ITemplateToCredentialMapper {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    @Inject(NotificationRecipientsYmlTemplate)
+    @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 

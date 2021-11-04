@@ -16,9 +16,10 @@ import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
 import {
-  NotificationReceiversYml,
-  NotificationRecipientsYmlTemplate,
+  TemlateToCredentialMapper,
+  NotificationRecipientsYmlAdapter,
 } from '@src/services';
+import { NotificationRecipientsAdapterModule } from '../notification-recipients-adapter/notification.recipients.adapter.module';
 
 const testData = {
   ...challengeAdminsData,
@@ -44,10 +45,11 @@ describe('NotificationService', () => {
           useClass: WinstonConfigService,
         }),
         NotifmeModule,
+        NotificationRecipientsAdapterModule,
       ],
       providers: [
-        NotificationReceiversYml,
-        NotificationRecipientsYmlTemplate,
+        TemlateToCredentialMapper,
+        NotificationRecipientsYmlAdapter,
         NotificationService,
         ApplicationNotificationBuilder,
         ConfigService,

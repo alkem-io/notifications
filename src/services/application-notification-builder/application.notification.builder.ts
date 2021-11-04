@@ -10,13 +10,13 @@ import {
   INotificationRecipientProvider,
   INotifiedUsersProvider,
 } from '@core/contracts';
-import { NotificationReceiversYml } from '../notification-receiver-yml/notification.receivers.yml';
+import { TemlateToCredentialMapper } from '../template-to-credential-mapper/template.to.credential.mapper';
 import { User } from '@core/models';
 
 @Injectable()
 export class ApplicationNotificationBuilder {
   constructor(
-    @Inject(NotificationReceiversYml)
+    @Inject(TemlateToCredentialMapper)
     private readonly notificationReceivers: INotificationRecipientProvider,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,

@@ -9,11 +9,11 @@ import { HttpExceptionsFilter } from './core';
 import {
   ApplicationNotificationBuilder,
   NotificationService,
-  NotificationReceiversYml,
-  NotificationRecipientsYmlTemplate,
+  TemlateToCredentialMapper,
   AlkemioClientAdapterModule,
 } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/wrappers';
+import { NotificationRecipientsAdapterModule } from './services/notification-recipients-adapter/notification.recipients.adapter.module';
 
 @Module({
   imports: [
@@ -28,6 +28,7 @@ import { AlkemioClientModule, NotifmeModule } from '@src/wrappers';
     NotifmeModule,
     AlkemioClientModule,
     AlkemioClientAdapterModule,
+    NotificationRecipientsAdapterModule,
   ],
   providers: [
     {
@@ -36,8 +37,7 @@ import { AlkemioClientModule, NotifmeModule } from '@src/wrappers';
     },
     NotificationService,
     ApplicationNotificationBuilder,
-    NotificationReceiversYml,
-    NotificationRecipientsYmlTemplate,
+    TemlateToCredentialMapper,
   ],
   controllers: [AppController],
 })

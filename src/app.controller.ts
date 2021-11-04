@@ -5,7 +5,7 @@ import { Channel, Message } from 'amqplib';
 import { ALKEMIO_CLIENT_ADAPTER } from './common';
 import { NotificationService } from '@src/services';
 import { IFeatureFlagProvider } from '@core/contracts';
-import { ApplicationCreatedEventPayload } from '@src/types';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 
 @Controller()
 export class AppController {

@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import {
-  INotificationRecipientTemplateProvider,
+  INotificationRecipientTemplateProvider as INotificationRecipientProvider,
   TemplateConfig,
 } from '@core/contracts/notification.receiver.template.provider.interface';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common';
 
 @Injectable()
-export class NotificationRecipientsYmlTemplate
-  implements INotificationRecipientTemplateProvider
+export class NotificationRecipientsYmlAdapter
+  implements INotificationRecipientProvider
 {
   constructor(private readonly configService: ConfigService) {}
 
