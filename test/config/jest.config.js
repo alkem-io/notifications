@@ -20,7 +20,11 @@ module.exports = {
   testEnvironment: 'node',
   collectCoverageFrom: [
     '<rootDir>/src/**/*.service.ts',
+    '<rootDir>/src/**/utils.ts',
     '<rootDir>/src/**/*.controller.ts',
+    '<rootDir>/src/**/*.adapter.ts',
+    '<rootDir>/src/**/*.mapper.ts',
+    '<rootDir>/src/**/*.builder.ts',
   ],
   testTimeout: 90000,
   collectCoverage: true,

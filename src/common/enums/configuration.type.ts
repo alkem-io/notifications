@@ -3,4 +3,7 @@ export enum ConfigurationTypes {
   RABBIT_MQ = 'rabbitmq',
   HOSTING = 'hosting',
   NOTIFICATION_PROVIDERS = 'notification_providers',
+  ALKEMIO = 'alkemio',
+  KRATOS = 'kratos',
+  NOTIFICATION_RECIPIENTS = 'recipients',
 }

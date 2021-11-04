@@ -1,6 +1,6 @@
 {
   "name": "alkemio-notifications",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Alkemio notifications service",
   "author": "Cherrytwist Foundation",
   "private": false,
@@ -32,6 +32,7 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/config/typeorm.cli.config.ts"
   },
   "dependencies": {
+    "@alkemio/client-lib": "^0.9.9",
     "@nestjs/axios": "^0.0.1",
     "@nestjs/common": "^8.0.5",
     "@nestjs/config": "^1.0.1",
