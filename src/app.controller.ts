@@ -40,7 +40,7 @@ export class AppController {
           //toDo make this nack
           channel.ack(originalMsg);
         } else {
-          channel.nack(originalMsg);
+          channel.ack(originalMsg);
         }
       })
       .catch(err => {

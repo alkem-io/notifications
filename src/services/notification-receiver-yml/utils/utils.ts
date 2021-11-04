@@ -1,45 +1,6 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import {
-  INotificationRecipientProvider,
-  INotificationRecipientTemplateProvider,
-  RecipientCredential,
-  TemplateRule,
-} from '@core/contracts';
-import { NotificationRecipientsYmlTemplate } from '@src/services/notification-receivers-template-yml/notification.receivers.template.yml';
-import { AuthorizationCredential } from '@alkemio/client-lib';
+import { RecipientCredential, TemplateRule } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types';
-
-// todo tests
-@Injectable()
-export class NotificationReceiversYml
-  implements INotificationRecipientProvider
-{
-  constructor(
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    @Inject(NotificationRecipientsYmlTemplate)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
-  ) {}
-
-  public getApplicationCreatedRecipients(
-    payload: ApplicationCreatedEventPayload
-  ): RecipientCredential[] {
-    const template = this.recipientTemplateProvider.getTemplate();
-
-    if (!template.application_created) {
-      return [];
-    }
-
-    const { admin = [], applicant = [] } = template.application_created;
-
-    const admins = admin.map(x => ruleToCredential(x, payload, true));
-    const applicants = applicant.map(x => ruleToCredential(x, payload));
-
-    // and filter out the mismatches
-    return [...admins, ...applicants].filter(x => x) as RecipientCredential[];
-  }
-}
+import { AuthorizationCredential } from '@alkemio/client-lib';
 
 /***
  * Returns a credential from the payload based on the rule provided
@@ -48,7 +9,7 @@ export class NotificationReceiversYml
  * @param isAdmin
  * @returns Credential if matched with the payload, *undefined* otherwise
  */
-const ruleToCredential = (
+export const ruleToCredential = (
   templateRule: TemplateRule,
   payload: ApplicationCreatedEventPayload,
   isAdmin = false
@@ -78,7 +39,7 @@ const ruleToCredential = (
  * *null* - the provided *role* is not supported or the *resourceIdPattern* has no match in the payload
  * *undefined* - a resourceId is matched with the role, but the credential does not require a resourceId
  */
-const getResourceId = (
+export const getResourceId = (
   role: AuthorizationCredential,
   resourceIdPattern: string,
   payload: ApplicationCreatedEventPayload
@@ -86,8 +47,13 @@ const getResourceId = (
   const fillPattern = new RegExp(/^<\w*>$/g);
   const resourceIdFromPayload = getResourceIdByRole(role, payload);
 
-  if (!resourceIdFromPayload || resourceIdPattern.search(fillPattern) > -1) {
-    // return resourceId from the payload or undefined | null
+  if (!resourceIdFromPayload) {
+    // return undefined | null
+    return resourceIdFromPayload;
+  }
+
+  if (resourceIdPattern.search(fillPattern) > -1) {
+    // return resourceId from the payload
     return resourceIdFromPayload;
   }
 
@@ -106,7 +72,7 @@ const getResourceId = (
  * *undefined* - a resourceId is matched with the role, but the credential does not require a resourceId
  * *null* - the role is not supported
  */
-const getResourceIdByRole = (
+export const getResourceIdByRole = (
   role: AuthorizationCredential,
   payload: ApplicationCreatedEventPayload
 ): string | undefined | null | never => {

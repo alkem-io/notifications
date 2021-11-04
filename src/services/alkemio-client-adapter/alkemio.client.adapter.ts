@@ -60,12 +60,13 @@ export class AlkemioClientAdapter
     );
   }
 
-  getUsersWithCredentials = async (
+  async getUsersWithCredentials(
     credential: AuthorizationCredential,
     resourceID?: string
-  ): Promise<User[]> =>
-    this.alkemioClient.usersWithAuthorizationCredential(
+  ): Promise<User[]> {
+    return this.alkemioClient.usersWithAuthorizationCredential(
       credential,
       resourceID
     ) as Promise<User[]>;
+  }
 }

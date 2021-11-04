@@ -13,7 +13,7 @@ export type TemplateRow = {
 };
 
 export type TemplateConfig = {
-  application_created: TemplateRow;
+  application_created?: TemplateRow;
 };
 
 export interface INotificationRecipientTemplateProvider {
