@@ -9,7 +9,7 @@ export async function alkemioClientFactory(
 ): Promise<AlkemioClient | undefined> {
   try {
     const server = configService.get(ConfigurationTypes.ALKEMIO)?.endpoint;
-    const alkemioClient = new AlkemioClient({
+    const alkemioClientConfig = {
       graphqlEndpoint: server,
       authInfo: {
         credentials: {
@@ -22,7 +22,10 @@ export async function alkemioClientFactory(
           return configService.get(ConfigurationTypes.KRATOS)?.public_endpoint;
         },
       },
-    });
+    };
+    logger.verbose?.('Alkemio client config:', LogContext.NOTIFICATIONS);
+    logger.verbose?.(alkemioClientConfig, LogContext.NOTIFICATIONS);
+    const alkemioClient = new AlkemioClient(alkemioClientConfig);
 
     await alkemioClient.enableAuthentication();
 
