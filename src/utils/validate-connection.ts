@@ -1,4 +1,4 @@
-import { AlkemioClient, AuthInfo } from '@alkemio/client-lib';
+import { AlkemioClient } from '@alkemio/client-lib';
 import * as dotenv from 'dotenv';
 
 const main = async () => {
@@ -8,11 +8,21 @@ const main = async () => {
     graphqlEndpoint:
       process.env.ALKEMIO_SERVER_ENDPOINT ??
       'http://localhost:3000/admin/graphql',
+    authInfo: {
+      credentials: {
+        email: process.env.SERVICE_ACCOUNT_USERNAME ?? 'admin@alkem.io',
+        password: process.env.SERVICE_ACCOUNT_PASSWORD ?? 'obichamazis',
+      },
+      kratosPublicApiEndpoint:
+        process.env.KRATOS_API_PUBLIC_ENDPOINT ??
+        'http://localhost:3000/identity/ory/kratos/public',
+    },
   });
 
-  ctClient.config.authInfo = await getAuthInfo();
-  console.log(ctClient);
+  console.log(`Client config: ${JSON.stringify(ctClient.config)}`);
   await ctClient.enableAuthentication();
+
+  console.log(`API Token: ${ctClient.apiToken}`);
 
   const serverVersion = await ctClient.validateConnection();
   console.log(`Alkemio platform version: ${serverVersion}`);
@@ -21,21 +31,6 @@ const main = async () => {
   const hubExists = await ctClient.hubExists(hubID);
   console.log(`Hub '${hubID}' exists: ${hubExists}`);
 };
-
-async function getAuthInfo(): Promise<AuthInfo | undefined> {
-  return {
-    credentials: {
-      email: process.env.SERVICE_ACCOUNT_USERNAME ?? 'admin@alkem.io',
-      password: process.env.SERVICE_ACCOUNT_PASSWORD ?? '!Rn5Ez5FuuyUNc!',
-    },
-    apiEndpointFactory: () => {
-      return (
-        process.env.KRATOS_API_PUBLIC_ENDPOINT ??
-        'http://localhost:3000/identity/ory/kratos/public/'
-      );
-    },
-  };
-}
 
 try {
   main();

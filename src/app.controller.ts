@@ -2,7 +2,7 @@ import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
-import { ALKEMIO_CLIENT_ADAPTER } from './common';
+import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common';
 import { NotificationService } from '@src/services';
 import { IFeatureFlagProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
@@ -23,6 +23,8 @@ export class AppController {
     @Payload() payload: ApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
+    this.logger.verbose?.(JSON.stringify(payload), LogContext.NOTIFICATIONS);
+
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
 

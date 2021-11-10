@@ -34,7 +34,7 @@
     "validate-connection": "ts-node src/utils/validate-connection.ts"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.9.9",
+    "@alkemio/client-lib": "^0.10.1",
     "@nestjs/axios": "^0.0.1",
     "@nestjs/common": "^8.0.5",
     "@nestjs/config": "^1.0.1",

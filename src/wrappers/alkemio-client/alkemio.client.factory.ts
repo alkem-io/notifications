@@ -9,6 +9,10 @@ export async function alkemioClientFactory(
 ): Promise<AlkemioClient | undefined> {
   try {
     const server = configService.get(ConfigurationTypes.ALKEMIO)?.endpoint;
+    const kratosApiEndpoint = configService.get(
+      ConfigurationTypes.KRATOS
+    )?.public_endpoint;
+
     const alkemioClientConfig = {
       graphqlEndpoint: server,
       authInfo: {
@@ -18,13 +22,13 @@ export async function alkemioClientFactory(
           password: configService.get(ConfigurationTypes.ALKEMIO)
             ?.service_account?.password,
         },
-        apiEndpointFactory: () => {
-          return configService.get(ConfigurationTypes.KRATOS)?.public_endpoint;
-        },
+        kratosPublicApiEndpoint: kratosApiEndpoint,
       },
     };
-    logger.verbose?.('Alkemio client config:', LogContext.NOTIFICATIONS);
-    logger.verbose?.(alkemioClientConfig, LogContext.NOTIFICATIONS);
+    logger.verbose?.(
+      `Alkemio client config: ${JSON.stringify(alkemioClientConfig)}`,
+      LogContext.NOTIFICATIONS
+    );
     const alkemioClient = new AlkemioClient(alkemioClientConfig);
 
     await alkemioClient.enableAuthentication();
