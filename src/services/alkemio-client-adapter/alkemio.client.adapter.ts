@@ -24,7 +24,8 @@ export class AlkemioClientAdapter
 
   async getApplicant(payload: any): Promise<User> {
     const applicant = await this.alkemioClient.user(payload.applicantID);
-    if (!applicant) throw new Error('Applicant not found!');
+    if (!applicant)
+      throw new Error(`Applicant with id: ${payload.applicantID} not found!`);
 
     return applicant;
   }

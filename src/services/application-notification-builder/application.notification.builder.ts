@@ -91,7 +91,7 @@ export class ApplicationNotificationBuilder {
 }
 
 const getBaseNotification = (payload: any, applicant: User) => ({
-  emailFrom: '<info@alkem.io>',
+  emailFrom: 'info@alkem.io',
   applicant: {
     name: applicant.displayName,
     email: applicant.email,

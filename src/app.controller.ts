@@ -2,7 +2,7 @@ import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
-import { ALKEMIO_CLIENT_ADAPTER } from './common';
+import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common';
 import { NotificationService } from '@src/services';
 import { IFeatureFlagProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
@@ -23,30 +23,29 @@ export class AppController {
     @Payload() payload: ApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
+    this.logger.verbose?.(JSON.stringify(payload), LogContext.NOTIFICATIONS);
+
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
 
     if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
-      //toDo make this nack
       channel.ack(originalMsg);
+      return;
     }
 
     this.notificationService
       .sendApplicationNotifications(payload)
       .then(x => {
-        const shouldNack = x.some(y => y.status === 'rejected');
+        const nacked = x.filter(y => y.status === 'rejected');
 
-        if (shouldNack) {
-          //toDo make this nack
-          channel.ack(originalMsg);
+        if (nacked.length === 0) {
+          this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
         } else {
-          channel.ack(originalMsg);
+          this.logger.verbose?.(`${nacked.length} messages failed to be sent!`);
         }
       })
       .catch(err => {
         this.logger.error(err);
-        // toDo check how to reject a message
-        // channel.reject(originalMsg);
       });
   }
 }
