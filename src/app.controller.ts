@@ -40,11 +40,16 @@ export class AppController {
 
         if (nacked.length === 0) {
           this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
+          channel.ack(originalMsg);
         } else {
           this.logger.verbose?.(`${nacked.length} messages failed to be sent!`);
+          //channel.nack(originalMsg);
+          channel.ack(originalMsg);
         }
       })
       .catch(err => {
+        //channel.reject(originalMsg);
+        channel.ack(originalMsg);
         this.logger.error(err);
       });
   }
