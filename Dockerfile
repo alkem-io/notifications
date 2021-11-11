@@ -15,6 +15,10 @@ COPY package*.json ./
 RUN npm i -g npm@7.5.6
 RUN npm install
 
+## Add the wait script to the image
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
+RUN chmod +x /wait
+
 # If you are building your code for production
 # RUN npm ci --only=production
 
@@ -28,5 +32,4 @@ RUN npm run build
 
 ENV NODE_ENV=${ENV_ARG}
 
-EXPOSE ${GRAPHQL_ENDPOINT_PORT_ARG}
 CMD ["/bin/sh", "-c", "npm run start:prod"]

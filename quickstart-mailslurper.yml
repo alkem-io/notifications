@@ -8,8 +8,8 @@ services:
     container_name: alkemio_notifications_mailslurper
     image: oryd/mailslurper:latest-smtps
     ports:
-      - 4436
-      - 5051:4437
+      - 4436:4436
+      - 4437:4437
       - 1025:1025
     networks:
       - alkemio_notifications_net
