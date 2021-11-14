@@ -1,1 +1,1 @@
-export * from './application.created.event.payload';
+export * from './user.registration.event.payload';

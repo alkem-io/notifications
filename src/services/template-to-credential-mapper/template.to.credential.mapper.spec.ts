@@ -72,17 +72,17 @@ describe('TemplateToCredentialMapper', () => {
 
       const expectedResponse: RecipientCredential[] = [
         {
-          role: AuthorizationCredential.EcoverseAdmin,
+          type: AuthorizationCredential.EcoverseAdmin,
           resourceID: 'hub',
           isAdmin: true,
         },
         {
-          role: AuthorizationCredential.GlobalAdmin,
+          type: AuthorizationCredential.GlobalAdmin,
           resourceID: undefined,
           isAdmin: true,
         },
         {
-          role: AuthorizationCredential.UserSelfManagement,
+          type: AuthorizationCredential.UserSelfManagement,
           resourceID: 'applicant',
           isAdmin: false,
         },

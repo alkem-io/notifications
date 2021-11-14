@@ -84,7 +84,8 @@ kratos:
 
 recipients:
   application_created:
-    admin:
+    - name: admin
+      rules:
       - rule:
           type: CHALLENGE_ADMIN
           resource_id: <challengeID>
@@ -95,9 +96,27 @@ recipients:
           type: ECOVERSE_ADMIN
           resource_id: <ecoverseID>
       - rule:
+          type: GLOBAL_COMMUNITY_ADMIN
+          resource_id: <>
+      - rule:
           type: GLOBAL_ADMIN
           resource_id: <>
-    applicant:
+    - name: applicant
+      rules:
       - rule:
           type: USER_SELF_MANAGEMENT
           resource_id: <applicantID>
+  user_registration:
+    - name: admin
+      rules:
+      - rule:
+          type: GLOBAL_COMMUNITY_ADMIN
+          resource_id: <>
+      - rule:
+          type: GLOBAL_ADMIN
+          resource_id: <>
+    - name: registrant
+      rules:
+      - rule:
+          type: USER_SELF_MANAGEMENT
+          resource_id: <applicantID>XX

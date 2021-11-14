@@ -6,8 +6,8 @@ export interface INotifiedUsersProvider {
   getChallengeAdmins(challengeID: string): Promise<User[]> | User[];
   getOpportunityAdmins(opportunityID: string): Promise<User[]> | User[];
   getApplicant(payload: any): Promise<User> | User;
-  getUsersWithCredentials(
-    credential: AuthorizationCredential,
-    resourceID?: string
+  getUsersMatchingCredentialCriteria(
+    credentialType: AuthorizationCredential,
+    credentialResourceID?: string
   ): Promise<User[]>;
 }

@@ -5,9 +5,9 @@ import {
   INotificationRecipientTemplateProvider,
   RecipientCredential,
 } from '@core/contracts';
-import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@src/common';
 import { ruleToCredential } from './utils/utils';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 
 // todo tests
 @Injectable()
@@ -22,20 +22,27 @@ export class TemplateToCredentialMapper
   ) {}
 
   public getApplicationCreatedRecipients(
-    payload: ApplicationCreatedEventPayload
+    payload: ApplicationCreatedEventPayload,
+    roleName: string
   ): RecipientCredential[] {
-    const template = this.recipientTemplateProvider.getTemplate();
+    const applicationCreatedTemplate =
+      this.recipientTemplateProvider.getTemplate().application_created;
 
-    if (!template.application_created) {
+    if (!applicationCreatedTemplate) {
       return [];
     }
 
-    const { admin = [], applicant = [] } = template.application_created;
+    const ruleSetForRole = applicationCreatedTemplate.find(
+      templateRuleSet => templateRuleSet.name === roleName
+    );
 
-    const admins = admin.map(x => ruleToCredential(x, payload, true));
-    const applicants = applicant.map(x => ruleToCredential(x, payload));
+    if (!ruleSetForRole) {
+      this.logger.error(`Unable to identify rule set for role: ${roleName}`);
+      return [];
+    }
 
-    // and filter out the mismatches
-    return [...admins, ...applicants].filter(x => x) as RecipientCredential[];
+    const rules = ruleSetForRole.rules;
+
+    return rules.map(x => ruleToCredential(x, payload));
   }
 }
