@@ -14,7 +14,7 @@ import { INotifiedUsersProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types';
 import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
-import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
+import { ApplicationNotificationBuilder } from '../../event-handlers/application-notification-builder/application.notification.builder';
 import {
   TemplateToCredentialMapper,
   NotificationRecipientsYmlAdapter,

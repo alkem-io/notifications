@@ -14,10 +14,10 @@ import {
 } from '@core/contracts';
 import { User } from '@core/models';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
-import { ruleToCredential } from '../template-to-credential-mapper/utils/utils';
+import { ruleToCredential } from '../../services/template-to-credential-mapper/utils/utils';
 
 @Injectable()
-export class ApplicationNotificationBuilder {
+export class UserRegistrationNotificationBuilder {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -85,7 +85,7 @@ export class ApplicationNotificationBuilder {
 
     return this.buildNotification(
       mergedUserPayload,
-      'user.application.applicant'
+      'user.registration.registrant'
     );
   }
 
@@ -96,7 +96,10 @@ export class ApplicationNotificationBuilder {
       email: admin.email,
     };
 
-    return this.buildNotification(mergedAdminPayload, 'user.application.admin');
+    return this.buildNotification(
+      mergedAdminPayload,
+      'user.registration.admin'
+    );
   }
 
   buildNotification = (payload: any, templateName: string) =>
@@ -107,7 +110,7 @@ export class ApplicationNotificationBuilder {
     roleName: string
   ): RecipientCredential[] {
     const applicationCreatedTemplate =
-      this.recipientTemplateProvider.getTemplate().application_created;
+      this.recipientTemplateProvider.getTemplate().user_registration;
 
     if (!applicationCreatedTemplate) {
       return [];
