@@ -74,17 +74,14 @@ describe('TemplateToCredentialMapper', () => {
         {
           type: AuthorizationCredential.EcoverseAdmin,
           resourceID: 'hub',
-          isAdmin: true,
         },
         {
           type: AuthorizationCredential.GlobalAdmin,
           resourceID: undefined,
-          isAdmin: true,
         },
         {
           type: AuthorizationCredential.UserSelfManagement,
           resourceID: 'applicant',
-          isAdmin: false,
         },
       ];
 

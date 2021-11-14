@@ -8,21 +8,17 @@ import {
 } from '@src/common';
 import { NotificationTemplateBuilder } from '@src/wrappers/notifme/notification.templates.builder';
 import {
-  INotificationRecipientProvider,
   INotificationRecipientTemplateProvider,
   INotifiedUsersProvider,
   RecipientCredential,
 } from '@core/contracts';
 import { User } from '@core/models';
-import { TemplateToCredentialMapper } from '../template-to-credential-mapper';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { ruleToCredential } from '../template-to-credential-mapper/utils/utils';
 
 @Injectable()
 export class ApplicationNotificationBuilder {
   constructor(
-    @Inject(TemplateToCredentialMapper)
-    private readonly notificationReceivers: INotificationRecipientProvider,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
