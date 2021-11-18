@@ -88,6 +88,40 @@ describe('NotificationService', () => {
       }
     });
 
+    it('Should send 3 application notifications', async () => {
+      const admins = [
+        ...testData.hubAdmins,
+        ...testData.challengeAdmins,
+        ...testData.opportunityAdmins,
+      ];
+
+      console.log(admins.length);
+
+      jest
+        .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
+        .mockResolvedValue(admins);
+
+      jest
+        .spyOn(alkemioAdapter, 'getApplicant')
+        .mockResolvedValue(testData.adminUser);
+
+      const res = await notificationService.sendApplicationNotifications(
+        testData.eventPayload.data as ApplicationCreatedEventPayload
+      );
+
+      let emailCount = 0;
+      for (const notificationStatus of res) {
+        expect(
+          (notificationStatus as PromiseFulfilledResult<NotificationStatus>)
+            .value.status
+        ).toBe('success');
+
+        console.log(JSON.stringify(notificationStatus));
+        emailCount++;
+      }
+      console.log(emailCount);
+    });
+
     it('Should fail to send notification', async () => {
       jest
         .spyOn(alkemioAdapter, 'getApplicant')

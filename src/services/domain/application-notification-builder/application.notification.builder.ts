@@ -55,6 +55,7 @@ export class ApplicationNotificationBuilder {
     const adminUsers: User[] = [];
     settledAdminUsers.forEach(x => {
       if (x.status === 'fulfilled') {
+        console.log(JSON.stringify(x.value));
         adminUsers.push(...x.value);
       } else {
         this.logger.error(
