@@ -6,7 +6,7 @@ import {
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
 } from '@src/common';
-import { NotificationTemplateBuilder } from '@src/wrappers/notifme/notification.templates.builder';
+import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import {
   INotificationRecipientTemplateProvider,
   INotifiedUsersProvider,
@@ -14,10 +14,10 @@ import {
 } from '@core/contracts';
 import { User } from '@core/models';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
-import { ruleToCredential } from '../../services/template-to-credential-mapper/utils/utils';
+import { ruleToCredential } from '../../application/template-to-credential-mapper/utils/utils';
 
 @Injectable()
-export class UserRegistrationNotificationBuilder {
+export class ApplicationNotificationBuilder {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -85,7 +85,7 @@ export class UserRegistrationNotificationBuilder {
 
     return this.buildNotification(
       mergedUserPayload,
-      'user.registration.registrant'
+      'user.application.applicant'
     );
   }
 
@@ -96,10 +96,7 @@ export class UserRegistrationNotificationBuilder {
       email: admin.email,
     };
 
-    return this.buildNotification(
-      mergedAdminPayload,
-      'user.registration.admin'
-    );
+    return this.buildNotification(mergedAdminPayload, 'user.application.admin');
   }
 
   buildNotification = (payload: any, templateName: string) =>
@@ -110,7 +107,7 @@ export class UserRegistrationNotificationBuilder {
     roleName: string
   ): RecipientCredential[] {
     const applicationCreatedTemplate =
-      this.recipientTemplateProvider.getTemplate().user_registration;
+      this.recipientTemplateProvider.getTemplate().application_created;
 
     if (!applicationCreatedTemplate) {
       return [];

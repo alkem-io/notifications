@@ -6,7 +6,6 @@ networks:
 services:
   mailslurper:
     container_name: alkemio_notifications_mailslurper
-    ## todo: fixed version
     image: oryd/mailslurper:latest-smtps
     ports:
       - 4436:4436

@@ -12,7 +12,7 @@ import { ApplicationCreatedEventPayload } from '@src/types';
 import configuration from '@config/configuration';
 import { MockNotificationRecipientsYmlProvider } from '@test/mocks';
 import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@src/common';
-import { TemplateToCredentialMapper } from './';
+import { TemplateToCredentialMapper } from '.';
 import { MockNotificationRecipientsAdapterModule } from '@test/mocks/notification.recipiens.adapter.module.mock';
 
 describe('TemplateToCredentialMapper', () => {

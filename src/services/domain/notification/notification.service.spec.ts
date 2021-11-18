@@ -3,7 +3,7 @@ import { WinstonConfigService } from '@src/config';
 import { WinstonModule } from 'nest-winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
-import { NotifmeModule } from '@src/wrappers/notifme/notifme.module';
+import { NotifmeModule } from '@src/services/external/notifme/notifme.module';
 import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
@@ -14,12 +14,12 @@ import { INotifiedUsersProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types';
 import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
-import { ApplicationNotificationBuilder } from '../../event-handlers/application-notification-builder/application.notification.builder';
+import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
 import {
   TemplateToCredentialMapper,
   NotificationRecipientsYmlAdapter,
 } from '@src/services';
-import { NotificationRecipientsAdapterModule } from '../notification-recipients-adapter/notification.recipients.adapter.module';
+import { NotificationRecipientsAdapterModule } from '../../application/notification-recipients-adapter/notification.recipients.adapter.module';
 
 const testData = {
   ...challengeAdminsData,
