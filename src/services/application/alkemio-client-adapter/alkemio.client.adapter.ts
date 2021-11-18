@@ -40,28 +40,7 @@ export class AlkemioClientAdapter
     return applicationCreator;
   }
 
-  async getOpportunityAdmins(opportunityID: string): Promise<User[]> {
-    return await this.getUsersWithCredentials(
-      AuthorizationCredential.OpportunityAdmin,
-      opportunityID
-    );
-  }
-
-  async getHubAdmins(ecoverseID: string): Promise<User[]> {
-    return await this.getUsersWithCredentials(
-      AuthorizationCredential.EcoverseAdmin,
-      ecoverseID
-    );
-  }
-
-  async getChallengeAdmins(challengeID: string): Promise<User[]> {
-    return await this.getUsersWithCredentials(
-      AuthorizationCredential.ChallengeAdmin,
-      challengeID
-    );
-  }
-
-  async getUsersWithCredentials(
+  async getUsersMatchingCredentialCriteria(
     credential: AuthorizationCredential,
     resourceID?: string
   ): Promise<User[]> {

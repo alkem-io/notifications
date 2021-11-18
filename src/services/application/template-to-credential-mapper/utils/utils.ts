@@ -1,6 +1,6 @@
 import { RecipientCredential, TemplateRule } from '@core/contracts';
-import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { AuthorizationCredential } from '@alkemio/client-lib';
+import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 
 /***
  * Returns a credential from the payload based on the rule provided
@@ -11,21 +11,17 @@ import { AuthorizationCredential } from '@alkemio/client-lib';
  */
 export const ruleToCredential = (
   templateRule: TemplateRule,
-  payload: ApplicationCreatedEventPayload,
-  isAdmin = false
-): RecipientCredential | undefined => {
+  payload: ApplicationCreatedEventPayload
+): RecipientCredential => {
   const { rule } = templateRule;
-  const resourceID = getResourceId(rule.type, rule.resource_id, payload);
+  const resourceID = getResourceId(rule.type, rule.resource_id || '', payload);
 
+  //valentin - what if it's undefined and not null?
   if (resourceID === null) {
-    return undefined;
+    rule.resource_id = undefined;
   }
 
-  return {
-    role: templateRule.rule.type,
-    resourceID,
-    isAdmin,
-  };
+  return rule;
 };
 
 /***

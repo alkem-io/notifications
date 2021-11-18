@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
-import { AlkemioClientModule } from '../../wrappers/alkemio-client/alkemio.client.module';
+import { AlkemioClientModule } from '../../external/alkemio-client/alkemio.client.module';
 import { AlkemioClientAdapter } from './alkemio.client.adapter';
 
 @Module({

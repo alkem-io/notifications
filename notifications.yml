@@ -84,20 +84,59 @@ kratos:
 
 recipients:
   application_created:
-    admin:
-      - rule:
-          type: CHALLENGE_ADMIN
-          resource_id: <challengeID>
-      - rule:
-          type: OPPORTUNITY_ADMIN
-          resource_id: <opportunityID>
-      - rule:
-          type: ECOVERSE_ADMIN
-          resource_id: <ecoverseID>
-      - rule:
-          type: GLOBAL_ADMIN
-          resource_id: <>
-    applicant:
-      - rule:
-          type: USER_SELF_MANAGEMENT
-          resource_id: <applicantID>
+    - name: admin
+      rules:
+        - rule:
+            type: CHALLENGE_ADMIN
+            resource_id: <challengeID>
+        - rule:
+            type: OPPORTUNITY_ADMIN
+            resource_id: <opportunityID>
+        - rule:
+            type: ECOVERSE_ADMIN
+            resource_id: <ecoverseID>
+        - rule:
+            type: GLOBAL_COMMUNITY_ADMIN
+            resource_id: <>
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id: <>
+    - name: applicant
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <applicantID>
+  user_registration:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_COMMUNITY_ADMIN
+            resource_id: <>
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id: <>
+    - name: registrant
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <applicantID>
+  communication_update:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_COMMUNITY_ADMIN
+            resource_id: <>
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id: <>
+    - name: community_member
+      rules:
+        - rule:
+            type: CHALLENGE_MEMBER
+            resource_id: <challengeID>
+        - rule:
+            type: OPPORTUNITY_MEMBER
+            resource_id: <opportunityID>
+        - rule:
+            type: ECOVERSE_MEMBER
+            resource_id: <ecoverseID>

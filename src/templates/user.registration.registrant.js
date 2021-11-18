@@ -1,0 +1,29 @@
+/* eslint-disable quotes */
+module.exports = () => ({
+  name: 'user-registration-registrant',
+  title: 'Welcome {{user.firstname}}',
+  version: 1,
+  channels: {
+    email: {
+      from: '{{emailFrom}}',
+      to: '{{registrant.email}}',
+      subject: 'Alkemio registration successful!',
+      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+        {% block content %}
+          Hi {{registrant.name}},<br><br>
+
+          Welcome to the Alkemio platform!<br><br>
+
+          Your user profile has been successfully created. Please spend some time to further populate your profile so that other users / organizations can find you.
+
+          <br><br>
+          And please look at the Challenges on the platform to see what interests you! Then apply to join one or more communities :)
+          <br>
+          Looking forward to seeing your interactions and contributions!
+
+          Sincerely yours,
+          Team Alkemio
+        {% endblock %}`,
+    },
+  },
+});
