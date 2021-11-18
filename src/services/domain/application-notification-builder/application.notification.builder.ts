@@ -55,8 +55,11 @@ export class ApplicationNotificationBuilder {
     const adminUsers: User[] = [];
     settledAdminUsers.forEach(x => {
       if (x.status === 'fulfilled') {
-        console.log(JSON.stringify(x.value));
-        adminUsers.push(...x.value);
+        const users = [...x.value];
+        for (const user of users) {
+          if (adminUsers.find(x => x.email === user.email)) continue;
+          adminUsers.push(user);
+        }
       } else {
         this.logger.error(
           `Could not fetch admin users: ${x.reason}`,

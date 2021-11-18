@@ -95,8 +95,6 @@ describe('NotificationService', () => {
         ...testData.opportunityAdmins,
       ];
 
-      console.log(admins.length);
-
       jest
         .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
         .mockResolvedValue(admins);
@@ -109,17 +107,14 @@ describe('NotificationService', () => {
         testData.eventPayload.data as ApplicationCreatedEventPayload
       );
 
-      let emailCount = 0;
       for (const notificationStatus of res) {
         expect(
           (notificationStatus as PromiseFulfilledResult<NotificationStatus>)
             .value.status
         ).toBe('success');
-
-        console.log(JSON.stringify(notificationStatus));
-        emailCount++;
       }
-      console.log(emailCount);
+
+      expect(res.length).toBe(admins.length); //1 admin is duplicated + 1 applicant
     });
 
     it('Should fail to send notification', async () => {
