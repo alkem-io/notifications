@@ -69,6 +69,7 @@ describe('NotificationService', () => {
 
   describe('Application Notifications', () => {
     it('Should send application notification', async () => {
+      //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
       jest
         .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
         .mockResolvedValue(testData.hubAdmins);
