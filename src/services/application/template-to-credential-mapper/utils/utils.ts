@@ -16,6 +16,7 @@ export const ruleToCredential = (
   const { rule } = templateRule;
   const resourceID = getResourceId(rule.type, rule.resource_id || '', payload);
 
+  //valentin - what if it's undefined and not null?
   if (resourceID === null) {
     rule.resource_id = undefined;
   }

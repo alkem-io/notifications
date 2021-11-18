@@ -15,10 +15,7 @@ import { ApplicationCreatedEventPayload } from '@src/types';
 import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
-import {
-  TemplateToCredentialMapper,
-  NotificationRecipientsYmlAdapter,
-} from '@src/services';
+import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { NotificationRecipientsAdapterModule } from '../../application/notification-recipients-adapter/notification.recipients.adapter.module';
 
 const testData = {
@@ -48,7 +45,6 @@ describe('NotificationService', () => {
         NotificationRecipientsAdapterModule,
       ],
       providers: [
-        TemplateToCredentialMapper,
         NotificationRecipientsYmlAdapter,
         NotificationService,
         ApplicationNotificationBuilder,
@@ -58,10 +54,7 @@ describe('NotificationService', () => {
           useValue: {
             getApplicant: jest.fn(),
             getApplicationCreator: jest.fn(),
-            getOpportunityAdmins: jest.fn(),
-            getHubAdmins: jest.fn(),
-            getChallengeAdmins: jest.fn(),
-            getUsersWithCredentials: jest.fn(),
+            getUsersMatchingCredentialCriteria: jest.fn(),
           },
         },
       ],
@@ -77,24 +70,12 @@ describe('NotificationService', () => {
   describe('Application Notifications', () => {
     it('Should send application notification', async () => {
       jest
-        .spyOn(alkemioAdapter, 'getUsersWithCredentials')
+        .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
         .mockResolvedValue(testData.hubAdmins);
 
       jest
         .spyOn(alkemioAdapter, 'getApplicant')
         .mockResolvedValue(testData.adminUser);
-
-      jest
-        .spyOn(alkemioAdapter, 'getHubAdmins')
-        .mockResolvedValue(testData.hubAdmins);
-
-      jest
-        .spyOn(alkemioAdapter, 'getChallengeAdmins')
-        .mockResolvedValue(testData.challengeAdmins);
-
-      jest
-        .spyOn(alkemioAdapter, 'getOpportunityAdmins')
-        .mockResolvedValue(testData.opportunityAdmins);
 
       const res = await notificationService.sendApplicationNotifications(
         testData.eventPayload.data as ApplicationCreatedEventPayload

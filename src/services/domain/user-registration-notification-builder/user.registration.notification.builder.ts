@@ -35,11 +35,10 @@ export class UserRegistrationNotificationBuilder {
       'admin'
     );
 
-    // const applicantsCredentials =
-    //   this.notificationReceivers.getApplicationCreatedRecipients(
-    //     payload,
-    //     'applicants'
-    //   );
+    // const applicantsCredentials = this.getApplicationCreatedRecipients(
+    //   payload,
+    //   'applicant'
+    // );
 
     const applicant = await this.notifiedUsersService.getApplicant(payload);
 
@@ -105,6 +104,11 @@ export class UserRegistrationNotificationBuilder {
   buildNotification = (payload: any, templateName: string) =>
     this.notificationTemplateBuilder.buildTemplate(templateName, payload);
 
+  // toDo:
+  // 1. Move getRecipients back to the credential mapper. Logically, it has nothing to do with this service.
+  // 2. Decide on a design how to get a template, either have the template with named sections, or create callbacks to get the specific template or...
+  // 3. Abstract ApplicationCreatedEventPayload. Create base payload.
+  // 4. Use the abstraction of the payload in the getRecipients. The format of what is needed in the credential mapper is quite fixed and the rules are strongly types - we know what we need.
   public getApplicationCreatedRecipients(
     payload: ApplicationCreatedEventPayload,
     roleName: string

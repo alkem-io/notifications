@@ -70,6 +70,7 @@ export class ApplicationNotificationBuilder {
 
     // todo what to do with the applicant field in the template??
     // todo: need to send a message to all users configured to receive the applicants email; cannot assume it is just one.
+    // valentin - I am not sure that's the case, in my opinion it's a 3rd flow. Applicant is applicant and is always one person.
 
     const applicantNotification = this.buildUserNotification(
       payload,
@@ -102,6 +103,8 @@ export class ApplicationNotificationBuilder {
   buildNotification = (payload: any, templateName: string) =>
     this.notificationTemplateBuilder.buildTemplate(templateName, payload);
 
+  // toDo:
+  // 1. Move getRecipients back to the credential mapper. Logically, it has nothing to do with this service.
   public getApplicationCreatedRecipients(
     payload: ApplicationCreatedEventPayload,
     roleName: string

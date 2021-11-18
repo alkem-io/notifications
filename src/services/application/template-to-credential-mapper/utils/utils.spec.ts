@@ -3,7 +3,7 @@ import { ApplicationCreatedEventPayload } from '@src/types/application.created.e
 import { getResourceId, getResourceIdByRole, ruleToCredential } from './utils';
 
 describe('ruleToCredential', () => {
-  it('returns undefined on unsupported role or missing data', () => {
+  it('returns undefined resource_id on unsupported role or missing data', () => {
     const payload = {
       hub: {
         id: 'hub',
@@ -19,7 +19,10 @@ describe('ruleToCredential', () => {
         },
         payload
       )
-    ).toBeUndefined();
+    ).toEqual({
+      type: AuthorizationCredential.GlobalAdminCommunity,
+      resource_id: undefined,
+    });
     expect(
       ruleToCredential(
         {
@@ -30,7 +33,10 @@ describe('ruleToCredential', () => {
         },
         payload
       )
-    ).toBeUndefined();
+    ).toEqual({
+      type: AuthorizationCredential.ChallengeAdmin,
+      resource_id: undefined,
+    });
   });
   it('returns correct response', () => {
     const payload = {
@@ -49,9 +55,8 @@ describe('ruleToCredential', () => {
         payload
       )
     ).toEqual({
-      role: AuthorizationCredential.EcoverseAdmin,
-      resourceID: 'hub',
-      isAdmin: false,
+      type: AuthorizationCredential.EcoverseAdmin,
+      resource_id: '<>',
     });
   });
   it('returns correct response on global admin', () => {
@@ -71,8 +76,8 @@ describe('ruleToCredential', () => {
         payload
       )
     ).toEqual({
-      role: AuthorizationCredential.GlobalAdmin,
-      isAdmin: false,
+      type: AuthorizationCredential.GlobalAdmin,
+      resource_id: '<>',
     });
   });
 });
