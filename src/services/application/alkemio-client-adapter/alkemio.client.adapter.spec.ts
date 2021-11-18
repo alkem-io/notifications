@@ -61,39 +61,6 @@ describe('AlkemioAdapter', () => {
   });
 
   describe('Alkemio Client Adapter', () => {
-    it('Should get hub admins', async () => {
-      jest
-        .spyOn(alkemioClient, 'usersWithAuthorizationCredential')
-        .mockResolvedValue(testData.hubAdmins);
-
-      const res = await alkemioAdapter.getHubAdmins(
-        testData.eventPayload.data.hub.id
-      );
-      expect(res.length === 0);
-    });
-
-    it('Should get opportunity admins', async () => {
-      jest
-        .spyOn(alkemioClient, 'usersWithAuthorizationCredential')
-        .mockResolvedValue(testData.opportunityAdmins);
-
-      const res = await alkemioAdapter.getOpportunityAdmins(
-        testData.eventPayload.data.hub.id
-      );
-      expect(res.length === 1);
-    });
-
-    it('Should get challenge admins', async () => {
-      jest
-        .spyOn(alkemioClient, 'usersWithAuthorizationCredential')
-        .mockResolvedValue(testData.challengeAdmins);
-
-      const res = await alkemioAdapter.getChallengeAdmins(
-        testData.eventPayload.data.hub.id
-      );
-      expect(res.length === 1);
-    });
-
     it('Should throw an error', async () => {
       jest.spyOn(alkemioClient, 'user').mockResolvedValue(undefined);
 

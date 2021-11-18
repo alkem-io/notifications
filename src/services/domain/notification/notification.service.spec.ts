@@ -3,7 +3,7 @@ import { WinstonConfigService } from '@src/config';
 import { WinstonModule } from 'nest-winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
-import { NotifmeModule } from '@src/wrappers/notifme/notifme.module';
+import { NotifmeModule } from '@src/services/external/notifme/notifme.module';
 import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
@@ -15,11 +15,8 @@ import { ApplicationCreatedEventPayload } from '@src/types';
 import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
-import {
-  TemplateToCredentialMapper,
-  NotificationRecipientsYmlAdapter,
-} from '@src/services';
-import { NotificationRecipientsAdapterModule } from '../notification-recipients-adapter/notification.recipients.adapter.module';
+import { NotificationRecipientsYmlAdapter } from '@src/services';
+import { NotificationRecipientsAdapterModule } from '../../application/notification-recipients-adapter/notification.recipients.adapter.module';
 
 const testData = {
   ...challengeAdminsData,
@@ -48,7 +45,6 @@ describe('NotificationService', () => {
         NotificationRecipientsAdapterModule,
       ],
       providers: [
-        TemplateToCredentialMapper,
         NotificationRecipientsYmlAdapter,
         NotificationService,
         ApplicationNotificationBuilder,
@@ -58,10 +54,7 @@ describe('NotificationService', () => {
           useValue: {
             getApplicant: jest.fn(),
             getApplicationCreator: jest.fn(),
-            getOpportunityAdmins: jest.fn(),
-            getHubAdmins: jest.fn(),
-            getChallengeAdmins: jest.fn(),
-            getUsersWithCredentials: jest.fn(),
+            getUsersMatchingCredentialCriteria: jest.fn(),
           },
         },
       ],
@@ -76,25 +69,14 @@ describe('NotificationService', () => {
 
   describe('Application Notifications', () => {
     it('Should send application notification', async () => {
+      //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
       jest
-        .spyOn(alkemioAdapter, 'getUsersWithCredentials')
+        .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
         .mockResolvedValue(testData.hubAdmins);
 
       jest
         .spyOn(alkemioAdapter, 'getApplicant')
         .mockResolvedValue(testData.adminUser);
-
-      jest
-        .spyOn(alkemioAdapter, 'getHubAdmins')
-        .mockResolvedValue(testData.hubAdmins);
-
-      jest
-        .spyOn(alkemioAdapter, 'getChallengeAdmins')
-        .mockResolvedValue(testData.challengeAdmins);
-
-      jest
-        .spyOn(alkemioAdapter, 'getOpportunityAdmins')
-        .mockResolvedValue(testData.opportunityAdmins);
 
       const res = await notificationService.sendApplicationNotifications(
         testData.eventPayload.data as ApplicationCreatedEventPayload
@@ -105,6 +87,35 @@ describe('NotificationService', () => {
             .value.status
         ).toBe('success');
       }
+    });
+
+    it('Should send 3 application notifications', async () => {
+      const admins = [
+        ...testData.hubAdmins,
+        ...testData.challengeAdmins,
+        ...testData.opportunityAdmins,
+      ];
+
+      jest
+        .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
+        .mockResolvedValue(admins);
+
+      jest
+        .spyOn(alkemioAdapter, 'getApplicant')
+        .mockResolvedValue(testData.adminUser);
+
+      const res = await notificationService.sendApplicationNotifications(
+        testData.eventPayload.data as ApplicationCreatedEventPayload
+      );
+
+      for (const notificationStatus of res) {
+        expect(
+          (notificationStatus as PromiseFulfilledResult<NotificationStatus>)
+            .value.status
+        ).toBe('success');
+      }
+
+      expect(res.length).toBe(admins.length); //1 admin is duplicated + 1 applicant
     });
 
     it('Should fail to send notification', async () => {

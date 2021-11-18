@@ -4,6 +4,7 @@ export enum CommunityType {
   OPPORTUNITY = 'opportunity',
 }
 
+// toDo: fix this type - derive from base event payload.
 export type ApplicationCreatedEventPayload = {
   applicationCreatorID: string;
   applicantID: string;
