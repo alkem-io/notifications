@@ -33,6 +33,7 @@ export class AppController {
       return;
     }
 
+    // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     this.notificationService
       .sendApplicationNotifications(payload)
       .then(x => {
@@ -40,16 +41,29 @@ export class AppController {
 
         if (nacked.length === 0) {
           this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
+          // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
+          // so only the message supplied is acknowledged.
           channel.ack(originalMsg);
         } else {
-          this.logger.verbose?.(`${nacked.length} messages failed to be sent!`);
-          //channel.nack(originalMsg);
-          channel.ack(originalMsg);
+          if (nacked.length === x.length) {
+            this.logger.verbose?.('All messages failed to be sent!');
+            // if all messages failed to be sent, we reject the message but we make sure the message is
+            // not discarded so we provide 'true' to requeue parameter
+            channel.reject(originalMsg, true);
+          } else {
+            this.logger.verbose?.(
+              `${nacked.length} messages out of total ${x.length} messages failed to be sent!`
+            );
+            // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
+            // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
+            channel.nack(originalMsg, false, false);
+          }
         }
       })
       .catch(err => {
-        //channel.reject(originalMsg);
-        channel.ack(originalMsg);
+        // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
+        // not discarded so we provide 'true' to requeue parameter
+        channel.reject(originalMsg, true);
         this.logger.error(err);
       });
   }
