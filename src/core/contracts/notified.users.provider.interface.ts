@@ -1,10 +1,9 @@
 import { User } from '../models';
-import { AuthorizationCredential } from '@alkemio/client-lib';
+import { CredentialCriteria } from '../models/credential.criteria';
 
 export interface INotifiedUsersProvider {
-  getApplicant(payload: any): Promise<User> | User;
-  getUsersMatchingCredentialCriteria(
-    credentialType: AuthorizationCredential,
-    resourceID?: string
+  getUser(userID: string): Promise<User>;
+  getUniqueUsersMatchingCredentialCriteria(
+    credentialCriterias: CredentialCriteria[]
   ): Promise<User[]>;
 }

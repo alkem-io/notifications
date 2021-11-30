@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { AlkemioClient, AuthorizationCredential } from '@alkemio/client-lib';
+import { AlkemioClient } from '@alkemio/client-lib';
 import { ALKEMIO_CLIENT_PROVIDER } from '@src/common';
 import { IFeatureFlagProvider, INotifiedUsersProvider } from '@core/contracts';
-import { User } from '@core/models';
+import { CredentialCriteria, User } from '@core/models';
 
 @Injectable()
 export class AlkemioClientAdapter
@@ -22,33 +22,42 @@ export class AlkemioClientAdapter
     return false;
   }
 
-  async getApplicant(payload: any): Promise<User> {
-    const applicant = await this.tryGetUser(payload.applicantID, 0);
-    if (!applicant)
-      throw new Error(`Applicant with id: ${payload.applicantID} not found!`);
+  async getUser(userID: string): Promise<User> {
+    const applicant = await this.tryGetUser(userID, 0);
+    if (!applicant) throw new Error(`User with id: ${userID} not found!`);
 
     return applicant;
   }
 
-  async getApplicationCreator(payload: any): Promise<User> {
-    const applicationCreator = await this.tryGetUser(
-      payload.applicationCreatorID,
-      0
-    );
-    if (!applicationCreator)
-      throw new Error('The creator of the application was not found!');
-
-    return applicationCreator;
-  }
-
   async getUsersMatchingCredentialCriteria(
-    credential: AuthorizationCredential,
-    resourceID?: string
+    credentialCriteria: CredentialCriteria
   ): Promise<User[]> {
     return this.alkemioClient.usersWithAuthorizationCredential(
-      credential,
-      resourceID
+      credentialCriteria.type,
+      credentialCriteria.resourceID
     ) as Promise<User[]>;
+  }
+
+  async getUniqueUsersMatchingCredentialCriteria(
+    credentialCriterias: CredentialCriteria[]
+  ): Promise<User[]> {
+    const users: User[] = [];
+    for (const criteria of credentialCriterias) {
+      const matchedUsers = await this.getUsersMatchingCredentialCriteria(
+        criteria
+      );
+      users.push(...matchedUsers);
+    }
+    const uniqueUsers: User[] = [];
+    for (const user of users) {
+      const alreadyFound = uniqueUsers.find(
+        uniqueUser => uniqueUser.id === user.id
+      );
+      if (!alreadyFound) {
+        uniqueUsers.push(user);
+      }
+    }
+    return uniqueUsers;
   }
 
   private async tryGetUser(

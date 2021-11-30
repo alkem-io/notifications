@@ -6,11 +6,11 @@ module.exports = () => ({
   channels: {
     email: {
       from: '{{emailFrom}}',
-      to: '{{payload.email}}',
+      to: '{{user.email}}',
       subject: 'Alkemio registration successful!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{payload.name}},<br><br>
+          Hi {{user.name}},<br><br>
 
           Welcome to the Alkemio platform!<br><br>
 

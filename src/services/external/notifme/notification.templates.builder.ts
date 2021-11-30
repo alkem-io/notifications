@@ -11,12 +11,12 @@ export class NotificationTemplateBuilder {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService
   ) {}
-  async buildTemplate(template: string, payload: any): Promise<any> {
+  async buildTemplate(template: string, templatePayload: any): Promise<any> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const getRenderer = require('notifme-template');
       const render = getRenderer(renderString, './src/templates');
-      const notification = await render(template, payload, 'en-US');
+      const notification = await render(template, templatePayload, 'en-US');
 
       return notification;
     } catch (error) {
