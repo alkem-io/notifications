@@ -13,10 +13,10 @@ import {
   INotifiedUsersProvider,
 } from '@core/contracts';
 import { User, CredentialCriteria } from '@core/models';
-import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { ruleToCredential } from '../../application/template-to-credential-mapper/utils/utils';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { ConfigService } from '@nestjs/config';
+import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
 
 @Injectable()
 export class UserRegistrationNotifier {
@@ -37,10 +37,10 @@ export class UserRegistrationNotifier {
     )?.webclient_endpoint;
   }
 
-  async sendNotifications(eventPayload: any) {
+  async sendNotifications(eventPayload: UserRegistrationEventPayload) {
     // Get additional data
     const registrant = await this.notifiedUsersService.getUser(
-      eventPayload.registrant
+      eventPayload.userID
     );
 
     await this.sendNotificationsForRole(
@@ -59,7 +59,7 @@ export class UserRegistrationNotifier {
   }
 
   async sendNotificationsForRole(
-    eventPayload: any,
+    eventPayload: UserRegistrationEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
     registrant: User
@@ -118,7 +118,7 @@ export class UserRegistrationNotifier {
   // 3. Abstract ApplicationCreatedEventPayload. Create base payload.
   // 4. Use the abstraction of the payload in the getRecipients. The format of what is needed in the credential mapper is quite fixed and the rules are strongly types - we know what we need.
   public getCredentialCriterias(
-    payload: ApplicationCreatedEventPayload,
+    payload: UserRegistrationEventPayload,
     roleName: string
   ): CredentialCriteria[] {
     const applicationCreatedTemplate =
@@ -139,7 +139,10 @@ export class UserRegistrationNotifier {
 
     const rules = ruleSetForRole.rules;
 
-    return rules.map(x => ruleToCredential(x, payload));
+    const lookupMap: Map<string, string> = new Map();
+    lookupMap.set('registrantID', payload.userID);
+
+    return rules.map(x => ruleToCredential(x, lookupMap));
   }
 
   createTemplatePayload(

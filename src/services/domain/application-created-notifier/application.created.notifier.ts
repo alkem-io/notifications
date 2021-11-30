@@ -137,7 +137,16 @@ export class ApplicationCreatedNotifier {
 
     const rules = ruleSetForRole.rules;
 
-    return rules.map(x => ruleToCredential(x, payload));
+    const lookupMap: Map<string, string> = new Map();
+    lookupMap.set('applicantID', payload.applicantID);
+    lookupMap.set('hubID', payload.hub.id);
+    lookupMap.set('challengeID', payload.hub.challenge?.id || '');
+    lookupMap.set(
+      'opportunityID',
+      payload.hub.challenge?.opportunity?.id || ''
+    );
+
+    return rules.map(x => ruleToCredential(x, lookupMap));
   }
 
   createTemplatePayload(
