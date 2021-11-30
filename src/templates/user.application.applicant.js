@@ -6,12 +6,12 @@ module.exports = () => ({
   channels: {
     email: {
       from: '{{emailFrom}}',
-      to: '{{applicant.email}}',
+      to: '{{payload.email}}',
       subject: 'Your application from to {{community.name}} was received!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{applicant.name}},<br><br>
-          We have received your application for {{community.name}} [{{community.type}}] !<br><br>
+          Hi {{payload.name}},<br><br>
+          We have received your application for {{community.name}} [{{community.type}}]!<br><br>
 
           Sincerely yours,
           Team Alkemio

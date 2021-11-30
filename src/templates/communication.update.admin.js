@@ -1,18 +1,18 @@
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'user-registration-admin',
-  title: 'New user registration {{user.firstname}} {{user.lastname}}',
+  name: 'communication-update-admin',
+  title: 'New update sent to community {{community.displayName}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{user.email}}',
-      subject: 'New user registration: {{payload.name}}',
+      subject: 'New update shared with community {{community.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{user.firstname}},<br><br>
 
-          There is a new user registration: {{payload.name}}, with email {{payload.email}}<br><br>
+          A new update was shared on the following community: <a href="{{community.url}}">{{community.displayName}}</a>.<br><br>
 
           Sincerely yours,
           Team Alkemio
