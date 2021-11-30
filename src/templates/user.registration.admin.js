@@ -1,18 +1,18 @@
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'user-registration-admin',
-  title: 'New user registration {{user.firstname}} {{user.lastname}}',
+  title: 'New user registration: {{registrant.name}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
-      to: '{{user.email}}',
-      subject: 'New user registration: {{payload.name}}',
+      to: '{{recipient.email}}',
+      subject: 'New user registration: {{registrant.name}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{user.firstname}},<br><br>
+          Hi {{recipient.firstname}},<br><br>
 
-          There is a new user registration: {{payload.name}}, with email {{payload.email}}<br><br>
+          There is a <a href="{{registrant.profile}}" >new user registration </a>: {{registrant.name}}, with email {{registrant.email}}<br><br>
 
           Sincerely yours,
           Team Alkemio

@@ -2,6 +2,7 @@ import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   ALKEMIO_CLIENT_ADAPTER,
+  ConfigurationTypes,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
@@ -15,9 +16,11 @@ import { User, CredentialCriteria } from '@core/models';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { ruleToCredential } from '../../application/template-to-credential-mapper/utils/utils';
 import { EmailTemplate } from '@src/common/enums/email.template';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserRegistrationNotifier {
+  webclientEndpoint: string;
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -26,8 +29,13 @@ export class UserRegistrationNotifier {
     @Inject(TEMPLATE_PROVIDER)
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
-  ) {}
+    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider,
+    private configService: ConfigService
+  ) {
+    this.webclientEndpoint = this.configService.get(
+      ConfigurationTypes.ALKEMIO
+    )?.webclient_endpoint;
+  }
 
   async sendNotifications(eventPayload: any) {
     // Get additional data
@@ -143,10 +151,13 @@ export class UserRegistrationNotifier {
       emailFrom: 'info@alkem.io',
       registrant: {
         name: registrant.displayName,
+        firstname: registrant.firstName,
         email: registrant.email,
+        profile: `${this.webclientEndpoint}/user/${registrant.nameID}`,
       },
       recipient: {
         name: recipient.displayName,
+        firstname: recipient.firstName,
         email: recipient.email,
       },
       event: eventPayload,
