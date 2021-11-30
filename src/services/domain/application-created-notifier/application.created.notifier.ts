@@ -14,8 +14,6 @@ import {
 } from '@core/contracts';
 import { User } from '@core/models';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
-import { ruleToCredential } from '../../application/template-to-credential-mapper/utils/utils';
-import { CredentialCriteria } from '@src/core/models/credential.criteria';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { ConfigService } from '@nestjs/config';
 
@@ -69,10 +67,17 @@ export class ApplicationCreatedNotifier {
       `Notifications [${emailTemplate}] - role '${recipientRole}`,
       LogContext.NOTIFICATIONS
     );
-    const credentialCriterias = this.getCredentialCriterias(
-      eventPayload,
-      recipientRole
-    );
+    // Get the lookup map
+    const lookupMap = this.createLookupMap(eventPayload);
+    const applicationCreatedRuleSets =
+      this.recipientTemplateProvider.getTemplate().application_created;
+
+    const credentialCriterias =
+      this.recipientTemplateProvider.getCredentialCriterias(
+        lookupMap,
+        applicationCreatedRuleSets,
+        recipientRole
+      );
 
     const recipients =
       await this.notifiedUsersService.getUniqueUsersMatchingCredentialCriteria(
@@ -96,7 +101,7 @@ export class ApplicationCreatedNotifier {
   }
 
   async buildNotification(
-    eventPayload: any,
+    eventPayload: ApplicationCreatedEventPayload,
     recipient: User,
     templateName: string,
     registrant: User
@@ -113,30 +118,9 @@ export class ApplicationCreatedNotifier {
     );
   }
 
-  // toDo:
-  // 1. Move getRecipients back to the credential mapper. Logically, it has nothing to do with this service.
-  public getCredentialCriterias(
-    payload: ApplicationCreatedEventPayload,
-    roleName: string
-  ): CredentialCriteria[] {
-    const applicationCreatedTemplate =
-      this.recipientTemplateProvider.getTemplate().application_created;
-
-    if (!applicationCreatedTemplate) {
-      return [];
-    }
-
-    const ruleSetForRole = applicationCreatedTemplate.find(
-      templateRuleSet => templateRuleSet.name === roleName
-    );
-
-    if (!ruleSetForRole) {
-      this.logger.error(`Unable to identify rule set for role: ${roleName}`);
-      return [];
-    }
-
-    const rules = ruleSetForRole.rules;
-
+  createLookupMap(
+    payload: ApplicationCreatedEventPayload
+  ): Map<string, string> {
     const lookupMap: Map<string, string> = new Map();
     lookupMap.set('applicantID', payload.applicantID);
     lookupMap.set('hubID', payload.hub.id);
@@ -145,12 +129,11 @@ export class ApplicationCreatedNotifier {
       'opportunityID',
       payload.hub.challenge?.opportunity?.id || ''
     );
-
-    return rules.map(x => ruleToCredential(x, lookupMap));
+    return lookupMap;
   }
 
   createTemplatePayload(
-    eventPayload: any,
+    eventPayload: ApplicationCreatedEventPayload,
     recipient: User,
     applicant: User
   ): any {

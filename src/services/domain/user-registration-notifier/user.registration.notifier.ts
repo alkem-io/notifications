@@ -12,8 +12,7 @@ import {
   INotificationRecipientTemplateProvider,
   INotifiedUsersProvider,
 } from '@core/contracts';
-import { User, CredentialCriteria } from '@core/models';
-import { ruleToCredential } from '../../application/template-to-credential-mapper/utils/utils';
+import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { ConfigService } from '@nestjs/config';
 import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
@@ -68,10 +67,17 @@ export class UserRegistrationNotifier {
       `Notifications [${emailTemplate}] - recipients role: '${recipientRole}`,
       LogContext.NOTIFICATIONS
     );
-    const credentialCriterias = this.getCredentialCriterias(
-      eventPayload,
-      recipientRole
-    );
+    // Get the lookup map
+    const lookupMap = this.createLookupMap(eventPayload);
+    const userRegistrationRuleSets =
+      this.recipientTemplateProvider.getTemplate().user_registration;
+
+    const credentialCriterias =
+      this.recipientTemplateProvider.getCredentialCriterias(
+        lookupMap,
+        userRegistrationRuleSets,
+        recipientRole
+      );
 
     const recipients =
       await this.notifiedUsersService.getUniqueUsersMatchingCredentialCriteria(
@@ -112,37 +118,10 @@ export class UserRegistrationNotifier {
     );
   }
 
-  // toDo:
-  // 1. Move getRecipients back to the credential mapper. Logically, it has nothing to do with this service.
-  // 2. Decide on a design how to get a template, either have the template with named sections, or create callbacks to get the specific template or...
-  // 3. Abstract ApplicationCreatedEventPayload. Create base payload.
-  // 4. Use the abstraction of the payload in the getRecipients. The format of what is needed in the credential mapper is quite fixed and the rules are strongly types - we know what we need.
-  public getCredentialCriterias(
-    payload: UserRegistrationEventPayload,
-    roleName: string
-  ): CredentialCriteria[] {
-    const applicationCreatedTemplate =
-      this.recipientTemplateProvider.getTemplate().user_registration;
-
-    if (!applicationCreatedTemplate) {
-      return [];
-    }
-
-    const ruleSetForRole = applicationCreatedTemplate.find(
-      templateRuleSet => templateRuleSet.name === roleName
-    );
-
-    if (!ruleSetForRole) {
-      this.logger.error(`Unable to identify rule set for role: ${roleName}`);
-      return [];
-    }
-
-    const rules = ruleSetForRole.rules;
-
+  createLookupMap(payload: UserRegistrationEventPayload): Map<string, string> {
     const lookupMap: Map<string, string> = new Map();
     lookupMap.set('registrantID', payload.userID);
-
-    return rules.map(x => ruleToCredential(x, lookupMap));
+    return lookupMap;
   }
 
   createTemplatePayload(
