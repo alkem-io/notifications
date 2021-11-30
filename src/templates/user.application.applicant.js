@@ -7,7 +7,7 @@ module.exports = () => ({
     email: {
       from: '{{emailFrom}}',
       to: '{{payload.email}}',
-      subject: 'Your application from to {{community.name}} was received!',
+      subject: 'Your application to {{community.name}} was received!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{payload.name}},<br><br>

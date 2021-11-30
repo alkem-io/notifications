@@ -23,7 +23,7 @@ export class AlkemioClientAdapter
   }
 
   async getApplicant(payload: any): Promise<User> {
-    const applicant = await this.alkemioClient.user(payload.applicantID);
+    const applicant = await this.tryGetUser(payload.applicantID, 0);
     if (!applicant)
       throw new Error(`Applicant with id: ${payload.applicantID} not found!`);
 
@@ -31,8 +31,9 @@ export class AlkemioClientAdapter
   }
 
   async getApplicationCreator(payload: any): Promise<User> {
-    const applicationCreator = await this.alkemioClient.user(
-      payload.applicationCreatorID
+    const applicationCreator = await this.tryGetUser(
+      payload.applicationCreatorID,
+      0
     );
     if (!applicationCreator)
       throw new Error('The creator of the application was not found!');
@@ -48,5 +49,19 @@ export class AlkemioClientAdapter
       credential,
       resourceID
     ) as Promise<User[]>;
+  }
+
+  private async tryGetUser(
+    userID: string,
+    retry: number
+  ): Promise<User | undefined> {
+    let user = await this.alkemioClient.user(userID);
+    if (!user && retry < 1) {
+      await this.alkemioClient.enableAuthentication(); // workaround as currently the cli doesn't pass the error through}
+      retry++;
+      user = await this.tryGetUser(userID, retry);
+    }
+
+    return user;
   }
 }
