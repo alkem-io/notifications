@@ -13,6 +13,7 @@ import { NotificationRecipientsAdapterModule } from './services/application/noti
 import { UserRegistrationNotifier } from './services/domain/user-registration/user.registration.notifier';
 import { CommunicationUpdateNotifier } from './services/domain/communication-update/communication.update.notifier';
 import { CommunicationDiscussionCreatedNotifier } from './services/domain/communication-discussion-created/communication.discussion.created.notifier';
+import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CommunicationDiscussionCreatedNotifier } from './services/domain/commun
     NotifmeModule,
     AlkemioClientModule,
     AlkemioClientAdapterModule,
+    AlkemioUrlGeneratorModule,
     NotificationRecipientsAdapterModule,
   ],
   providers: [

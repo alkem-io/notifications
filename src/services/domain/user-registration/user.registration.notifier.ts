@@ -2,6 +2,7 @@ import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   ALKEMIO_CLIENT_ADAPTER,
+  ALKEMIO_URL_GENERATOR,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
@@ -12,6 +13,7 @@ import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
 import { AlkemioClientAdapter } from '@src/services';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 
 @Injectable()
 export class UserRegistrationNotifier {
@@ -20,6 +22,8 @@ export class UserRegistrationNotifier {
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
     private alkemioAdapter: AlkemioClientAdapter,
+    @Inject(ALKEMIO_URL_GENERATOR)
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     @Inject(TEMPLATE_PROVIDER)
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
@@ -124,7 +128,7 @@ export class UserRegistrationNotifier {
     recipient: User,
     registrant: User
   ): any {
-    const registrantProfileURL = this.alkemioAdapter.createUserURL(
+    const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
       registrant.nameID
     );
     return {

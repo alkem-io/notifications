@@ -2,6 +2,7 @@ import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   ALKEMIO_CLIENT_ADAPTER,
+  ALKEMIO_URL_GENERATOR,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
@@ -12,6 +13,7 @@ import { User } from '@core/models';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { AlkemioClientAdapter } from '@src/services';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 
 @Injectable()
 export class ApplicationCreatedNotifier {
@@ -20,6 +22,8 @@ export class ApplicationCreatedNotifier {
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
     private readonly alkemioAdapter: AlkemioClientAdapter,
+    @Inject(ALKEMIO_URL_GENERATOR)
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     @Inject(TEMPLATE_PROVIDER)
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
@@ -129,10 +133,10 @@ export class ApplicationCreatedNotifier {
     recipient: User,
     applicant: User
   ): any {
-    const applicantProfileURL = this.alkemioAdapter.createUserURL(
+    const applicantProfileURL = this.alkemioUrlGenerator.createUserURL(
       applicant.nameID
     );
-    const communityURL = this.alkemioAdapter.createCommunityURL(
+    const communityURL = this.alkemioUrlGenerator.createCommunityURL(
       eventPayload.hub.id,
       eventPayload.hub.challenge?.id,
       eventPayload.hub.challenge?.opportunity?.id
