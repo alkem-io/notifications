@@ -11,6 +11,8 @@ import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import { ApplicationCreatedNotifier } from '@src/services/domain/application-created-notifier/application.created.notifier';
 import { NotificationRecipientsAdapterModule } from './services/application/notification-recipients-adapter/notification.recipients.adapter.module';
 import { UserRegistrationNotifier } from './services/domain/user-registration-notifier/user.registration.notifier';
+import { CommunicationUpdateNotifier } from './services/domain/communication-update/communication.update.notifier';
+import { CommunicationDiscussionCreatedNotifier } from './services/domain/communication-discussion-created/communication.discussion.created.notifier';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { UserRegistrationNotifier } from './services/domain/user-registration-no
     },
     ApplicationCreatedNotifier,
     UserRegistrationNotifier,
+    CommunicationUpdateNotifier,
+    CommunicationDiscussionCreatedNotifier,
   ],
   controllers: [AppController],
 })

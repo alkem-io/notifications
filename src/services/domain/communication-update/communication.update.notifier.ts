@@ -2,6 +2,7 @@ import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   ALKEMIO_CLIENT_ADAPTER,
+  ConfigurationTypes,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
@@ -10,52 +11,61 @@ import { NotificationTemplateBuilder } from '@src/services/external/notifme/noti
 import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
+import { ConfigService } from '@nestjs/config';
+import { CommunicationUpdateEventPayload } from '@src/types/communication.update.event.payload';
 import { AlkemioClientAdapter } from '@src/services';
 
 @Injectable()
-export class UserRegistrationNotifier {
+export class CommunicationUpdateNotifier {
+  webclientEndpoint: string;
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private alkemioAdapter: AlkemioClientAdapter,
+    private readonly alkemioAdapter: AlkemioClientAdapter,
     @Inject(TEMPLATE_PROVIDER)
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
-  ) {}
+    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider,
+    private configService: ConfigService
+  ) {
+    this.webclientEndpoint = this.configService.get(
+      ConfigurationTypes.ALKEMIO
+    )?.webclient_endpoint;
+  }
 
-  async sendNotifications(eventPayload: UserRegistrationEventPayload) {
+  async sendNotifications(eventPayload: CommunicationUpdateEventPayload) {
     this.logger.verbose?.(
-      `[Notifications: userRegistration]: ${JSON.stringify(eventPayload)}`,
+      `[Notifications: communication update]: ${JSON.stringify(eventPayload)}`,
       LogContext.NOTIFICATIONS
     );
     // Get additional data
-    const registrant = await this.alkemioAdapter.getUser(eventPayload.userID);
+    const sender = await this.alkemioAdapter.getUser(
+      eventPayload.update.createdBy
+    );
 
     const adminNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
       'admin',
-      EmailTemplate.USER_REGISTRATION_ADMIN,
-      registrant
+      EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
+      sender
     );
 
-    const registrantNotificationPromises = await this.sendNotificationsForRole(
+    const memberNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
-      'registrant',
-      EmailTemplate.USER_REGISTRATION_REGISTRANT,
-      registrant
+      'member',
+      EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
+      sender
     );
 
-    return [...adminNotificationPromises, ...registrantNotificationPromises];
+    return [...adminNotificationPromises, ...memberNotificationPromises];
   }
 
   async sendNotificationsForRole(
-    eventPayload: UserRegistrationEventPayload,
+    eventPayload: CommunicationUpdateEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
-    registrant: User
+    sender: User
   ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - recipients role: '${recipientRole}`,
@@ -84,7 +94,7 @@ export class UserRegistrationNotifier {
     );
 
     const notifications = recipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, registrant)
+      this.buildNotification(eventPayload, recipient, emailTemplate, sender)
     );
 
     Promise.all(notifications);
@@ -99,12 +109,12 @@ export class UserRegistrationNotifier {
     eventPayload: any,
     recipient: User,
     templateName: string,
-    registrant: User
+    sender: User
   ) {
     const templatePayload = this.createTemplatePayload(
       eventPayload,
       recipient,
-      registrant
+      sender
     ) as any;
 
     return await this.notificationTemplateBuilder.buildTemplate(
@@ -113,32 +123,47 @@ export class UserRegistrationNotifier {
     );
   }
 
-  createLookupMap(payload: UserRegistrationEventPayload): Map<string, string> {
+  createLookupMap(
+    payload: CommunicationUpdateEventPayload
+  ): Map<string, string> {
     const lookupMap: Map<string, string> = new Map();
-    lookupMap.set('registrantID', payload.userID);
+    lookupMap.set('hubID', payload.hub.id);
+    lookupMap.set('challengeID', payload.hub.challenge?.id || '');
+    lookupMap.set(
+      'opportunityID',
+      payload.hub.challenge?.opportunity?.id || ''
+    );
     return lookupMap;
   }
 
   createTemplatePayload(
-    eventPayload: any,
+    eventPayload: CommunicationUpdateEventPayload,
     recipient: User,
-    registrant: User
+    sender: User
   ): any {
-    const registrantProfileURL = this.alkemioAdapter.createUserURL(
-      registrant.nameID
+    const communityURL = this.alkemioAdapter.createCommunityURL(
+      eventPayload.hub.id,
+      eventPayload.hub.challenge?.id,
+      eventPayload.hub.challenge?.opportunity?.id
     );
+    const senderProfile = this.alkemioAdapter.createUserURL(sender.nameID);
     return {
       emailFrom: 'info@alkem.io',
-      registrant: {
-        name: registrant.displayName,
-        firstname: registrant.firstName,
-        email: registrant.email,
-        profile: registrantProfileURL,
+      update: {
+        createdby: sender.displayName,
+        firstname: sender.firstName,
+        email: sender.email,
+        profile: senderProfile,
       },
       recipient: {
         name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
+      },
+      community: {
+        name: eventPayload.community.name,
+        type: eventPayload.community.type,
+        url: communityURL,
       },
       event: eventPayload,
     };

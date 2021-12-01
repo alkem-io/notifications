@@ -2,45 +2,33 @@ import { Injectable, Inject, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   ALKEMIO_CLIENT_ADAPTER,
-  ConfigurationTypes,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
 } from '@src/common';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
-import {
-  INotificationRecipientTemplateProvider,
-  INotifiedUsersProvider,
-} from '@core/contracts';
+import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { User } from '@core/models';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { ConfigService } from '@nestjs/config';
+import { AlkemioClientAdapter } from '@src/services';
 
 @Injectable()
 export class ApplicationCreatedNotifier {
-  webclientEndpoint: string;
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly notifiedUsersService: INotifiedUsersProvider,
+    private readonly alkemioAdapter: AlkemioClientAdapter,
     @Inject(TEMPLATE_PROVIDER)
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider,
-    private configService: ConfigService
-  ) {
-    this.webclientEndpoint = this.configService.get(
-      ConfigurationTypes.ALKEMIO
-    )?.webclient_endpoint;
-  }
+    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
+  ) {}
 
   async sendNotifications(eventPayload: any) {
     // Get additional data
-    const applicant = await this.notifiedUsersService.getUser(
-      eventPayload.applicant
-    );
+    const applicant = await this.alkemioAdapter.getUser(eventPayload.applicant);
 
     const adminNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
@@ -81,7 +69,7 @@ export class ApplicationCreatedNotifier {
       );
 
     const recipients =
-      await this.notifiedUsersService.getUniqueUsersMatchingCredentialCriteria(
+      await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
         credentialCriterias
       );
 
@@ -139,12 +127,20 @@ export class ApplicationCreatedNotifier {
     recipient: User,
     applicant: User
   ): any {
+    const applicantProfileURL = this.alkemioAdapter.createUserURL(
+      applicant.nameID
+    );
+    const communityURL = this.alkemioAdapter.createCommunityURL(
+      eventPayload.hub.id,
+      eventPayload.hub.challenge?.id,
+      eventPayload.hub.challenge?.opportunity?.id
+    );
     return {
       emailFrom: 'info@alkem.io',
       applicant: {
         name: applicant.displayName,
         email: applicant.email,
-        profile: `${this.webclientEndpoint}/user/${applicant.nameID}`,
+        profile: applicantProfileURL,
       },
       recipient: {
         name: recipient.displayName,
@@ -153,6 +149,7 @@ export class ApplicationCreatedNotifier {
       community: {
         name: eventPayload.community.name,
         type: eventPayload.community.type,
+        url: communityURL,
       },
       event: eventPayload,
     };
