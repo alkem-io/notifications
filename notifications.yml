@@ -95,7 +95,7 @@ recipients:
             resource_id: <opportunityID>
         - rule:
             type: ECOVERSE_ADMIN
-            resource_id: <ecoverseID>
+            resource_id: <hubID>
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
             resource_id: <>
@@ -140,7 +140,7 @@ recipients:
             resource_id: <opportunityID>
         - rule:
             type: ECOVERSE_MEMBER
-            resource_id: <ecoverseID>
+            resource_id: <hubID>
   communication_discussion_created:
     - name: admin
       rules:
@@ -160,4 +160,4 @@ recipients:
             resource_id: <opportunityID>
         - rule:
             type: ECOVERSE_MEMBER
-            resource_id: <ecoverseID>
+            resource_id: <hubID>
