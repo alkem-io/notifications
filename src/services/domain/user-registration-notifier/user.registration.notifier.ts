@@ -37,6 +37,10 @@ export class UserRegistrationNotifier {
   }
 
   async sendNotifications(eventPayload: UserRegistrationEventPayload) {
+    this.logger.verbose?.(
+      `[Notifications: userRegistration]: ${JSON.stringify(eventPayload)}`,
+      LogContext.NOTIFICATIONS
+    );
     // Get additional data
     const registrant = await this.notifiedUsersService.getUser(
       eventPayload.userID

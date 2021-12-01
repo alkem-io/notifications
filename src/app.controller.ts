@@ -26,7 +26,12 @@ export class AppController {
     @Payload() payload: ApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.logger.verbose?.(JSON.stringify(payload), LogContext.NOTIFICATIONS);
+    this.logger.verbose?.(
+      `[Event received: communityApplicationCreated]: ${JSON.stringify(
+        payload
+      )}`,
+      LogContext.NOTIFICATIONS
+    );
 
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
@@ -77,7 +82,10 @@ export class AppController {
     @Payload() payload: UserRegistrationEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.logger.verbose?.(JSON.stringify(payload), LogContext.NOTIFICATIONS);
+    this.logger.verbose?.(
+      `[Event received: userRegistration]: ${JSON.stringify(payload)}`,
+      LogContext.NOTIFICATIONS
+    );
 
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;

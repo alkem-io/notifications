@@ -1,8 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { AlkemioClient } from '@alkemio/client-lib';
-import { ALKEMIO_CLIENT_PROVIDER } from '@src/common';
+import { ALKEMIO_CLIENT_PROVIDER, LogContext } from '@src/common';
 import { IFeatureFlagProvider, INotifiedUsersProvider } from '@core/contracts';
 import { CredentialCriteria, User } from '@core/models';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class AlkemioClientAdapter
@@ -10,15 +11,19 @@ export class AlkemioClientAdapter
 {
   constructor(
     @Inject(ALKEMIO_CLIENT_PROVIDER)
-    private alkemioClient: AlkemioClient
+    private alkemioClient: AlkemioClient,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService
   ) {}
 
   async areNotificationsEnabled(): Promise<boolean> {
     const featureFlags = await this.alkemioClient.featureFlags();
     if (
       featureFlags?.find(x => x.name === 'notifications' && x.enabled === true)
-    )
+    ) {
       return true;
+    }
+    this.logger.warn('Notifications are not enabled', LogContext.NOTIFICATIONS);
     return false;
   }
 
