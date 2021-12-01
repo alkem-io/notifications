@@ -98,10 +98,10 @@ recipients:
             resource_id: <hubID>
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
-            resource_id: <>
+            resource_id:
         - rule:
             type: GLOBAL_ADMIN
-            resource_id: <>
+            resource_id:
     - name: applicant
       rules:
         - rule:
@@ -112,24 +112,24 @@ recipients:
       rules:
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
-            resource_id: <>
+            resource_id:
         - rule:
             type: GLOBAL_ADMIN
-            resource_id: <>
+            resource_id:
     - name: registrant
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
-            resource_id: <applicantID>
+            resource_id: <registrantID>
   communication_update:
     - name: admin
       rules:
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
-            resource_id: <>
+            resource_id:
         - rule:
             type: GLOBAL_ADMIN
-            resource_id: <>
+            resource_id:
     - name: member
       rules:
         - rule:
@@ -146,10 +146,10 @@ recipients:
       rules:
         - rule:
             type: GLOBAL_COMMUNITY_ADMIN
-            resource_id: <>
+            resource_id:
         - rule:
             type: GLOBAL_ADMIN
-            resource_id: <>
+            resource_id:
     - name: member
       rules:
         - rule:
