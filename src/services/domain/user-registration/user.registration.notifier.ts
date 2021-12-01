@@ -93,7 +93,7 @@ export class UserRegistrationNotifier {
 
     Promise.all(notifications);
     this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - completed`,
+      `Notifications [${emailTemplate}] - completed for ${notifications.length} recipients.`,
       LogContext.NOTIFICATIONS
     );
     return notifications;
