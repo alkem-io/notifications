@@ -46,19 +46,21 @@ export class UserRegistrationNotifier {
       eventPayload.userID
     );
 
-    await this.sendNotificationsForRole(
+    const adminNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
       'admin',
       EmailTemplate.USER_REGISTRATION_ADMIN,
       registrant
     );
 
-    await this.sendNotificationsForRole(
+    const registrantNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
       'registrant',
       EmailTemplate.USER_REGISTRATION_REGISTRANT,
       registrant
     );
+
+    return [...adminNotificationPromises, ...registrantNotificationPromises];
   }
 
   async sendNotificationsForRole(
@@ -66,7 +68,7 @@ export class UserRegistrationNotifier {
     recipientRole: string,
     emailTemplate: EmailTemplate,
     registrant: User
-  ) {
+  ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - recipients role: '${recipientRole}`,
       LogContext.NOTIFICATIONS
@@ -102,6 +104,7 @@ export class UserRegistrationNotifier {
       `Notifications [${emailTemplate}] - completed`,
       LogContext.NOTIFICATIONS
     );
+    return notifications;
   }
 
   async buildNotification(

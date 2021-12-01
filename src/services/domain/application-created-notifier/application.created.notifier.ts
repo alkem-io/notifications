@@ -42,19 +42,20 @@ export class ApplicationCreatedNotifier {
       eventPayload.applicant
     );
 
-    await this.sendNotificationsForRole(
+    const adminNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
       'admin',
       EmailTemplate.USER_APPLICATION_ADMIN,
       applicant
     );
 
-    await this.sendNotificationsForRole(
+    const applicantNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
       'applicant',
       EmailTemplate.USER_APPLICATION_APPLICANT,
       applicant
     );
+    return [...adminNotificationPromises, ...applicantNotificationPromises];
   }
 
   async sendNotificationsForRole(
@@ -62,7 +63,7 @@ export class ApplicationCreatedNotifier {
     recipientRole: string,
     emailTemplate: EmailTemplate,
     registrant: User
-  ) {
+  ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - role '${recipientRole}`,
       LogContext.NOTIFICATIONS
@@ -98,6 +99,7 @@ export class ApplicationCreatedNotifier {
       `Notifications [${recipientRole}] - completed`,
       LogContext.NOTIFICATIONS
     );
+    return notifications;
   }
 
   async buildNotification(
