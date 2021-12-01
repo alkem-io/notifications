@@ -6,13 +6,13 @@ module.exports = () => ({
   channels: {
     email: {
       from: '{{emailFrom}}',
-      to: '{{user.email}}',
+      to: '{{recipient.email}}',
       subject: 'New update shared with community {{community.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{user.firstname}},<br><br>
+          Hi {{recipient.firstname}},<br><br>
 
-          A new update was shared on the following community: <a href="{{community.url}}">{{community.displayName}}</a>.<br><br>
+          A new update was shared by {{update.sender.firstname} on the following community: <a href="{{community.url}}">{{community.displayName}}</a>.<br><br>
 
           Sincerely yours,
           Team Alkemio

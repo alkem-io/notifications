@@ -153,11 +153,14 @@ export class CommunicationUpdateNotifier {
     const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     return {
       emailFrom: 'info@alkem.io',
-      update: {
-        createdby: sender.displayName,
+      sender: {
+        name: sender.displayName,
         firstname: sender.firstName,
         email: sender.email,
         profile: senderProfile,
+      },
+      update: {
+        id: eventPayload.update.id,
       },
       recipient: {
         name: recipient.displayName,

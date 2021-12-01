@@ -13,7 +13,6 @@ import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { ConfigService } from '@nestjs/config';
-import { CommunicationUpdateEventPayload } from '@src/types/communication.update.event.payload';
 import { AlkemioClientAdapter } from '@src/services';
 import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communication.discussion.created.event.payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
@@ -146,7 +145,7 @@ export class CommunicationDiscussionCreatedNotifier {
   }
 
   createTemplatePayload(
-    eventPayload: CommunicationUpdateEventPayload,
+    eventPayload: CommunicationDiscussionCreatedEventPayload,
     recipient: User,
     sender: User
   ): any {
@@ -158,11 +157,16 @@ export class CommunicationDiscussionCreatedNotifier {
     const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     return {
       emailFrom: 'info@alkem.io',
-      discussion: {
-        createdby: sender.displayName,
+      createdBy: {
+        name: sender.displayName,
         firstname: sender.firstName,
         email: sender.email,
         profile: senderProfile,
+      },
+      discussion: {
+        id: eventPayload.discussion.id,
+        title: eventPayload.discussion.title,
+        description: eventPayload.discussion.description,
       },
       recipient: {
         name: recipient.displayName,
