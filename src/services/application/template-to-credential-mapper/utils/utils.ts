@@ -8,19 +8,19 @@ import { CredentialCriteria } from '@src/core/models';
  * @param lookupMap
  * @returns Credential if matched with the payload, *undefined* otherwise
  */
-export const ruleToCredential = (
+export const ruleToCredentialCriteria = (
   templateRule: TemplateRule,
   lookupMap: Map<string, string>
 ): CredentialCriteria => {
-  const { rule } = templateRule;
-  const resourceID = getResourceId(rule.resource_id || '', lookupMap);
+  const resourceID = getResourceId(
+    templateRule.rule.resource_id || '',
+    lookupMap
+  );
 
-  //valentin - what if it's undefined and not null?
-  if (resourceID === null) {
-    rule.resource_id = undefined;
-  }
-
-  return rule;
+  return {
+    type: templateRule.rule.type,
+    resourceID: resourceID,
+  };
 };
 
 /***
@@ -34,8 +34,11 @@ export const ruleToCredential = (
 export const getResourceId = (
   resourceIdPattern: string,
   lookupMap: Map<string, string>
-): string | undefined | null => {
+): string | undefined => {
   const fillPattern = new RegExp(/^<\w*>$/g);
+  if (!resourceIdPattern || resourceIdPattern.length === 0) {
+    return undefined;
+  }
 
   if (resourceIdPattern.search(fillPattern) === -1) {
     // nothing to substitute
@@ -50,7 +53,7 @@ export const getResourceId = (
   const lookupValue = lookupMap.get(lookupKey);
   if (!lookupValue) {
     throw new NotSupportedException(
-      `The provided resourceID of '${resourceIdPattern}' gave a lookup key of '${lookupKey}' that was not in the provided map`,
+      `The provided resourceID of '${resourceIdPattern}' gave a lookup key of '${lookupKey}' that was not in the provided map: ${lookupMap.keys()}`,
       LogContext.NOTIFICATIONS
     );
   }

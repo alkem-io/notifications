@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common';
 import { CredentialCriteria } from '@src/core/models/credential.criteria';
-import { ruleToCredential } from '../template-to-credential-mapper/utils/utils';
+import { ruleToCredentialCriteria } from '../template-to-credential-mapper/utils/utils';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
@@ -48,6 +48,6 @@ export class NotificationRecipientsYmlAdapter
 
     const rules = ruleSetForRole.rules;
 
-    return rules.map(x => ruleToCredential(x, lookupMap));
+    return rules.map(x => ruleToCredentialCriteria(x, lookupMap));
   }
 }

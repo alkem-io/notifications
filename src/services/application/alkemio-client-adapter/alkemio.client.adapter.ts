@@ -35,10 +35,12 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
   async getUsersMatchingCredentialCriteria(
     credentialCriteria: CredentialCriteria
   ): Promise<User[]> {
-    return this.alkemioClient.usersWithAuthorizationCredential(
+    const users = await this.alkemioClient.usersWithAuthorizationCredential(
       credentialCriteria.type,
       credentialCriteria.resourceID
-    ) as Promise<User[]>;
+    );
+    if (!users) return [];
+    return users;
   }
 
   async getUniqueUsersMatchingCredentialCriteria(
