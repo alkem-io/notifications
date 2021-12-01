@@ -51,7 +51,7 @@ export const getResourceId = (
     resourceIdPattern.length - 1
   );
   const lookupValue = lookupMap.get(lookupKey);
-  if (!lookupValue) {
+  if (!lookupValue && lookupValue != '') {
     throw new NotSupportedException(
       `The provided resourceID of '${resourceIdPattern}' gave a lookup key of '${lookupKey}' that was not in the provided map: ${lookupMap.keys()}`,
       LogContext.NOTIFICATIONS

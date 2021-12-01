@@ -14,9 +14,12 @@ export type ApplicationCreatedEventPayload = {
   };
   hub: {
     id: string;
+    nameID: string;
     challenge?: {
       id: string;
+      nameID: string;
       opportunity?: {
+        nameID: string;
         id: string;
       };
     };

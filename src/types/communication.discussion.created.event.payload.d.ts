@@ -12,7 +12,7 @@ export type CommunicationDiscussionCreatedEventPayload = {
   };
   hub: {
     id: string;
-    nameeID: string;
+    nameID: string;
     challenge?: {
       id: string;
       nameID: string;
