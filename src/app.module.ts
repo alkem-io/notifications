@@ -8,9 +8,9 @@ import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import { AlkemioClientAdapterModule } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
-import { ApplicationCreatedNotifier } from '@src/services/domain/application-created-notifier/application.created.notifier';
+import { ApplicationCreatedNotifier } from '@src/services/domain/application-created/application.created.notifier';
 import { NotificationRecipientsAdapterModule } from './services/application/notification-recipients-adapter/notification.recipients.adapter.module';
-import { UserRegistrationNotifier } from './services/domain/user-registration-notifier/user.registration.notifier';
+import { UserRegistrationNotifier } from './services/domain/user-registration/user.registration.notifier';
 import { CommunicationUpdateNotifier } from './services/domain/communication-update/communication.update.notifier';
 import { CommunicationDiscussionCreatedNotifier } from './services/domain/communication-discussion-created/communication.discussion.created.notifier';
 

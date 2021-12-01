@@ -26,9 +26,11 @@ export class ApplicationCreatedNotifier {
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 
-  async sendNotifications(eventPayload: any) {
+  async sendNotifications(eventPayload: ApplicationCreatedEventPayload) {
     // Get additional data
-    const applicant = await this.alkemioAdapter.getUser(eventPayload.applicant);
+    const applicant = await this.alkemioAdapter.getUser(
+      eventPayload.applicantID
+    );
 
     const adminNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,

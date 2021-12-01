@@ -7,7 +7,7 @@ import { IFeatureFlagProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
 import { ApplicationCreatedNotifier } from './services';
 import { UserRegistrationEventPayload } from './types';
-import { UserRegistrationNotifier } from './services/domain/user-registration-notifier/user.registration.notifier';
+import { UserRegistrationNotifier } from './services/domain/user-registration/user.registration.notifier';
 import { CommunicationUpdateNotifier } from './services/domain/communication-update/communication.update.notifier';
 import { CommunicationUpdateEventPayload } from './types/communication.update.event.payload';
 import { CommunicationDiscussionCreatedEventPayload } from './types/communication.discussion.created.event.payload';
