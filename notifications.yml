@@ -121,7 +121,7 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <registrantID>
-  communication_updated:
+  communication_update_sent:
     - name: admin
       rules:
         - rule:

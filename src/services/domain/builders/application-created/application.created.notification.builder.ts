@@ -59,7 +59,7 @@ export class ApplicationCreatedNotificationBuilder {
     eventPayload: any,
     recipientRole: string,
     emailTemplate: EmailTemplate,
-    registrant: User
+    applicant: User
   ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - role '${recipientRole}`,
@@ -88,7 +88,7 @@ export class ApplicationCreatedNotificationBuilder {
     );
 
     const notifications = recipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, registrant)
+      this.buildNotification(eventPayload, recipient, emailTemplate, applicant)
     );
 
     Promise.all(notifications);
@@ -103,12 +103,12 @@ export class ApplicationCreatedNotificationBuilder {
     eventPayload: ApplicationCreatedEventPayload,
     recipient: User,
     templateName: string,
-    registrant: User
+    applicant: User
   ): Promise<any> {
     const templatePayload = this.createTemplatePayload(
       eventPayload,
       recipient,
-      registrant
+      applicant
     ) as any;
 
     return await this.notificationTemplateBuilder.buildTemplate(

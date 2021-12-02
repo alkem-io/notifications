@@ -5,7 +5,7 @@ import { Channel, Message } from 'amqplib';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   COMMUNICATION_DISCUSSION_CREATED,
-  COMMUNICATION_UPDATED,
+  COMMUNICATION_UPDATE_SENT,
   COMMUNITY_APPLICATION_CREATED,
   LogContext,
   USER_REGISTERED,
@@ -56,7 +56,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(COMMUNICATION_UPDATED)
+  @EventPattern(COMMUNICATION_UPDATE_SENT)
   async sendCommunicationUpdatedNotifications(
     // todo is auto validation possible
     @Payload() eventPayload: CommunicationUpdateEventPayload,
@@ -68,7 +68,7 @@ export class AppController {
       this.notificationService.sendCommunicationUpdateddNotification(
         eventPayload
       ),
-      COMMUNICATION_UPDATED
+      COMMUNICATION_UPDATE_SENT
     );
   }
 
