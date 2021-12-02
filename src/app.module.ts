@@ -7,12 +7,16 @@ import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import {
-  ApplicationNotificationBuilder,
-  NotificationService,
   AlkemioClientAdapterModule,
+  ApplicationCreatedNotificationBuilder,
 } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import { NotificationRecipientsAdapterModule } from './services/application/notification-recipients-adapter/notification.recipients.adapter.module';
+import { UserRegisteredNotificationBuilder } from './services/domain/builders/user-registered/user.registered.notification.builder';
+import { CommunicationUpdateNotificationBuilder } from './services/domain/builders/communication-updated/communication.updated.notification.builder';
+import { CommunicationDiscussionCreatedNotificationBuilder } from './services/domain/builders/communication-discussion-created/communication.discussion.created.notification.builder';
+import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
+import { NotificationService } from './services/domain/notification/notification.service';
 
 @Module({
   imports: [
@@ -27,6 +31,7 @@ import { NotificationRecipientsAdapterModule } from './services/application/noti
     NotifmeModule,
     AlkemioClientModule,
     AlkemioClientAdapterModule,
+    AlkemioUrlGeneratorModule,
     NotificationRecipientsAdapterModule,
   ],
   providers: [
@@ -34,8 +39,11 @@ import { NotificationRecipientsAdapterModule } from './services/application/noti
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
+    ApplicationCreatedNotificationBuilder,
+    UserRegisteredNotificationBuilder,
+    CommunicationUpdateNotificationBuilder,
+    CommunicationDiscussionCreatedNotificationBuilder,
     NotificationService,
-    ApplicationNotificationBuilder,
   ],
   controllers: [AppController],
 })

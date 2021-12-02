@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { MockConfigServiceProvider } from '@test/mocks';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 describe('NotificationRecipientsYmlAdapter', () => {
   let configService: ConfigService;
@@ -10,7 +11,16 @@ describe('NotificationRecipientsYmlAdapter', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [MockConfigServiceProvider, NotificationRecipientsYmlAdapter],
+      providers: [
+        MockConfigServiceProvider,
+        NotificationRecipientsYmlAdapter,
+        {
+          provide: WINSTON_MODULE_NEST_PROVIDER,
+          useValue: {
+            error: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     recipientTemplateProvider =

@@ -4,7 +4,7 @@ import { WinstonModule } from 'nest-winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
 import { NotifmeModule } from '@src/services/external/notifme/notifme.module';
-import { ALKEMIO_CLIENT_ADAPTER } from '@src/common';
+import { ALKEMIO_CLIENT_ADAPTER, ALKEMIO_URL_GENERATOR } from '@src/common';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
 import * as hubAdminsData from '@test/data/hub.admins.json';
@@ -14,9 +14,13 @@ import { INotifiedUsersProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types';
 import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
-import { ApplicationNotificationBuilder } from '../application-notification-builder/application.notification.builder';
+import { ApplicationCreatedNotificationBuilder } from '@src/services';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { NotificationRecipientsAdapterModule } from '../../application/notification-recipients-adapter/notification.recipients.adapter.module';
+import { UserRegisteredNotificationBuilder } from '../builders/user-registered/user.registered.notification.builder';
+import { CommunicationUpdateNotificationBuilder } from '../builders/communication-updated/communication.updated.notification.builder';
+import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 
 const testData = {
   ...challengeAdminsData,
@@ -47,15 +51,23 @@ describe('NotificationService', () => {
       providers: [
         NotificationRecipientsYmlAdapter,
         NotificationService,
-        ApplicationNotificationBuilder,
+        ApplicationCreatedNotificationBuilder,
+        UserRegisteredNotificationBuilder,
+        CommunicationUpdateNotificationBuilder,
+        CommunicationDiscussionCreatedNotificationBuilder,
         ConfigService,
         {
           provide: ALKEMIO_CLIENT_ADAPTER,
           useValue: {
-            getApplicant: jest.fn(),
+            getUser: jest.fn(),
             getApplicationCreator: jest.fn(),
             getUsersMatchingCredentialCriteria: jest.fn(),
+            getUniqueUsersMatchingCredentialCriteria: jest.fn(),
           },
+        },
+        {
+          provide: ALKEMIO_URL_GENERATOR,
+          useClass: AlkemioUrlGenerator,
         },
       ],
     }).compile();
@@ -71,14 +83,14 @@ describe('NotificationService', () => {
     it('Should send application notification', async () => {
       //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
       jest
-        .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
+        .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
         .mockResolvedValue(testData.hubAdmins);
 
       jest
-        .spyOn(alkemioAdapter, 'getApplicant')
+        .spyOn(alkemioAdapter, 'getUser')
         .mockResolvedValue(testData.adminUser);
 
-      const res = await notificationService.sendApplicationNotifications(
+      const res = await notificationService.sendApplicationCreatedNotifications(
         testData.eventPayload.data as ApplicationCreatedEventPayload
       );
       for (const notificationStatus of res) {
@@ -89,7 +101,7 @@ describe('NotificationService', () => {
       }
     });
 
-    it('Should send 3 application notifications', async () => {
+    it('Should send 6 application notifications', async () => {
       const admins = [
         ...testData.hubAdmins,
         ...testData.challengeAdmins,
@@ -97,14 +109,14 @@ describe('NotificationService', () => {
       ];
 
       jest
-        .spyOn(alkemioAdapter, 'getUsersMatchingCredentialCriteria')
+        .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
         .mockResolvedValue(admins);
 
       jest
-        .spyOn(alkemioAdapter, 'getApplicant')
+        .spyOn(alkemioAdapter, 'getUser')
         .mockResolvedValue(testData.adminUser);
 
-      const res = await notificationService.sendApplicationNotifications(
+      const res = await notificationService.sendApplicationCreatedNotifications(
         testData.eventPayload.data as ApplicationCreatedEventPayload
       );
 
@@ -115,15 +127,15 @@ describe('NotificationService', () => {
         ).toBe('success');
       }
 
-      expect(res.length).toBe(admins.length); //1 admin is duplicated + 1 applicant
+      expect(res.length).toBe(6); //based on the template. toDo Mock the configuration
     });
 
     it('Should fail to send notification', async () => {
       jest
-        .spyOn(alkemioAdapter, 'getApplicant')
+        .spyOn(alkemioAdapter, 'getUser')
         .mockRejectedValue(new Error('Applicant not found!'));
       expect(
-        notificationService.sendApplicationNotifications(
+        notificationService.sendApplicationCreatedNotifications(
           testData.eventPayload.data as ApplicationCreatedEventPayload
         )
       ).rejects.toThrow();

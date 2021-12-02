@@ -12,13 +12,5 @@ export type ApplicationCreatedEventPayload = {
     name: string;
     type: CommunityType;
   };
-  hub: {
-    id: string;
-    challenge?: {
-      id: string;
-      opportunity?: {
-        id: string;
-      };
-    };
-  };
+  hub: HubPayload;
 };
