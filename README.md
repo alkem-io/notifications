@@ -17,7 +17,7 @@ npm run start:services
 ```
 
 3. Go to http://localhost:15672/#/queues/%2F/alkemio-notifications.
-4. Under publish message, select content_type under properties with value application/json.
+4. Under publish message, go to `properties` and add a new property with name `content_type` and value `application/json`.
 5. Select payload:
 
 ```json

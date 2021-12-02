@@ -22,7 +22,7 @@
       "@common/*": ["src/common/*"],
       "@core/*": ["src/core/*"]
     }
+    // "typeRoots": ["./src/types"]
   },
-  "exclude": ["node_modules", "dist"],
-  "typeRoots": ["./src/types"]
+  "exclude": ["node_modules", "dist"]
 }

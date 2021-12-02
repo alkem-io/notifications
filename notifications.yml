@@ -75,6 +75,7 @@ hosting:
 
 alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/admin/graphql
+  webclient_endpoint: ${ALKEMIO_WEBCLIENT_ENDPOINT}:http://localhost:3000
   service_account:
     username: ${SERVICE_ACCOUNT_USERNAME}:notifications@alkem.io
     password: ${SERVICE_ACCOUNT_PASSWORD}:change-me-now
@@ -94,42 +95,42 @@ recipients:
             resource_id: <opportunityID>
         - rule:
             type: ECOVERSE_ADMIN
-            resource_id: <ecoverseID>
+            resource_id: <hubID>
         - rule:
-            type: GLOBAL_COMMUNITY_ADMIN
-            resource_id: <>
+            type: GLOBAL_ADMIN_COMMUNITY
+            resource_id:
         - rule:
             type: GLOBAL_ADMIN
-            resource_id: <>
+            resource_id:
     - name: applicant
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <applicantID>
-  user_registration:
+  user_registered:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_COMMUNITY_ADMIN
-            resource_id: <>
+            type: GLOBAL_ADMIN_COMMUNITY
+            resource_id:
         - rule:
             type: GLOBAL_ADMIN
-            resource_id: <>
+            resource_id:
     - name: registrant
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
-            resource_id: <applicantID>
-  communication_update:
+            resource_id: <registrantID>
+  communication_update_sent:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_COMMUNITY_ADMIN
-            resource_id: <>
+            type: GLOBAL_ADMIN_COMMUNITY
+            resource_id:
         - rule:
             type: GLOBAL_ADMIN
-            resource_id: <>
-    - name: community_member
+            resource_id:
+    - name: member
       rules:
         - rule:
             type: CHALLENGE_MEMBER
@@ -139,4 +140,24 @@ recipients:
             resource_id: <opportunityID>
         - rule:
             type: ECOVERSE_MEMBER
-            resource_id: <ecoverseID>
+            resource_id: <hubID>
+  communication_discussion_created:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_COMMUNITY_ADMIN
+            resource_id:
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id:
+    - name: member
+      rules:
+        - rule:
+            type: CHALLENGE_MEMBER
+            resource_id: <challengeID>
+        - rule:
+            type: OPPORTUNITY_MEMBER
+            resource_id: <opportunityID>
+        - rule:
+            type: ECOVERSE_MEMBER
+            resource_id: <hubID>

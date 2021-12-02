@@ -65,7 +65,7 @@ describe('AlkemioAdapter', () => {
       jest.spyOn(alkemioClient, 'user').mockResolvedValue(undefined);
 
       expect(
-        alkemioAdapter.getApplicant(testData.eventPayload.data.hub.id)
+        alkemioAdapter.getUser(testData.eventPayload.data.hub.id)
       ).rejects.toThrow();
     });
 
