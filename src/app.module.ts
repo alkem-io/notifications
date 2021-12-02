@@ -6,14 +6,17 @@ import { AppController } from './app.controller';
 import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
-import { AlkemioClientAdapterModule } from '@src/services';
+import {
+  AlkemioClientAdapterModule,
+  ApplicationCreatedNotificationBuilder,
+} from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
-import { ApplicationCreatedNotifier } from '@src/services/domain/application-created/application.created.notifier';
 import { NotificationRecipientsAdapterModule } from './services/application/notification-recipients-adapter/notification.recipients.adapter.module';
-import { UserRegistrationNotifier } from './services/domain/user-registration/user.registration.notifier';
-import { CommunicationUpdateNotifier } from './services/domain/communication-update/communication.update.notifier';
-import { CommunicationDiscussionCreatedNotifier } from './services/domain/communication-discussion-created/communication.discussion.created.notifier';
+import { UserRegisteredNotificationBuilder } from './services/domain/builders/user-registered/user.registered.notification.builder';
+import { CommunicationUpdateNotificationBuilder } from './services/domain/builders/communication-updated/communication.updated.notification.builder';
+import { CommunicationDiscussionCreatedNotificationBuilder } from './services/domain/builders/communication-discussion-created/communication.discussion.created.notification.builder';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
+import { NotificationService } from './services/domain/notification/notification.service';
 
 @Module({
   imports: [
@@ -36,10 +39,11 @@ import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-ge
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
-    ApplicationCreatedNotifier,
-    UserRegistrationNotifier,
-    CommunicationUpdateNotifier,
-    CommunicationDiscussionCreatedNotifier,
+    ApplicationCreatedNotificationBuilder,
+    UserRegisteredNotificationBuilder,
+    CommunicationUpdateNotificationBuilder,
+    CommunicationDiscussionCreatedNotificationBuilder,
+    NotificationService,
   ],
   controllers: [AppController],
 })

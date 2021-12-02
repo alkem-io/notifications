@@ -3,7 +3,6 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_URL_GENERATOR,
-  ConfigurationTypes,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
@@ -12,68 +11,58 @@ import { NotificationTemplateBuilder } from '@src/services/external/notifme/noti
 import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { ConfigService } from '@nestjs/config';
+import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
 import { AlkemioClientAdapter } from '@src/services';
-import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communication.discussion.created.event.payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 
 @Injectable()
-export class CommunicationDiscussionCreatedNotifier {
-  webclientEndpoint: string;
+export class UserRegisteredNotificationBuilder {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly alkemioAdapter: AlkemioClientAdapter,
+    private alkemioAdapter: AlkemioClientAdapter,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     @Inject(TEMPLATE_PROVIDER)
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider,
-    private configService: ConfigService
-  ) {
-    this.webclientEndpoint = this.configService.get(
-      ConfigurationTypes.ALKEMIO
-    )?.webclient_endpoint;
-  }
+    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
+  ) {}
 
-  async sendNotifications(
-    eventPayload: CommunicationDiscussionCreatedEventPayload
-  ) {
+  async sendNotifications(eventPayload: UserRegistrationEventPayload) {
     this.logger.verbose?.(
-      `[Notifications: communication discussion]: ${JSON.stringify(
-        eventPayload
-      )}`,
+      `[Notifications: userRegistration]: ${JSON.stringify(eventPayload)}`,
       LogContext.NOTIFICATIONS
     );
     // Get additional data
-    const sender = await this.alkemioAdapter.getUser(
-      eventPayload.discussion.createdBy
-    );
+    const registrant = await this.alkemioAdapter.getUser(eventPayload.userID);
 
     const adminNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
       'admin',
-      EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
-      sender
+      EmailTemplate.USER_REGISTRATION_ADMIN,
+      registrant
     );
 
-    const memberNotificationPromises = await this.sendNotificationsForRole(
+    const registrantNotificationPromises = await this.sendNotificationsForRole(
       eventPayload,
-      'member',
-      EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
-      sender
+      'registrant',
+      EmailTemplate.USER_REGISTRATION_REGISTRANT,
+      registrant
     );
 
-    return [...adminNotificationPromises, ...memberNotificationPromises];
+    return Promise.all([
+      ...adminNotificationPromises,
+      ...registrantNotificationPromises,
+    ]);
   }
 
   async sendNotificationsForRole(
-    eventPayload: CommunicationDiscussionCreatedEventPayload,
+    eventPayload: UserRegistrationEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
-    sender: User
+    registrant: User
   ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - recipients role: '${recipientRole}`,
@@ -82,7 +71,7 @@ export class CommunicationDiscussionCreatedNotifier {
     // Get the lookup map
     const lookupMap = this.createLookupMap(eventPayload);
     const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().user_registration;
+      this.recipientTemplateProvider.getTemplate().user_registered;
 
     const credentialCriterias =
       this.recipientTemplateProvider.getCredentialCriterias(
@@ -102,12 +91,12 @@ export class CommunicationDiscussionCreatedNotifier {
     );
 
     const notifications = recipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, sender)
+      this.buildNotification(eventPayload, recipient, emailTemplate, registrant)
     );
 
     Promise.all(notifications);
     this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - completed`,
+      `Notifications [${emailTemplate}] - completed for ${notifications.length} recipients.`,
       LogContext.NOTIFICATIONS
     );
     return notifications;
@@ -117,12 +106,12 @@ export class CommunicationDiscussionCreatedNotifier {
     eventPayload: any,
     recipient: User,
     templateName: string,
-    sender: User
+    registrant: User
   ) {
     const templatePayload = this.createTemplatePayload(
       eventPayload,
       recipient,
-      sender
+      registrant
     ) as any;
 
     return await this.notificationTemplateBuilder.buildTemplate(
@@ -131,52 +120,32 @@ export class CommunicationDiscussionCreatedNotifier {
     );
   }
 
-  createLookupMap(
-    payload: CommunicationDiscussionCreatedEventPayload
-  ): Map<string, string> {
+  createLookupMap(payload: UserRegistrationEventPayload): Map<string, string> {
     const lookupMap: Map<string, string> = new Map();
-    lookupMap.set('hubID', payload.hub.id);
-    lookupMap.set('challengeID', payload.hub.challenge?.id || '');
-    lookupMap.set(
-      'opportunityID',
-      payload.hub.challenge?.opportunity?.id || ''
-    );
+    lookupMap.set('registrantID', payload.userID);
     return lookupMap;
   }
 
   createTemplatePayload(
-    eventPayload: CommunicationDiscussionCreatedEventPayload,
+    eventPayload: any,
     recipient: User,
-    sender: User
+    registrant: User
   ): any {
-    const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.id,
-      eventPayload.hub.challenge?.id,
-      eventPayload.hub.challenge?.opportunity?.id
+    const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
+      registrant.nameID
     );
-    const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     return {
       emailFrom: 'info@alkem.io',
-      createdBy: {
-        name: sender.displayName,
-        firstname: sender.firstName,
-        email: sender.email,
-        profile: senderProfile,
-      },
-      discussion: {
-        id: eventPayload.discussion.id,
-        title: eventPayload.discussion.title,
-        description: eventPayload.discussion.description,
+      registrant: {
+        name: registrant.displayName,
+        firstname: registrant.firstName,
+        email: registrant.email,
+        profile: registrantProfileURL,
       },
       recipient: {
         name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
-      },
-      community: {
-        name: eventPayload.community.name,
-        type: eventPayload.community.type,
-        url: communityURL,
       },
       event: eventPayload,
     };

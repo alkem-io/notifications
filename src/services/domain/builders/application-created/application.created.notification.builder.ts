@@ -16,7 +16,7 @@ import { AlkemioClientAdapter } from '@src/services';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 
 @Injectable()
-export class ApplicationCreatedNotifier {
+export class ApplicationCreatedNotificationBuilder {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -30,29 +30,32 @@ export class ApplicationCreatedNotifier {
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 
-  async sendNotifications(eventPayload: ApplicationCreatedEventPayload) {
+  async buildNotifications(eventPayload: ApplicationCreatedEventPayload) {
     // Get additional data
     const applicant = await this.alkemioAdapter.getUser(
       eventPayload.applicantID
     );
 
-    const adminNotificationPromises = await this.sendNotificationsForRole(
+    const adminNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'admin',
       EmailTemplate.USER_APPLICATION_ADMIN,
       applicant
     );
 
-    const applicantNotificationPromises = await this.sendNotificationsForRole(
+    const applicantNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'applicant',
       EmailTemplate.USER_APPLICATION_APPLICANT,
       applicant
     );
-    return [...adminNotificationPromises, ...applicantNotificationPromises];
+    return Promise.all([
+      ...adminNotificationPromises,
+      ...applicantNotificationPromises,
+    ]);
   }
 
-  async sendNotificationsForRole(
+  async buildNotificationsForRole(
     eventPayload: any,
     recipientRole: string,
     emailTemplate: EmailTemplate,

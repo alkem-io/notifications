@@ -2,89 +2,97 @@ import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
-import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common';
+import {
+  ALKEMIO_CLIENT_ADAPTER,
+  COMMUNICATION_DISCUSSION_CREATED,
+  COMMUNICATION_UPDATED,
+  COMMUNITY_APPLICATION_CREATED,
+  LogContext,
+  USER_REGISTERED,
+} from './common';
 import { IFeatureFlagProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
-import { ApplicationCreatedNotifier } from './services';
 import { UserRegistrationEventPayload } from './types';
-import { UserRegistrationNotifier } from './services/domain/user-registration/user.registration.notifier';
-import { CommunicationUpdateNotifier } from './services/domain/communication-update/communication.update.notifier';
 import { CommunicationUpdateEventPayload } from './types/communication.update.event.payload';
 import { CommunicationDiscussionCreatedEventPayload } from './types/communication.discussion.created.event.payload';
-import { CommunicationDiscussionCreatedNotifier } from './services/domain/communication-discussion-created/communication.discussion.created.notifier';
+import { NotificationService } from './services/domain/notification/notification.service';
 
 @Controller()
 export class AppController {
   constructor(
-    private applicationCreatedNotifier: ApplicationCreatedNotifier,
-    private userRegisteredNotifier: UserRegistrationNotifier,
-    private communicationUpdateNotifier: CommunicationUpdateNotifier,
-    private communicationDiscussionCreatedNotifier: CommunicationDiscussionCreatedNotifier,
+    private notificationService: NotificationService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
     private readonly featureFlagProvider: IFeatureFlagProvider
   ) {}
 
-  @EventPattern('communityApplicationCreated')
+  @EventPattern(COMMUNITY_APPLICATION_CREATED)
   async sendApplicationNotification(
     // todo is auto validation possible
     @Payload() eventPayload: ApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotification(
+    this.sendNotifications(
       eventPayload,
       context,
-      this.applicationCreatedNotifier,
-      'communityApplicationCreated'
+      this.notificationService.sendApplicationCreatedNotifications(
+        eventPayload
+      ),
+      COMMUNITY_APPLICATION_CREATED
     );
   }
-  @EventPattern('userRegistration')
+  @EventPattern(USER_REGISTERED)
   async sendUserRegisteredNotification(
     // todo is auto validation possible
     @Payload() eventPayload: UserRegistrationEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotification(
+    this.sendNotifications(
       eventPayload,
       context,
-      this.userRegisteredNotifier,
-      'userRegistration'
+      this.notificationService.sendUserRegisteredNotification(eventPayload),
+      USER_REGISTERED
     );
   }
 
-  @EventPattern('communicationUpdate')
-  async sendCommunicationUpdateNotifications(
+  @EventPattern(COMMUNICATION_UPDATED)
+  async sendCommunicationUpdatedNotifications(
     // todo is auto validation possible
     @Payload() eventPayload: CommunicationUpdateEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotification(
+    this.sendNotifications(
       eventPayload,
       context,
-      this.communicationUpdateNotifier,
-      'communicationUpdate'
+      this.notificationService.sendCommunicationUpdateddNotification(
+        eventPayload
+      ),
+      COMMUNICATION_UPDATED
     );
   }
 
-  @EventPattern('communicationDiscussionCreated')
+  @EventPattern(COMMUNICATION_DISCUSSION_CREATED)
   async sendCommunicationDiscussionCreatedNotifications(
     // todo is auto validation possible
     @Payload() eventPayload: CommunicationDiscussionCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotification(
+    this.sendNotifications(
       eventPayload,
       context,
-      this.communicationDiscussionCreatedNotifier,
-      'communicationDiscussionCreated'
+      this.notificationService.sendCommunicationDiscussionCreatedNotification(
+        eventPayload
+      ),
+      COMMUNICATION_DISCUSSION_CREATED
     );
   }
 
-  private async sendNotification(
+  private async sendNotifications(
     @Payload() eventPayload: any,
     @Ctx() context: RmqContext,
-    notifier: any,
+    // notificationBuilder: any,
+    sendNotifications: any,
     eventName: string
   ) {
     this.logger.verbose?.(
@@ -101,8 +109,7 @@ export class AppController {
     }
 
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
-    notifier
-      .sendNotifications(eventPayload)
+    sendNotifications
       .then((x: any[]) => {
         const nacked = x.filter(
           (y: { status: string }) => y.status === 'rejected'

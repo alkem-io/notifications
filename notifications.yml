@@ -107,7 +107,7 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <applicantID>
-  user_registration:
+  user_registered:
     - name: admin
       rules:
         - rule:
@@ -121,7 +121,7 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <registrantID>
-  communication_update:
+  communication_updated:
     - name: admin
       rules:
         - rule:

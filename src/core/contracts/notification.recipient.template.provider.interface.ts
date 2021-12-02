@@ -15,8 +15,8 @@ export type TemplateRuleSet = {
 
 export type TemplateConfig = {
   application_created?: TemplateRuleSet[];
-  user_registration?: TemplateRuleSet[];
-  communication_update?: TemplateRuleSet[];
+  user_registered?: TemplateRuleSet[];
+  communication_updated?: TemplateRuleSet[];
 };
 
 export interface INotificationRecipientTemplateProvider {

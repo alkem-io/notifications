@@ -13,12 +13,12 @@ import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { ConfigService } from '@nestjs/config';
-import { CommunicationUpdateEventPayload } from '@src/types/communication.update.event.payload';
 import { AlkemioClientAdapter } from '@src/services';
+import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communication.discussion.created.event.payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 
 @Injectable()
-export class CommunicationUpdateNotifier {
+export class CommunicationDiscussionCreatedNotificationBuilder {
   webclientEndpoint: string;
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
@@ -38,14 +38,18 @@ export class CommunicationUpdateNotifier {
     )?.webclient_endpoint;
   }
 
-  async sendNotifications(eventPayload: CommunicationUpdateEventPayload) {
+  async sendNotifications(
+    eventPayload: CommunicationDiscussionCreatedEventPayload
+  ) {
     this.logger.verbose?.(
-      `[Notifications: communication update]: ${JSON.stringify(eventPayload)}`,
+      `[Notifications: communication discussion]: ${JSON.stringify(
+        eventPayload
+      )}`,
       LogContext.NOTIFICATIONS
     );
     // Get additional data
     const sender = await this.alkemioAdapter.getUser(
-      eventPayload.update.createdBy
+      eventPayload.discussion.createdBy
     );
 
     const adminNotificationPromises = await this.sendNotificationsForRole(
@@ -62,11 +66,14 @@ export class CommunicationUpdateNotifier {
       sender
     );
 
-    return [...adminNotificationPromises, ...memberNotificationPromises];
+    return Promise.all([
+      ...adminNotificationPromises,
+      ...memberNotificationPromises,
+    ]);
   }
 
   async sendNotificationsForRole(
-    eventPayload: CommunicationUpdateEventPayload,
+    eventPayload: CommunicationDiscussionCreatedEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
     sender: User
@@ -78,7 +85,7 @@ export class CommunicationUpdateNotifier {
     // Get the lookup map
     const lookupMap = this.createLookupMap(eventPayload);
     const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().user_registration;
+      this.recipientTemplateProvider.getTemplate().user_registered;
 
     const credentialCriterias =
       this.recipientTemplateProvider.getCredentialCriterias(
@@ -128,7 +135,7 @@ export class CommunicationUpdateNotifier {
   }
 
   createLookupMap(
-    payload: CommunicationUpdateEventPayload
+    payload: CommunicationDiscussionCreatedEventPayload
   ): Map<string, string> {
     const lookupMap: Map<string, string> = new Map();
     lookupMap.set('hubID', payload.hub.id);
@@ -141,7 +148,7 @@ export class CommunicationUpdateNotifier {
   }
 
   createTemplatePayload(
-    eventPayload: CommunicationUpdateEventPayload,
+    eventPayload: CommunicationDiscussionCreatedEventPayload,
     recipient: User,
     sender: User
   ): any {
@@ -153,14 +160,16 @@ export class CommunicationUpdateNotifier {
     const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     return {
       emailFrom: 'info@alkem.io',
-      sender: {
+      createdBy: {
         name: sender.displayName,
         firstname: sender.firstName,
         email: sender.email,
         profile: senderProfile,
       },
-      update: {
-        id: eventPayload.update.id,
+      discussion: {
+        id: eventPayload.discussion.id,
+        title: eventPayload.discussion.title,
+        description: eventPayload.discussion.description,
       },
       recipient: {
         name: recipient.displayName,
