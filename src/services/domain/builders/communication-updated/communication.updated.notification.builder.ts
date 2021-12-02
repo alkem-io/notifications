@@ -149,9 +149,9 @@ export class CommunicationUpdateNotificationBuilder {
     sender: User
   ): any {
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.id,
-      eventPayload.hub.challenge?.id,
-      eventPayload.hub.challenge?.opportunity?.id
+      eventPayload.hub.nameID,
+      eventPayload.hub.challenge?.nameID,
+      eventPayload.hub.challenge?.opportunity?.nameID
     );
     const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     return {

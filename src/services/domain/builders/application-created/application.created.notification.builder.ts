@@ -140,9 +140,9 @@ export class ApplicationCreatedNotificationBuilder {
       applicant.nameID
     );
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.id,
-      eventPayload.hub.challenge?.id,
-      eventPayload.hub.challenge?.opportunity?.id
+      eventPayload.hub.nameID,
+      eventPayload.hub.challenge?.nameID,
+      eventPayload.hub.challenge?.opportunity?.nameID
     );
     return {
       emailFrom: 'info@alkem.io',
