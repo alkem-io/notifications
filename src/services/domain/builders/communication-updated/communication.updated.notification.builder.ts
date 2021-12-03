@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 import { CommunicationUpdateEventPayload } from '@src/types/communication.update.event.payload';
 import { AlkemioClientAdapter } from '@src/services';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { UserPreferenceType } from '@alkemio/client-lib';
 
 @Injectable()
 export class CommunicationUpdateNotificationBuilder {
@@ -59,7 +60,8 @@ export class CommunicationUpdateNotificationBuilder {
       eventPayload,
       'member',
       EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
-      sender
+      sender,
+      UserPreferenceType.NotificationCommunicationUpdates
     );
 
     return Promise.all([
@@ -72,7 +74,8 @@ export class CommunicationUpdateNotificationBuilder {
     eventPayload: CommunicationUpdateEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
-    sender: User
+    sender: User,
+    preferenceType?: UserPreferenceType
   ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - recipients role: '${recipientRole}`,
@@ -95,12 +98,28 @@ export class CommunicationUpdateNotificationBuilder {
         credentialCriterias
       );
 
+    const filteredRecipients: User[] = [];
+    for (const recipient of recipients) {
+      if (recipient.preferences) {
+        if (
+          !preferenceType ||
+          recipient.preferences.find(
+            preference =>
+              preference.definition.group === 'Notification' &&
+              preference.definition.type === preferenceType &&
+              preference.value === 'true'
+          )
+        )
+          filteredRecipients.push(recipient);
+      }
+    }
+
     this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - identified ${recipients.length} recipients`,
+      `Notifications [${emailTemplate}] - identified ${filteredRecipients.length} recipients`,
       LogContext.NOTIFICATIONS
     );
 
-    const notifications = recipients.map(recipient =>
+    const notifications = filteredRecipients.map(recipient =>
       this.buildNotification(eventPayload, recipient, emailTemplate, sender)
     );
 
