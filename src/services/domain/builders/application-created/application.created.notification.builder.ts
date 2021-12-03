@@ -14,6 +14,7 @@ import { ApplicationCreatedEventPayload } from '@src/types/application.created.e
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { AlkemioClientAdapter } from '@src/services';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { UserPreferenceType } from '@alkemio/client-lib';
 
 @Injectable()
 export class ApplicationCreatedNotificationBuilder {
@@ -40,14 +41,16 @@ export class ApplicationCreatedNotificationBuilder {
       eventPayload,
       'admin',
       EmailTemplate.USER_APPLICATION_ADMIN,
-      applicant
+      applicant,
+      UserPreferenceType.NotificationApplicationReceived
     );
 
     const applicantNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'applicant',
       EmailTemplate.USER_APPLICATION_APPLICANT,
-      applicant
+      applicant,
+      UserPreferenceType.NotificationApplicationSubmitted
     );
     return Promise.all([
       ...adminNotificationPromises,
@@ -59,7 +62,8 @@ export class ApplicationCreatedNotificationBuilder {
     eventPayload: any,
     recipientRole: string,
     emailTemplate: EmailTemplate,
-    applicant: User
+    applicant: User,
+    preferenceType: UserPreferenceType
   ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - role '${recipientRole}`,
@@ -82,12 +86,27 @@ export class ApplicationCreatedNotificationBuilder {
         credentialCriterias
       );
 
+    const filteredRecipients: User[] = [];
+    for (const recipient of recipients) {
+      if (recipient.preferences) {
+        if (
+          recipient.preferences.find(
+            preference =>
+              preference.definition.group === 'Notification' &&
+              preference.definition.type === preferenceType &&
+              preference.value === 'true'
+          )
+        )
+          filteredRecipients.push(recipient);
+      }
+    }
+
     this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - identified ${recipients.length} recipients`,
+      `Notifications [${emailTemplate}] - identified ${filteredRecipients.length} recipients`,
       LogContext.NOTIFICATIONS
     );
 
-    const notifications = recipients.map(recipient =>
+    const notifications = filteredRecipients.map(recipient =>
       this.buildNotification(eventPayload, recipient, emailTemplate, applicant)
     );
 
