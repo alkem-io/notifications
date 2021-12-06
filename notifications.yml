@@ -147,7 +147,7 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_COMMUNITY_ADMIN
+            type: GLOBAL_ADMIN_COMMUNITY
             resource_id:
         - rule:
             type: GLOBAL_ADMIN

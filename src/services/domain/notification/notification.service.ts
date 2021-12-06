@@ -52,7 +52,7 @@ export class NotificationService {
     );
   }
 
-  async sendCommunicationUpdateddNotification(
+  async sendCommunicationUpdatedNotification(
     payload: CommunicationUpdateEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(

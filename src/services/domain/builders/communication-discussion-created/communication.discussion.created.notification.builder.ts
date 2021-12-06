@@ -16,6 +16,7 @@ import { ConfigService } from '@nestjs/config';
 import { AlkemioClientAdapter } from '@src/services';
 import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communication.discussion.created.event.payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { UserPreferenceType } from '@alkemio/client-lib';
 
 @Injectable()
 export class CommunicationDiscussionCreatedNotificationBuilder {
@@ -38,7 +39,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     )?.webclient_endpoint;
   }
 
-  async sendNotifications(
+  async buildNotifications(
     eventPayload: CommunicationDiscussionCreatedEventPayload
   ) {
     this.logger.verbose?.(
@@ -52,18 +53,19 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
       eventPayload.discussion.createdBy
     );
 
-    const adminNotificationPromises = await this.sendNotificationsForRole(
+    const adminNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'admin',
-      EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
+      EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_ADMIN,
       sender
     );
 
-    const memberNotificationPromises = await this.sendNotificationsForRole(
+    const memberNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'member',
-      EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
-      sender
+      EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_MEMBER,
+      sender,
+      UserPreferenceType.NotificationCommunicationDiscussionCreated
     );
 
     return Promise.all([
@@ -72,11 +74,12 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     ]);
   }
 
-  async sendNotificationsForRole(
+  async buildNotificationsForRole(
     eventPayload: CommunicationDiscussionCreatedEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
-    sender: User
+    sender: User,
+    preferenceType?: UserPreferenceType
   ): Promise<any> {
     this.logger.verbose?.(
       `Notifications [${emailTemplate}] - recipients role: '${recipientRole}`,
@@ -85,7 +88,8 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     // Get the lookup map
     const lookupMap = this.createLookupMap(eventPayload);
     const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().user_registered;
+      this.recipientTemplateProvider.getTemplate()
+        .communication_discussion_created;
 
     const credentialCriterias =
       this.recipientTemplateProvider.getCredentialCriterias(
@@ -99,12 +103,28 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
         credentialCriterias
       );
 
+    const filteredRecipients: User[] = [];
+    for (const recipient of recipients) {
+      if (recipient.preferences) {
+        if (
+          !preferenceType ||
+          recipient.preferences.find(
+            preference =>
+              preference.definition.group === 'Notification' &&
+              preference.definition.type === preferenceType &&
+              preference.value === 'true'
+          )
+        )
+          filteredRecipients.push(recipient);
+      }
+    }
+
     this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - identified ${recipients.length} recipients`,
+      `Notifications [${emailTemplate}] - identified ${filteredRecipients.length} recipients`,
       LogContext.NOTIFICATIONS
     );
 
-    const notifications = recipients.map(recipient =>
+    const notifications = filteredRecipients.map(recipient =>
       this.buildNotification(eventPayload, recipient, emailTemplate, sender)
     );
 
@@ -153,9 +173,9 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     sender: User
   ): any {
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.id,
-      eventPayload.hub.challenge?.id,
-      eventPayload.hub.challenge?.opportunity?.id
+      eventPayload.hub.nameID,
+      eventPayload.hub.challenge?.nameID,
+      eventPayload.hub.challenge?.opportunity?.nameID
     );
     const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     return {
