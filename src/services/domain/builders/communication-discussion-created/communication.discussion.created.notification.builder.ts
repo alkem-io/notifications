@@ -56,14 +56,14 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     const adminNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'admin',
-      EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
+      EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_ADMIN,
       sender
     );
 
     const memberNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'member',
-      EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
+      EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_MEMBER,
       sender,
       UserPreferenceType.NotificationCommunicationDiscussionCreated
     );
@@ -88,7 +88,8 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     // Get the lookup map
     const lookupMap = this.createLookupMap(eventPayload);
     const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().user_registered;
+      this.recipientTemplateProvider.getTemplate()
+        .communication_discussion_created;
 
     const credentialCriterias =
       this.recipientTemplateProvider.getCredentialCriterias(
