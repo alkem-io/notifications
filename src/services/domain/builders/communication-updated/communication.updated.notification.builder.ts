@@ -84,7 +84,7 @@ export class CommunicationUpdateNotificationBuilder {
     // Get the lookup map
     const lookupMap = this.createLookupMap(eventPayload);
     const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().user_registered;
+      this.recipientTemplateProvider.getTemplate().communication_update_sent;
 
     const credentialCriterias =
       this.recipientTemplateProvider.getCredentialCriterias(
@@ -143,10 +143,13 @@ export class CommunicationUpdateNotificationBuilder {
       sender
     ) as any;
 
-    return await this.notificationTemplateBuilder.buildTemplate(
-      templateName,
-      templatePayload
-    );
+    const populatedNotification =
+      await this.notificationTemplateBuilder.buildTemplate(
+        templateName,
+        templatePayload
+      );
+
+    return populatedNotification;
   }
 
   createLookupMap(
