@@ -9,7 +9,7 @@ import { AlkemioClientAdapterModule } from './alkemio.client.adapter.module';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
 import * as hubAdminsData from '@test/data/hub.admins.json';
-import * as eventPayload from '@test/data/event.payload.json';
+import * as eventPayload from '@test/data/event.application.created.payload.json';
 import { AlkemioClientAdapter } from './alkemio.client.adapter';
 
 const testData = {

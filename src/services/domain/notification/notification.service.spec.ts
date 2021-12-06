@@ -8,7 +8,7 @@ import { ALKEMIO_CLIENT_ADAPTER, ALKEMIO_URL_GENERATOR } from '@src/common';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
 import * as hubAdminsData from '@test/data/hub.admins.json';
-import * as eventPayload from '@test/data/event.payload.json';
+import * as eventPayload from '@test/data/event.application.created.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
 import { ApplicationCreatedEventPayload } from '@src/types';
