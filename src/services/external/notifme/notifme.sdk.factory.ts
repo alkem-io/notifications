@@ -11,7 +11,9 @@ export async function notifmeSdkFactory(
     const notifmeSdk = new NotifmeSdk({
       channels: {
         email: {
-          multiProviderStrategy: 'fallback',
+          multiProviderStrategy: configService.get(
+            ConfigurationTypes.NOTIFICATION_PROVIDERS
+          )?.email?.multi_provider_strategy,
           providers: [
             {
               type: 'smtp',
