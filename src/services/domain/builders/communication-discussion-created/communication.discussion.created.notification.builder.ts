@@ -39,7 +39,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     )?.webclient_endpoint;
   }
 
-  async sendNotifications(
+  async buildNotifications(
     eventPayload: CommunicationDiscussionCreatedEventPayload
   ) {
     this.logger.verbose?.(
@@ -53,14 +53,14 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
       eventPayload.discussion.createdBy
     );
 
-    const adminNotificationPromises = await this.sendNotificationsForRole(
+    const adminNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'admin',
       EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
       sender
     );
 
-    const memberNotificationPromises = await this.sendNotificationsForRole(
+    const memberNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'member',
       EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
@@ -74,7 +74,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     ]);
   }
 
-  async sendNotificationsForRole(
+  async buildNotificationsForRole(
     eventPayload: CommunicationDiscussionCreatedEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,

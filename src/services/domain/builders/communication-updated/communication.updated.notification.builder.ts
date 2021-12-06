@@ -39,7 +39,7 @@ export class CommunicationUpdateNotificationBuilder {
     )?.webclient_endpoint;
   }
 
-  async sendNotifications(eventPayload: CommunicationUpdateEventPayload) {
+  async buildNotifications(eventPayload: CommunicationUpdateEventPayload) {
     this.logger.verbose?.(
       `[Notifications: communication update]: ${JSON.stringify(eventPayload)}`,
       LogContext.NOTIFICATIONS
@@ -49,14 +49,14 @@ export class CommunicationUpdateNotificationBuilder {
       eventPayload.update.createdBy
     );
 
-    const adminNotificationPromises = await this.sendNotificationsForRole(
+    const adminNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'admin',
       EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
       sender
     );
 
-    const memberNotificationPromises = await this.sendNotificationsForRole(
+    const memberNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'member',
       EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
@@ -70,7 +70,7 @@ export class CommunicationUpdateNotificationBuilder {
     ]);
   }
 
-  async sendNotificationsForRole(
+  async buildNotificationsForRole(
     eventPayload: CommunicationUpdateEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,

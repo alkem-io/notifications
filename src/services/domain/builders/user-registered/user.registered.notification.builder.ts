@@ -31,7 +31,7 @@ export class UserRegisteredNotificationBuilder {
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 
-  async sendNotifications(eventPayload: UserRegistrationEventPayload) {
+  async buildNotifications(eventPayload: UserRegistrationEventPayload) {
     this.logger.verbose?.(
       `[Notifications: userRegistration]: ${JSON.stringify(eventPayload)}`,
       LogContext.NOTIFICATIONS
@@ -39,7 +39,7 @@ export class UserRegisteredNotificationBuilder {
     // Get additional data
     const registrant = await this.alkemioAdapter.getUser(eventPayload.userID);
 
-    const adminNotificationPromises = await this.sendNotificationsForRole(
+    const adminNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'admin',
       EmailTemplate.USER_REGISTRATION_ADMIN,
@@ -47,7 +47,7 @@ export class UserRegisteredNotificationBuilder {
       UserPreferenceType.NotificationUserSignUp
     );
 
-    const registrantNotificationPromises = await this.sendNotificationsForRole(
+    const registrantNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'registrant',
       EmailTemplate.USER_REGISTRATION_REGISTRANT,
@@ -60,7 +60,7 @@ export class UserRegisteredNotificationBuilder {
     ]);
   }
 
-  async sendNotificationsForRole(
+  async buildNotificationsForRole(
     eventPayload: UserRegistrationEventPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
