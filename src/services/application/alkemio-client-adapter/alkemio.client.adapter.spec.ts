@@ -64,9 +64,7 @@ describe('AlkemioAdapter', () => {
     it('Should throw an error', async () => {
       jest.spyOn(alkemioClient, 'user').mockResolvedValue(undefined);
 
-      expect(
-        alkemioAdapter.getUser(testData.eventPayload.data.hub.id)
-      ).rejects.toThrow();
+      expect(alkemioAdapter.getUser(testData.data.hub.id)).rejects.toThrow();
     });
 
     it('Should return true', async () => {

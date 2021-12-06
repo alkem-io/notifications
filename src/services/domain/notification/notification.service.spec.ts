@@ -91,7 +91,7 @@ describe('NotificationService', () => {
         .mockResolvedValue(testData.adminUser);
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.eventPayload.data as ApplicationCreatedEventPayload
+        testData.data as ApplicationCreatedEventPayload
       );
       for (const notificationStatus of res) {
         expect(
@@ -117,7 +117,7 @@ describe('NotificationService', () => {
         .mockResolvedValue(testData.adminUser);
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.eventPayload.data as ApplicationCreatedEventPayload
+        testData.data as ApplicationCreatedEventPayload
       );
 
       for (const notificationStatus of res) {
@@ -136,7 +136,7 @@ describe('NotificationService', () => {
         .mockRejectedValue(new Error('Applicant not found!'));
       expect(
         notificationService.sendApplicationCreatedNotifications(
-          testData.eventPayload.data as ApplicationCreatedEventPayload
+          testData.data as ApplicationCreatedEventPayload
         )
       ).rejects.toThrow();
     });
