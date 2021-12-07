@@ -53,6 +53,8 @@ monitoring:
 
 notification_providers:
   email:
+    #multi-provider strategy. Values can be fallback | no-fallback | roundrobin
+    multi_provider_strategy: ${EMAIL_MULTI_PROVIDER_STRATEGY}:fallback
     smtp:
       host: ${EMAIL_SMTP_HOST}:localhost
       port: ${EMAIL_SMTP_PORT}:1025
@@ -145,7 +147,7 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_COMMUNITY_ADMIN
+            type: GLOBAL_ADMIN_COMMUNITY
             resource_id:
         - rule:
             type: GLOBAL_ADMIN

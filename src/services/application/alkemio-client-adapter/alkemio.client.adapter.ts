@@ -41,7 +41,8 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
 
     const users = await this.alkemioClient.usersWithAuthorizationCredential(
       credentialCriteria.type,
-      resourceID
+      resourceID,
+      true
     );
     if (!users) return [];
     return users;

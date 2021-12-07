@@ -65,7 +65,7 @@ export class AppController {
     this.sendNotifications(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationUpdateddNotification(
+      this.notificationService.sendCommunicationUpdatedNotification(
         eventPayload
       ),
       COMMUNICATION_UPDATE_SENT
