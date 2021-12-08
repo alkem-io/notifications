@@ -13,7 +13,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstname}},<br><br>
 
-          A new discussion was created by {{createdBy.firstname} on your community <a href="{{community.url}}">{{community.name}}</a>: {{discussion.title}}<br><br>
+          A new discussion was created by {{createdBy.firstname}} on your community <a href="{{community.url}}">{{community.name}}</a>: {{discussion.title}}<br><br>
 
           Sincerely yours,
           Team Alkemio
