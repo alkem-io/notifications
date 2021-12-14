@@ -23,10 +23,10 @@ export class AlkemioUrlGenerator {
   ): string {
     const baseURL = `${this.webclientEndpoint}/${hubNameID}`;
     if (opportunityNameID) {
-      return `${baseURL}/${challengeNameID}/${opportunityNameID}`;
+      return `${baseURL}/challenges/${challengeNameID}/opportunities/${opportunityNameID}`;
     }
     if (challengeNameID) {
-      return `${baseURL}/${challengeNameID}`;
+      return `${baseURL}/challenges/${challengeNameID}`;
     }
     return baseURL;
   }
