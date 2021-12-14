@@ -1,5 +1,6 @@
-const footerBlock = `{% block footer %}<a
-  style="
+module.exports = {
+  footerBlock: `{% block footer %}<a
+  stylstylee="
     color: #068293;
     text-decoration: underline;
     font-family: Montserrat;
@@ -33,6 +34,5 @@ href="https://alkem.io/about/"
 alt="About Alkemio"
 >About</a
 >
-{% endblock %}`;
-
-module.exports = footerBlock;
+{% endblock %}`,
+};
