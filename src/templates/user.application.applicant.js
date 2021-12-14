@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'user-application-applicant',
@@ -15,7 +17,8 @@ module.exports = () => ({
           Please view the status of your application on your <a href="{{applicant.profile}}">profile</a>.<br><br>
           Sincerely yours,
           Team Alkemio
-        {% endblock %}`,
+        {% endblock %}
+        ${templates.footerBlock}`,
     },
   },
 });

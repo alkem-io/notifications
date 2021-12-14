@@ -16,6 +16,10 @@ export class AlkemioUrlGenerator {
     )?.webclient_endpoint;
   }
 
+  createHubURL(): string {
+    return this.webclientEndpoint;
+  }
+
   createCommunityURL(
     hubNameID: string,
     challengeNameID?: string,
@@ -37,5 +41,9 @@ export class AlkemioUrlGenerator {
 
   createOrganizationURL(orgNameID: string): string {
     return `${this.webclientEndpoint}/organization/${orgNameID}`;
+  }
+
+  createUserNotificationPreferencesURL(userNameID: string): string {
+    return `${this.webclientEndpoint}/user/${userNameID}/settings/notifications`;
   }
 }
