@@ -125,7 +125,8 @@ export class AppController {
             this.logger.verbose?.('All messages failed to be sent!');
             // if all messages failed to be sent, we reject the message but we make sure the message is
             // not discarded so we provide 'true' to requeue parameter
-            channel.reject(originalMsg, true);
+            channel.nack(originalMsg, false, false);
+            // channel.reject(originalMsg, true);
           } else {
             this.logger.verbose?.(
               `${nacked.length} messages out of total ${x.length} messages failed to be sent!`

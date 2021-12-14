@@ -1,4 +1,4 @@
-export const footerBlock = `{% block footer %}<a
+const footerBlock = `{% block footer %}<a
   style="
     color: #068293;
     text-decoration: underline;
@@ -34,3 +34,5 @@ alt="About Alkemio"
 >About</a
 >
 {% endblock %}`;
+
+module.exports = footerBlock;
