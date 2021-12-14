@@ -57,7 +57,8 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
       eventPayload,
       'admin',
       EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_ADMIN,
-      sender
+      sender,
+      UserPreferenceType.NotificationCommunicationDiscussionCreatedAdmin
     );
 
     const memberNotificationPromises = await this.buildNotificationsForRole(

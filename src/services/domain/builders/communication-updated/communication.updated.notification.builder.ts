@@ -53,7 +53,8 @@ export class CommunicationUpdateNotificationBuilder {
       eventPayload,
       'admin',
       EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
-      sender
+      sender,
+      UserPreferenceType.NotificationCommunicationUpdateSentAdmin
     );
 
     const memberNotificationPromises = await this.buildNotificationsForRole(
