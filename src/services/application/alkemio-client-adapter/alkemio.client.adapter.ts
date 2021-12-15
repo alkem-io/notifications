@@ -64,7 +64,14 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
         uniqueUser => uniqueUser.id === user.id
       );
       if (!alreadyFound) {
-        uniqueUsers.push(user);
+        if (user.email) uniqueUsers.push(user);
+        else {
+          this.logger.error(
+            `The user: ${user.displayName} email could not be obtained!
+            Please check the service account running the notifications service, it should have sufficient permissions to see the user email.`,
+            LogContext.NOTIFICATIONS
+          );
+        }
       }
     }
     return uniqueUsers;
