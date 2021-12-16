@@ -163,6 +163,11 @@ export class ApplicationCreatedNotificationBuilder {
       eventPayload.hub.challenge?.nameID,
       eventPayload.hub.challenge?.opportunity?.nameID
     );
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
     return {
       emailFrom: 'info@alkem.io',
       applicant: {
@@ -173,11 +178,15 @@ export class ApplicationCreatedNotificationBuilder {
       recipient: {
         name: recipient.displayName,
         email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
       },
       community: {
         name: eventPayload.community.name,
         type: eventPayload.community.type,
         url: communityURL,
+      },
+      hub: {
+        url: hubURL,
       },
       event: eventPayload,
     };
