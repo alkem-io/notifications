@@ -153,6 +153,11 @@ export class UserRegisteredNotificationBuilder {
     const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
       registrant.nameID
     );
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
     return {
       emailFrom: 'info@alkem.io',
       registrant: {
@@ -165,6 +170,10 @@ export class UserRegisteredNotificationBuilder {
         name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
+      },
+      hub: {
+        url: hubURL,
       },
       event: eventPayload,
     };

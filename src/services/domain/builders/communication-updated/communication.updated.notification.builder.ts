@@ -53,7 +53,8 @@ export class CommunicationUpdateNotificationBuilder {
       eventPayload,
       'admin',
       EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
-      sender
+      sender,
+      UserPreferenceType.NotificationCommunicationUpdateSentAdmin
     );
 
     const memberNotificationPromises = await this.buildNotificationsForRole(
@@ -176,6 +177,11 @@ export class CommunicationUpdateNotificationBuilder {
       eventPayload.hub.challenge?.opportunity?.nameID
     );
     const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
     return {
       emailFrom: 'info@alkem.io',
       sender: {
@@ -191,11 +197,15 @@ export class CommunicationUpdateNotificationBuilder {
         name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
       },
       community: {
         name: eventPayload.community.name,
         type: eventPayload.community.type,
         url: communityURL,
+      },
+      hub: {
+        url: hubURL,
       },
       event: eventPayload,
     };

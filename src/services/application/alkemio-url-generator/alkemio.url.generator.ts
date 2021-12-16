@@ -16,6 +16,10 @@ export class AlkemioUrlGenerator {
     )?.webclient_endpoint;
   }
 
+  createHubURL(): string {
+    return this.webclientEndpoint;
+  }
+
   createCommunityURL(
     hubNameID: string,
     challengeNameID?: string,
@@ -23,10 +27,10 @@ export class AlkemioUrlGenerator {
   ): string {
     const baseURL = `${this.webclientEndpoint}/${hubNameID}`;
     if (opportunityNameID) {
-      return `${baseURL}/${challengeNameID}/${opportunityNameID}`;
+      return `${baseURL}/challenges/${challengeNameID}/opportunities/${opportunityNameID}`;
     }
     if (challengeNameID) {
-      return `${baseURL}/${challengeNameID}`;
+      return `${baseURL}/challenges/${challengeNameID}`;
     }
     return baseURL;
   }
@@ -37,5 +41,9 @@ export class AlkemioUrlGenerator {
 
   createOrganizationURL(orgNameID: string): string {
     return `${this.webclientEndpoint}/organization/${orgNameID}`;
+  }
+
+  createUserNotificationPreferencesURL(userNameID: string): string {
+    return `${this.webclientEndpoint}/user/${userNameID}/settings/notifications`;
   }
 }
