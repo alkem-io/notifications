@@ -22,6 +22,7 @@
       "@common/*": ["src/common/*"],
       "@core/*": ["src/core/*"]
     }
+    // "types": ["alkemio-templates"]
     // "typeRoots": ["./src/types"]
   },
   "exclude": ["node_modules", "dist"]
