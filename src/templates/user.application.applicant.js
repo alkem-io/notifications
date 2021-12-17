@@ -16,7 +16,6 @@ module.exports = () => ({
           We have received your application for <a href="{{community.url}}">{{community.name}}</a> [{{community.type}}]!<br><br>
           Please view the status of your application on your <a href="{{applicant.profile}}">profile</a>.<br><br>
           Sincerely yours,
-          Team Alkemio
         {% endblock %}
         ${templates.footerBlock}`,
     },

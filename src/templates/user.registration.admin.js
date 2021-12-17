@@ -17,7 +17,6 @@ module.exports = () => ({
           There is a <a href="{{registrant.profile}}" >new user registration </a>: {{registrant.name}}, with email {{registrant.email}}<br><br>
 
           Sincerely yours,
-          Team Alkemio
         {% endblock %}
         ${templates.footerBlock}`,
     },

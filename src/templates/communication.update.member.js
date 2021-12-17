@@ -18,7 +18,6 @@ module.exports = () => ({
           To view the update please navigate to <a href="{{community.url}}">{{community.name}}</a>.<br><br>
 
           Sincerely yours,
-          Team Alkemio
         {% endblock %}
 
         ${templates.footerBlock}`,
