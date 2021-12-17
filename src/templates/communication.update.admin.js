@@ -17,7 +17,6 @@ module.exports = () => ({
           A new update was shared by {{sender.firstname}} on the following community: <a href="{{community.url}}">{{community.name}}</a>.<br><br>
 
           Sincerely yours,
-          Team Alkemio
         {% endblock %}
 
         ${templates.footerBlock}`,

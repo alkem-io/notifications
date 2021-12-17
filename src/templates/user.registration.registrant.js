@@ -25,7 +25,6 @@ module.exports = () => ({
           Looking forward to seeing your interactions and contributions!
 
           Sincerely yours,
-          Team Alkemio
         {% endblock %}
         ${templates.footerBlock}`,
     },

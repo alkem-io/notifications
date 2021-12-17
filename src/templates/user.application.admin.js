@@ -18,7 +18,6 @@ module.exports = () => ({
           The profile of the new applicant is available <a href="{{applicant.profile}}" >here</a>.<br><br>
 
           Sincerely yours,
-          Team Alkemio
         {% endblock %}
         ${templates.footerBlock}`,
     },
