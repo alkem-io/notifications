@@ -105,10 +105,6 @@ export class AppController {
 
     if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
       channel.ack(originalMsg);
-      this.logger.verbose?.(
-        'Notifications are disabled. Returning...',
-        LogContext.NOTIFICATIONS
-      );
       return;
     }
 
