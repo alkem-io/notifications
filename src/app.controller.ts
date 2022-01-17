@@ -92,7 +92,7 @@ export class AppController {
     @Payload() eventPayload: any,
     @Ctx() context: RmqContext,
     // notificationBuilder: any,
-    sendNotifications: any,
+    sendNotificationsImpl: any,
     eventName: string
   ) {
     this.logger.verbose?.(
@@ -109,7 +109,7 @@ export class AppController {
     }
 
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
-    sendNotifications
+    sendNotificationsImpl
       .then((x: any[]) => {
         const nacked = x.filter(
           (y: { status: string }) => y.status === 'rejected'

@@ -59,6 +59,7 @@ describe('NotificationService', () => {
         {
           provide: ALKEMIO_CLIENT_ADAPTER,
           useValue: {
+            areNotificationsEnabled: jest.fn(),
             getUser: jest.fn(),
             getApplicationCreator: jest.fn(),
             getUsersMatchingCredentialCriteria: jest.fn(),
@@ -109,6 +110,10 @@ describe('NotificationService', () => {
       ];
 
       jest
+        .spyOn(alkemioAdapter, 'areNotificationsEnabled')
+        .mockResolvedValue(true);
+
+      jest
         .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
         .mockResolvedValue(admins);
 
@@ -139,6 +144,18 @@ describe('NotificationService', () => {
           testData.data as ApplicationCreatedEventPayload
         )
       ).rejects.toThrow();
+    });
+
+    it('Should not send notifications when notifications are disabled', async () => {
+      jest
+        .spyOn(alkemioAdapter, 'areNotificationsEnabled')
+        .mockResolvedValue(false);
+
+      const res = await notificationService.sendApplicationCreatedNotifications(
+        testData.data as ApplicationCreatedEventPayload
+      );
+
+      expect(res.length).toBe(0); //shouldn't have any notifications sent
     });
   });
 });
