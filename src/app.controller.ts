@@ -92,7 +92,7 @@ export class AppController {
     @Payload() eventPayload: any,
     @Ctx() context: RmqContext,
     // notificationBuilder: any,
-    sendNotifications: any,
+    sendNotificationsImpl: any,
     eventName: string
   ) {
     this.logger.verbose?.(
@@ -105,11 +105,15 @@ export class AppController {
 
     if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
       channel.ack(originalMsg);
+      this.logger.verbose?.(
+        'Notifications are disabled. Returning...',
+        LogContext.NOTIFICATIONS
+      );
       return;
     }
 
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
-    sendNotifications
+    sendNotificationsImpl
       .then((x: any[]) => {
         const nacked = x.filter(
           (y: { status: string }) => y.status === 'rejected'
