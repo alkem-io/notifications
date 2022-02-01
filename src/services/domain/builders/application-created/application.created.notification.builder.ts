@@ -92,7 +92,6 @@ export class ApplicationCreatedNotificationBuilder {
         if (
           recipient.preferences.find(
             preference =>
-              preference.definition.group === 'Notification' &&
               preference.definition.type === preferenceType &&
               preference.value === 'true'
           )
