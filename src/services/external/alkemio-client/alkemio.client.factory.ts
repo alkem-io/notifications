@@ -14,7 +14,7 @@ export async function alkemioClientFactory(
     )?.public_endpoint;
 
     const alkemioClientConfig = {
-      graphqlEndpoint: server,
+      apiEndpointPrivateGraphql: server,
       authInfo: {
         credentials: {
           email: configService.get(ConfigurationTypes.ALKEMIO)?.service_account
