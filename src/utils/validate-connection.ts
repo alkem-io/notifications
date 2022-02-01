@@ -8,7 +8,7 @@ import * as dotenv from 'dotenv';
 const main = async () => {
   dotenv.config();
   const server =
-    process.env.API_ENDPOINT_PRIVATE_GRAPHQL || DEFAULT_ENDPOINTS.alkemioServer;
+    process.env.ALKEMIO_SERVER_ENDPOINT || DEFAULT_ENDPOINTS.alkemioServer;
   const alkemioClient = new AlkemioClient({
     apiEndpointPrivateGraphql: server,
     authInfo: {
