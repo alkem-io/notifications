@@ -80,7 +80,7 @@ Note: replace applicantionCreatorID, applicantID, and hub + challenge + opportun
 
 ```gql
 query {
-  ecoverses {
+  hubs {
     id
     displayName
     challenges {
