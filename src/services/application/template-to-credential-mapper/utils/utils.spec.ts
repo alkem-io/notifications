@@ -44,14 +44,14 @@ describe.skip('ruleToCredentialCriteria', () => {
     //   ruleToCredentialCriteria(
     //     {
     //       rule: {
-    //         type: AuthorizationCredential.EcoverseAdmin,
+    //         type: AuthorizationCredential.HubAdmin,
     //         resource_id: '<>',
     //       },
     //     },
     //     payload
     //   )
     // ).toEqual({
-    //   type: AuthorizationCredential.EcoverseAdmin,
+    //   type: AuthorizationCredential.HubAdmin,
     //   resource_id: '<>',
     // });
   });
@@ -117,7 +117,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
-//         getResourceId(AuthorizationCredential.EcoverseAdmin, '<>', payload)
+//         getResourceId(AuthorizationCredential.HubAdmin, '<>', payload)
 //       ).toEqual('hub');
 //       expect(
 //         getResourceId(AuthorizationCredential.ChallengeAdmin, '<>', payload)
@@ -141,7 +141,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
-//         getResourceId(AuthorizationCredential.EcoverseAdmin, 'hub', payload)
+//         getResourceId(AuthorizationCredential.HubAdmin, 'hub', payload)
 //       ).toEqual('hub');
 //     });
 //     it('returns null if id does not exist on non fill pattern', () => {
@@ -158,7 +158,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //       } as ApplicationCreatedEventPayload;
 //       expect(
 //         getResourceId(
-//           AuthorizationCredential.EcoverseAdmin,
+//           AuthorizationCredential.HubAdmin,
 //           'template-id',
 //           payload
 //         )
@@ -171,7 +171,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //   it('throws on missing hub id', () => {
 //     const payload = {} as ApplicationCreatedEventPayload;
 //     expect(() =>
-//       getResourceId(AuthorizationCredential.EcoverseAdmin, payload)
+//       getResourceId(AuthorizationCredential.HubAdmin, payload)
 //     ).toThrowError('"id" field of "hub" not found in the payload');
 //   });
 //   it('return undefined on global admin', () => {
@@ -216,7 +216,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
-//         getResourceId(AuthorizationCredential.EcoverseAdmin, payload)
+//         getResourceId(AuthorizationCredential.HubAdmin, payload)
 //       ).toEqual('hub-id');
 //     });
 //     it('challenge', () => {
