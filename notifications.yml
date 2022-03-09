@@ -8,10 +8,10 @@ rabbitmq:
     port: ${RABBITMQ_PORT}:5672
 
     # RabbitMQ user
-    user: ${RABBITMQ_USER}:user
+    user: ${RABBITMQ_USER}:alkemio-admin
 
     # RabbitMQ password
-    password: ${RABBITMQ_PASSWORD}:bitnami
+    password: ${RABBITMQ_PASSWORD}:alkemio!
 
 ## MONITORING ##
 # This section defines settings used for DevOps - MONITORING providers, endpoints, logging configuration.
