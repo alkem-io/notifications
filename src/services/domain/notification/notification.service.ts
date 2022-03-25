@@ -15,6 +15,8 @@ import { UserRegistrationEventPayload } from '@src/types';
 import { CommunicationUpdateEventPayload } from '@src/types/communication.update.event.payload';
 import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communication.discussion.created.event.payload';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
+import { CommunityContextReviewSubmittedPayload } from '@src/types/community.context.review.submitted.payload';
+import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
 
 @Injectable()
 export class NotificationService {
@@ -28,7 +30,8 @@ export class NotificationService {
     private applicationCreatedNotificationBuilder: ApplicationCreatedNotificationBuilder,
     private userRegisteredNotificationBuilder: UserRegisteredNotificationBuilder,
     private communicationUpdatedNotificationBuilder: CommunicationUpdateNotificationBuilder,
-    private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder
+    private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
+    private communityContextReviewSubmittedNotificationBuilder: CommunityContextReviewSubmittedNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -85,6 +88,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.communicationDiscussionCreatedNotificationBuilder
+    );
+  }
+
+  async sendCommunityContextFeedbackNotification(
+    payload: CommunityContextReviewSubmittedPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communityContextReviewSubmittedNotificationBuilder
     );
   }
 

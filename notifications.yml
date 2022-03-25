@@ -163,3 +163,14 @@ recipients:
         - rule:
             type: HUB_MEMBER
             resource_id: <hubID>
+  community_review_submitted:
+    - name: admin
+      rules:
+        - rule:
+            type: CHALLENGE_ADMIN
+            resource_id: <challengeID>
+    - name: reviewer
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <reviewerID>

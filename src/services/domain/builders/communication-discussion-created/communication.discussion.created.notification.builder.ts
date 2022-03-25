@@ -83,7 +83,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
     preferenceType?: UserPreferenceType
   ): Promise<any> {
     this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - recipients role: '${recipientRole}`,
+      `Notifications [${emailTemplate}] - recipients role: '${recipientRole}'`,
       LogContext.NOTIFICATIONS
     );
     // Get the lookup map

@@ -3,3 +3,5 @@ export const USER_REGISTERED = 'userRegistered';
 export const COMMUNICATION_UPDATE_SENT = 'communicationUpdateSent';
 export const COMMUNICATION_DISCUSSION_CREATED =
   'communicationDiscussionCreated';
+export const COMMUNITY_CONTEXT_REVIEW_SUBMITTED =
+  'communityContextReviewSubmitted';

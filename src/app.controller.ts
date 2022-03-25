@@ -7,6 +7,7 @@ import {
   COMMUNICATION_DISCUSSION_CREATED,
   COMMUNICATION_UPDATE_SENT,
   COMMUNITY_APPLICATION_CREATED,
+  COMMUNITY_CONTEXT_REVIEW_SUBMITTED,
   LogContext,
   USER_REGISTERED,
 } from './common';
@@ -16,6 +17,7 @@ import { UserRegistrationEventPayload } from './types';
 import { CommunicationUpdateEventPayload } from './types/communication.update.event.payload';
 import { CommunicationDiscussionCreatedEventPayload } from './types/communication.discussion.created.event.payload';
 import { NotificationService } from './services/domain/notification/notification.service';
+import { CommunityContextReviewSubmittedPayload } from '@src/types/community.context.review.submitted.payload';
 
 @Controller()
 export class AppController {
@@ -85,6 +87,21 @@ export class AppController {
         eventPayload
       ),
       COMMUNICATION_DISCUSSION_CREATED
+    );
+  }
+
+  @EventPattern(COMMUNITY_CONTEXT_REVIEW_SUBMITTED)
+  async sendCommunityContextFeedbackNotifications(
+    @Payload() eventPayload: CommunityContextReviewSubmittedPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunityContextFeedbackNotification(
+        eventPayload
+      ),
+      COMMUNITY_CONTEXT_REVIEW_SUBMITTED
     );
   }
 
