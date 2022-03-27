@@ -1,70 +1,74 @@
-import { Injectable, Inject, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import {
   ALKEMIO_CLIENT_ADAPTER,
-  ALKEMIO_URL_GENERATOR,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   TEMPLATE_PROVIDER,
 } from '@src/common';
-import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
-import { INotificationRecipientTemplateProvider } from '@core/contracts';
-import { User } from '@core/models';
-import { EmailTemplate } from '@src/common/enums/email.template';
-import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
 import { AlkemioClientAdapter } from '@src/services';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { NotificationTemplateBuilder } from '@src/services/external';
+import { INotificationRecipientTemplateProvider } from '@core/contracts';
+import {
+  CommunityContextReviewSubmittedPayload,
+  FeedbackQuestions,
+} from '@src/types/community.context.review.submitted.payload';
+import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
+import { User } from '@core/models';
 
 @Injectable()
-export class UserRegisteredNotificationBuilder {
+export class CommunityContextReviewSubmittedNotificationBuilder {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private alkemioAdapter: AlkemioClientAdapter,
-    @Inject(ALKEMIO_URL_GENERATOR)
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
+    private readonly alkemioAdapter: AlkemioClientAdapter,
     @Inject(TEMPLATE_PROVIDER)
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 
-  async buildNotifications(eventPayload: UserRegistrationEventPayload) {
+  async buildNotifications(
+    eventPayload: CommunityContextReviewSubmittedPayload
+  ) {
     this.logger.verbose?.(
-      `[Notifications: userRegistration]: ${JSON.stringify(eventPayload)}`,
+      `[Notifications: community review submitted]: ${JSON.stringify(
+        eventPayload
+      )}`,
       LogContext.NOTIFICATIONS
     );
-    // Get additional data
-    const registrant = await this.alkemioAdapter.getUser(eventPayload.userID);
+
+    const reviewer = await this.alkemioAdapter.getUser(eventPayload.userId);
 
     const adminNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'admin',
-      EmailTemplate.USER_REGISTRATION_ADMIN,
-      registrant,
-      UserPreferenceType.NotificationUserSignUp
+      EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_ADMIN,
+      reviewer,
+      UserPreferenceType.NotificationCommunityReviewSubmittedAdmin
     );
 
-    const registrantNotificationPromises = await this.buildNotificationsForRole(
+    const reviewerNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
-      'registrant',
-      EmailTemplate.USER_REGISTRATION_REGISTRANT,
-      registrant
+      'reviewer',
+      EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_REVIEWER,
+      reviewer,
+      UserPreferenceType.NotificationCommunityReviewSubmitted
     );
 
     return Promise.all([
       ...adminNotificationPromises,
-      ...registrantNotificationPromises,
+      ...reviewerNotificationPromises,
     ]);
   }
 
   async buildNotificationsForRole(
-    eventPayload: UserRegistrationEventPayload,
+    eventPayload: CommunityContextReviewSubmittedPayload,
     recipientRole: string,
     emailTemplate: EmailTemplate,
-    registrant: User,
+    reviewer: User,
     preferenceType?: UserPreferenceType
   ): Promise<any> {
     this.logger.verbose?.(
@@ -74,7 +78,7 @@ export class UserRegisteredNotificationBuilder {
     // Get the lookup map
     const lookupMap = this.createLookupMap(eventPayload);
     const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().user_registered;
+      this.recipientTemplateProvider.getTemplate().community_review_submitted;
 
     const credentialCriterias =
       this.recipientTemplateProvider.getCredentialCriterias(
@@ -109,14 +113,14 @@ export class UserRegisteredNotificationBuilder {
     );
 
     const notifications = filteredRecipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, registrant)
+      this.buildNotification(eventPayload, recipient, emailTemplate, reviewer)
     );
 
-    Promise.all(notifications);
     this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - completed for ${notifications.length} recipients.`,
+      `Notifications [${emailTemplate}] - completed`,
       LogContext.NOTIFICATIONS
     );
+
     return notifications;
   }
 
@@ -124,57 +128,58 @@ export class UserRegisteredNotificationBuilder {
     eventPayload: any,
     recipient: User,
     templateName: string,
-    registrant: User
+    reviewer: User
   ) {
     const templatePayload = this.createTemplatePayload(
       eventPayload,
       recipient,
-      registrant
+      reviewer
     ) as any;
 
-    return await this.notificationTemplateBuilder.buildTemplate(
-      templateName,
-      templatePayload
-    );
-  }
+    const populatedNotification =
+      await this.notificationTemplateBuilder.buildTemplate(
+        templateName,
+        templatePayload
+      );
 
-  createLookupMap(payload: UserRegistrationEventPayload): Map<string, string> {
-    const lookupMap: Map<string, string> = new Map();
-    lookupMap.set('registrantID', payload.userID);
-    return lookupMap;
+    return populatedNotification;
   }
 
   createTemplatePayload(
-    eventPayload: any,
+    eventPayload: CommunityContextReviewSubmittedPayload,
     recipient: User,
-    registrant: User
+    reviewer: User
   ): any {
-    const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
-      registrant.nameID
-    );
-    const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
     return {
       emailFrom: 'info@alkem.io',
-      registrant: {
-        name: registrant.displayName,
-        firstname: registrant.firstName,
-        email: registrant.email,
-        profile: registrantProfileURL,
+      reviewer: {
+        name: reviewer.displayName,
       },
       recipient: {
         name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
       },
-      hub: {
-        url: hubURL,
+      community: {
+        name: eventPayload.community.name,
       },
-      event: eventPayload,
+      review: toStringReview(eventPayload.questions),
     };
   }
+
+  createLookupMap(
+    payload: CommunityContextReviewSubmittedPayload
+  ): Map<string, string> {
+    const lookupMap: Map<string, string> = new Map();
+    lookupMap.set('userID', payload.userId);
+    lookupMap.set('challengeID', payload.challengeId);
+    lookupMap.set('reviewerID', payload.userId);
+    return lookupMap;
+  }
 }
+
+const toStringReview = (questions: FeedbackQuestions[]): string =>
+  questions.reduce<string>(
+    (acc, curr) => acc.concat(`${curr.name}\n${curr.value}\n`),
+    ''
+  );

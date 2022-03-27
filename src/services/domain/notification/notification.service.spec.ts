@@ -21,6 +21,7 @@ import { UserRegisteredNotificationBuilder } from '../builders/user-registered/u
 import { CommunicationUpdateNotificationBuilder } from '../builders/communication-updated/communication.updated.notification.builder';
 import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
 
 const testData = {
   ...challengeAdminsData,
@@ -55,6 +56,7 @@ describe('NotificationService', () => {
         UserRegisteredNotificationBuilder,
         CommunicationUpdateNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
+        CommunityContextReviewSubmittedNotificationBuilder,
         ConfigService,
         {
           provide: ALKEMIO_CLIENT_ADAPTER,
