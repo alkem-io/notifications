@@ -53,7 +53,7 @@ export class CommunityContextReviewSubmittedNotificationBuilder {
     const reviewerNotificationPromises = await this.buildNotificationsForRole(
       eventPayload,
       'reviewer',
-      EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
+      EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_REVIEWER,
       reviewer,
       UserPreferenceType.NotificationCommunityReviewSubmitted
     );
