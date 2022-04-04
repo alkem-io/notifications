@@ -77,7 +77,7 @@ export class UserRegisteredNotificationBuilder {
       this.recipientTemplateProvider.getTemplate().user_registered;
 
     const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriterias(
+      this.recipientTemplateProvider.getCredentialCriteria(
         lookupMap,
         userRegistrationRuleSets,
         recipientRole

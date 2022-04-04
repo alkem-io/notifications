@@ -88,7 +88,7 @@ export class CommunicationUpdateNotificationBuilder {
       this.recipientTemplateProvider.getTemplate().communication_update_sent;
 
     const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriterias(
+      this.recipientTemplateProvider.getCredentialCriteria(
         lookupMap,
         userRegistrationRuleSets,
         recipientRole

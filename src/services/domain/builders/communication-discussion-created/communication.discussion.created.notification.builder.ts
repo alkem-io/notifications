@@ -93,7 +93,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder {
         .communication_discussion_created;
 
     const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriterias(
+      this.recipientTemplateProvider.getCredentialCriteria(
         lookupMap,
         userRegistrationRuleSets,
         recipientRole

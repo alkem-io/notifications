@@ -1,6 +1,6 @@
 import { LogContext, NotSupportedException } from '@src/common';
 import { TemplateRule } from '@src/core/contracts';
-import { CredentialCriteria } from '@src/core/models';
+import { CredentialCriterion } from '@src/core/models';
 
 /***
  * Returns a credential from the payload based on the rule provided
@@ -8,10 +8,10 @@ import { CredentialCriteria } from '@src/core/models';
  * @param lookupMap
  * @returns Credential if matched with the payload, *undefined* otherwise
  */
-export const ruleToCredentialCriteria = (
+export const ruleToCredentialCriterion = (
   templateRule: TemplateRule,
   lookupMap: Map<string, string>
-): CredentialCriteria => {
+): CredentialCriterion => {
   const resourceID = getResourceId(
     templateRule.rule.resource_id || '',
     lookupMap

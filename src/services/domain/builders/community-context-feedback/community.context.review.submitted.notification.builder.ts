@@ -81,7 +81,7 @@ export class CommunityContextReviewSubmittedNotificationBuilder {
       this.recipientTemplateProvider.getTemplate().community_review_submitted;
 
     const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriterias(
+      this.recipientTemplateProvider.getCredentialCriteria(
         lookupMap,
         userRegistrationRuleSets,
         recipientRole

@@ -1,5 +1,5 @@
 import { AuthorizationCredential } from '@alkemio/client-lib';
-import { CredentialCriteria } from '../models/credential.criteria';
+import { CredentialCriterion } from '../models/credential.criterion';
 
 export type TemplateRule = {
   rule: {
@@ -24,9 +24,9 @@ export type TemplateConfig = {
 export interface INotificationRecipientTemplateProvider {
   getTemplate(): TemplateConfig;
 
-  getCredentialCriterias(
+  getCredentialCriteria(
     lookupMap: Map<string, string>,
     templateRuleSets: TemplateRuleSet[] | undefined,
     roleName: string
-  ): CredentialCriteria[];
+  ): CredentialCriterion[];
 }

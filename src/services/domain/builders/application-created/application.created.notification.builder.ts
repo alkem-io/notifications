@@ -75,7 +75,7 @@ export class ApplicationCreatedNotificationBuilder {
       this.recipientTemplateProvider.getTemplate().application_created;
 
     const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriterias(
+      this.recipientTemplateProvider.getCredentialCriteria(
         lookupMap,
         applicationCreatedRuleSets,
         recipientRole
