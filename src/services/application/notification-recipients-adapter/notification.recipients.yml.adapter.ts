@@ -50,4 +50,27 @@ export class NotificationRecipientsYmlAdapter
 
     return rules.map(x => ruleToCredentialCriterion(x, lookupMap));
   }
+
+  public getCredentialCriteria2(
+    roleName: string,
+    lookupMap?: Map<string, string>,
+    templateRuleSets?: TemplateRuleSet[]
+  ): CredentialCriterion[] {
+    if (!templateRuleSets) {
+      return [];
+    }
+
+    const ruleSetForRole = templateRuleSets.find(
+      templateRuleSet => templateRuleSet.name === roleName
+    );
+
+    if (!ruleSetForRole) {
+      this.logger.error(`Unable to identify rule set for role: ${roleName}`);
+      return [];
+    }
+
+    const rules = ruleSetForRole.rules;
+
+    return rules.map(x => ruleToCredentialCriterion(x, lookupMap));
+  }
 }

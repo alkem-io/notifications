@@ -10,7 +10,7 @@ import { CredentialCriterion } from '@src/core/models';
  */
 export const ruleToCredentialCriterion = (
   templateRule: TemplateRule,
-  lookupMap: Map<string, string>
+  lookupMap?: Map<string, string>
 ): CredentialCriterion => {
   const resourceID = getResourceId(
     templateRule.rule.resource_id || '',
@@ -26,6 +26,7 @@ export const ruleToCredentialCriterion = (
 /***
  * Matches a resourceID pattern via a value in the provided map
  * @param resourceIdPattern
+ * @param lookupMap
  * @returns
  * *string* - a resourceID is matched;
  * *null* - the provided *role* is not supported or the *resourceIdPattern* has no match in the payload
@@ -33,7 +34,7 @@ export const ruleToCredentialCriterion = (
  */
 export const getResourceId = (
   resourceIdPattern: string,
-  lookupMap: Map<string, string>
+  lookupMap?: Map<string, string>
 ): string | undefined => {
   const fillPattern = new RegExp(/^<\w*>$/g);
   if (!resourceIdPattern || resourceIdPattern.length === 0) {
@@ -43,6 +44,13 @@ export const getResourceId = (
   if (resourceIdPattern.search(fillPattern) === -1) {
     // nothing to substitute
     return resourceIdPattern;
+  }
+
+  if (!lookupMap) {
+    throw new NotSupportedException(
+      'lookupMap not provided',
+      LogContext.NOTIFICATIONS
+    );
   }
 
   // Need to do a replacement

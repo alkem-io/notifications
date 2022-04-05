@@ -17,6 +17,7 @@ import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communica
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { CommunityContextReviewSubmittedPayload } from '@src/types/community.context.review.submitted.payload';
 import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
+import { NotificationTemplateType } from '@src/types/notification.template.type';
 
 @Injectable()
 export class NotificationService {
@@ -35,8 +36,8 @@ export class NotificationService {
   ) {}
 
   async sendNotifications(
-    payload: any,
-    notificationBuilder: any
+    payload: Record<string, unknown>,
+    notificationBuilder: any // todo INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const notificationsEnabled =
       await this.alkemioClientAdapter.areNotificationsEnabled();
@@ -48,11 +49,12 @@ export class NotificationService {
 
       return [];
     }
-
+    // todo: after the notificationBuilder interface is defined remove the any type
     return notificationBuilder
-      .buildNotifications(payload)
+      .build(payload)
       .then((x: any[]) => x.map((x: any) => this.sendNotification(x)))
-      .then((x: any) => Promise.allSettled(x));
+      .then((x: any) => Promise.allSettled(x))
+      .catch((error: Error) => this.logger.error(error.message));
   }
 
   async sendApplicationCreatedNotifications(
@@ -101,7 +103,7 @@ export class NotificationService {
   }
 
   private async sendNotification(
-    notification: any
+    notification: NotificationTemplateType
   ): Promise<NotificationStatus> {
     return this.notifmeService.send(notification.channels).then(
       res => {

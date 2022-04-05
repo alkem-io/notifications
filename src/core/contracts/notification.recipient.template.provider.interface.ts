@@ -24,9 +24,19 @@ export type TemplateConfig = {
 export interface INotificationRecipientTemplateProvider {
   getTemplate(): TemplateConfig;
 
+  // todo
+  /***
+   * @deprecated use getCredentialCriteria2
+   */
   getCredentialCriteria(
     lookupMap: Map<string, string>,
     templateRuleSets: TemplateRuleSet[] | undefined,
     roleName: string
+  ): CredentialCriterion[];
+
+  getCredentialCriteria2(
+    roleName: string,
+    lookupMap?: Map<string, string>,
+    templateRuleSets?: TemplateRuleSet[]
   ): CredentialCriterion[];
 }

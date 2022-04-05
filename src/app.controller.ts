@@ -18,6 +18,7 @@ import { CommunicationUpdateEventPayload } from './types/communication.update.ev
 import { CommunicationDiscussionCreatedEventPayload } from './types/communication.discussion.created.event.payload';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { CommunityContextReviewSubmittedPayload } from '@src/types/community.context.review.submitted.payload';
+import { NotificationStatus } from 'notifme-sdk';
 
 @Controller()
 export class AppController {
@@ -106,10 +107,9 @@ export class AppController {
   }
 
   private async sendNotifications(
-    @Payload() eventPayload: any,
+    @Payload() eventPayload: Record<string, unknown>,
     @Ctx() context: RmqContext,
-    // notificationBuilder: any,
-    sendNotificationsImpl: any,
+    sendNotificationsImpl: Promise<PromiseSettledResult<NotificationStatus>[]>,
     eventName: string
   ) {
     this.logger.verbose?.(
@@ -127,7 +127,7 @@ export class AppController {
 
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     sendNotificationsImpl
-      .then((x: any[]) => {
+      .then(x => {
         const nacked = x.filter(
           (y: { status: string }) => y.status === 'rejected'
         );
@@ -153,7 +153,7 @@ export class AppController {
           }
         }
       })
-      .catch((err: any) => {
+      .catch(err => {
         // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
         // not discarded so we provide 'true' to requeue parameter
         // channel.reject(originalMsg, true);
