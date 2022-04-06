@@ -1,6 +1,6 @@
 import { FactoryProvider, LoggerService, Scope } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { NotificationBuilder } from '@src/services/domain/builders';
+import { NotificationBuilder } from './notification.builder';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,

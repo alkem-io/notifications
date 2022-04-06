@@ -3,11 +3,11 @@ import { ALKEMIO_URL_GENERATOR } from '@src/common';
 import { User } from '@core/models';
 import { UserRegistrationEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
-import { INotificationBuilder } from '../notification.builder.interface';
+import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import {
   NotificationBuilder,
   RoleConfig,
-} from '../notification-builder/notification.builder';
+} from '../../../application/notification-builder/notification.builder';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';

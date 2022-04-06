@@ -20,7 +20,7 @@ import {
 } from './services/domain/builders';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { NotificationBuilderFactoryProvider } from './services/domain/builders/notification-builder';
+import { NotificationBuilderFactoryProvider } from './services/application/notification-builder';
 
 @Module({
   imports: [

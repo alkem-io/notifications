@@ -3,4 +3,3 @@ export * from './communication-discussion-created/communication.discussion.creat
 export * from './communication-updated/communication.updated.notification.builder';
 export * from './community-context-feedback/community.context.review.submitted.notification.builder';
 export * from './user-registered/user.registered.notification.builder';
-export * from './notification-builder/notification.builder';

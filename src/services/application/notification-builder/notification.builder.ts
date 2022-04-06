@@ -4,6 +4,8 @@ import {
   EventPayloadNotProvidedException,
   LogContext,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,
+  RolesNotProvidedException,
+  RuleSetNotFoundException,
   TEMPLATE_PROVIDER,
   TemplateBuilderFnNotProvidedException,
   TemplateNotProvidedException,
@@ -34,9 +36,8 @@ export type TemplateBuilderFn<TPayload> = (
 
 export type NotificationOptions<TPayload> = {
   payload?: TPayload;
-  // todo: choose a proper name for eventUserId
   eventUserId?: string;
-  roleConfig: RoleConfig[];
+  roleConfig?: RoleConfig[];
   templateType?: TemplateType;
   templatePayloadBuilderFn?: (
     payload: TPayload,
@@ -47,8 +48,8 @@ export type NotificationOptions<TPayload> = {
   templateVariables?: Map<string, string>;
 };
 
-export class NotificationBuilder<TPayload> {
-  private readonly options: NotificationOptions<TPayload>;
+export class NotificationBuilder<TPayload = Record<string, unknown>> {
+  private options: NotificationOptions<TPayload>;
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -59,9 +60,54 @@ export class NotificationBuilder<TPayload> {
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {
-    this.options = {
-      roleConfig: [],
-    };
+    this.options = {};
+  }
+
+  setPayload(payload: TPayload) {
+    this.options.payload = payload;
+    return this;
+  }
+
+  setEventUser(id: string) {
+    this.options.eventUserId = id;
+    return this;
+  }
+
+  setRoleConfig(config: RoleConfig | RoleConfig[]) {
+    if (!this.options.roleConfig) {
+      this.options.roleConfig = [];
+    }
+
+    this.options.roleConfig.push(
+      ...(Array.isArray(config) ? config : [config])
+    );
+
+    return this;
+  }
+
+  // todo: can we improve the type of map
+  setTemplateVariables(map: Map<string, string>) {
+    this.options.templateVariables = map;
+    return this;
+  }
+
+  setTemplateType(templateType: TemplateType) {
+    this.options.templateType = templateType;
+    return this;
+  }
+
+  setTemplateBuilderFn(fn: TemplateBuilderFn<TPayload>) {
+    this.options.templatePayloadBuilderFn = fn;
+    return this;
+  }
+
+  getOptions() {
+    return this.options;
+  }
+
+  reset() {
+    this.options = {};
+    return this;
   }
 
   async build(): Promise<NotificationTemplateType[]> {
@@ -73,6 +119,12 @@ export class NotificationBuilder<TPayload> {
     const eventUser = this.options.eventUserId
       ? await this.alkemioAdapter.getUser(this.options.eventUserId)
       : undefined;
+
+    if (!this.options.roleConfig || !this.options.roleConfig.length) {
+      throw new RolesNotProvidedException(
+        `No roles are provided for template '${this.options.templateType}'`
+      );
+    }
 
     const notificationsForRoles = this.options.roleConfig.flatMap(
       ({ role, emailTemplate, preferenceType }) =>
@@ -103,39 +155,6 @@ export class NotificationBuilder<TPayload> {
       .then(x => x as NotificationTemplateType[]);
   }
 
-  setPayload(payload: TPayload) {
-    this.options.payload = payload;
-    return this;
-  }
-
-  setEventUser(id: string) {
-    this.options.eventUserId = id;
-    return this;
-  }
-
-  setRoleConfig(config: RoleConfig | RoleConfig[]) {
-    this.options.roleConfig.push(
-      ...(Array.isArray(config) ? config : [config])
-    );
-    return this;
-  }
-
-  // todo: can we improve the type of map
-  setTemplateVariables(map: Map<string, string>) {
-    this.options.templateVariables = map;
-    return this;
-  }
-
-  setTemplateType(templateType: TemplateType) {
-    this.options.templateType = templateType;
-    return this;
-  }
-
-  setTemplateBuilderFn(fn: TemplateBuilderFn<TPayload>) {
-    this.options.templatePayloadBuilderFn = fn;
-    return this;
-  }
-
   private async buildNotificationsForRole(
     recipientRole: string,
     emailTemplate: EmailTemplate,
@@ -154,7 +173,14 @@ export class NotificationBuilder<TPayload> {
     }
 
     const ruleSets =
-      this.recipientTemplateProvider.getTemplate()[this.options.templateType];
+      this.recipientTemplateProvider.getTemplate()?.[this.options.templateType];
+
+    if (this.options.roleConfig && !ruleSets) {
+      const rolesText = this.options.roleConfig.map(x => x.role).join(',');
+      throw new RuleSetNotFoundException(
+        `No rule set(s) found for roles: [${rolesText}]`
+      );
+    }
 
     const credentialCriteria =
       this.recipientTemplateProvider.getCredentialCriteria2(
