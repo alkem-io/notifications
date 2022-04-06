@@ -1,14 +1,6 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import {
-  ALKEMIO_CLIENT_ADAPTER,
-  LogContext,
-  NOTIFICATION_RECIPIENTS_YML_ADAPTER,
-  TEMPLATE_PROVIDER,
-} from '@src/common';
-import { AlkemioClientAdapter } from '@src/services';
-import { NotificationTemplateBuilder } from '@src/services/external';
-import { INotificationRecipientTemplateProvider } from '@core/contracts';
+import { Injectable } from '@nestjs/common';
+import { COMMUNITY_CONTEXT_REVIEW_SUBMITTED } from '@src/common';
+import { INotificationBuilder } from '@core/contracts';
 import {
   CommunityContextReviewSubmittedPayload,
   FeedbackQuestions,
@@ -16,140 +8,61 @@ import {
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
+import { NotificationBuilder, RoleConfig } from '@src/services/application';
+import { NotificationTemplateType } from '@src/types';
 
 @Injectable()
-export class CommunityContextReviewSubmittedNotificationBuilder {
+export class CommunityContextReviewSubmittedNotificationBuilder
+  implements INotificationBuilder
+{
   constructor(
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly alkemioAdapter: AlkemioClientAdapter,
-    @Inject(TEMPLATE_PROVIDER)
-    private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
-    @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
+    private readonly notificationBuilder: NotificationBuilder<CommunityContextReviewSubmittedPayload>
   ) {}
 
-  async buildNotifications(
-    eventPayload: CommunityContextReviewSubmittedPayload
-  ) {
-    this.logger.verbose?.(
-      `[Notifications: community review submitted]: ${JSON.stringify(
-        eventPayload
-      )}`,
-      LogContext.NOTIFICATIONS
-    );
+  build(
+    payload: CommunityContextReviewSubmittedPayload
+  ): Promise<NotificationTemplateType[]> {
+    const roleConfig: RoleConfig[] = [
+      {
+        role: 'admin',
+        emailTemplate: EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_ADMIN,
+        preferenceType:
+          UserPreferenceType.NotificationCommunityReviewSubmittedAdmin,
+      },
+      {
+        role: 'reviewer',
+        emailTemplate: EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_REVIEWER,
+        preferenceType: UserPreferenceType.NotificationCommunityReviewSubmitted,
+      },
+    ];
 
-    const reviewer = await this.alkemioAdapter.getUser(eventPayload.userId);
-
-    const adminNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'admin',
-      EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_ADMIN,
-      reviewer,
-      UserPreferenceType.NotificationCommunityReviewSubmittedAdmin
-    );
-
-    const reviewerNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'reviewer',
-      EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_REVIEWER,
-      reviewer,
-      UserPreferenceType.NotificationCommunityReviewSubmitted
-    );
-
-    return Promise.all([
-      ...adminNotificationPromises,
-      ...reviewerNotificationPromises,
+    const lookupMap = new Map([
+      ['userID', payload.userId],
+      ['challengeID', payload.challengeId],
+      ['reviewerID', payload.userId],
     ]);
-  }
 
-  async buildNotificationsForRole(
-    eventPayload: CommunityContextReviewSubmittedPayload,
-    recipientRole: string,
-    emailTemplate: EmailTemplate,
-    reviewer: User,
-    preferenceType?: UserPreferenceType
-  ): Promise<any> {
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - recipients role: '${recipientRole}'`,
-      LogContext.NOTIFICATIONS
-    );
-    // Get the lookup map
-    const lookupMap = this.createLookupMap(eventPayload);
-    const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().community_review_submitted;
-
-    const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriteria(
-        lookupMap,
-        userRegistrationRuleSets,
-        recipientRole
-      );
-
-    const recipients =
-      await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
-        credentialCriterias
-      );
-
-    const filteredRecipients: User[] = [];
-    for (const recipient of recipients) {
-      if (recipient.preferences) {
-        if (
-          !preferenceType ||
-          recipient.preferences.find(
-            preference =>
-              preference.definition.type === preferenceType &&
-              preference.value === 'true'
-          )
-        )
-          filteredRecipients.push(recipient);
-      }
-    }
-
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - identified ${filteredRecipients.length} recipients`,
-      LogContext.NOTIFICATIONS
-    );
-
-    const notifications = filteredRecipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, reviewer)
-    );
-
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - completed`,
-      LogContext.NOTIFICATIONS
-    );
-
-    return notifications;
-  }
-
-  async buildNotification(
-    eventPayload: any,
-    recipient: User,
-    templateName: string,
-    reviewer: User
-  ) {
-    const templatePayload = this.createTemplatePayload(
-      eventPayload,
-      recipient,
-      reviewer
-    ) as any;
-
-    const populatedNotification =
-      await this.notificationTemplateBuilder.buildTemplate(
-        templateName,
-        templatePayload
-      );
-
-    return populatedNotification;
+    return this.notificationBuilder
+      .setPayload(payload)
+      .setEventUser(payload.userId)
+      .setRoleConfig(roleConfig)
+      .setTemplateType('community_review_submitted')
+      .setTemplateVariables(lookupMap)
+      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
+      .build();
   }
 
   createTemplatePayload(
     eventPayload: CommunityContextReviewSubmittedPayload,
     recipient: User,
-    reviewer: User
+    reviewer?: User
   ): any {
+    if (!reviewer) {
+      throw Error(
+        `Reviewer not provided for '${COMMUNITY_CONTEXT_REVIEW_SUBMITTED}' event`
+      );
+    }
+
     return {
       emailFrom: 'info@alkem.io',
       reviewer: {
@@ -165,16 +78,6 @@ export class CommunityContextReviewSubmittedNotificationBuilder {
       },
       review: toStringReview(eventPayload.questions),
     };
-  }
-
-  createLookupMap(
-    payload: CommunityContextReviewSubmittedPayload
-  ): Map<string, string> {
-    const lookupMap: Map<string, string> = new Map();
-    lookupMap.set('userID', payload.userId);
-    lookupMap.set('challengeID', payload.challengeId);
-    lookupMap.set('reviewerID', payload.userId);
-    return lookupMap;
   }
 }
 
