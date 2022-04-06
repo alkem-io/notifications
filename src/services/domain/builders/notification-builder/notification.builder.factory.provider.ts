@@ -23,8 +23,9 @@ const NotificationBuilderFactory = (
     recipientTemplateProvider
   );
 };
-
-export const NotificationBuilderProvider: FactoryProvider = {
+// it is request scoped due to the requirement to hold a state
+// per request before calling the build method on it
+export const NotificationBuilderFactoryProvider: FactoryProvider = {
   provide: NotificationBuilder,
   useFactory: NotificationBuilderFactory,
   inject: [
