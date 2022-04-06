@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ALKEMIO_URL_GENERATOR } from '@src/common';
+import { ALKEMIO_URL_GENERATOR, USER_REGISTERED } from '@src/common';
 import { User } from '@core/models';
 import { UserRegistrationEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
@@ -54,7 +54,7 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
     registrant?: User
   ): Record<string, unknown> {
     if (!registrant) {
-      throw Error('Registrant not provided for UserRegistrationEvent');
+      throw Error(`Registrant not provided for '${USER_REGISTERED}' event`);
     }
 
     const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
