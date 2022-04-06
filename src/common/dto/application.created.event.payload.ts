@@ -1,3 +1,5 @@
+import { HubPayload } from './hub.payload';
+
 export enum CommunityType {
   HUB = 'hub',
   CHALLENGE = 'challenge',

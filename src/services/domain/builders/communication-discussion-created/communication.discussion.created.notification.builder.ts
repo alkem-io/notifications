@@ -14,7 +14,7 @@ import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { ConfigService } from '@nestjs/config';
 import { AlkemioClientAdapter } from '@src/services';
-import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communication.discussion.created.event.payload';
+import { CommunicationDiscussionCreatedEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { UserPreferenceType } from '@alkemio/client-lib';
 

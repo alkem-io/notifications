@@ -6,17 +6,19 @@ import {
   LogContext,
   NOTIFICATIONS_PROVIDER,
 } from '@src/common';
-import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
+import {
+  ApplicationCreatedEventPayload,
+  CommunicationUpdateEventPayload,
+  CommunicationDiscussionCreatedEventPayload,
+  CommunityContextReviewSubmittedPayload,
+  UserRegistrationEventPayload,
+} from '@common/dto';
 import { ApplicationCreatedNotificationBuilder } from '@src/services';
 import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
 import { CommunicationUpdateNotificationBuilder } from '../builders/communication-updated/communication.updated.notification.builder';
 import { UserRegisteredNotificationBuilder } from '../builders/user-registered/user.registered.notification.builder';
-import { UserRegistrationEventPayload } from '@src/types';
-import { CommunicationUpdateEventPayload } from '@src/types/communication.update.event.payload';
-import { CommunicationDiscussionCreatedEventPayload } from '@src/types/communication.discussion.created.event.payload';
-import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
-import { CommunityContextReviewSubmittedPayload } from '@src/types/community.context.review.submitted.payload';
 import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ALKEMIO_URL_GENERATOR } from '@src/common';
 import { User } from '@core/models';
-import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
+import { UserRegistrationEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { INotificationBuilder } from '../notification.builder.interface';
 import {

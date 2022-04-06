@@ -12,7 +12,7 @@ import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import {
   CommunityContextReviewSubmittedPayload,
   FeedbackQuestions,
-} from '@src/types/community.context.review.submitted.payload';
+} from '@common/dto';
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';

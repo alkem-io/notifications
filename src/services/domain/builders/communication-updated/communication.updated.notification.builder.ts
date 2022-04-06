@@ -13,7 +13,7 @@ import { INotificationRecipientTemplateProvider } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { ConfigService } from '@nestjs/config';
-import { CommunicationUpdateEventPayload } from '@src/types/communication.update.event.payload';
+import { CommunicationUpdateEventPayload } from '@common/dto';
 import { AlkemioClientAdapter } from '@src/services';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { UserPreferenceType } from '@alkemio/client-lib';

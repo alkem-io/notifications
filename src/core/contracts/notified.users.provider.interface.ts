@@ -5,6 +5,6 @@ import { IFeatureFlagProvider } from './feature.flag.provider.interface';
 export interface INotifiedUsersProvider extends IFeatureFlagProvider {
   getUser(userID: string): Promise<User>;
   getUniqueUsersMatchingCredentialCriteria(
-    credentialCriterias: CredentialCriterion[]
+    credentialCriteria: CredentialCriterion[]
   ): Promise<User[]>;
 }
