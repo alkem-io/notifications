@@ -26,8 +26,8 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        preferenceType: UserPreferenceType.NotificationUserSignUp,
         emailTemplate: EmailTemplate.USER_REGISTRATION_ADMIN,
+        preferenceType: UserPreferenceType.NotificationUserSignUp,
       },
       {
         role: 'registrant',

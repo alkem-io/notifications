@@ -1,177 +1,72 @@
-import { Injectable, Inject, LoggerService } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Injectable, Inject } from '@nestjs/common';
 import {
-  ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_URL_GENERATOR,
-  ConfigurationTypes,
-  LogContext,
-  NOTIFICATION_RECIPIENTS_YML_ADAPTER,
-  TEMPLATE_PROVIDER,
+  COMMUNICATION_DISCUSSION_CREATED,
 } from '@src/common';
-import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
-import { INotificationRecipientTemplateProvider } from '@core/contracts';
+import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { ConfigService } from '@nestjs/config';
-import { AlkemioClientAdapter } from '@src/services';
 import { CommunicationDiscussionCreatedEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { UserPreferenceType } from '@alkemio/client-lib';
+import { NotificationBuilder, RoleConfig } from '@src/services/application';
+import { NotificationTemplateType } from '@src/types';
 
 @Injectable()
-export class CommunicationDiscussionCreatedNotificationBuilder {
-  webclientEndpoint: string;
+export class CommunicationDiscussionCreatedNotificationBuilder
+  implements INotificationBuilder
+{
   constructor(
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly alkemioAdapter: AlkemioClientAdapter,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    @Inject(TEMPLATE_PROVIDER)
-    private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
-    @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider,
-    private configService: ConfigService
-  ) {
-    this.webclientEndpoint = this.configService.get(
-      ConfigurationTypes.ALKEMIO
-    )?.webclient_endpoint;
-  }
+    private readonly notificationBuilder: NotificationBuilder<CommunicationDiscussionCreatedEventPayload>
+  ) {}
 
-  async buildNotifications(
-    eventPayload: CommunicationDiscussionCreatedEventPayload
-  ) {
-    this.logger.verbose?.(
-      `[Notifications: communication discussion]: ${JSON.stringify(
-        eventPayload
-      )}`,
-      LogContext.NOTIFICATIONS
-    );
-    // Get additional data
-    const sender = await this.alkemioAdapter.getUser(
-      eventPayload.discussion.createdBy
-    );
-
-    const adminNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'admin',
-      EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_ADMIN,
-      sender,
-      UserPreferenceType.NotificationCommunicationDiscussionCreatedAdmin
-    );
-
-    const memberNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'member',
-      EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_MEMBER,
-      sender,
-      UserPreferenceType.NotificationCommunicationDiscussionCreated
-    );
-
-    return Promise.all([
-      ...adminNotificationPromises,
-      ...memberNotificationPromises,
-    ]);
-  }
-
-  async buildNotificationsForRole(
-    eventPayload: CommunicationDiscussionCreatedEventPayload,
-    recipientRole: string,
-    emailTemplate: EmailTemplate,
-    sender: User,
-    preferenceType?: UserPreferenceType
-  ): Promise<any> {
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - recipients role: '${recipientRole}'`,
-      LogContext.NOTIFICATIONS
-    );
-    // Get the lookup map
-    const lookupMap = this.createLookupMap(eventPayload);
-    const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate()
-        .communication_discussion_created;
-
-    const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriteria(
-        lookupMap,
-        userRegistrationRuleSets,
-        recipientRole
-      );
-
-    const recipients =
-      await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
-        credentialCriterias
-      );
-
-    const filteredRecipients: User[] = [];
-    for (const recipient of recipients) {
-      if (recipient.preferences) {
-        if (
-          !preferenceType ||
-          recipient.preferences.find(
-            preference =>
-              preference.definition.type === preferenceType &&
-              preference.value === 'true'
-          )
-        )
-          filteredRecipients.push(recipient);
-      }
-    }
-
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - identified ${filteredRecipients.length} recipients`,
-      LogContext.NOTIFICATIONS
-    );
-
-    const notifications = filteredRecipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, sender)
-    );
-
-    Promise.all(notifications);
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - completed`,
-      LogContext.NOTIFICATIONS
-    );
-    return notifications;
-  }
-
-  async buildNotification(
-    eventPayload: any,
-    recipient: User,
-    templateName: string,
-    sender: User
-  ) {
-    const templatePayload = this.createTemplatePayload(
-      eventPayload,
-      recipient,
-      sender
-    ) as any;
-
-    return await this.notificationTemplateBuilder.buildTemplate(
-      templateName,
-      templatePayload
-    );
-  }
-
-  createLookupMap(
+  build(
     payload: CommunicationDiscussionCreatedEventPayload
-  ): Map<string, string> {
-    const lookupMap: Map<string, string> = new Map();
-    lookupMap.set('hubID', payload.hub.id);
-    lookupMap.set('challengeID', payload.hub.challenge?.id || '');
-    lookupMap.set(
-      'opportunityID',
-      payload.hub.challenge?.opportunity?.id || ''
-    );
-    return lookupMap;
+  ): Promise<NotificationTemplateType[]> {
+    const roleConfig: RoleConfig[] = [
+      {
+        role: 'admin',
+        emailTemplate: EmailTemplate.USER_REGISTRATION_ADMIN,
+        preferenceType:
+          UserPreferenceType.NotificationCommunicationDiscussionCreatedAdmin,
+      },
+      {
+        role: 'member',
+        emailTemplate: EmailTemplate.USER_REGISTRATION_REGISTRANT,
+        preferenceType:
+          UserPreferenceType.NotificationCommunicationDiscussionCreated,
+      },
+    ];
+
+    const lookupMap = new Map([
+      ['hubID', payload.hub.id],
+      ['challengeID', payload.hub.challenge?.id ?? ''],
+      ['opportunityID', payload.hub.challenge?.opportunity?.id ?? ''],
+    ]);
+
+    return this.notificationBuilder
+      .setPayload(payload)
+      .setEventUser(payload.discussion.createdBy)
+      .setRoleConfig(roleConfig)
+      .setTemplateType('communication_discussion_created')
+      .setTemplateVariables(lookupMap)
+      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
+      .build();
   }
 
   createTemplatePayload(
     eventPayload: CommunicationDiscussionCreatedEventPayload,
     recipient: User,
-    sender: User
-  ): any {
+    sender?: User
+  ): Record<string, unknown> {
+    if (!sender) {
+      throw Error(
+        `Sender not provided for '${COMMUNICATION_DISCUSSION_CREATED}' event`
+      );
+    }
+
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
       eventPayload.hub.nameID,
       eventPayload.hub.challenge?.nameID,
