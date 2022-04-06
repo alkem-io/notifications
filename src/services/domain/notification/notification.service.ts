@@ -20,6 +20,7 @@ import { UserRegisteredNotificationBuilder } from '../builders/user-registered/u
 import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
+import { INotificationBuilder } from '@core/contracts';
 
 @Injectable()
 export class NotificationService {
@@ -39,7 +40,7 @@ export class NotificationService {
 
   async sendNotifications(
     payload: Record<string, unknown>,
-    notificationBuilder: any // todo INotificationBuilder
+    notificationBuilder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const notificationsEnabled =
       await this.alkemioClientAdapter.areNotificationsEnabled();
@@ -51,11 +52,11 @@ export class NotificationService {
 
       return [];
     }
-    // todo: after the notificationBuilder interface is defined remove the any type
+
     return notificationBuilder
       .build(payload)
-      .then((x: any[]) => x.map((x: any) => this.sendNotification(x)))
-      .then((x: any) => Promise.allSettled(x))
+      .then(x => x.map((x: any) => this.sendNotification(x)))
+      .then(x => Promise.allSettled(x))
       .catch((error: Error) => this.logger.error(error.message));
   }
 

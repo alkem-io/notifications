@@ -48,7 +48,6 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
   }
 
   private createTemplatePayload(
-    // todo not sure if the payload is even needed
     eventPayload: UserRegistrationEventPayload,
     recipient: User,
     registrant?: User

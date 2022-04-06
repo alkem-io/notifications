@@ -183,7 +183,7 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
     }
 
     const credentialCriteria =
-      this.recipientTemplateProvider.getCredentialCriteria2(
+      this.recipientTemplateProvider.getCredentialCriteria(
         recipientRole,
         this.options.templateVariables,
         ruleSets
