@@ -28,13 +28,13 @@ export class CommunicationDiscussionCreatedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        emailTemplate: EmailTemplate.USER_REGISTRATION_ADMIN,
+        emailTemplate: EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_ADMIN,
         preferenceType:
           UserPreferenceType.NotificationCommunicationDiscussionCreatedAdmin,
       },
       {
         role: 'member',
-        emailTemplate: EmailTemplate.USER_REGISTRATION_REGISTRANT,
+        emailTemplate: EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_MEMBER,
         preferenceType:
           UserPreferenceType.NotificationCommunicationDiscussionCreated,
       },
