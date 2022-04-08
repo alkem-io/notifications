@@ -1,16 +1,14 @@
-import { Provider } from '@nestjs/common';
-import { MockType } from '@test/utils/mock.type';
+import { ValueProvider } from '@nestjs/common';
+import { PublicPart } from '@test/utils/public-part';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
+import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@src/common';
 
-export class MockNotificationRecipientsYmlAdapter
-  implements MockType<NotificationRecipientsYmlAdapter>
-{
-  getTemplate() {
-    throw new Error('Not supported');
-  }
-}
-
-export const MockNotificationRecipientsYmlProvider: Provider = {
-  provide: NotificationRecipientsYmlAdapter,
-  useClass: MockNotificationRecipientsYmlAdapter,
+export const MockNotificationRecipientsYmlProvider: ValueProvider<
+  PublicPart<NotificationRecipientsYmlAdapter>
+> = {
+  provide: NOTIFICATION_RECIPIENTS_YML_ADAPTER,
+  useValue: {
+    getTemplate: jest.fn(),
+    getCredentialCriteria: jest.fn(),
+  },
 };

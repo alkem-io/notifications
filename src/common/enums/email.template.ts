@@ -7,4 +7,6 @@ export enum EmailTemplate {
   COMMUNICATION_DISCUSSION_CREATED_MEMBER = 'communication.discussion.created.member',
   COMMUNICATION_UPDATE_ADMIN = 'communication.update.admin',
   COMMUNICATION_UPDATE_MEMBER = 'communication.update.member',
+  COMMUNITY_REVIEW_SUBMITTED_ADMIN = 'community.review.submitted.admin',
+  COMMUNITY_REVIEW_SUBMITTED_REVIEWER = 'community.review.submitted.reviewer',
 }

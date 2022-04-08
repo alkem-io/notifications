@@ -1,3 +1,3 @@
-export type MockType<T> = {
+export type PublicPart<T> = {
   [P in keyof T]?: unknown;
 };

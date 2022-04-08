@@ -1,8 +1,8 @@
 import { Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { MockType } from '@test/utils/mock.type';
+import { PublicPart } from '@test/utils/public-part';
 
-class MockConfigService implements MockType<ConfigService> {
+class MockConfigService implements PublicPart<ConfigService> {
   get() {
     throw new Error('Not implemented');
   }

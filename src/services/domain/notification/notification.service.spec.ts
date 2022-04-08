@@ -4,14 +4,17 @@ import { WinstonModule } from 'nest-winston';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '@src/config/configuration';
 import { NotifmeModule } from '@src/services/external/notifme/notifme.module';
-import { ALKEMIO_CLIENT_ADAPTER, ALKEMIO_URL_GENERATOR } from '@src/common';
+import { ApplicationCreatedEventPayload } from '@src/common/dto';
+import {
+  ALKEMIO_CLIENT_ADAPTER,
+  ALKEMIO_URL_GENERATOR,
+} from '@src/common/enums';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
 import * as hubAdminsData from '@test/data/hub.admins.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
-import { ApplicationCreatedEventPayload } from '@src/types';
 import { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ApplicationCreatedNotificationBuilder } from '@src/services';
@@ -21,6 +24,9 @@ import { UserRegisteredNotificationBuilder } from '../builders/user-registered/u
 import { CommunicationUpdateNotificationBuilder } from '../builders/communication-updated/communication.updated.notification.builder';
 import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
+import { MockAlkemioClientAdapterProvider } from '@test/mocks';
+import { NotificationBuilder } from '@src/services/application';
 
 const testData = {
   ...challengeAdminsData,
@@ -55,17 +61,10 @@ describe('NotificationService', () => {
         UserRegisteredNotificationBuilder,
         CommunicationUpdateNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
+        CommunityContextReviewSubmittedNotificationBuilder,
+        NotificationBuilder,
         ConfigService,
-        {
-          provide: ALKEMIO_CLIENT_ADAPTER,
-          useValue: {
-            areNotificationsEnabled: jest.fn(),
-            getUser: jest.fn(),
-            getApplicationCreator: jest.fn(),
-            getUsersMatchingCredentialCriteria: jest.fn(),
-            getUniqueUsersMatchingCredentialCriteria: jest.fn(),
-          },
-        },
+        MockAlkemioClientAdapterProvider,
         {
           provide: ALKEMIO_URL_GENERATOR,
           useClass: AlkemioUrlGenerator,

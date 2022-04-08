@@ -2,7 +2,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { AlkemioClient } from '@alkemio/client-lib';
 import { ALKEMIO_CLIENT_PROVIDER, LogContext } from '@src/common';
 import { IFeatureFlagProvider } from '@core/contracts';
-import { CredentialCriteria, User } from '@core/models';
+import { CredentialCriterion, User } from '@core/models';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
   }
 
   async getUsersMatchingCredentialCriteria(
-    credentialCriteria: CredentialCriteria
+    credentialCriteria: CredentialCriterion
   ): Promise<User[]> {
     let resourceID: string | undefined = undefined;
     if (credentialCriteria.resourceID)
@@ -49,12 +49,12 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
   }
 
   async getUniqueUsersMatchingCredentialCriteria(
-    credentialCriterias: CredentialCriteria[]
+    credentialCriteria: CredentialCriterion[]
   ): Promise<User[]> {
     const users: User[] = [];
-    for (const criteria of credentialCriterias) {
+    for (const criterion of credentialCriteria) {
       const matchedUsers = await this.getUsersMatchingCredentialCriteria(
-        criteria
+        criterion
       );
       users.push(...matchedUsers);
     }

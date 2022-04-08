@@ -1,4 +1,5 @@
 import { HubPayload } from './hub.payload';
+import { CommunityType } from './application.created.event.payload';
 
 export type CommunicationUpdateEventPayload = {
   update: {

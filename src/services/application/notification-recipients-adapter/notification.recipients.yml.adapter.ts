@@ -6,8 +6,8 @@ import {
 } from '@core/contracts';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common';
-import { CredentialCriteria } from '@src/core/models/credential.criteria';
-import { ruleToCredentialCriteria } from '../template-to-credential-mapper/utils/utils';
+import { CredentialCriterion } from '@core/models/credential.criterion';
+import { ruleToCredentialCriterion } from '../template-to-credential-mapper/utils/utils';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
@@ -28,11 +28,11 @@ export class NotificationRecipientsYmlAdapter
     );
   }
 
-  public getCredentialCriterias(
-    lookupMap: Map<string, string>,
-    templateRuleSets: TemplateRuleSet[],
-    roleName: string
-  ): CredentialCriteria[] {
+  public getCredentialCriteria(
+    roleName: string,
+    lookupMap?: Map<string, string>,
+    templateRuleSets?: TemplateRuleSet[]
+  ): CredentialCriterion[] {
     if (!templateRuleSets) {
       return [];
     }
@@ -48,6 +48,6 @@ export class NotificationRecipientsYmlAdapter
 
     const rules = ruleSetForRole.rules;
 
-    return rules.map(x => ruleToCredentialCriteria(x, lookupMap));
+    return rules.map(x => ruleToCredentialCriterion(x, lookupMap));
   }
 }

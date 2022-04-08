@@ -2,8 +2,7 @@ import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { INotificationRecipientTemplateProvider } from '@core/contracts';
-import { MockConfigServiceProvider } from '@test/mocks';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { MockConfigServiceProvider, MockWinstonProvider } from '@test/mocks';
 
 describe('NotificationRecipientsYmlAdapter', () => {
   let configService: ConfigService;
@@ -14,12 +13,7 @@ describe('NotificationRecipientsYmlAdapter', () => {
       providers: [
         MockConfigServiceProvider,
         NotificationRecipientsYmlAdapter,
-        {
-          provide: WINSTON_MODULE_NEST_PROVIDER,
-          useValue: {
-            error: jest.fn(),
-          },
-        },
+        MockWinstonProvider,
       ],
     }).compile();
 
