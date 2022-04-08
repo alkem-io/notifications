@@ -9,17 +9,18 @@ import { HttpExceptionsFilter } from './core';
 import {
   AlkemioClientAdapterModule,
   ApplicationCreatedNotificationBuilder,
+  NotificationRecipientsAdapterModule,
 } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
-import { NotificationRecipientsAdapterModule } from '@src/services';
 import {
-  UserRegisteredNotificationBuilder,
-  CommunityContextReviewSubmittedNotificationBuilder,
-  CommunicationUpdateNotificationBuilder,
   CommunicationDiscussionCreatedNotificationBuilder,
+  CommunicationUpdateNotificationBuilder,
+  CommunityContextReviewSubmittedNotificationBuilder,
+  UserRegisteredNotificationBuilder,
 } from './services/domain/builders';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
 import { NotificationService } from './services/domain/notification/notification.service';
+import { NotificationBuilderFactoryProvider } from './services/application/notification-builder';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { NotificationService } from './services/domain/notification/notification
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
+    NotificationBuilderFactoryProvider,
     ApplicationCreatedNotificationBuilder,
     UserRegisteredNotificationBuilder,
     CommunicationUpdateNotificationBuilder,

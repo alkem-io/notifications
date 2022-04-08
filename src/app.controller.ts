@@ -2,6 +2,7 @@ import { Controller, Inject, LoggerService } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
+import { NotificationStatus } from 'notifme-sdk';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   COMMUNICATION_DISCUSSION_CREATED,
@@ -12,12 +13,14 @@ import {
   USER_REGISTERED,
 } from './common';
 import { IFeatureFlagProvider } from '@core/contracts';
-import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
-import { UserRegistrationEventPayload } from './types';
-import { CommunicationUpdateEventPayload } from './types/communication.update.event.payload';
-import { CommunicationDiscussionCreatedEventPayload } from './types/communication.discussion.created.event.payload';
+import {
+  ApplicationCreatedEventPayload,
+  CommunicationUpdateEventPayload,
+  CommunicationDiscussionCreatedEventPayload,
+  CommunityContextReviewSubmittedPayload,
+  UserRegistrationEventPayload,
+} from '@common/dto';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { CommunityContextReviewSubmittedPayload } from '@src/types/community.context.review.submitted.payload';
 
 @Controller()
 export class AppController {
@@ -106,10 +109,9 @@ export class AppController {
   }
 
   private async sendNotifications(
-    @Payload() eventPayload: any,
+    @Payload() eventPayload: Record<string, unknown>,
     @Ctx() context: RmqContext,
-    // notificationBuilder: any,
-    sendNotificationsImpl: any,
+    sentNotifications: Promise<PromiseSettledResult<NotificationStatus>[]>,
     eventName: string
   ) {
     this.logger.verbose?.(
@@ -126,8 +128,8 @@ export class AppController {
     }
 
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
-    sendNotificationsImpl
-      .then((x: any[]) => {
+    sentNotifications
+      .then(x => {
         const nacked = x.filter(
           (y: { status: string }) => y.status === 'rejected'
         );
@@ -153,7 +155,7 @@ export class AppController {
           }
         }
       })
-      .catch((err: any) => {
+      .catch(err => {
         // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
         // not discarded so we provide 'true' to requeue parameter
         // channel.reject(originalMsg, true);

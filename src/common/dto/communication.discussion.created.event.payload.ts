@@ -1,3 +1,6 @@
+import { CommunityType } from './application.created.event.payload';
+import { HubPayload } from './hub.payload';
+
 export type CommunicationDiscussionCreatedEventPayload = {
   discussion: {
     id: string;

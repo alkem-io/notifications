@@ -1,10 +1,10 @@
 import { User } from '../models';
-import { CredentialCriteria } from '../models/credential.criteria';
+import { CredentialCriterion } from '../models/credential.criterion';
 import { IFeatureFlagProvider } from './feature.flag.provider.interface';
 
 export interface INotifiedUsersProvider extends IFeatureFlagProvider {
   getUser(userID: string): Promise<User>;
   getUniqueUsersMatchingCredentialCriteria(
-    credentialCriterias: CredentialCriteria[]
+    credentialCriteria: CredentialCriterion[]
   ): Promise<User[]>;
 }

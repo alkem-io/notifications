@@ -1,159 +1,70 @@
-import { Injectable, Inject, LoggerService } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Injectable, Inject } from '@nestjs/common';
 import {
-  ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_URL_GENERATOR,
-  LogContext,
-  NOTIFICATION_RECIPIENTS_YML_ADAPTER,
-  TEMPLATE_PROVIDER,
+  COMMUNITY_APPLICATION_CREATED,
 } from '@src/common';
-import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
-import { INotificationRecipientTemplateProvider } from '@core/contracts';
+import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-import { ApplicationCreatedEventPayload } from '@src/types/application.created.event.payload';
-import { EmailTemplate } from '@src/common/enums/email.template';
-import { AlkemioClientAdapter } from '@src/services';
+import { ApplicationCreatedEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { NotificationBuilder, RoleConfig } from '@src/services/application';
+import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
+import { EmailTemplate } from '@common/enums/email.template';
 
 @Injectable()
-export class ApplicationCreatedNotificationBuilder {
+export class ApplicationCreatedNotificationBuilder
+  implements INotificationBuilder
+{
   constructor(
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly alkemioAdapter: AlkemioClientAdapter,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    @Inject(TEMPLATE_PROVIDER)
-    private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
-    @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
+    private readonly notificationBuilder: NotificationBuilder<ApplicationCreatedEventPayload>
   ) {}
 
-  async buildNotifications(eventPayload: ApplicationCreatedEventPayload) {
-    // Get additional data
-    const applicant = await this.alkemioAdapter.getUser(
-      eventPayload.applicantID
-    );
-
-    const adminNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'admin',
-      EmailTemplate.USER_APPLICATION_ADMIN,
-      applicant,
-      UserPreferenceType.NotificationApplicationReceived
-    );
-
-    const applicantNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'applicant',
-      EmailTemplate.USER_APPLICATION_APPLICANT,
-      applicant,
-      UserPreferenceType.NotificationApplicationSubmitted
-    );
-    return Promise.all([
-      ...adminNotificationPromises,
-      ...applicantNotificationPromises,
-    ]);
-  }
-
-  async buildNotificationsForRole(
-    eventPayload: any,
-    recipientRole: string,
-    emailTemplate: EmailTemplate,
-    applicant: User,
-    preferenceType: UserPreferenceType
-  ): Promise<any> {
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - role '${recipientRole}`,
-      LogContext.NOTIFICATIONS
-    );
-    // Get the lookup map
-    const lookupMap = this.createLookupMap(eventPayload);
-    const applicationCreatedRuleSets =
-      this.recipientTemplateProvider.getTemplate().application_created;
-
-    const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriterias(
-        lookupMap,
-        applicationCreatedRuleSets,
-        recipientRole
-      );
-
-    const recipients =
-      await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
-        credentialCriterias
-      );
-
-    const filteredRecipients: User[] = [];
-    for (const recipient of recipients) {
-      if (recipient.preferences) {
-        if (
-          recipient.preferences.find(
-            preference =>
-              preference.definition.type === preferenceType &&
-              preference.value === 'true'
-          )
-        )
-          filteredRecipients.push(recipient);
-      }
-    }
-
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - identified ${filteredRecipients.length} recipients`,
-      LogContext.NOTIFICATIONS
-    );
-
-    const notifications = filteredRecipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, applicant)
-    );
-
-    Promise.all(notifications);
-    this.logger.verbose?.(
-      `Notifications [${recipientRole}] - completed`,
-      LogContext.NOTIFICATIONS
-    );
-    return notifications;
-  }
-
-  async buildNotification(
-    eventPayload: ApplicationCreatedEventPayload,
-    recipient: User,
-    templateName: string,
-    applicant: User
-  ): Promise<any> {
-    const templatePayload = this.createTemplatePayload(
-      eventPayload,
-      recipient,
-      applicant
-    ) as any;
-
-    return await this.notificationTemplateBuilder.buildTemplate(
-      templateName,
-      templatePayload
-    );
-  }
-
-  createLookupMap(
+  build(
     payload: ApplicationCreatedEventPayload
-  ): Map<string, string> {
-    const lookupMap: Map<string, string> = new Map();
-    lookupMap.set('applicantID', payload.applicantID);
-    lookupMap.set('hubID', payload.hub.id);
-    lookupMap.set('challengeID', payload.hub.challenge?.id || '');
-    lookupMap.set(
-      'opportunityID',
-      payload.hub.challenge?.opportunity?.id || ''
-    );
-    return lookupMap;
+  ): Promise<NotificationTemplateType[]> {
+    const roleConfig: RoleConfig[] = [
+      {
+        role: 'admin',
+        preferenceType: UserPreferenceType.NotificationApplicationReceived,
+        emailTemplate: EmailTemplate.USER_APPLICATION_ADMIN,
+      },
+      {
+        role: 'applicant',
+        emailTemplate: EmailTemplate.USER_APPLICATION_APPLICANT,
+        preferenceType: UserPreferenceType.NotificationApplicationSubmitted,
+      },
+    ];
+
+    const lookupMap = new Map([
+      ['applicantID', payload.applicantID],
+      ['hubID', payload.hub.id],
+      ['challengeID', payload.hub.challenge?.id ?? ''],
+      ['opportunityID', payload.hub.challenge?.opportunity?.id ?? ''],
+    ]);
+
+    return this.notificationBuilder
+      .setPayload(payload)
+      .setEventUser(payload.applicantID)
+      .setRoleConfig(roleConfig)
+      .setTemplateType('application_created')
+      .setTemplateVariables(lookupMap)
+      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
+      .build();
   }
 
   createTemplatePayload(
     eventPayload: ApplicationCreatedEventPayload,
     recipient: User,
-    applicant: User
-  ): any {
+    applicant?: User
+  ): Record<string, unknown> {
+    if (!applicant) {
+      throw Error(
+        `Applicant not provided for '${COMMUNITY_APPLICATION_CREATED} event'`
+      );
+    }
     const applicantProfileURL = this.alkemioUrlGenerator.createUserURL(
       applicant.nameID
     );

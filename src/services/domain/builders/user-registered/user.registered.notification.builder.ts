@@ -1,154 +1,61 @@
-import { Injectable, Inject, LoggerService } from '@nestjs/common';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import {
-  ALKEMIO_CLIENT_ADAPTER,
-  ALKEMIO_URL_GENERATOR,
-  LogContext,
-  NOTIFICATION_RECIPIENTS_YML_ADAPTER,
-  TEMPLATE_PROVIDER,
-} from '@src/common';
-import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
-import { INotificationRecipientTemplateProvider } from '@core/contracts';
+import { Inject, Injectable } from '@nestjs/common';
+import { ALKEMIO_URL_GENERATOR, USER_REGISTERED } from '@src/common';
 import { User } from '@core/models';
-import { EmailTemplate } from '@src/common/enums/email.template';
-import { UserRegistrationEventPayload } from '@src/types/user.registration.event.payload';
-import { AlkemioClientAdapter } from '@src/services';
+import { UserRegistrationEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
+import {
+  NotificationBuilder,
+  RoleConfig,
+} from '../../../application/notification-builder/notification.builder';
 import { UserPreferenceType } from '@alkemio/client-lib';
+import { EmailTemplate } from '@common/enums/email.template';
+import { NotificationTemplateType } from '@src/types/notification.template.type';
 
 @Injectable()
-export class UserRegisteredNotificationBuilder {
+export class UserRegisteredNotificationBuilder implements INotificationBuilder {
   constructor(
-    @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private alkemioAdapter: AlkemioClientAdapter,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    @Inject(TEMPLATE_PROVIDER)
-    private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
-    @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
-    private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
+    private readonly notificationBuilder: NotificationBuilder<UserRegistrationEventPayload>
   ) {}
 
-  async buildNotifications(eventPayload: UserRegistrationEventPayload) {
-    this.logger.verbose?.(
-      `[Notifications: userRegistration]: ${JSON.stringify(eventPayload)}`,
-      LogContext.NOTIFICATIONS
-    );
-    // Get additional data
-    const registrant = await this.alkemioAdapter.getUser(eventPayload.userID);
+  build(
+    payload: UserRegistrationEventPayload
+  ): Promise<NotificationTemplateType[]> {
+    const roleConfig: RoleConfig[] = [
+      {
+        role: 'admin',
+        emailTemplate: EmailTemplate.USER_REGISTRATION_ADMIN,
+        preferenceType: UserPreferenceType.NotificationUserSignUp,
+      },
+      {
+        role: 'registrant',
+        emailTemplate: EmailTemplate.USER_REGISTRATION_REGISTRANT,
+      },
+    ];
 
-    const adminNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'admin',
-      EmailTemplate.USER_REGISTRATION_ADMIN,
-      registrant,
-      UserPreferenceType.NotificationUserSignUp
-    );
+    const lookupMap = new Map([['registrantID', payload.userID]]);
 
-    const registrantNotificationPromises = await this.buildNotificationsForRole(
-      eventPayload,
-      'registrant',
-      EmailTemplate.USER_REGISTRATION_REGISTRANT,
-      registrant
-    );
-
-    return Promise.all([
-      ...adminNotificationPromises,
-      ...registrantNotificationPromises,
-    ]);
+    return this.notificationBuilder
+      .setPayload(payload)
+      .setEventUser(payload.userID)
+      .setRoleConfig(roleConfig)
+      .setTemplateType('user_registered')
+      .setTemplateVariables(lookupMap)
+      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
+      .build();
   }
 
-  async buildNotificationsForRole(
+  private createTemplatePayload(
     eventPayload: UserRegistrationEventPayload,
-    recipientRole: string,
-    emailTemplate: EmailTemplate,
-    registrant: User,
-    preferenceType?: UserPreferenceType
-  ): Promise<any> {
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - recipients role: '${recipientRole}'`,
-      LogContext.NOTIFICATIONS
-    );
-    // Get the lookup map
-    const lookupMap = this.createLookupMap(eventPayload);
-    const userRegistrationRuleSets =
-      this.recipientTemplateProvider.getTemplate().user_registered;
-
-    const credentialCriterias =
-      this.recipientTemplateProvider.getCredentialCriterias(
-        lookupMap,
-        userRegistrationRuleSets,
-        recipientRole
-      );
-
-    const recipients =
-      await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
-        credentialCriterias
-      );
-
-    const filteredRecipients: User[] = [];
-    for (const recipient of recipients) {
-      if (recipient.preferences) {
-        if (
-          !preferenceType ||
-          recipient.preferences.find(
-            preference =>
-              preference.definition.type === preferenceType &&
-              preference.value === 'true'
-          )
-        )
-          filteredRecipients.push(recipient);
-      }
+    recipient: User,
+    registrant?: User
+  ): Record<string, unknown> {
+    if (!registrant) {
+      throw Error(`Registrant not provided for '${USER_REGISTERED}' event`);
     }
 
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - identified ${filteredRecipients.length} recipients`,
-      LogContext.NOTIFICATIONS
-    );
-
-    const notifications = filteredRecipients.map(recipient =>
-      this.buildNotification(eventPayload, recipient, emailTemplate, registrant)
-    );
-
-    Promise.all(notifications);
-    this.logger.verbose?.(
-      `Notifications [${emailTemplate}] - completed for ${notifications.length} recipients.`,
-      LogContext.NOTIFICATIONS
-    );
-    return notifications;
-  }
-
-  async buildNotification(
-    eventPayload: any,
-    recipient: User,
-    templateName: string,
-    registrant: User
-  ) {
-    const templatePayload = this.createTemplatePayload(
-      eventPayload,
-      recipient,
-      registrant
-    ) as any;
-
-    return await this.notificationTemplateBuilder.buildTemplate(
-      templateName,
-      templatePayload
-    );
-  }
-
-  createLookupMap(payload: UserRegistrationEventPayload): Map<string, string> {
-    const lookupMap: Map<string, string> = new Map();
-    lookupMap.set('registrantID', payload.userID);
-    return lookupMap;
-  }
-
-  createTemplatePayload(
-    eventPayload: any,
-    recipient: User,
-    registrant: User
-  ): any {
     const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
       registrant.nameID
     );
