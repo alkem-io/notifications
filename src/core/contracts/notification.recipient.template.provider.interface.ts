@@ -19,6 +19,7 @@ export type TemplateConfig = {
   communication_update_sent?: TemplateRuleSet[];
   communication_discussion_created?: TemplateRuleSet[];
   community_review_submitted?: TemplateRuleSet[];
+  community_new_member?: TemplateRuleSet[];
 };
 
 export interface INotificationRecipientTemplateProvider {

@@ -17,6 +17,7 @@ import {
   CommunicationUpdateNotificationBuilder,
   CommunityContextReviewSubmittedNotificationBuilder,
   UserRegisteredNotificationBuilder,
+  CommunityNewMemberNotificationBuilder,
 } from './services/domain/builders';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
 import { NotificationService } from './services/domain/notification/notification.service';
@@ -49,6 +50,7 @@ import { NotificationBuilderFactoryProvider } from './services/application/notif
     CommunicationUpdateNotificationBuilder,
     CommunicationDiscussionCreatedNotificationBuilder,
     CommunityContextReviewSubmittedNotificationBuilder,
+    CommunityNewMemberNotificationBuilder,
     NotificationService,
   ],
   controllers: [AppController],

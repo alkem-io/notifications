@@ -196,7 +196,7 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
 
     if (!recipients.length) {
       const criteriaText = credentialCriteria
-        .map(x => `<${x.type},${x.resourceID}`)
+        .map(x => `<${x.type},${x.resourceID}>`)
         .join(' OR ');
       this.logger.verbose?.(
         `Unable to find recipients matching ${criteriaText}`,
