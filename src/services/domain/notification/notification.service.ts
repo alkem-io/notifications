@@ -4,6 +4,7 @@ import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   LogContext,
+  NotificationNoChannelsException,
   NOTIFICATIONS_PROVIDER,
 } from '@src/common';
 import {
@@ -58,7 +59,7 @@ export class NotificationService {
 
     return notificationBuilder
       .build(payload)
-      .then(x => x.map((x: any) => this.sendNotification(x)))
+      .then(x => x.map(y => this.sendNotification(y)))
       .then(x => Promise.allSettled(x))
       .catch((error: Error) => this.logger.error(error.message));
   }
@@ -120,6 +121,12 @@ export class NotificationService {
   private async sendNotification(
     notification: NotificationTemplateType
   ): Promise<NotificationStatus> {
+    if (!Object.keys(notification.channels).length) {
+      throw new NotificationNoChannelsException(
+        `Notification (${notification.name}) - (${notification.title}) no channels provided`
+      );
+    }
+
     return this.notifmeService.send(notification.channels).then(
       res => {
         this.logger.verbose?.(
