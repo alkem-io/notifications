@@ -196,7 +196,7 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
 
     if (!recipients.length) {
       const criteriaText = credentialCriteria
-        .map(x => `<${x.type},${x.resourceID}`)
+        .map(x => `<${x.type},${x.resourceID}>`)
         .join(' OR ');
       this.logger.verbose?.(
         `Unable to find recipients matching ${criteriaText}`,
@@ -204,6 +204,11 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
       );
       return [];
     }
+
+    this.logger.verbose?.(
+      `Identified ${recipients.length} recipients to be filtered by preferences`,
+      LogContext.NOTIFICATIONS
+    );
 
     const filteredRecipients: User[] = [];
 
@@ -220,6 +225,11 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
           )
         ) {
           filteredRecipients.push(recipient);
+        } else {
+          this.logger.verbose?.(
+            `User ${recipient.displayName} filtered out because of ${extra?.rolePreferenceType}`,
+            LogContext.NOTIFICATIONS
+          );
         }
       }
     }

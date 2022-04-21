@@ -20,11 +20,14 @@ import { NotificationService } from './notification.service';
 import { ApplicationCreatedNotificationBuilder } from '@src/services';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { NotificationRecipientsAdapterModule } from '../../application/notification-recipients-adapter/notification.recipients.adapter.module';
-import { UserRegisteredNotificationBuilder } from '../builders/user-registered/user.registered.notification.builder';
-import { CommunicationUpdateNotificationBuilder } from '../builders/communication-updated/communication.updated.notification.builder';
-import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
+import {
+  UserRegisteredNotificationBuilder,
+  CommunicationUpdateNotificationBuilder,
+  CommunicationDiscussionCreatedNotificationBuilder,
+  CommunityContextReviewSubmittedNotificationBuilder,
+  CommunityNewMemberNotificationBuilder,
+} from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
-import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
 import { MockAlkemioClientAdapterProvider } from '@test/mocks';
 import { NotificationBuilder } from '@src/services/application';
 
@@ -62,6 +65,7 @@ describe('NotificationService', () => {
         CommunicationUpdateNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
         CommunityContextReviewSubmittedNotificationBuilder,
+        CommunityNewMemberNotificationBuilder,
         NotificationBuilder,
         ConfigService,
         MockAlkemioClientAdapterProvider,
