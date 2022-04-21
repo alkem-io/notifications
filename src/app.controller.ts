@@ -9,6 +9,7 @@ import {
   COMMUNICATION_UPDATE_SENT,
   COMMUNITY_APPLICATION_CREATED,
   COMMUNITY_CONTEXT_REVIEW_SUBMITTED,
+  COMMUNITY_NEW_MEMBER,
   LogContext,
   USER_REGISTERED,
 } from './common';
@@ -19,6 +20,7 @@ import {
   CommunicationDiscussionCreatedEventPayload,
   CommunityContextReviewSubmittedPayload,
   UserRegistrationEventPayload,
+  CommunityNewMemberPayload,
 } from '@common/dto';
 import { NotificationService } from './services/domain/notification/notification.service';
 
@@ -47,6 +49,23 @@ export class AppController {
       COMMUNITY_APPLICATION_CREATED
     );
   }
+
+  @EventPattern(COMMUNITY_NEW_MEMBER)
+  async sendCommunityNewMemberNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: CommunityNewMemberPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunityNewMemberNotifications(
+        eventPayload
+      ),
+      COMMUNITY_NEW_MEMBER
+    );
+  }
+
   @EventPattern(USER_REGISTERED)
   async sendUserRegisteredNotification(
     // todo is auto validation possible

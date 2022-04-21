@@ -4,6 +4,7 @@ import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   LogContext,
+  NotificationNoChannelsException,
   NOTIFICATIONS_PROVIDER,
 } from '@src/common';
 import {
@@ -12,6 +13,7 @@ import {
   CommunicationDiscussionCreatedEventPayload,
   CommunityContextReviewSubmittedPayload,
   UserRegistrationEventPayload,
+  CommunityNewMemberPayload,
 } from '@common/dto';
 import { ApplicationCreatedNotificationBuilder } from '@src/services';
 import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
@@ -21,6 +23,7 @@ import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';
+import { CommunityNewMemberNotificationBuilder } from '@src/services/domain/builders';
 
 @Injectable()
 export class NotificationService {
@@ -35,7 +38,8 @@ export class NotificationService {
     private userRegisteredNotificationBuilder: UserRegisteredNotificationBuilder,
     private communicationUpdatedNotificationBuilder: CommunicationUpdateNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
-    private communityContextReviewSubmittedNotificationBuilder: CommunityContextReviewSubmittedNotificationBuilder
+    private communityContextReviewSubmittedNotificationBuilder: CommunityContextReviewSubmittedNotificationBuilder,
+    private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -55,7 +59,7 @@ export class NotificationService {
 
     return notificationBuilder
       .build(payload)
-      .then(x => x.map((x: any) => this.sendNotification(x)))
+      .then(x => x.map(y => this.sendNotification(y)))
       .then(x => Promise.allSettled(x))
       .catch((error: Error) => this.logger.error(error.message));
   }
@@ -66,6 +70,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.applicationCreatedNotificationBuilder
+    );
+  }
+
+  async sendCommunityNewMemberNotifications(
+    payload: CommunityNewMemberPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communityNewMemberNotificationBuilder
     );
   }
 
@@ -108,6 +121,12 @@ export class NotificationService {
   private async sendNotification(
     notification: NotificationTemplateType
   ): Promise<NotificationStatus> {
+    if (!Object.keys(notification.channels).length) {
+      throw new NotificationNoChannelsException(
+        `Notification (${notification.name}) - (${notification.title}) no channels provided`
+      );
+    }
+
     return this.notifmeService.send(notification.channels).then(
       res => {
         this.logger.verbose?.(

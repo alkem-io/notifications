@@ -9,4 +9,6 @@ export enum EmailTemplate {
   COMMUNICATION_UPDATE_MEMBER = 'communication.update.member',
   COMMUNITY_REVIEW_SUBMITTED_ADMIN = 'community.review.submitted.admin',
   COMMUNITY_REVIEW_SUBMITTED_REVIEWER = 'community.review.submitted.reviewer',
+  COMMUNITY_NEW_MEMBER_ADMIN = 'community.new.member.admin',
+  COMMUNITY_NEW_MEMBER_MEMBER = 'community.new.member.member',
 }
