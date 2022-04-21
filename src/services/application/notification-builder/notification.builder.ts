@@ -205,6 +205,11 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
       return [];
     }
 
+    this.logger.verbose?.(
+      `Identified ${recipients.length} recipients to be filtered by preferences`,
+      LogContext.NOTIFICATIONS
+    );
+
     const filteredRecipients: User[] = [];
 
     if (!extra?.rolePreferenceType) {
@@ -220,6 +225,11 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
           )
         ) {
           filteredRecipients.push(recipient);
+        } else {
+          this.logger.verbose?.(
+            `User ${recipient.displayName} filtered out because of ${extra?.rolePreferenceType}`,
+            LogContext.NOTIFICATIONS
+          );
         }
       }
     }
