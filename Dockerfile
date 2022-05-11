@@ -1,4 +1,4 @@
-FROM node:14.17.3-alpine
+FROM node:16.15.0-alpine
 
 
 # Create app directory
@@ -12,7 +12,7 @@ ARG ENV_ARG=production
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN npm i -g npm@7.5.6
+RUN npm i -g npm@8.5.5
 RUN npm install
 
 ## Add the wait script to the image
