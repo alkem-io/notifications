@@ -142,7 +142,7 @@ describe('NotificationService', () => {
       jest
         .spyOn(alkemioAdapter, 'getUser')
         .mockRejectedValue(new Error('Applicant not found!'));
-      expect(
+      await expect(
         notificationService.sendApplicationCreatedNotifications(
           testData.data as ApplicationCreatedEventPayload
         )
