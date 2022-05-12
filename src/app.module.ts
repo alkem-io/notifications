@@ -22,6 +22,7 @@ import {
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { NotificationBuilderFactoryProvider } from './services/application/notification-builder';
+import { NotificationBuilder } from '@src/services/application/notification-builder/notification.builder1';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { NotificationBuilderFactoryProvider } from './services/application/notif
       useClass: HttpExceptionsFilter,
     },
     NotificationBuilderFactoryProvider,
+    NotificationBuilder,
     ApplicationCreatedNotificationBuilder,
     UserRegisteredNotificationBuilder,
     CommunicationUpdateNotificationBuilder,
