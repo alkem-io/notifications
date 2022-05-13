@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
+// todo
+import {
+  NotificationBuilder,
+  RoleConfig,
+} from '@src/services/application/notification-builder/notification.builder1';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityNewMemberPayload } from '@common/dto';
 import { NotificationTemplateType } from '@src/types';
@@ -32,21 +36,21 @@ export class CommunityNewMemberNotificationBuilder
       },
     ];
 
-    const lookupMap = new Map([
-      ['memberID', payload.userID],
-      ['hubID', payload.hub.id],
-      ['challengeID', payload.hub.challenge?.id ?? ''],
-      ['opportunityID', payload.hub.challenge?.opportunity?.id ?? ''],
-    ]);
+    const templateVariables = {
+      memberID: payload.userID,
+      hubID: payload.hub.id,
+      challengeID: payload.hub.challenge?.id ?? '',
+      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+    };
 
-    return this.notificationBuilder
-      .setPayload(payload)
-      .setEventUser(payload.userID)
-      .setRoleConfig(roleConfig)
-      .setTemplateType('community_new_member')
-      .setTemplateVariables(lookupMap)
-      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
-      .build();
+    return this.notificationBuilder.build({
+      payload,
+      eventUserId: payload.userID,
+      roleConfig,
+      templateType: 'community_new_member',
+      templateVariables,
+      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+    });
   }
 
   private createTemplatePayload(
