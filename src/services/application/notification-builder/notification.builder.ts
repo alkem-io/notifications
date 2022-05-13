@@ -8,7 +8,6 @@ import {
   RuleSetNotFoundException,
   TEMPLATE_PROVIDER,
   TemplateBuilderFnNotProvidedException,
-  TemplateNotProvidedException,
 } from '@src/common';
 import { AlkemioClientAdapter } from '@src/services';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -38,7 +37,7 @@ export type NotificationOptions<TPayload = Record<string, unknown>> = {
   payload: TPayload;
   templateType: TemplateType;
   templatePayloadBuilderFn: TemplateBuilderFn<TPayload>;
-  roleConfig?: RoleConfig[];
+  roleConfig: RoleConfig[];
   eventUserId?: string;
   templateVariables?: Record<string, string>;
 };
@@ -65,7 +64,7 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
       ? await this.alkemioAdapter.getUser(eventUserId)
       : undefined;
 
-    if (!roleConfig || !roleConfig.length) {
+    if (!roleConfig.length) {
       throw new RolesNotProvidedException(
         `No roles are provided for template '${templateType}'`
       );
@@ -115,14 +114,10 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
       LogContext.NOTIFICATIONS
     );
 
-    if (!templateType) {
-      throw new TemplateNotProvidedException('Template type not provided');
-    }
-
     const ruleSets =
       this.recipientTemplateProvider.getTemplate()?.[templateType];
 
-    if (roleConfig && !ruleSets) {
+    if (!ruleSets) {
       const rolesText = roleConfig.map(x => x.role).join(',');
       throw new RuleSetNotFoundException(
         `No rule set(s) found for roles: [${rolesText}]`
