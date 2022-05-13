@@ -17,7 +17,7 @@ import {
 } from '@common/dto';
 import { ApplicationCreatedNotificationBuilder } from '@src/services';
 import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
-import { CommunicationUpdateNotificationBuilder } from '../builders/communication-updated/communication.updated.notification.builder';
+import { CommunicationUpdateCreatedNotificationBuilder } from '../builders/communication-update-created/communication.update.created.notification.builder';
 import { UserRegisteredNotificationBuilder } from '../builders/user-registered/user.registered.notification.builder';
 import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
@@ -36,7 +36,7 @@ export class NotificationService {
     private readonly notifmeService: NotifmeSdk,
     private applicationCreatedNotificationBuilder: ApplicationCreatedNotificationBuilder,
     private userRegisteredNotificationBuilder: UserRegisteredNotificationBuilder,
-    private communicationUpdatedNotificationBuilder: CommunicationUpdateNotificationBuilder,
+    private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
     private communityContextReviewSubmittedNotificationBuilder: CommunityContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder

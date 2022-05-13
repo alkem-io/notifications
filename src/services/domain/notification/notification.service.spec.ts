@@ -22,7 +22,7 @@ import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { NotificationRecipientsAdapterModule } from '../../application/notification-recipients-adapter/notification.recipients.adapter.module';
 import {
   UserRegisteredNotificationBuilder,
-  CommunicationUpdateNotificationBuilder,
+  CommunicationUpdateCreatedNotificationBuilder,
   CommunicationDiscussionCreatedNotificationBuilder,
   CommunityContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
@@ -62,7 +62,7 @@ describe('NotificationService', () => {
         NotificationService,
         ApplicationCreatedNotificationBuilder,
         UserRegisteredNotificationBuilder,
-        CommunicationUpdateNotificationBuilder,
+        CommunicationUpdateCreatedNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
         CommunityContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,

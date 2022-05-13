@@ -14,7 +14,7 @@ import {
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import {
   CommunicationDiscussionCreatedNotificationBuilder,
-  CommunicationUpdateNotificationBuilder,
+  CommunicationUpdateCreatedNotificationBuilder,
   CommunityContextReviewSubmittedNotificationBuilder,
   UserRegisteredNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
@@ -49,7 +49,7 @@ import { NotificationBuilder } from '@src/services/application/notification-buil
     NotificationBuilder,
     ApplicationCreatedNotificationBuilder,
     UserRegisteredNotificationBuilder,
-    CommunicationUpdateNotificationBuilder,
+    CommunicationUpdateCreatedNotificationBuilder,
     CommunicationDiscussionCreatedNotificationBuilder,
     CommunityContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
