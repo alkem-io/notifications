@@ -8,7 +8,11 @@ import {
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
+// todo
+import {
+  NotificationBuilder,
+  RoleConfig,
+} from '@src/services/application/notification-builder/notification.builder1';
 import { NotificationTemplateType } from '@src/types';
 
 @Injectable()
@@ -36,20 +40,20 @@ export class CommunityContextReviewSubmittedNotificationBuilder
       },
     ];
 
-    const lookupMap = new Map([
-      ['userID', payload.userId],
-      ['challengeID', payload.challengeId],
-      ['reviewerID', payload.userId],
-    ]);
+    const templateVariables = {
+      userID: payload.userId,
+      challengeID: payload.challengeId,
+      reviewerID: payload.userId,
+    };
 
-    return this.notificationBuilder
-      .setPayload(payload)
-      .setEventUser(payload.userId)
-      .setRoleConfig(roleConfig)
-      .setTemplateType('community_review_submitted')
-      .setTemplateVariables(lookupMap)
-      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
-      .build();
+    return this.notificationBuilder.build({
+      payload,
+      eventUserId: payload.userId,
+      roleConfig,
+      templateType: 'community_review_submitted',
+      templateVariables,
+      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+    });
   }
 
   createTemplatePayload(
