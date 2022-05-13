@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-// todo
-import {
-  NotificationBuilder,
-  RoleConfig,
-} from '@src/services/application/notification-builder/notification.builder1';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityNewMemberPayload } from '@common/dto';
 import { NotificationTemplateType } from '@src/types';

@@ -4,11 +4,7 @@ import { User } from '@core/models';
 import { UserRegistrationEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-// todo
-import {
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application/notification-builder/notification.builder1';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';

@@ -6,12 +6,11 @@ import {
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
 import { ApplicationCreatedEventPayload } from '@common/dto';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
-// todo
 import {
+  AlkemioUrlGenerator,
   NotificationBuilder,
   RoleConfig,
-} from '@src/services/application/notification-builder/notification.builder1';
+} from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';

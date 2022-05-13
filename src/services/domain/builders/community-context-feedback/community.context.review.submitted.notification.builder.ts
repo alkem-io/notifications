@@ -8,11 +8,7 @@ import {
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
-// todo
-import {
-  NotificationBuilder,
-  RoleConfig,
-} from '@src/services/application/notification-builder/notification.builder1';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 
 @Injectable()

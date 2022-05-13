@@ -19,10 +19,11 @@ import {
   UserRegisteredNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
 } from './services/domain/builders';
-import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { NotificationBuilderFactoryProvider } from './services/application/notification-builder';
-import { NotificationBuilder } from '@src/services/application/notification-builder/notification.builder1';
+import {
+  AlkemioUrlGeneratorModule,
+  NotificationBuilder,
+} from './services/application';
 
 @Module({
   imports: [
@@ -45,7 +46,6 @@ import { NotificationBuilder } from '@src/services/application/notification-buil
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
-    NotificationBuilderFactoryProvider,
     NotificationBuilder,
     ApplicationCreatedNotificationBuilder,
     UserRegisteredNotificationBuilder,

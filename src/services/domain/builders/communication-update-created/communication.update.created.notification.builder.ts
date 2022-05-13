@@ -4,13 +4,12 @@ import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { CommunicationUpdateEventPayload } from '@common/dto';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { UserPreferenceType } from '@alkemio/client-lib';
-// todo
 import {
+  AlkemioUrlGenerator,
   NotificationBuilder,
   RoleConfig,
-} from '@src/services/application/notification-builder/notification.builder1';
+} from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 
 @Injectable()
