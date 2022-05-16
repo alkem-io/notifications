@@ -5,3 +5,5 @@ export * from './community.context.review.submitted.payload';
 export * from './community.new.member.payload';
 export * from './user.registration.event.payload';
 export * from './hub.payload';
+export * from './aspect.created.event.payload';
+export * from './aspect.comment.created.event.payload';

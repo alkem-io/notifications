@@ -14,6 +14,7 @@ import {
   CommunityContextReviewSubmittedPayload,
   UserRegistrationEventPayload,
   CommunityNewMemberPayload,
+  AspectCreatedEventPayload,
 } from '@common/dto';
 import { ApplicationCreatedNotificationBuilder } from '@src/services';
 import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
@@ -116,6 +117,12 @@ export class NotificationService {
       payload,
       this.communityContextReviewSubmittedNotificationBuilder
     );
+  }
+
+  async sendAspectCreatedNotification(
+    payload: AspectCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(payload, {});
   }
 
   private async sendNotification(

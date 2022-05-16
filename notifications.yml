@@ -191,3 +191,32 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <memberID>
+  aspect_created:
+    - name: admin
+      rules:
+        - rule:
+            type: HUB_ADMIN
+            resource_id: <hubID>
+        - rule:
+            type: CHALLENGE_ADMIN
+            resource_id: <challengeID>
+        - rule:
+            type: OPPORTUNITY_ADMIN
+            resource_id: <opportunityID>
+  aspect_comment_created:
+    - name: admin
+      rules:
+        - rule:
+          type: HUB_ADMIN
+          resource_id: <hubID>
+        - rule:
+            type: CHALLENGE_ADMIN
+            resource_id: <challengeID>
+        - rule:
+            type: OPPORTUNITY_ADMIN
+            resource_id: <opportunityID>
+    - name: owner
+      rules:
+        - rule:
+          type: USER_SELF_MANAGEMENT
+          resource_id: <ownerID>
