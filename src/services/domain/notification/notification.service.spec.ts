@@ -1,13 +1,9 @@
 import { Test } from '@nestjs/testing';
-import { WinstonConfigService } from '@src/config';
-import { WinstonModule } from 'nest-winston';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import configuration from '@src/config/configuration';
-import { NotifmeModule } from '@src/services/external/notifme/notifme.module';
 import { ApplicationCreatedEventPayload } from '@src/common/dto';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_URL_GENERATOR,
+  NOTIFICATIONS_PROVIDER,
 } from '@src/common/enums';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
@@ -15,21 +11,28 @@ import * as hubAdminsData from '@test/data/hub.admins.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
-import { NotificationStatus } from 'notifme-sdk';
+import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ApplicationCreatedNotificationBuilder } from '@src/services';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
-import { NotificationRecipientsAdapterModule } from '../../application/notification-recipients-adapter/notification.recipients.adapter.module';
 import {
   UserRegisteredNotificationBuilder,
-  CommunicationUpdateNotificationBuilder,
+  CommunicationUpdateCreatedNotificationBuilder,
   CommunicationDiscussionCreatedNotificationBuilder,
   CommunityContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
-import { MockAlkemioClientAdapterProvider } from '@test/mocks';
+import {
+  MockAlkemioClientAdapterProvider,
+  MockConfigServiceProvider,
+  MockNotificationBuilderProvider,
+  MockNotificationRecipientsYmlProvider,
+  MockWinstonProvider,
+} from '@test/mocks';
 import { NotificationBuilder } from '@src/services/application';
+import { MockNotifmeProvider } from '@test/mocks/notifme.provider.mock';
+import { NotificationTemplateType } from '@src/types';
 
 const testData = {
   ...challengeAdminsData,
@@ -42,32 +45,26 @@ const testData = {
 describe('NotificationService', () => {
   let notificationService: NotificationService;
   let alkemioAdapter: INotifiedUsersProvider;
+  let notificationBuilder: NotificationBuilder;
+  let notifmeService: NotifmeSdk;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          envFilePath: ['.env'],
-          isGlobal: true,
-          load: [configuration],
-        }),
-        WinstonModule.forRootAsync({
-          useClass: WinstonConfigService,
-        }),
-        NotifmeModule,
-        NotificationRecipientsAdapterModule,
-      ],
       providers: [
+        MockConfigServiceProvider,
+        MockNotifmeProvider,
+        MockWinstonProvider,
+        MockNotificationRecipientsYmlProvider,
         NotificationRecipientsYmlAdapter,
         NotificationService,
         ApplicationCreatedNotificationBuilder,
         UserRegisteredNotificationBuilder,
-        CommunicationUpdateNotificationBuilder,
+        CommunicationUpdateCreatedNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
         CommunityContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
-        NotificationBuilder,
-        ConfigService,
+        MockNotificationBuilderProvider,
+        MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,
         {
           provide: ALKEMIO_URL_GENERATOR,
@@ -81,6 +78,14 @@ describe('NotificationService', () => {
     alkemioAdapter = moduleRef.get<INotifiedUsersProvider>(
       ALKEMIO_CLIENT_ADAPTER
     );
+    notificationBuilder = moduleRef.get(NotificationBuilder);
+    notifmeService = moduleRef.get(NOTIFICATIONS_PROVIDER);
+  });
+
+  beforeEach(() => {
+    jest
+      .spyOn(alkemioAdapter, 'areNotificationsEnabled')
+      .mockResolvedValue(true);
   });
 
   describe('Application Notifications', () => {
@@ -93,6 +98,14 @@ describe('NotificationService', () => {
       jest
         .spyOn(alkemioAdapter, 'getUser')
         .mockResolvedValue(testData.adminUser);
+
+      jest
+        .spyOn(notificationBuilder, 'build')
+        .mockResolvedValue(generateNotificationTemplate(1));
+
+      jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
         testData.data as ApplicationCreatedEventPayload
@@ -112,6 +125,8 @@ describe('NotificationService', () => {
         ...testData.opportunityAdmins,
       ];
 
+      const applicationCount = 6;
+
       jest
         .spyOn(alkemioAdapter, 'areNotificationsEnabled')
         .mockResolvedValue(true);
@@ -123,6 +138,14 @@ describe('NotificationService', () => {
       jest
         .spyOn(alkemioAdapter, 'getUser')
         .mockResolvedValue(testData.adminUser);
+
+      jest
+        .spyOn(notificationBuilder, 'build')
+        .mockResolvedValue(generateNotificationTemplate(applicationCount));
+
+      jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
         testData.data as ApplicationCreatedEventPayload
@@ -138,18 +161,6 @@ describe('NotificationService', () => {
       expect(res.length).toBe(6); //based on the template. toDo Mock the configuration
     });
 
-    // todo: skipped because of racing condition, to be solved in separate story
-    it.skip('Should fail to send notification', async () => {
-      jest
-        .spyOn(alkemioAdapter, 'getUser')
-        .mockRejectedValue(new Error('Applicant not found!'));
-      await expect(
-        notificationService.sendApplicationCreatedNotifications(
-          testData.data as ApplicationCreatedEventPayload
-        )
-      ).rejects.toThrow();
-    });
-
     it('Should not send notifications when notifications are disabled', async () => {
       jest
         .spyOn(alkemioAdapter, 'areNotificationsEnabled')
@@ -163,3 +174,19 @@ describe('NotificationService', () => {
     });
   });
 });
+
+const generateNotificationTemplate = (
+  amount: number
+): NotificationTemplateType[] =>
+  new Array(amount).fill(null).map((_, i) => ({
+    name: `template${i}`,
+    title: `title${i}`,
+    version: 1,
+    channels: {
+      email: {
+        to: `to${i}@email`,
+        from: 'from@email',
+        subject: `subject${i}`,
+      },
+    },
+  }));

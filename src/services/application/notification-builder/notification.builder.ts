@@ -8,7 +8,6 @@ import {
   RuleSetNotFoundException,
   TEMPLATE_PROVIDER,
   TemplateBuilderFnNotProvidedException,
-  TemplateNotProvidedException,
 } from '@src/common';
 import { AlkemioClientAdapter } from '@src/services';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -34,22 +33,16 @@ export type TemplateBuilderFn<TPayload> = (
   eventUser?: User
 ) => Record<string, unknown>;
 
-export type NotificationOptions<TPayload> = {
-  payload?: TPayload;
+export type NotificationOptions<TPayload = Record<string, unknown>> = {
+  payload: TPayload;
+  templateType: TemplateType;
+  templatePayloadBuilderFn: TemplateBuilderFn<TPayload>;
+  roleConfig: RoleConfig[];
   eventUserId?: string;
-  roleConfig?: RoleConfig[];
-  templateType?: TemplateType;
-  templatePayloadBuilderFn?: (
-    payload: TPayload,
-    recipient: User,
-    eventUser: User | undefined
-  ) => Record<string, unknown>;
-  // todo: can we improve the type
-  templateVariables?: Map<string, string>;
+  templateVariables?: Record<string, string>;
 };
 
 export class NotificationBuilder<TPayload = Record<string, unknown>> {
-  private options: NotificationOptions<TPayload>;
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -59,76 +52,27 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
     private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
-  ) {
-    this.options = {};
-  }
+  ) {}
 
-  setPayload(payload: TPayload) {
-    this.options.payload = payload;
-    return this;
-  }
-
-  setEventUser(id: string) {
-    this.options.eventUserId = id;
-    return this;
-  }
-
-  setRoleConfig(config: RoleConfig | RoleConfig[]) {
-    if (!this.options.roleConfig) {
-      this.options.roleConfig = [];
-    }
-
-    this.options.roleConfig.push(
-      ...(Array.isArray(config) ? config : [config])
-    );
-
-    return this;
-  }
-
-  // todo: can we improve the type of map
-  setTemplateVariables(map: Map<string, string>) {
-    this.options.templateVariables = map;
-    return this;
-  }
-
-  setTemplateType(templateType: TemplateType) {
-    this.options.templateType = templateType;
-    return this;
-  }
-
-  setTemplateBuilderFn(fn: TemplateBuilderFn<TPayload>) {
-    this.options.templatePayloadBuilderFn = fn;
-    return this;
-  }
-
-  getOptions() {
-    return this.options;
-  }
-
-  reset() {
-    this.options = {};
-    return this;
-  }
-
-  async build(): Promise<NotificationTemplateType[]> {
-    this.logger.verbose?.(
-      JSON.stringify(this.options.payload),
-      LogContext.NOTIFICATIONS
-    );
+  async build(
+    options: NotificationOptions<TPayload>
+  ): Promise<NotificationTemplateType[]> {
+    const { payload, eventUserId, roleConfig, templateType } = options;
+    this.logger.verbose?.(JSON.stringify(payload), LogContext.NOTIFICATIONS);
     // get the user related to that event
-    const eventUser = this.options.eventUserId
-      ? await this.alkemioAdapter.getUser(this.options.eventUserId)
+    const eventUser = eventUserId
+      ? await this.alkemioAdapter.getUser(eventUserId)
       : undefined;
 
-    if (!this.options.roleConfig || !this.options.roleConfig.length) {
+    if (!roleConfig.length) {
       throw new RolesNotProvidedException(
-        `No roles are provided for template '${this.options.templateType}'`
+        `No roles are provided for template '${templateType}'`
       );
     }
 
-    const notificationsForRoles = this.options.roleConfig.flatMap(
+    const notificationsForRoles = roleConfig.flatMap(
       ({ role, emailTemplate, preferenceType }) =>
-        this.buildNotificationsForRole(role, emailTemplate, {
+        this.buildNotificationsForRole(options, role, emailTemplate, {
           eventUser,
           rolePreferenceType: preferenceType,
         })
@@ -156,6 +100,7 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
   }
 
   private async buildNotificationsForRole(
+    options: NotificationOptions<TPayload>,
     recipientRole: string,
     emailTemplate: EmailTemplate,
     extra?: {
@@ -163,29 +108,32 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
       rolePreferenceType?: UserPreferenceType;
     }
   ): Promise<NotificationTemplateType[]> {
+    const { templateType, roleConfig, templateVariables } = options;
     this.logger.verbose?.(
       `Building notifications with [${emailTemplate}] for '${recipientRole}'`,
       LogContext.NOTIFICATIONS
     );
 
-    if (!this.options.templateType) {
-      throw new TemplateNotProvidedException('Template type not provided');
-    }
-
     const ruleSets =
-      this.recipientTemplateProvider.getTemplate()?.[this.options.templateType];
+      this.recipientTemplateProvider.getTemplate()?.[templateType];
 
-    if (this.options.roleConfig && !ruleSets) {
-      const rolesText = this.options.roleConfig.map(x => x.role).join(',');
+    if (!ruleSets) {
+      const rolesText = roleConfig.map(x => x.role).join(',');
       throw new RuleSetNotFoundException(
         `No rule set(s) found for roles: [${rolesText}]`
       );
     }
 
+    const variableMap = templateVariables
+      ? new Map<string, string>(
+          Object.keys(templateVariables).map(x => [x, templateVariables[x]])
+        )
+      : undefined;
+
     const credentialCriteria =
       this.recipientTemplateProvider.getCredentialCriteria(
         recipientRole,
-        this.options.templateVariables,
+        variableMap,
         ruleSets
       );
 
@@ -240,7 +188,12 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
     );
 
     const notifications = filteredRecipients.map(recipient =>
-      this.buildNotificationTemplate(recipient, emailTemplate, extra?.eventUser)
+      this.buildNotificationTemplate(
+        options,
+        recipient,
+        emailTemplate,
+        extra?.eventUser
+      )
     );
 
     this.logger.verbose?.(
@@ -266,24 +219,26 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
   }
 
   private async buildNotificationTemplate(
+    options: NotificationOptions<TPayload>,
     recipient: User,
     templateName: string,
     eventUser?: User
   ): Promise<NotificationTemplateType | undefined> {
-    if (!this.options.templatePayloadBuilderFn) {
+    const { templatePayloadBuilderFn, templateType, payload } = options;
+    if (!templatePayloadBuilderFn) {
       throw new TemplateBuilderFnNotProvidedException(
-        `No template builder function provided for template '${this.options.templateType}'`
+        `No template builder function provided for template '${templateType}'`
       );
     }
 
-    if (!this.options.payload) {
+    if (!payload) {
       throw new EventPayloadNotProvidedException(
         `Payload not provided for template '${templateName}'`
       );
     }
 
-    const templatePayload = this.options.templatePayloadBuilderFn(
-      this.options.payload,
+    const templatePayload = templatePayloadBuilderFn(
+      payload,
       recipient,
       eventUser
     );
