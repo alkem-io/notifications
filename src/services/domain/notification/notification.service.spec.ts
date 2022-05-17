@@ -48,7 +48,7 @@ describe('NotificationService', () => {
   let notificationBuilder: NotificationBuilder;
   let notifmeService: NotifmeSdk;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         MockConfigServiceProvider,
@@ -82,6 +82,12 @@ describe('NotificationService', () => {
     notifmeService = moduleRef.get(NOTIFICATIONS_PROVIDER);
   });
 
+  beforeEach(() => {
+    jest
+      .spyOn(alkemioAdapter, 'areNotificationsEnabled')
+      .mockResolvedValue(true);
+  });
+
   describe('Application Notifications', () => {
     it('Should send application notification', async () => {
       //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
@@ -92,6 +98,14 @@ describe('NotificationService', () => {
       jest
         .spyOn(alkemioAdapter, 'getUser')
         .mockResolvedValue(testData.adminUser);
+
+      jest
+        .spyOn(notificationBuilder, 'build')
+        .mockResolvedValue(generateNotificationTemplate(1));
+
+      jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
         testData.data as ApplicationCreatedEventPayload
@@ -145,18 +159,6 @@ describe('NotificationService', () => {
       }
 
       expect(res.length).toBe(6); //based on the template. toDo Mock the configuration
-    });
-
-    // todo: skipped because of racing condition, to be solved in separate story
-    it.skip('Should fail to send notification', async () => {
-      jest
-        .spyOn(alkemioAdapter, 'getUser')
-        .mockRejectedValue(new Error('Applicant not found!'));
-      await expect(
-        notificationService.sendApplicationCreatedNotifications(
-          testData.data as ApplicationCreatedEventPayload
-        )
-      ).rejects.toThrow();
     });
 
     it('Should not send notifications when notifications are disabled', async () => {

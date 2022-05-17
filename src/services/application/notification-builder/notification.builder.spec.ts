@@ -56,7 +56,7 @@ describe('NotificationBuilder', () => {
         RolesNotProvidedException
       );
     });
-    it.only('throw on rule set not found', async () => {
+    it('throw on rule set not found', async () => {
       const loggerSpy = jest.spyOn(logger, 'warn');
 
       await notificationBuilder.build(getBaseOptions());
