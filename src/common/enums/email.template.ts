@@ -12,6 +12,6 @@ export enum EmailTemplate {
   COMMUNITY_NEW_MEMBER_ADMIN = 'community.new.member.admin',
   COMMUNITY_NEW_MEMBER_MEMBER = 'community.new.member.member',
   ASPECT_CREATED_ADMIN = 'aspect.created.admin',
-  ASPECT_COMMENT_CREATED_ADMIN = 'aspect.comment.created.admin',
+  ASPECT_CREATED_MEMBER = 'aspect.created.member',
   ASPECT_COMMENT_CREATED_MEMBER = 'aspect.comment.created.member',
 }

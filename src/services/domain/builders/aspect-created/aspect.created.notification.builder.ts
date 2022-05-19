@@ -1,17 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { AspectCreatedEventPayload } from '@common/dto';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
+import {
+  AlkemioUrlGenerator,
+  NotificationBuilder,
+  RoleConfig,
+} from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { EmailTemplate } from '@common/enums/email.template';
 import { User } from '@core/models';
-import { ASPECT_CREATED } from '@src/common';
+import { ALKEMIO_URL_GENERATOR, ASPECT_CREATED } from '@src/common';
+import { EmailTemplate } from '@common/enums/email.template';
 
 @Injectable()
 export class AspectCreatedNotificationBuilder implements INotificationBuilder {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<AspectCreatedEventPayload>
+    private readonly notificationBuilder: NotificationBuilder<AspectCreatedEventPayload>,
+    @Inject(ALKEMIO_URL_GENERATOR)
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
     payload: AspectCreatedEventPayload
@@ -19,36 +25,72 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        preferenceType: UserPreferenceType.NotificationAspectCreated,
+        preferenceType: UserPreferenceType.NotificationAspectCreatedAdmin,
         emailTemplate: EmailTemplate.ASPECT_CREATED_ADMIN,
+      },
+      {
+        role: 'user',
+        preferenceType: UserPreferenceType.NotificationAspectCreated,
+        emailTemplate: EmailTemplate.ASPECT_CREATED_MEMBER,
       },
     ];
 
-    const lookupMap = new Map([
-      ['hubID', ''],
-      ['challengeID', ''],
-      ['opportunityID', ''],
-    ]);
+    const templateVariables = {
+      hubID: payload.hub.id,
+      challengeID: payload.hub?.challenge?.id ?? '',
+      opportunityID: payload.hub?.challenge?.opportunity?.id ?? '',
+    };
 
-    return this.notificationBuilder
-      .setPayload(payload)
-      .setEventUser(payload.userID)
-      .setRoleConfig(roleConfig)
-      .setTemplateType('application_created')
-      .setTemplateVariables(lookupMap)
-      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
-      .build();
+    return this.notificationBuilder.build({
+      payload,
+      eventUserId: payload.aspect.createdBy,
+      roleConfig,
+      templateType: 'aspect_created',
+      templateVariables,
+      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+    });
   }
 
   createTemplatePayload(
     eventPayload: AspectCreatedEventPayload,
     recipient: User,
-    applicant?: User
+    creator?: User
   ): Record<string, unknown> {
-    if (!applicant) {
-      throw Error(`Applicant not provided for '${ASPECT_CREATED} event'`);
+    if (!creator) {
+      throw Error(`Creator not provided for '${ASPECT_CREATED} event'`);
     }
 
-    return {};
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+
+    const communityURL = this.alkemioUrlGenerator.createCommunityURL(
+      eventPayload.hub.nameID,
+      eventPayload.hub.challenge?.nameID,
+      eventPayload.hub.challenge?.opportunity?.nameID
+    );
+
+    return {
+      emailFrom: 'info@alkem.io',
+      createdBy: {
+        name: creator.displayName,
+        firstname: creator.firstName,
+        email: creator.email,
+      },
+      aspect: {
+        displayName: eventPayload.aspect.displayName,
+      },
+      recipient: {
+        name: recipient.displayName,
+        firstname: recipient.firstName,
+        email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
+      },
+      community: {
+        name: eventPayload.community.name,
+        url: communityURL,
+      },
+    };
   }
 }
