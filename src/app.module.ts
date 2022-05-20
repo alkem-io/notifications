@@ -19,6 +19,7 @@ import {
   UserRegisteredNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
   AspectCreatedNotificationBuilder,
+  AspectCommentCreatedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import {
@@ -55,6 +56,7 @@ import {
     CommunityContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
     AspectCreatedNotificationBuilder,
+    AspectCommentCreatedNotificationBuilder,
     NotificationService,
   ],
   controllers: [AppController],

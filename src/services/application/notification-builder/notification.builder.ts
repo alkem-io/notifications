@@ -164,21 +164,29 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
       filteredRecipients.push(...recipients);
     } else {
       for (const recipient of recipients) {
-        if (
+        const targetedUserPreference =
           recipient.preferences &&
           recipient.preferences.find(
             preference =>
-              preference.definition.type === extra?.rolePreferenceType &&
-              preference.value === 'true'
-          )
-        ) {
-          filteredRecipients.push(recipient);
-        } else {
+              preference.definition.type === extra.rolePreferenceType
+          );
+
+        if (!targetedUserPreference) {
+          this.logger.verbose?.(
+            `Skipping recipient ${recipient.nameID} - ${extra.rolePreferenceType} preference not found`
+          );
+          continue;
+        }
+
+        if (targetedUserPreference.value !== 'true') {
           this.logger.verbose?.(
             `User ${recipient.displayName} filtered out because of ${extra?.rolePreferenceType}`,
             LogContext.NOTIFICATIONS
           );
+          continue;
         }
+
+        filteredRecipients.push(recipient);
       }
     }
 

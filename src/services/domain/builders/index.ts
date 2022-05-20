@@ -5,3 +5,4 @@ export * from './community-context-feedback/community.context.review.submitted.n
 export * from './community-new-member/community.new.member.notification.builder';
 export * from './user-registered/user.registered.notification.builder';
 export * from './aspect-created/aspect.created.notification.builder';
+export * from './aspect-comment-created/aspect.comment.created.notification.builder';

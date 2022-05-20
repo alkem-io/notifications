@@ -12,6 +12,7 @@ import { NotificationStatus } from 'notifme-sdk';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   ASPECT_CREATED,
+  COMMENT_CREATED_ON_ASPECT,
   COMMUNICATION_DISCUSSION_CREATED,
   COMMUNICATION_UPDATE_SENT,
   COMMUNITY_APPLICATION_CREATED,
@@ -23,6 +24,7 @@ import {
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
   ApplicationCreatedEventPayload,
+  AspectCommentCreatedEventPayload,
   AspectCreatedEventPayload,
   CommunicationDiscussionCreatedEventPayload,
   CommunicationUpdateEventPayload,
@@ -144,6 +146,21 @@ export class AppController {
       eventPayload,
       context,
       this.notificationService.sendAspectCreatedNotification(eventPayload),
+      ASPECT_CREATED
+    );
+  }
+
+  @EventPattern(COMMENT_CREATED_ON_ASPECT, Transport.RMQ)
+  async sendAspectCommentCreatedNotifications(
+    @Payload() eventPayload: AspectCommentCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendAspectCommentCreatedNotification(
+        eventPayload
+      ),
       ASPECT_CREATED
     );
   }
