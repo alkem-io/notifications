@@ -15,6 +15,8 @@ export type TemplateRuleSet = {
 
 export type TemplateConfig = {
   application_created?: TemplateRuleSet[];
+  aspect_created?: TemplateRuleSet[];
+  aspect_comment_created?: TemplateRuleSet[];
   user_registered?: TemplateRuleSet[];
   communication_update_sent?: TemplateRuleSet[];
   communication_discussion_created?: TemplateRuleSet[];

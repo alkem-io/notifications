@@ -4,13 +4,16 @@ import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { CommunicationUpdateEventPayload } from '@common/dto';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
+import {
+  AlkemioUrlGenerator,
+  NotificationBuilder,
+  RoleConfig,
+} from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 
 @Injectable()
-export class CommunicationUpdateNotificationBuilder
+export class CommunicationUpdateCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
@@ -36,20 +39,20 @@ export class CommunicationUpdateNotificationBuilder
       },
     ];
 
-    const lookupMap = new Map([
-      ['hubID', payload.hub.id],
-      ['challengeID', payload.hub.challenge?.id ?? ''],
-      ['opportunityID', payload.hub.challenge?.opportunity?.id ?? ''],
-    ]);
+    const templateVariables = {
+      hubID: payload.hub.id,
+      challengeID: payload.hub.challenge?.id ?? '',
+      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+    };
 
-    return this.notificationBuilder
-      .setPayload(payload)
-      .setEventUser(payload.update.createdBy)
-      .setRoleConfig(roleConfig)
-      .setTemplateType('communication_update_sent')
-      .setTemplateVariables(lookupMap)
-      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
-      .build();
+    return this.notificationBuilder.build({
+      payload,
+      eventUserId: payload.update.createdBy,
+      roleConfig,
+      templateType: 'communication_update_sent',
+      templateVariables,
+      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+    });
   }
 
   createTemplatePayload(

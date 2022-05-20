@@ -4,10 +4,7 @@ import { User } from '@core/models';
 import { UserRegistrationEventPayload } from '@common/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-import {
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application/notification-builder/notification.builder';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -35,16 +32,16 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
       },
     ];
 
-    const lookupMap = new Map([['registrantID', payload.userID]]);
+    const templateVariables = { registrantID: payload.userID };
 
-    return this.notificationBuilder
-      .setPayload(payload)
-      .setEventUser(payload.userID)
-      .setRoleConfig(roleConfig)
-      .setTemplateType('user_registered')
-      .setTemplateVariables(lookupMap)
-      .setTemplateBuilderFn(this.createTemplatePayload.bind(this))
-      .build();
+    return this.notificationBuilder.build({
+      payload,
+      eventUserId: payload.userID,
+      roleConfig,
+      templateType: 'user_registered',
+      templateVariables,
+      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+    });
   }
 
   private createTemplatePayload(

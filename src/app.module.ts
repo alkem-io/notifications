@@ -14,14 +14,18 @@ import {
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import {
   CommunicationDiscussionCreatedNotificationBuilder,
-  CommunicationUpdateNotificationBuilder,
+  CommunicationUpdateCreatedNotificationBuilder,
   CommunityContextReviewSubmittedNotificationBuilder,
   UserRegisteredNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
+  AspectCreatedNotificationBuilder,
+  AspectCommentCreatedNotificationBuilder,
 } from './services/domain/builders';
-import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { NotificationBuilderFactoryProvider } from './services/application/notification-builder';
+import {
+  AlkemioUrlGeneratorModule,
+  NotificationBuilder,
+} from './services/application';
 
 @Module({
   imports: [
@@ -44,13 +48,15 @@ import { NotificationBuilderFactoryProvider } from './services/application/notif
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
-    NotificationBuilderFactoryProvider,
+    NotificationBuilder,
     ApplicationCreatedNotificationBuilder,
     UserRegisteredNotificationBuilder,
-    CommunicationUpdateNotificationBuilder,
+    CommunicationUpdateCreatedNotificationBuilder,
     CommunicationDiscussionCreatedNotificationBuilder,
     CommunityContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
+    AspectCreatedNotificationBuilder,
+    AspectCommentCreatedNotificationBuilder,
     NotificationService,
   ],
   controllers: [AppController],

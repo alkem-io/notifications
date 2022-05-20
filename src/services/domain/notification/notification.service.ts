@@ -14,16 +14,22 @@ import {
   CommunityContextReviewSubmittedPayload,
   UserRegistrationEventPayload,
   CommunityNewMemberPayload,
+  AspectCreatedEventPayload,
+  AspectCommentCreatedEventPayload,
 } from '@common/dto';
-import { ApplicationCreatedNotificationBuilder } from '@src/services';
-import { CommunicationDiscussionCreatedNotificationBuilder } from '../builders/communication-discussion-created/communication.discussion.created.notification.builder';
-import { CommunicationUpdateNotificationBuilder } from '../builders/communication-updated/communication.updated.notification.builder';
-import { UserRegisteredNotificationBuilder } from '../builders/user-registered/user.registered.notification.builder';
-import { CommunityContextReviewSubmittedNotificationBuilder } from '../builders/community-context-feedback/community.context.review.submitted.notification.builder';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';
 import { CommunityNewMemberNotificationBuilder } from '@src/services/domain/builders';
+import {
+  ApplicationCreatedNotificationBuilder,
+  CommunicationDiscussionCreatedNotificationBuilder,
+  CommunicationUpdateCreatedNotificationBuilder,
+  UserRegisteredNotificationBuilder,
+  CommunityContextReviewSubmittedNotificationBuilder,
+  AspectCreatedNotificationBuilder,
+  AspectCommentCreatedNotificationBuilder,
+} from '../builders';
 
 @Injectable()
 export class NotificationService {
@@ -36,10 +42,12 @@ export class NotificationService {
     private readonly notifmeService: NotifmeSdk,
     private applicationCreatedNotificationBuilder: ApplicationCreatedNotificationBuilder,
     private userRegisteredNotificationBuilder: UserRegisteredNotificationBuilder,
-    private communicationUpdatedNotificationBuilder: CommunicationUpdateNotificationBuilder,
+    private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
     private communityContextReviewSubmittedNotificationBuilder: CommunityContextReviewSubmittedNotificationBuilder,
-    private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder
+    private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
+    private aspectCreatedNotificationBuilder: AspectCreatedNotificationBuilder,
+    private aspectCommentCreatedNotificationBuilder: AspectCommentCreatedNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -115,6 +123,24 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.communityContextReviewSubmittedNotificationBuilder
+    );
+  }
+
+  async sendAspectCreatedNotification(
+    payload: AspectCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.aspectCreatedNotificationBuilder
+    );
+  }
+
+  async sendAspectCommentCreatedNotification(
+    payload: AspectCommentCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.aspectCommentCreatedNotificationBuilder
     );
   }
 
