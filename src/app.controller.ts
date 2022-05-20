@@ -1,10 +1,18 @@
 import { Controller, Inject, LoggerService } from '@nestjs/common';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  Payload,
+  RmqContext,
+  Transport,
+} from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
 import { NotificationStatus } from 'notifme-sdk';
 import {
   ALKEMIO_CLIENT_ADAPTER,
+  ASPECT_CREATED,
+  COMMENT_CREATED_ON_ASPECT,
   COMMUNICATION_DISCUSSION_CREATED,
   COMMUNICATION_UPDATE_SENT,
   COMMUNITY_APPLICATION_CREATED,
@@ -16,11 +24,13 @@ import {
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
   ApplicationCreatedEventPayload,
-  CommunicationUpdateEventPayload,
+  AspectCommentCreatedEventPayload,
+  AspectCreatedEventPayload,
   CommunicationDiscussionCreatedEventPayload,
+  CommunicationUpdateEventPayload,
   CommunityContextReviewSubmittedPayload,
-  UserRegistrationEventPayload,
   CommunityNewMemberPayload,
+  UserRegistrationEventPayload,
 } from '@common/dto';
 import { NotificationService } from './services/domain/notification/notification.service';
 
@@ -124,6 +134,34 @@ export class AppController {
         eventPayload
       ),
       COMMUNITY_CONTEXT_REVIEW_SUBMITTED
+    );
+  }
+
+  @EventPattern(ASPECT_CREATED, Transport.RMQ)
+  async sendAspectCreatedNotifications(
+    @Payload() eventPayload: AspectCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendAspectCreatedNotification(eventPayload),
+      ASPECT_CREATED
+    );
+  }
+
+  @EventPattern(COMMENT_CREATED_ON_ASPECT, Transport.RMQ)
+  async sendAspectCommentCreatedNotifications(
+    @Payload() eventPayload: AspectCommentCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendAspectCommentCreatedNotification(
+        eventPayload
+      ),
+      ASPECT_CREATED
     );
   }
 
