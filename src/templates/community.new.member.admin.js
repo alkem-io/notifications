@@ -14,7 +14,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstname}},<br><br>
 
-          User {{member.displayName}} joined the {{community.name}} community
+          User {{member.name}} joined the {{community.name}} community
           <br/>
           Sincerely yours,
         {% endblock %}
