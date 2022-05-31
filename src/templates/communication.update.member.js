@@ -3,13 +3,13 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'communication-update-member',
-  title: 'New update sent to community {{community.name}}',
+  title: '[{{community.name}}] New update shared',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: 'New update shared with community {{community.name}}',
+      subject: '[{{community.name}}] New update shared',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.firstname}},<br><br>

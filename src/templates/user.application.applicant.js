@@ -3,13 +3,13 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'user-application-applicant',
-  title: "Application to join '{{community.name}}' received",
+  title: '[{{community.name}}] Application to join received',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: 'Your application to {{community.name}} was received!',
+      subject: '[{{community.name}}] Application to join received!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{applicant.name}},<br><br>
