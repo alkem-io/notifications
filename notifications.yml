@@ -207,13 +207,13 @@ recipients:
       rules:
         - rule:
             type: HUB_MEMBER
-            resource_id: <hubID>
+            resource_id: <communityID>
         - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <challengeID>
+            resource_id: <communityID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <opportunityID>
+            resource_id: <communityID>
   aspect_comment_created:
     - name: owner
       rules:
