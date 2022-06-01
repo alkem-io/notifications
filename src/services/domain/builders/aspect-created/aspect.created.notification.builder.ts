@@ -39,6 +39,10 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
       hubID: payload.hub.id,
       challengeID: payload.hub?.challenge?.id ?? '',
       opportunityID: payload.hub?.challenge?.opportunity?.id ?? '',
+      communityID:
+        payload.hub?.challenge?.opportunity?.id ??
+        payload.hub?.challenge?.id ??
+        payload.hub.id,
     };
 
     return this.notificationBuilder.build({

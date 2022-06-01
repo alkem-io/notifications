@@ -196,13 +196,13 @@ recipients:
       rules:
         - rule:
             type: HUB_ADMIN
-            resource_id: <hubID>
+            resource_id: <communityID>
         - rule:
             type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
+            resource_id: <communityID>
         - rule:
             type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
+            resource_id: <communityID>
     - name: user
       rules:
         - rule:
