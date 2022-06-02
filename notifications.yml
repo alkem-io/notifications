@@ -178,14 +178,14 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: HUB_MEMBER
-            resource_id: <entityID>
+            type: HUB_ADMIN
+            resource_id: <hubID>
         - rule:
-            type: CHALLENGE_MEMBER
-            resource_id: <entityID>
+            type: CHALLENGE_ADMIN
+            resource_id: <challengeID>
         - rule:
-            type: OPPORTUNITY_MEMBER
-            resource_id: <entityID>
+            type: OPPORTUNITY_ADMIN
+            resource_id: <opportunityID>
     - name: member
       rules:
         - rule:
