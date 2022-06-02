@@ -39,7 +39,7 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
       hubID: payload.hub.id,
       challengeID: payload.hub?.challenge?.id ?? '',
       opportunityID: payload.hub?.challenge?.opportunity?.id ?? '',
-      communityID:
+      entityID:
         payload.hub?.challenge?.opportunity?.id ??
         payload.hub?.challenge?.id ??
         payload.hub.id,

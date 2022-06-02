@@ -135,14 +135,14 @@ recipients:
     - name: member
       rules:
         - rule:
+            type: HUB_MEMBER
+            resource_id: <entityID>
+        - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <challengeID>
+            resource_id: <entityID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <opportunityID>
-        - rule:
-            type: HUB_MEMBER
-            resource_id: <hubID>
+            resource_id: <entityID>
   communication_discussion_created:
     - name: admin
       rules:
@@ -155,14 +155,14 @@ recipients:
     - name: member
       rules:
         - rule:
+            type: HUB_MEMBER
+            resource_id: <entityID>
+        - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <challengeID>
+            resource_id: <entityID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <opportunityID>
-        - rule:
-            type: HUB_MEMBER
-            resource_id: <hubID>
+            resource_id: <entityID>
   community_review_submitted:
     - name: admin
       rules:
@@ -178,14 +178,14 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: HUB_ADMIN
-            resource_id: <hubID>
+            type: HUB_MEMBER
+            resource_id: <entityID>
         - rule:
-            type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
+            type: CHALLENGE_MEMBER
+            resource_id: <entityID>
         - rule:
-            type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
+            type: OPPORTUNITY_MEMBER
+            resource_id: <entityID>
     - name: member
       rules:
         - rule:
@@ -196,24 +196,24 @@ recipients:
       rules:
         - rule:
             type: HUB_ADMIN
-            resource_id: <communityID>
+            resource_id: <hubID>
         - rule:
             type: CHALLENGE_ADMIN
-            resource_id: <communityID>
+            resource_id: <challengeID>
         - rule:
             type: OPPORTUNITY_ADMIN
-            resource_id: <communityID>
+            resource_id: <opportunityID>
     - name: user
       rules:
         - rule:
             type: HUB_MEMBER
-            resource_id: <communityID>
+            resource_id: <entityID>
         - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <communityID>
+            resource_id: <entityID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <communityID>
+            resource_id: <entityID>
   aspect_comment_created:
     - name: owner
       rules:
