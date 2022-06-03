@@ -47,6 +47,10 @@ export class CommunicationDiscussionCreatedNotificationBuilder
       hubID: payload.hub.id,
       challengeID: payload.hub.challenge?.id ?? '',
       opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+      entityID:
+        payload.hub?.challenge?.opportunity?.id ??
+        payload.hub?.challenge?.id ??
+        payload.hub.id,
     };
 
     return this.notificationBuilder.build({

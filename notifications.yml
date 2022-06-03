@@ -135,14 +135,14 @@ recipients:
     - name: member
       rules:
         - rule:
+            type: HUB_MEMBER
+            resource_id: <entityID>
+        - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <challengeID>
+            resource_id: <entityID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <opportunityID>
-        - rule:
-            type: HUB_MEMBER
-            resource_id: <hubID>
+            resource_id: <entityID>
   communication_discussion_created:
     - name: admin
       rules:
@@ -155,14 +155,14 @@ recipients:
     - name: member
       rules:
         - rule:
+            type: HUB_MEMBER
+            resource_id: <entityID>
+        - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <challengeID>
+            resource_id: <entityID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <opportunityID>
-        - rule:
-            type: HUB_MEMBER
-            resource_id: <hubID>
+            resource_id: <entityID>
   community_review_submitted:
     - name: admin
       rules:
@@ -207,13 +207,13 @@ recipients:
       rules:
         - rule:
             type: HUB_MEMBER
-            resource_id: <hubID>
+            resource_id: <entityID>
         - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <challengeID>
+            resource_id: <entityID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <opportunityID>
+            resource_id: <entityID>
   aspect_comment_created:
     - name: owner
       rules:
