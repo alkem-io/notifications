@@ -18,6 +18,7 @@ import {
   CommunityContextReviewSubmittedNotificationBuilder,
   UserRegisteredNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
+  CommunityCollaborationInterestNotificationBuilder,
   AspectCreatedNotificationBuilder,
   AspectCommentCreatedNotificationBuilder,
 } from './services/domain/builders';
@@ -55,6 +56,7 @@ import {
     CommunicationDiscussionCreatedNotificationBuilder,
     CommunityContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
+    CommunityCollaborationInterestNotificationBuilder,
     AspectCreatedNotificationBuilder,
     AspectCommentCreatedNotificationBuilder,
     NotificationService,

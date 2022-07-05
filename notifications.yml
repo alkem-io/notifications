@@ -191,6 +191,20 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <memberID>
+  community_collaboration_interest:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_ADMIN_COMMUNITY
+            resource_id:
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id:
+    - name: user
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <userID>
   aspect_created:
     - name: admin
       rules:
