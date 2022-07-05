@@ -69,9 +69,9 @@ export class CommunityCollaborationInterestNotificationBuilder
         firstname: recipient.firstName,
         email: recipient.email,
       },
-
       opportunity: {
-        nameID: eventPayload.opportunity.nameID,
+        name: eventPayload.opportunity.name,
+        communityName: eventPayload.opportunity.communityName,
       },
     };
   }

@@ -1,9 +1,7 @@
 export type CommunityCollaborationInterestPayload = {
   userID: string;
-  community: {
-    name: string;
-  };
   opportunity: {
-    nameID: string;
+    name: string;
+    communityName: string;
   };
 };
