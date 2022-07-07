@@ -197,9 +197,6 @@ recipients:
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
             resource_id:
-        - rule:
-            type: GLOBAL_ADMIN
-            resource_id:
     - name: user
       rules:
         - rule:
