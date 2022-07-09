@@ -195,6 +195,9 @@ recipients:
     - name: admin
       rules:
         - rule:
+            type: OPPORTUNITY_ADMIN
+            resource_id: <opportunityID>
+        - rule:
             type: GLOBAL_ADMIN_COMMUNITY
             resource_id:
     - name: user

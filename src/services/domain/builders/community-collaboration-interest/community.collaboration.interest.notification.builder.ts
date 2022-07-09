@@ -36,6 +36,7 @@ export class CommunityCollaborationInterestNotificationBuilder
 
     const templateVariables = {
       userID: payload.userID,
+      opportunityID: payload.opportunity.id,
     };
 
     return this.notificationBuilder.build({
