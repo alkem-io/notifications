@@ -3,13 +3,14 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'aspect-created-member',
-  title: 'New aspect created on {{community.name}}: {{aspect.displayName}}',
+  title: '[{{community.name}}] New aspect created: {{aspect.displayName}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: 'New aspect created on {{community.name}}: {{aspect.displayName}}',
+      subject:
+        '[{{community.name}}] New aspect created: {{aspect.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.firstname}},<br><br>
