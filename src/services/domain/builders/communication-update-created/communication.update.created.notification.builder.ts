@@ -69,7 +69,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
         `Sender not provided for '${COMMUNICATION_UPDATE_SENT}' event`
       );
     }
-
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
       eventPayload.hub.nameID,
       eventPayload.hub.challenge?.nameID,

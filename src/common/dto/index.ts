@@ -3,6 +3,7 @@ export * from './communication.discussion.created.event.payload';
 export * from './communication.update.event.payload';
 export * from './community.context.review.submitted.payload';
 export * from './community.new.member.payload';
+export * from './community.collaboration.interest.payload';
 export * from './user.registration.event.payload';
 export * from './hub.payload';
 export * from './aspect.created.event.payload';
