@@ -23,6 +23,7 @@ import {
   CommunityNewMemberNotificationBuilder,
   AspectCreatedNotificationBuilder,
   AspectCommentCreatedNotificationBuilder,
+  CommunityCollaborationInterestNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -65,6 +66,7 @@ describe('NotificationService', () => {
         CommunicationDiscussionCreatedNotificationBuilder,
         CommunityContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
+        CommunityCollaborationInterestNotificationBuilder,
         AspectCreatedNotificationBuilder,
         AspectCommentCreatedNotificationBuilder,
         MockNotificationBuilderProvider,
