@@ -3,6 +3,6 @@ export type CommunityCollaborationInterestPayload = {
   opportunity: {
     id: string;
     name: string;
-    communityName: string;
+    communityName: string | undefined;
   };
 };
