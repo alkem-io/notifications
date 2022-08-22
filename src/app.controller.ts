@@ -20,6 +20,7 @@ import {
   COMMUNITY_NEW_MEMBER,
   LogContext,
   USER_REGISTERED,
+  COMMUNITY_COLLABORATION_INTEREST,
 } from './common';
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
@@ -30,6 +31,7 @@ import {
   CommunicationUpdateEventPayload,
   CommunityContextReviewSubmittedPayload,
   CommunityNewMemberPayload,
+  CommunityCollaborationInterestPayload,
   UserRegistrationEventPayload,
 } from '@common/dto';
 import { NotificationService } from './services/domain/notification/notification.service';
@@ -73,6 +75,21 @@ export class AppController {
         eventPayload
       ),
       COMMUNITY_NEW_MEMBER
+    );
+  }
+
+  @EventPattern(COMMUNITY_COLLABORATION_INTEREST)
+  async sendCommunityCollaborationInterestNotification(
+    @Payload() eventPayload: CommunityCollaborationInterestPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunityCollaborationInterestNotification(
+        eventPayload
+      ),
+      COMMUNITY_COLLABORATION_INTEREST
     );
   }
 
