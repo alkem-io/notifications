@@ -74,6 +74,10 @@ export class CommunityCollaborationInterestNotificationBuilder
         name: eventPayload.opportunity.name,
         communityName: eventPayload.opportunity.communityName,
       },
+      relation: {
+        role: eventPayload.relation.role,
+        description: eventPayload.relation.description,
+      },
     };
   }
 }

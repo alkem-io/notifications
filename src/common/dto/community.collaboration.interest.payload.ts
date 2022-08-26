@@ -5,4 +5,8 @@ export type CommunityCollaborationInterestPayload = {
     name: string;
     communityName: string | undefined;
   };
+  relation: {
+    role: string;
+    description: string;
+  };
 };
