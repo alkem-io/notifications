@@ -49,7 +49,7 @@ const testData = {
 describe('NotificationService', () => {
   let notificationService: NotificationService;
   let alkemioAdapter: INotifiedUsersProvider;
-  let notificationBuilder: NotificationBuilder<any>;
+  let notificationBuilder: NotificationBuilder<any, any>;
   let notifmeService: NotifmeSdk;
 
   beforeAll(async () => {

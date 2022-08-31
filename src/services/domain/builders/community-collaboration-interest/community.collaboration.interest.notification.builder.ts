@@ -97,10 +97,6 @@ export class CommunityCollaborationInterestNotificationBuilder
       hub: {
         url: hubURL,
       },
-      relation: {
-        role: eventPayload.relation.role,
-        description: eventPayload.relation.description,
-      },
     };
   }
 }

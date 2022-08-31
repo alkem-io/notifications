@@ -35,6 +35,7 @@ import {
   CommunityCollaborationInterestPayload,
   UserRegistrationEventPayload,
   CalloutPublishedEventPayload,
+  BaseEventPayload,
 } from '@common/dto';
 import { NotificationService } from './services/domain/notification/notification.service';
 
@@ -198,7 +199,7 @@ export class AppController {
   }
 
   private async sendNotifications(
-    @Payload() eventPayload: Record<string, unknown>,
+    @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext,
     sentNotifications: Promise<PromiseSettledResult<NotificationStatus>[]>,
     eventName: string
