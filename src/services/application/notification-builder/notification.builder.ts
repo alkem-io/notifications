@@ -34,14 +34,21 @@ export type TemplateBuilderFn<TPayload> = (
 ) => Record<string, unknown>;
 
 export type NotificationOptions<TPayload = Record<string, unknown>> = {
+  /** The received event payload */
   payload: TPayload;
+  /** the name of the template in notifications.yml */
   templateType: TemplateType;
+  /** payload builder function for the email template */
   templatePayloadBuilderFn: TemplateBuilderFn<TPayload>;
+  /** configuration to which roles the notification must be sent */
   roleConfig: RoleConfig[];
+  /** the creator of the event if any */
   eventUserId?: string;
+  /** variables to be used into the chosen templateType if any */
   templateVariables?: Record<string, string>;
 };
-
+// todo improve the type of templatePayloadBuilderFn with TEmailPayload extending BaseEmailPayload
+// todo convert TPayload to extend Record
 export class NotificationBuilder<TPayload = Record<string, unknown>> {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)

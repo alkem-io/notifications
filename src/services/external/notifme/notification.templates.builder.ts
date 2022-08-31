@@ -7,14 +7,16 @@ import { renderString } from 'nunjucks';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 
 @Injectable()
-export class NotificationTemplateBuilder {
+export class NotificationTemplateBuilder<
+  TTemplatePayload = Record<string, unknown>
+> {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService
   ) {}
   async buildTemplate(
     template: string,
-    templatePayload: Record<string, unknown>
+    templatePayload: TTemplatePayload
   ): Promise<NotificationTemplateType | undefined> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires

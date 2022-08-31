@@ -16,4 +16,5 @@ export enum EmailTemplate {
   ASPECT_CREATED_ADMIN = 'aspect.created.admin',
   ASPECT_CREATED_MEMBER = 'aspect.created.member',
   ASPECT_COMMENT_CREATED_MEMBER = 'aspect.comment.created.member',
+  CALLOUT_PUBLISHED_MEMBER = 'callout.published.member',
 }

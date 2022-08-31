@@ -21,6 +21,7 @@ import {
   LogContext,
   USER_REGISTERED,
   COMMUNITY_COLLABORATION_INTEREST,
+  CALLOUT_PUBLISHED,
 } from './common';
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
@@ -33,6 +34,7 @@ import {
   CommunityNewMemberPayload,
   CommunityCollaborationInterestPayload,
   UserRegistrationEventPayload,
+  CalloutPublishedEventPayload,
 } from '@common/dto';
 import { NotificationService } from './services/domain/notification/notification.service';
 
@@ -178,6 +180,19 @@ export class AppController {
       this.notificationService.sendAspectCommentCreatedNotification(
         eventPayload
       ),
+      ASPECT_CREATED
+    );
+  }
+
+  @EventPattern(CALLOUT_PUBLISHED, Transport.RMQ)
+  async sendCalloutPublishedNotifications(
+    @Payload() eventPayload: CalloutPublishedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCalloutPublishedNotification(eventPayload),
       ASPECT_CREATED
     );
   }

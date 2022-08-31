@@ -17,11 +17,11 @@ import {
   AspectCreatedEventPayload,
   AspectCommentCreatedEventPayload,
   CommunityCollaborationInterestPayload,
+  CalloutPublishedEventPayload,
 } from '@common/dto';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';
-import { CommunityNewMemberNotificationBuilder } from '@src/services/domain/builders';
 import {
   ApplicationCreatedNotificationBuilder,
   CommunicationDiscussionCreatedNotificationBuilder,
@@ -31,6 +31,8 @@ import {
   AspectCreatedNotificationBuilder,
   AspectCommentCreatedNotificationBuilder,
   CommunityCollaborationInterestNotificationBuilder,
+  CalloutPublishedNotificationBuilder,
+  CommunityNewMemberNotificationBuilder,
 } from '../builders';
 
 @Injectable()
@@ -50,6 +52,7 @@ export class NotificationService {
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
     private aspectCreatedNotificationBuilder: AspectCreatedNotificationBuilder,
     private aspectCommentCreatedNotificationBuilder: AspectCommentCreatedNotificationBuilder,
+    private calloutPublishedNotificationBuilder: CalloutPublishedNotificationBuilder,
     private communityCollaborationInterestNotificationBuilder: CommunityCollaborationInterestNotificationBuilder
   ) {}
 
@@ -146,6 +149,16 @@ export class NotificationService {
       this.aspectCommentCreatedNotificationBuilder
     );
   }
+
+  async sendCalloutPublishedNotification(
+    payload: CalloutPublishedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.calloutPublishedNotificationBuilder
+    );
+  }
+
   async sendCommunityCollaborationInterestNotification(
     payload: CommunityCollaborationInterestPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
