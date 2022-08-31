@@ -1,5 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { COMMUNITY_CONTEXT_REVIEW_SUBMITTED } from '@src/common';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  ALKEMIO_URL_GENERATOR,
+  COMMUNITY_CONTEXT_REVIEW_SUBMITTED,
+} from '@src/common';
 import { INotificationBuilder } from '@core/contracts';
 import {
   CommunityContextReviewSubmittedPayload,
@@ -8,15 +11,25 @@ import {
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
-import { NotificationBuilder, RoleConfig } from '../../../application';
+import {
+  AlkemioUrlGenerator,
+  NotificationBuilder,
+  RoleConfig,
+} from '../../../application';
 import { NotificationTemplateType } from '@src/types';
+import { CommunityContextEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class CommunityContextReviewSubmittedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<CommunityContextReviewSubmittedPayload>
+    @Inject(ALKEMIO_URL_GENERATOR)
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
+    private readonly notificationBuilder: NotificationBuilder<
+      CommunityContextReviewSubmittedPayload,
+      CommunityContextEmailPayload
+    >
   ) {}
 
   build(
@@ -56,12 +69,19 @@ export class CommunityContextReviewSubmittedNotificationBuilder
     eventPayload: CommunityContextReviewSubmittedPayload,
     recipient: User,
     reviewer?: User
-  ): any {
+  ): CommunityContextEmailPayload {
     if (!reviewer) {
       throw Error(
         `Reviewer not provided for '${COMMUNITY_CONTEXT_REVIEW_SUBMITTED}' event`
       );
     }
+
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
 
     return {
       emailFrom: 'info@alkem.io',
@@ -69,14 +89,17 @@ export class CommunityContextReviewSubmittedNotificationBuilder
         name: reviewer.displayName,
       },
       recipient: {
-        name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
       },
       community: {
         name: eventPayload.community.name,
       },
       review: toStringReview(eventPayload.questions),
+      hub: {
+        url: hubURL,
+      },
     };
   }
 }

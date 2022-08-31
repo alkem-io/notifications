@@ -1,3 +1,4 @@
+export * from './base.event.payload';
 export * from './application.created.event.payload';
 export * from './communication.discussion.created.event.payload';
 export * from './communication.update.event.payload';

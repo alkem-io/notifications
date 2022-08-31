@@ -1,4 +1,6 @@
-export type AspectCreatedEventPayload = {
+import { BaseEventPayload } from './base.event.payload';
+
+export interface AspectCreatedEventPayload extends BaseEventPayload {
   aspect: {
     id: string;
     createdBy: string;
@@ -21,4 +23,4 @@ export type AspectCreatedEventPayload = {
       };
     };
   };
-};
+}

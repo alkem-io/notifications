@@ -25,7 +25,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 describe('NotificationBuilder', () => {
   let alkemioAdapter: INotifiedUsersProvider;
   let recipientTemplateProvider: INotificationRecipientTemplateProvider;
-  let notificationBuilder: NotificationBuilder;
+  let notificationBuilder: NotificationBuilder<any>;
   let logger: LoggerService;
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -86,7 +86,7 @@ describe('NotificationBuilder', () => {
   });
 });
 
-const getBaseOptions = (): NotificationOptions => ({
+const getBaseOptions = (): NotificationOptions<any> => ({
   payload: {},
   templateType: 'application_created',
   templatePayloadBuilderFn: () => ({}),

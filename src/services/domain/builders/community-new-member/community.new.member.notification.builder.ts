@@ -1,19 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-import { NotificationBuilder, RoleConfig } from '../../../application';
+import {
+  AlkemioUrlGenerator,
+  NotificationBuilder,
+  RoleConfig,
+} from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityNewMemberPayload } from '@common/dto';
 import { NotificationTemplateType } from '@src/types';
-import { COMMUNITY_NEW_MEMBER } from '@src/common';
+import { ALKEMIO_URL_GENERATOR, COMMUNITY_NEW_MEMBER } from '@src/common';
+import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<CommunityNewMemberPayload>
+    private readonly notificationBuilder: NotificationBuilder<
+      CommunityNewMemberPayload,
+      CommunityNewMemberEmailPayload
+    >,
+    @Inject(ALKEMIO_URL_GENERATOR)
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
 
   build(
@@ -53,23 +63,32 @@ export class CommunityNewMemberNotificationBuilder
     eventPayload: CommunityNewMemberPayload,
     recipient: User,
     member?: User
-  ) {
+  ): CommunityNewMemberEmailPayload {
     if (!member) {
       throw Error(`member not provided for '${COMMUNITY_NEW_MEMBER} event'`);
     }
 
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
+
     return {
       emailFrom: 'info@alkem.io',
       member: {
-        name: member.displayName,
         email: member.email,
       },
       recipient: {
         firstname: recipient.firstName,
-        email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
       },
       community: {
         name: eventPayload.community.name,
+      },
+      hub: {
+        url: hubURL,
       },
     };
   }

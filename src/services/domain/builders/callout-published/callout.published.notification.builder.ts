@@ -11,13 +11,17 @@ import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR, CALLOUT_PUBLISHED } from '@src/common';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CalloutPublishedEventPayload } from '@common/dto';
+import { CalloutPublishedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class CalloutPublishedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<CalloutPublishedEventPayload>, // CalloutPublishedEmailPayload
+    private readonly notificationBuilder: NotificationBuilder<
+      CalloutPublishedEventPayload,
+      CalloutPublishedEmailPayload
+    >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
@@ -53,7 +57,7 @@ export class CalloutPublishedNotificationBuilder
     eventPayload: CalloutPublishedEventPayload,
     recipient: User,
     creator?: User
-  ): Record<string, unknown> {
+  ): CalloutPublishedEmailPayload {
     if (!creator) {
       throw Error(`Creator not provided for '${CALLOUT_PUBLISHED} event'`);
     }

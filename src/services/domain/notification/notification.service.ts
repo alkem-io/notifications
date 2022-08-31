@@ -18,6 +18,7 @@ import {
   AspectCommentCreatedEventPayload,
   CommunityCollaborationInterestPayload,
   CalloutPublishedEventPayload,
+  BaseEventPayload,
 } from '@common/dto';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -57,7 +58,7 @@ export class NotificationService {
   ) {}
 
   async sendNotifications(
-    payload: Record<string, unknown>,
+    payload: BaseEventPayload,
     notificationBuilder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const notificationsEnabled =

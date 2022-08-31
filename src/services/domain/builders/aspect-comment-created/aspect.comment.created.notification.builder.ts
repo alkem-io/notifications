@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { AspectCommentCreatedEventPayload } from '@common/dto';
+import { AspectCommentCreatedEmailPayload } from '@common/email-template-payload';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -17,7 +18,10 @@ export class AspectCommentCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<AspectCommentCreatedEventPayload>,
+    private readonly notificationBuilder: NotificationBuilder<
+      AspectCommentCreatedEventPayload,
+      AspectCommentCreatedEmailPayload
+    >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
@@ -50,7 +54,7 @@ export class AspectCommentCreatedNotificationBuilder
     eventPayload: AspectCommentCreatedEventPayload,
     recipient: User,
     commentAuthor?: User
-  ): Record<string, unknown> {
+  ): AspectCommentCreatedEmailPayload {
     if (!commentAuthor) {
       throw Error(
         `Comment author not provided for '${COMMENT_CREATED_ON_ASPECT} event'`
@@ -67,25 +71,28 @@ export class AspectCommentCreatedNotificationBuilder
       eventPayload.hub.challenge?.opportunity?.nameID
     );
 
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
+
     return {
       emailFrom: 'info@alkem.io',
       aspect: {
         displayName: eventPayload.aspect.displayName,
       },
       recipient: {
-        name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
       createdBy: {
-        name: commentAuthor.displayName,
         firstname: commentAuthor.firstName,
         email: commentAuthor.email,
       },
       community: {
         name: eventPayload.community.name,
         url: communityURL,
+      },
+      hub: {
+        url: hubURL,
       },
     };
   }

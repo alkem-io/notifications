@@ -1,4 +1,7 @@
-export type CommunityCollaborationInterestPayload = {
+import { BaseEventPayload } from './base.event.payload';
+
+export interface CommunityCollaborationInterestPayload
+  extends BaseEventPayload {
   userID: string;
   opportunity: {
     id: string;
@@ -9,4 +12,4 @@ export type CommunityCollaborationInterestPayload = {
     role: string;
     description: string;
   };
-};
+}

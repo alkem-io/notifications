@@ -1,4 +1,6 @@
-export type CalloutPublishedEventPayload = {
+import { BaseEventPayload } from './base.event.payload';
+
+export interface CalloutPublishedEventPayload extends BaseEventPayload {
   userID: string;
   callout: {
     id: string;
@@ -21,4 +23,4 @@ export type CalloutPublishedEventPayload = {
       };
     };
   };
-};
+}

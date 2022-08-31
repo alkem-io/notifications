@@ -8,13 +8,17 @@ import { NotificationBuilder, RoleConfig } from '../../../application';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
+import { UserRegisteredEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class UserRegisteredNotificationBuilder implements INotificationBuilder {
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<UserRegistrationEventPayload>
+    private readonly notificationBuilder: NotificationBuilder<
+      UserRegistrationEventPayload,
+      UserRegisteredEmailPayload
+    >
   ) {}
 
   build(
@@ -48,7 +52,7 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
     eventPayload: UserRegistrationEventPayload,
     recipient: User,
     registrant?: User
-  ): Record<string, unknown> {
+  ): UserRegisteredEmailPayload {
     if (!registrant) {
       throw Error(`Registrant not provided for '${USER_REGISTERED}' event`);
     }
@@ -70,7 +74,6 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
         profile: registrantProfileURL,
       },
       recipient: {
-        name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
@@ -78,7 +81,6 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
       hub: {
         url: hubURL,
       },
-      event: eventPayload,
     };
   }
 }
