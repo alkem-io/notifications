@@ -52,8 +52,7 @@ export type NotificationOptions<
   /** variables to be used into the chosen templateType if any */
   templateVariables?: Record<string, string>;
 };
-// todo improve the type of templatePayloadBuilderFn with TEmailPayload extending BaseEmailPayload
-// todo convert TPayload to extend Record
+
 export class NotificationBuilder<
   TPayload extends BaseEventPayload,
   TEmailPayload extends BaseEmailPayload
