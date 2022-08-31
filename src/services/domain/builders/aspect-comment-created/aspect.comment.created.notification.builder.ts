@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { AspectCommentCreatedEventPayload } from '@common/dto';
 import {
@@ -26,7 +27,7 @@ export class AspectCommentCreatedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'owner',
-        preferenceType: 'NOTIFICATION_ASPECT_COMMENT_CREATED' as any, // UserPreferenceType.NotificationAspectCommentCreated, // todo not the correct one
+        preferenceType: UserPreferenceType.NotificationAspectCommentCreated,
         emailTemplate: EmailTemplate.ASPECT_COMMENT_CREATED_MEMBER,
       },
     ];
