@@ -1,7 +1,8 @@
 import { HubPayload } from './hub.payload';
 import { CommunityType } from './application.created.event.payload';
+import { BaseEventPayload } from '@common/dto/base.event.payload';
 
-export type CommunicationUpdateEventPayload = {
+export interface CommunicationUpdateEventPayload extends BaseEventPayload {
   update: {
     id: string;
     createdBy: string;
@@ -11,4 +12,4 @@ export type CommunicationUpdateEventPayload = {
     type: CommunityType;
   };
   hub: HubPayload;
-};
+}

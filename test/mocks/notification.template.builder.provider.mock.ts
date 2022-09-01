@@ -4,7 +4,7 @@ import { NotificationTemplateBuilder } from '@src/services/external';
 import { TEMPLATE_PROVIDER } from '@src/common';
 
 export const MockNotificationTemplateBuilderProvider: ValueProvider<
-  PublicPart<NotificationTemplateBuilder>
+  PublicPart<NotificationTemplateBuilder<any>>
 > = {
   provide: TEMPLATE_PROVIDER,
   useValue: {

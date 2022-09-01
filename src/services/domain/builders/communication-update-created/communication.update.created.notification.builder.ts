@@ -11,6 +11,7 @@ import {
   RoleConfig,
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
+import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
@@ -19,7 +20,10 @@ export class CommunicationUpdateCreatedNotificationBuilder
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<CommunicationUpdateEventPayload>
+    private readonly notificationBuilder: NotificationBuilder<
+      CommunicationUpdateEventPayload,
+      CommunicationUpdateCreatedEmailPayload
+    >
   ) {}
 
   build(
@@ -63,7 +67,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
     eventPayload: CommunicationUpdateEventPayload,
     recipient: User,
     sender?: User
-  ): any {
+  ): CommunicationUpdateCreatedEmailPayload {
     if (!sender) {
       throw Error(
         `Sender not provided for '${COMMUNICATION_UPDATE_SENT}' event`
@@ -83,7 +87,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       sender: {
-        name: sender.displayName,
         firstname: sender.firstName,
         email: sender.email,
         profile: senderProfile,
@@ -92,7 +95,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
         id: eventPayload.update.id,
       },
       recipient: {
-        name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
@@ -105,7 +107,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
       hub: {
         url: hubURL,
       },
-      event: eventPayload,
     };
   }
 }

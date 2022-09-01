@@ -1,13 +1,12 @@
 import { BaseEventPayload } from './base.event.payload';
 
-export interface AspectCommentCreatedEventPayload extends BaseEventPayload {
-  aspect: {
+export interface CalloutPublishedEventPayload extends BaseEventPayload {
+  userID: string;
+  callout: {
+    id: string;
     displayName: string;
-    createdBy: string;
-  };
-  comment: {
-    message: string;
-    createdBy: string;
+    description: string;
+    type: string;
   };
   community: {
     name: string;

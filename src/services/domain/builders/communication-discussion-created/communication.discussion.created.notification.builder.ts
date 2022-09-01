@@ -14,6 +14,7 @@ import {
   RoleConfig,
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
+import { CommunicationDiscussionCreatedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class CommunicationDiscussionCreatedNotificationBuilder
@@ -22,7 +23,10 @@ export class CommunicationDiscussionCreatedNotificationBuilder
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<CommunicationDiscussionCreatedEventPayload>
+    private readonly notificationBuilder: NotificationBuilder<
+      CommunicationDiscussionCreatedEventPayload,
+      CommunicationDiscussionCreatedEmailPayload
+    >
   ) {}
 
   build(
@@ -67,7 +71,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder
     eventPayload: CommunicationDiscussionCreatedEventPayload,
     recipient: User,
     sender?: User
-  ): Record<string, unknown> {
+  ): CommunicationDiscussionCreatedEmailPayload {
     if (!sender) {
       throw Error(
         `Sender not provided for '${COMMUNICATION_DISCUSSION_CREATED}' event`
@@ -99,7 +103,6 @@ export class CommunicationDiscussionCreatedNotificationBuilder
         description: eventPayload.discussion.description,
       },
       recipient: {
-        name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
@@ -112,7 +115,6 @@ export class CommunicationDiscussionCreatedNotificationBuilder
       hub: {
         url: hubURL,
       },
-      event: eventPayload,
     };
   }
 }
