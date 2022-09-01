@@ -31,7 +31,7 @@ export class CalloutPublishedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'user',
-        preferenceType: UserPreferenceType.NotificationCalloutCreated,
+        preferenceType: UserPreferenceType.NotificationCalloutPublished,
         emailTemplate: EmailTemplate.CALLOUT_PUBLISHED_MEMBER,
       },
     ];
@@ -87,6 +87,7 @@ export class CalloutPublishedNotificationBuilder
       },
       callout: {
         displayName: eventPayload.callout.displayName,
+        description: eventPayload.callout.description,
       },
       community: {
         name: eventPayload.community.name,

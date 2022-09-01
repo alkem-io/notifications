@@ -194,7 +194,7 @@ export class AppController {
       eventPayload,
       context,
       this.notificationService.sendCalloutPublishedNotification(eventPayload),
-      ASPECT_CREATED
+      CALLOUT_PUBLISHED
     );
   }
 

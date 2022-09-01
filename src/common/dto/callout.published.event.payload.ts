@@ -5,6 +5,7 @@ export interface CalloutPublishedEventPayload extends BaseEventPayload {
   callout: {
     id: string;
     displayName: string;
+    description: string;
     type: string;
   };
   community: {

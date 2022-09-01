@@ -13,6 +13,7 @@ export interface CalloutPublishedEmailPayload extends BaseEmailPayload {
   };
   callout: {
     displayName: string;
+    description: string;
   };
   publishedBy: {
     firstName: string;
