@@ -222,7 +222,7 @@ export class AppController {
       .then(x => {
         const nacked = x.filter(
           (y: { status: string }) => y.status === 'rejected'
-        );
+        ) as PromiseRejectedResult[];
 
         if (nacked.length === 0) {
           this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
@@ -243,6 +243,8 @@ export class AppController {
             // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
             channel.nack(originalMsg, false, false);
           }
+          // print all rejected notifications
+          nacked.forEach(x => this.logger?.warn(x.reason));
         }
       })
       .catch(err => {
