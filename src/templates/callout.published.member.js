@@ -9,14 +9,12 @@ module.exports = () => ({
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: 'New Callout is published on {{community.name}}: {{aspect.displayName}}',
+      subject: 'New Callout is published on {{community.name}}: {{callout.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{recipient.firstname}},<br><br>
+          Hi {{recipient.firstName}},<br><br>
 
-          A new callout was published by {{publishedBy.firstname}} on your community <a href="{{community.url}}">{{community.name}}</a>: {{callout.displayName}}<br><br>
-          
-          <i>{{callout.description}}</i><br><br>
+          A new callout was published by {{publishedBy.firstName}} on your community <a href="{{community.url}}">{{community.name}}</a>: {{callout.displayName}}<br><br>
 
           Sincerely yours,
         {% endblock %}

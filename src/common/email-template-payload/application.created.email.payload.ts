@@ -2,9 +2,9 @@ import { BaseEmailPayload } from '@common/email-template-payload';
 import { CommunityType } from '@common/dto';
 
 export interface ApplicationCreatedEmailPayload extends BaseEmailPayload {
-  emailFrom: string;
   applicant: {
     name: string;
+    firstname: string;
     email: string;
     profile: string;
   };

@@ -88,6 +88,7 @@ export class ApplicationCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       applicant: {
+        firstname: applicant.firstName,
         name: applicant.displayName,
         email: applicant.email,
         profile: applicantProfileURL,

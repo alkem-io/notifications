@@ -87,7 +87,6 @@ export class CalloutPublishedNotificationBuilder
       },
       callout: {
         displayName: eventPayload.callout.displayName,
-        description: eventPayload.callout.description,
       },
       community: {
         name: eventPayload.community.name,
