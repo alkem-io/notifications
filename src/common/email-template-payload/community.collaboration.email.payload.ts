@@ -4,7 +4,6 @@ export interface CommunityCollaborationInterestEmailPayload
   extends BaseEmailPayload {
   user: {
     name: string;
-    email: string;
   };
   recipient: {
     firstname: string;
@@ -13,5 +12,9 @@ export interface CommunityCollaborationInterestEmailPayload
   };
   opportunity: {
     name: string;
+  };
+  relation: {
+    role: string;
+    description: string;
   };
 }

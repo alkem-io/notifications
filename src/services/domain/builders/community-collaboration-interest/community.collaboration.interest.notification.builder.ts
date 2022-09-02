@@ -84,7 +84,6 @@ export class CommunityCollaborationInterestNotificationBuilder
       emailFrom: 'info@alkem.io',
       user: {
         name: user.displayName,
-        email: user.email,
       },
       recipient: {
         firstname: recipient.firstName,
@@ -93,6 +92,10 @@ export class CommunityCollaborationInterestNotificationBuilder
       },
       opportunity: {
         name: eventPayload.opportunity.name,
+      },
+      relation: {
+        role: eventPayload.relation.role,
+        description: eventPayload.relation.description,
       },
       hub: {
         url: hubURL,

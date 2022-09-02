@@ -4,11 +4,6 @@ export interface CommunicationUpdateCreatedEmailPayload
   extends BaseEmailPayload {
   sender: {
     firstname: string;
-    email: string;
-    profile: string;
-  };
-  update: {
-    id: string;
   };
   recipient: {
     firstname: string;
@@ -17,7 +12,6 @@ export interface CommunicationUpdateCreatedEmailPayload
   };
   community: {
     name: string;
-    type: string;
     url: string;
   };
   hub: {

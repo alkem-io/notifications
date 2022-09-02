@@ -78,7 +78,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
       eventPayload.hub.challenge?.nameID,
       eventPayload.hub.challenge?.opportunity?.nameID
     );
-    const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
@@ -88,11 +87,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
       emailFrom: 'info@alkem.io',
       sender: {
         firstname: sender.firstName,
-        email: sender.email,
-        profile: senderProfile,
-      },
-      update: {
-        id: eventPayload.update.id,
       },
       recipient: {
         firstname: recipient.firstName,
@@ -101,7 +95,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
       },
       community: {
         name: eventPayload.community.name,
-        type: eventPayload.community.type,
         url: communityURL,
       },
       hub: {
