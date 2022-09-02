@@ -78,10 +78,12 @@ export class CommunityNewMemberNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       member: {
+        name: member.displayName,
         email: member.email,
       },
       recipient: {
         firstname: recipient.firstName,
+        email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
       community: {
