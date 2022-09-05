@@ -20,6 +20,8 @@ import {
 import { NotificationTemplateBuilder } from '@src/services/external';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
+import { BaseEmailPayload } from '@common/email-template-payload';
+import { BaseEventPayload } from '@common/dto';
 
 export type RoleConfig = {
   role: string;
@@ -27,35 +29,47 @@ export type RoleConfig = {
   preferenceType?: UserPreferenceType;
 };
 export type TemplateType = keyof TemplateConfig;
-export type TemplateBuilderFn<TPayload> = (
+export type TemplateBuilderFn<TPayload, TEmailPayload> = (
   payload: TPayload,
   recipient: User,
   eventUser?: User
-) => Record<string, unknown>;
+) => TEmailPayload;
 
-export type NotificationOptions<TPayload = Record<string, unknown>> = {
+export type NotificationOptions<
+  TPayload extends BaseEventPayload,
+  TEmailPayload extends BaseEmailPayload
+> = {
+  /** The received event payload */
   payload: TPayload;
+  /** the name of the template in notifications.yml */
   templateType: TemplateType;
-  templatePayloadBuilderFn: TemplateBuilderFn<TPayload>;
+  /** payload builder function for the email template */
+  templatePayloadBuilderFn: TemplateBuilderFn<TPayload, TEmailPayload>;
+  /** configuration to which roles the notification must be sent */
   roleConfig: RoleConfig[];
+  /** the creator of the event if any */
   eventUserId?: string;
+  /** variables to be used into the chosen templateType if any */
   templateVariables?: Record<string, string>;
 };
 
-export class NotificationBuilder<TPayload = Record<string, unknown>> {
+export class NotificationBuilder<
+  TPayload extends BaseEventPayload,
+  TEmailPayload extends BaseEmailPayload
+> {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
     private alkemioAdapter: AlkemioClientAdapter,
     @Inject(TEMPLATE_PROVIDER)
-    private readonly notificationTemplateBuilder: NotificationTemplateBuilder,
+    private readonly notificationTemplateBuilder: NotificationTemplateBuilder<TEmailPayload>,
     @Inject(NOTIFICATION_RECIPIENTS_YML_ADAPTER)
     private readonly recipientTemplateProvider: INotificationRecipientTemplateProvider
   ) {}
 
   async build(
-    options: NotificationOptions<TPayload>
+    options: NotificationOptions<TPayload, TEmailPayload>
   ): Promise<NotificationTemplateType[]> {
     const { payload, eventUserId, roleConfig, templateType } = options;
     this.logger.verbose?.(JSON.stringify(payload), LogContext.NOTIFICATIONS);
@@ -100,7 +114,7 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
   }
 
   private async buildNotificationsForRole(
-    options: NotificationOptions<TPayload>,
+    options: NotificationOptions<TPayload, TEmailPayload>,
     recipientRole: string,
     emailTemplate: EmailTemplate,
     extra?: {
@@ -227,7 +241,7 @@ export class NotificationBuilder<TPayload = Record<string, unknown>> {
   }
 
   private async buildNotificationTemplate(
-    options: NotificationOptions<TPayload>,
+    options: NotificationOptions<TPayload, TEmailPayload>,
     recipient: User,
     templateName: string,
     eventUser?: User

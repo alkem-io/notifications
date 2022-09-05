@@ -1,19 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-import { NotificationBuilder, RoleConfig } from '../../../application';
+import {
+  AlkemioUrlGenerator,
+  NotificationBuilder,
+  RoleConfig,
+} from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityCollaborationInterestPayload } from '@common/dto';
 import { NotificationTemplateType } from '@src/types';
-import { COMMUNITY_COLLABORATION_INTEREST } from '@src/common';
+import {
+  ALKEMIO_URL_GENERATOR,
+  COMMUNITY_COLLABORATION_INTEREST,
+} from '@src/common';
+import { CommunityCollaborationInterestEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class CommunityCollaborationInterestNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<CommunityCollaborationInterestPayload>
+    @Inject(ALKEMIO_URL_GENERATOR)
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
+    private readonly notificationBuilder: NotificationBuilder<
+      CommunityCollaborationInterestPayload,
+      CommunityCollaborationInterestEmailPayload
+    >
   ) {}
 
   build(
@@ -53,26 +66,39 @@ export class CommunityCollaborationInterestNotificationBuilder
     eventPayload: CommunityCollaborationInterestPayload,
     recipient: User,
     user?: User
-  ) {
+  ): CommunityCollaborationInterestEmailPayload {
     if (!user) {
       throw Error(
         `Interested user not provided for '${COMMUNITY_COLLABORATION_INTEREST} event'`
       );
     }
 
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
+
     return {
       emailFrom: 'info@alkem.io',
       user: {
         name: user.displayName,
-        email: user.email,
       },
       recipient: {
         firstname: recipient.firstName,
         email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
       },
       opportunity: {
         name: eventPayload.opportunity.name,
-        communityName: eventPayload.opportunity.communityName,
+      },
+      relation: {
+        role: eventPayload.relation.role,
+        description: eventPayload.relation.description,
+      },
+      hub: {
+        url: hubURL,
       },
     };
   }

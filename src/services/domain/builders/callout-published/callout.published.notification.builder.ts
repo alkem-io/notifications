@@ -1,65 +1,67 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { AspectCommentCreatedEventPayload } from '@common/dto';
-import { AspectCommentCreatedEmailPayload } from '@common/email-template-payload';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
   RoleConfig,
 } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
-import { EmailTemplate } from '@common/enums/email.template';
+import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
-import { ALKEMIO_URL_GENERATOR, COMMENT_CREATED_ON_ASPECT } from '@src/common';
+import { ALKEMIO_URL_GENERATOR, CALLOUT_PUBLISHED } from '@src/common';
+import { EmailTemplate } from '@common/enums/email.template';
+import { CalloutPublishedEventPayload } from '@common/dto';
+import { CalloutPublishedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
-export class AspectCommentCreatedNotificationBuilder
+export class CalloutPublishedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
-      AspectCommentCreatedEventPayload,
-      AspectCommentCreatedEmailPayload
+      CalloutPublishedEventPayload,
+      CalloutPublishedEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
-    payload: AspectCommentCreatedEventPayload
+    payload: CalloutPublishedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
-        role: 'owner',
-        preferenceType: UserPreferenceType.NotificationAspectCommentCreated,
-        emailTemplate: EmailTemplate.ASPECT_COMMENT_CREATED_MEMBER,
+        role: 'user',
+        preferenceType: UserPreferenceType.NotificationCalloutPublished,
+        emailTemplate: EmailTemplate.CALLOUT_PUBLISHED_MEMBER,
       },
     ];
 
     const templateVariables = {
-      ownerID: payload.aspect.createdBy,
+      entityID:
+        payload.hub?.challenge?.opportunity?.id ??
+        payload.hub?.challenge?.id ??
+        payload.hub.id,
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.comment.createdBy,
+      eventUserId: payload.userID,
       roleConfig,
-      templateType: 'aspect_comment_created',
+      templateType: 'callout_published',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
   }
 
   createTemplatePayload(
-    eventPayload: AspectCommentCreatedEventPayload,
+    eventPayload: CalloutPublishedEventPayload,
     recipient: User,
-    commentAuthor?: User
-  ): AspectCommentCreatedEmailPayload {
-    if (!commentAuthor) {
-      throw Error(
-        `Comment author not provided for '${COMMENT_CREATED_ON_ASPECT} event'`
-      );
+    creator?: User
+  ): CalloutPublishedEmailPayload {
+    if (!creator) {
+      throw Error(`Creator not provided for '${CALLOUT_PUBLISHED} event'`);
     }
+
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
@@ -71,28 +73,27 @@ export class AspectCommentCreatedNotificationBuilder
       eventPayload.hub.challenge?.opportunity?.nameID
     );
 
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const alkemioUrl = this.alkemioUrlGenerator.createHubURL();
 
     return {
       emailFrom: 'info@alkem.io',
-      aspect: {
-        displayName: eventPayload.aspect.displayName,
-      },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      createdBy: {
-        firstname: commentAuthor.firstName,
-        email: commentAuthor.email,
+      publishedBy: {
+        firstName: creator.firstName,
+      },
+      callout: {
+        displayName: eventPayload.callout.displayName,
       },
       community: {
         name: eventPayload.community.name,
         url: communityURL,
       },
       hub: {
-        url: hubURL,
+        url: alkemioUrl,
       },
     };
   }

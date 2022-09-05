@@ -21,6 +21,7 @@ import {
   CommunityCollaborationInterestNotificationBuilder,
   AspectCreatedNotificationBuilder,
   AspectCommentCreatedNotificationBuilder,
+  CalloutPublishedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import {
@@ -59,6 +60,7 @@ import {
     CommunityCollaborationInterestNotificationBuilder,
     AspectCreatedNotificationBuilder,
     AspectCommentCreatedNotificationBuilder,
+    CalloutPublishedNotificationBuilder,
     NotificationService,
   ],
   controllers: [AppController],

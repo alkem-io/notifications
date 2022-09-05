@@ -231,3 +231,15 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <ownerID>
+  callout_published:
+    - name: user
+      rules:
+        - rule:
+            type: HUB_MEMBER
+            resource_id: <entityID>
+        - rule:
+            type: CHALLENGE_MEMBER
+            resource_id: <entityID>
+        - rule:
+            type: OPPORTUNITY_MEMBER
+            resource_id: <entityID>

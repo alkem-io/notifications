@@ -11,6 +11,7 @@ import {
   RoleConfig,
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
+import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
@@ -19,7 +20,10 @@ export class CommunicationUpdateCreatedNotificationBuilder
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<CommunicationUpdateEventPayload>
+    private readonly notificationBuilder: NotificationBuilder<
+      CommunicationUpdateEventPayload,
+      CommunicationUpdateCreatedEmailPayload
+    >
   ) {}
 
   build(
@@ -63,7 +67,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
     eventPayload: CommunicationUpdateEventPayload,
     recipient: User,
     sender?: User
-  ): any {
+  ): CommunicationUpdateCreatedEmailPayload {
     if (!sender) {
       throw Error(
         `Sender not provided for '${COMMUNICATION_UPDATE_SENT}' event`
@@ -74,7 +78,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
       eventPayload.hub.challenge?.nameID,
       eventPayload.hub.challenge?.opportunity?.nameID
     );
-    const senderProfile = this.alkemioUrlGenerator.createUserURL(sender.nameID);
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
@@ -83,29 +86,20 @@ export class CommunicationUpdateCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       sender: {
-        name: sender.displayName,
         firstname: sender.firstName,
-        email: sender.email,
-        profile: senderProfile,
-      },
-      update: {
-        id: eventPayload.update.id,
       },
       recipient: {
-        name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
       community: {
         name: eventPayload.community.name,
-        type: eventPayload.community.type,
         url: communityURL,
       },
       hub: {
         url: hubURL,
       },
-      event: eventPayload,
     };
   }
 }

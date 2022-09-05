@@ -7,6 +7,7 @@ export const COMMUNICATION_DISCUSSION_CREATED =
 export const COMMUNITY_CONTEXT_REVIEW_SUBMITTED =
   'communityContextReviewSubmitted';
 export const ASPECT_CREATED = 'aspectCreated';
+export const CALLOUT_PUBLISHED = 'calloutPublished';
 export const COMMENT_CREATED_ON_ASPECT = 'commentCreatedOnAspect';
 export const COMMUNITY_COLLABORATION_INTEREST =
   'communityCollaborationInterest';
