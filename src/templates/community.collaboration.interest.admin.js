@@ -3,19 +3,19 @@ const templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'community-collaboration-interest-admin',
-  title: 'Interest to collaborate on opportunity received',
+  title: '[{{opportunity.name}}] Interest to collaborate received from {{user.name}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '{{user.name}} is interested to collaborate on opportunity: {{opportunity.name}}',
+        '[{{opportunity.name}}] Interest to collaborate received from {{user.name}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.firstname}},<br><br>
 
-          The user '{{user.name}}' is interested to participate in '{{opportunity.name}}' opportunity:
+          The user '{{user.name}}' is interested to participate in Opportunity "{{opportunity.name}}":
           <br/>
           - role: {{relation.role}}<br/>
           - description: {{relation.description}}<br/>
