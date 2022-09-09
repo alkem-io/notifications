@@ -3,7 +3,8 @@ const templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'community-collaboration-interest-admin',
-  title: '[{{community.name}}] Interest to collaborate received from {{user.name}}',
+  title:
+    '[{{community.name}}] Interest to collaborate received from {{user.name}}',
   version: 1,
   channels: {
     email: {
@@ -19,7 +20,6 @@ module.exports = () => ({
           <br/>
           - role: {{relation.role}}<br/>
           - description: {{relation.description}}<br/>
-          <br/>
           <br/>
           Sincerely yours,
         {% endblock %}

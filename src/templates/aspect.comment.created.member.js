@@ -3,7 +3,8 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'aspect-created-member',
-  title: '{{community.name}} - New comment received on your Card "{{aspect.displayName}}"',
+  title:
+    '{{community.name}} - New comment received on your Card: "{{aspect.displayName}}"',
   version: 1,
   channels: {
     email: {
@@ -15,7 +16,8 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstname}},<br><br>
 
-          A new comment was created by {{createdBy.firstname}} on your Card <a href={{aspect.url}}>{{aspect.displayName}}</a> within the Callout "{{callout.displayName}}".<br><br>
+          A new comment was created by {{createdBy.firstname}} on your '{{aspect.displayName}}' Card in '<a href={{community.url}}>{{community.name}}</a>'.
+          <br><br>
 
           Sincerely yours,
         {% endblock %}

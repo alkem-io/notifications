@@ -24,7 +24,7 @@ export class NotificationTemplateBuilder<
       const getRenderer = require('notifme-template');
       const render = getRenderer(renderString, './src/templates');
       return await render(template, templatePayload, 'en-US');
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
         `Could not render template '${template}': ${error}`,
         LogContext.NOTIFICATIONS
