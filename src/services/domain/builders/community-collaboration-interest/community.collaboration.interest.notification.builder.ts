@@ -49,7 +49,9 @@ export class CommunityCollaborationInterestNotificationBuilder
 
     const templateVariables = {
       userID: payload.userID,
-      opportunityID: payload.opportunity.id,
+      hubID: payload.hub.id,
+      challengeID: payload.hub.challenge?.id ?? '',
+      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
     };
 
     return this.notificationBuilder.build({
@@ -80,6 +82,12 @@ export class CommunityCollaborationInterestNotificationBuilder
 
     const hubURL = this.alkemioUrlGenerator.createHubURL();
 
+    const communityURL = this.alkemioUrlGenerator.createCommunityURL(
+      eventPayload.hub.nameID,
+      eventPayload.hub.challenge?.nameID,
+      eventPayload.hub.challenge?.opportunity?.nameID
+    );
+
     return {
       emailFrom: 'info@alkem.io',
       user: {
@@ -90,12 +98,14 @@ export class CommunityCollaborationInterestNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      opportunity: {
-        name: eventPayload.opportunity.name,
-      },
       relation: {
         role: eventPayload.relation.role,
         description: eventPayload.relation.description,
+      },
+      community: {
+        name: eventPayload.community.name,
+        type: eventPayload.community.type,
+        url: communityURL,
       },
       hub: {
         url: hubURL,
