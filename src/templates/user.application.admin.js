@@ -11,7 +11,7 @@ module.exports = () => ({
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '[{{community.name}}] Admin - Application from {{applicant.firstname}}',
+        '[{{community.name}}] Application from {{applicant.firstname}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.name}},<br><br>
