@@ -3,7 +3,7 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'community-collaboration-interest-user',
-  title: 'Interest to collaborate on opportunity',
+  title: 'Interest to collaborate on {community.name}} [{{community.type}}]',
   version: 1,
   channels: {
     email: {
@@ -13,7 +13,7 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{user.name}},<br><br>
-          Thank you for expressing the interest to collaborate on {{opportunity.name}} opportunity. The community needs all the help it can get!
+          Thank you for expressing the interest to collaborate on '<a href="{{community.url}}">{{community.name}}</a>' [{{community.type}}]!
           <br><br>
           Sincerely yours,
         {% endblock %}

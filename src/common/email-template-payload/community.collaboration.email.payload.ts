@@ -1,3 +1,4 @@
+import { CommunityType } from '../enums/community.type';
 import { BaseEmailPayload } from './base.email.payload';
 
 export interface CommunityCollaborationInterestEmailPayload
@@ -10,11 +11,16 @@ export interface CommunityCollaborationInterestEmailPayload
     email: string;
     notificationPreferences: string;
   };
-  opportunity: {
-    name: string;
-  };
   relation: {
     role: string;
     description: string;
+  };
+  community: {
+    name: string;
+    type: CommunityType;
+    url: string;
+  };
+  hub: {
+    url: string;
   };
 }
