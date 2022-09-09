@@ -1,5 +1,5 @@
 import { BaseEmailPayload } from '@common/email-template-payload';
-import { CommunityType } from '@common/dto';
+import { CommunityType } from '../enums/community.type';
 
 export interface ApplicationCreatedEmailPayload extends BaseEmailPayload {
   applicant: {
