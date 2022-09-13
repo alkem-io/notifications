@@ -15,10 +15,8 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstname}},
           <br><br>
-
-          A new Card was created by {{createdBy.firstname}} on your community '<a href="{{community.url}}">{{community.name}}</a>': {{aspect.displayName}}.
+          A new Card was created by {{createdBy.firstname}} on your community '<a href="{{community.url}}">{{community.name}}</a>' with name '{{aspect.displayName}}'.
           <br><br>
-
           Sincerely yours,
         {% endblock %}
         ${templates.footerBlock}`,

@@ -4,6 +4,7 @@ export interface CommunityNewMemberEmailPayload extends BaseEmailPayload {
   member: {
     email: string;
     name: string;
+    profile: string;
   };
   recipient: {
     firstname: string;
