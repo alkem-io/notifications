@@ -74,12 +74,16 @@ export class CommunityNewMemberNotificationBuilder
       );
 
     const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const memberProfileURL = this.alkemioUrlGenerator.createUserURL(
+      member.nameID
+    );
 
     return {
       emailFrom: 'info@alkem.io',
       member: {
         name: member.displayName,
         email: member.email,
+        profile: memberProfileURL,
       },
       recipient: {
         firstname: recipient.firstName,
