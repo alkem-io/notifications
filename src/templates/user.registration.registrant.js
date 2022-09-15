@@ -3,13 +3,13 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'user-registration-registrant',
-  title: 'Welcome {{recipient.firstname}}',
+  title: 'Alkemio Welcome {{recipient.firstname}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: 'Alkemio registration successful!',
+      subject: 'Alkemio - Registration successful!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{registrant.name}},<br><br>

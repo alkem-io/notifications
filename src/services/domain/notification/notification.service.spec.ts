@@ -24,6 +24,7 @@ import {
   AspectCreatedNotificationBuilder,
   AspectCommentCreatedNotificationBuilder,
   CommunityCollaborationInterestNotificationBuilder,
+  CalloutPublishedNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -48,7 +49,7 @@ const testData = {
 describe('NotificationService', () => {
   let notificationService: NotificationService;
   let alkemioAdapter: INotifiedUsersProvider;
-  let notificationBuilder: NotificationBuilder;
+  let notificationBuilder: NotificationBuilder<any, any>;
   let notifmeService: NotifmeSdk;
 
   beforeAll(async () => {
@@ -69,6 +70,7 @@ describe('NotificationService', () => {
         CommunityCollaborationInterestNotificationBuilder,
         AspectCreatedNotificationBuilder,
         AspectCommentCreatedNotificationBuilder,
+        CalloutPublishedNotificationBuilder,
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,

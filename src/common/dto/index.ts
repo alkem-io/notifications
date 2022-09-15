@@ -1,3 +1,4 @@
+export * from './base.event.payload';
 export * from './application.created.event.payload';
 export * from './communication.discussion.created.event.payload';
 export * from './communication.update.event.payload';
@@ -8,3 +9,4 @@ export * from './user.registration.event.payload';
 export * from './hub.payload';
 export * from './aspect.created.event.payload';
 export * from './aspect.comment.created.event.payload';
+export * from './callout.published.event.payload';

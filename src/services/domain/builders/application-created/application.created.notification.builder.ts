@@ -14,6 +14,7 @@ import {
 import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
+import { ApplicationCreatedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class ApplicationCreatedNotificationBuilder
@@ -22,7 +23,10 @@ export class ApplicationCreatedNotificationBuilder
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<ApplicationCreatedEventPayload>
+    private readonly notificationBuilder: NotificationBuilder<
+      ApplicationCreatedEventPayload,
+      ApplicationCreatedEmailPayload
+    >
   ) {}
 
   build(
@@ -62,7 +66,7 @@ export class ApplicationCreatedNotificationBuilder
     eventPayload: ApplicationCreatedEventPayload,
     recipient: User,
     applicant?: User
-  ): Record<string, unknown> {
+  ): ApplicationCreatedEmailPayload {
     if (!applicant) {
       throw Error(
         `Applicant not provided for '${COMMUNITY_APPLICATION_CREATED} event'`
@@ -84,6 +88,7 @@ export class ApplicationCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       applicant: {
+        firstname: applicant.firstName,
         name: applicant.displayName,
         email: applicant.email,
         profile: applicantProfileURL,
@@ -101,7 +106,6 @@ export class ApplicationCreatedNotificationBuilder
       hub: {
         url: hubURL,
       },
-      event: eventPayload,
     };
   }
 }

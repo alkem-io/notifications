@@ -11,11 +11,15 @@ import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR, ASPECT_CREATED } from '@src/common';
 import { EmailTemplate } from '@common/enums/email.template';
+import { AspectCreatedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
 export class AspectCreatedNotificationBuilder implements INotificationBuilder {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<AspectCreatedEventPayload>,
+    private readonly notificationBuilder: NotificationBuilder<
+      AspectCreatedEventPayload,
+      AspectCreatedEmailPayload
+    >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
@@ -59,7 +63,7 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
     eventPayload: AspectCreatedEventPayload,
     recipient: User,
     creator?: User
-  ): Record<string, unknown> {
+  ): AspectCreatedEmailPayload {
     if (!creator) {
       throw Error(`Creator not provided for '${ASPECT_CREATED} event'`);
     }
@@ -75,10 +79,11 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
       eventPayload.hub.challenge?.opportunity?.nameID
     );
 
+    const hubURL = this.alkemioUrlGenerator.createHubURL();
+
     return {
       emailFrom: 'info@alkem.io',
       createdBy: {
-        name: creator.displayName,
         firstname: creator.firstName,
         email: creator.email,
       },
@@ -86,7 +91,6 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
         displayName: eventPayload.aspect.displayName,
       },
       recipient: {
-        name: recipient.displayName,
         firstname: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
@@ -94,6 +98,9 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
       community: {
         name: eventPayload.community.name,
         url: communityURL,
+      },
+      hub: {
+        url: hubURL,
       },
     };
   }

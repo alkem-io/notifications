@@ -5,23 +5,26 @@ import { LogContext } from '@src/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { renderString } from 'nunjucks';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
+import { BaseEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
-export class NotificationTemplateBuilder {
+export class NotificationTemplateBuilder<
+  TEmailPayload extends BaseEmailPayload
+> {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService
   ) {}
   async buildTemplate(
     template: string,
-    templatePayload: Record<string, unknown>
+    templatePayload: TEmailPayload
   ): Promise<NotificationTemplateType | undefined> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const getRenderer = require('notifme-template');
       const render = getRenderer(renderString, './src/templates');
       return await render(template, templatePayload, 'en-US');
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
         `Could not render template '${template}': ${error}`,
         LogContext.NOTIFICATIONS

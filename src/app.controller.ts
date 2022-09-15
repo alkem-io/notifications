@@ -21,6 +21,7 @@ import {
   LogContext,
   USER_REGISTERED,
   COMMUNITY_COLLABORATION_INTEREST,
+  CALLOUT_PUBLISHED,
 } from './common';
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
@@ -33,6 +34,8 @@ import {
   CommunityNewMemberPayload,
   CommunityCollaborationInterestPayload,
   UserRegistrationEventPayload,
+  CalloutPublishedEventPayload,
+  BaseEventPayload,
 } from '@common/dto';
 import { NotificationService } from './services/domain/notification/notification.service';
 
@@ -182,8 +185,21 @@ export class AppController {
     );
   }
 
+  @EventPattern(CALLOUT_PUBLISHED, Transport.RMQ)
+  async sendCalloutPublishedNotifications(
+    @Payload() eventPayload: CalloutPublishedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCalloutPublishedNotification(eventPayload),
+      CALLOUT_PUBLISHED
+    );
+  }
+
   private async sendNotifications(
-    @Payload() eventPayload: Record<string, unknown>,
+    @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext,
     sentNotifications: Promise<PromiseSettledResult<NotificationStatus>[]>,
     eventName: string
@@ -206,7 +222,7 @@ export class AppController {
       .then(x => {
         const nacked = x.filter(
           (y: { status: string }) => y.status === 'rejected'
-        );
+        ) as PromiseRejectedResult[];
 
         if (nacked.length === 0) {
           this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
@@ -227,6 +243,8 @@ export class AppController {
             // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
             channel.nack(originalMsg, false, false);
           }
+          // print all rejected notifications
+          nacked.forEach(x => this.logger?.warn(x.reason));
         }
       })
       .catch(err => {

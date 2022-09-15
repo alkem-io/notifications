@@ -23,6 +23,7 @@ export type TemplateConfig = {
   community_review_submitted?: TemplateRuleSet[];
   community_new_member?: TemplateRuleSet[];
   community_collaboration_interest?: TemplateRuleSet[];
+  callout_published?: TemplateRuleSet[];
 };
 
 export interface INotificationRecipientTemplateProvider {

@@ -1,13 +1,8 @@
 import { HubPayload } from './hub.payload';
+import { BaseEventPayload } from '@common/dto/base.event.payload';
+import { CommunityType } from '../enums/community.type';
 
-export enum CommunityType {
-  HUB = 'hub',
-  CHALLENGE = 'challenge',
-  OPPORTUNITY = 'opportunity',
-}
-
-// toDo: fix this type - derive from base event payload.
-export type ApplicationCreatedEventPayload = {
+export interface ApplicationCreatedEventPayload extends BaseEventPayload {
   applicationCreatorID: string;
   applicantID: string;
   community: {
@@ -15,4 +10,4 @@ export type ApplicationCreatedEventPayload = {
     type: CommunityType;
   };
   hub: HubPayload;
-};
+}

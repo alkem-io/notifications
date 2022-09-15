@@ -1,4 +1,6 @@
-export type AspectCommentCreatedEventPayload = {
+import { BaseEventPayload } from './base.event.payload';
+
+export interface AspectCommentCreatedEventPayload extends BaseEventPayload {
   aspect: {
     displayName: string;
     createdBy: string;
@@ -23,4 +25,4 @@ export type AspectCommentCreatedEventPayload = {
       };
     };
   };
-};
+}
