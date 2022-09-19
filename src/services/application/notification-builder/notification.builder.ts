@@ -124,7 +124,7 @@ export class NotificationBuilder<
   ): Promise<NotificationTemplateType[]> {
     const { templateType, roleConfig, templateVariables } = options;
     this.logger.verbose?.(
-      `Building notifications with [${emailTemplate}] for '${recipientRole}'`,
+      `[${emailTemplate} - '${recipientRole}'] Building notifications - start'`,
       LogContext.NOTIFICATIONS
     );
 
@@ -168,7 +168,11 @@ export class NotificationBuilder<
     }
 
     this.logger.verbose?.(
-      `Identified ${recipients.length} recipients to be filtered by preferences`,
+      `[${emailTemplate} - '${recipientRole}'] ...${
+        recipients.length
+      } recipients have matching credentials: ${JSON.stringify(
+        recipients.map(user => user.email)
+      )}`,
       LogContext.NOTIFICATIONS
     );
 
@@ -187,14 +191,14 @@ export class NotificationBuilder<
 
         if (!targetedUserPreference) {
           this.logger.verbose?.(
-            `Skipping recipient ${recipient.nameID} - ${extra.rolePreferenceType} preference not found`
+            `[${emailTemplate} - '${recipientRole}'] ...skipping recipient ${recipient.nameID} - ${extra.rolePreferenceType} preference not found`
           );
           continue;
         }
 
         if (targetedUserPreference.value !== 'true') {
           this.logger.verbose?.(
-            `User ${recipient.displayName} filtered out because of ${extra?.rolePreferenceType}`,
+            `[${emailTemplate} - '${recipientRole}'] User ${recipient.displayName} filtered out because of ${extra?.rolePreferenceType}`,
             LogContext.NOTIFICATIONS
           );
           continue;
@@ -205,7 +209,11 @@ export class NotificationBuilder<
     }
 
     this.logger.verbose?.(
-      `Notifications with [${emailTemplate}] for role ${recipientRole} - identified ${filteredRecipients.length} recipients`,
+      `[${emailTemplate} - '${recipientRole}'] ...${
+        filteredRecipients.length
+      } recipients with valid credentials have preference enabled:  ${JSON.stringify(
+        filteredRecipients.map(user => user.email)
+      )}`,
       LogContext.NOTIFICATIONS
     );
 
@@ -219,7 +227,7 @@ export class NotificationBuilder<
     );
 
     this.logger.verbose?.(
-      `Building notifications for [${emailTemplate}] - completed`,
+      `[${emailTemplate} - '${recipientRole}'] ...building notifications - completed`,
       LogContext.NOTIFICATIONS
     );
 
