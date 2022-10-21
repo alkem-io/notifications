@@ -79,8 +79,8 @@ alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/api/private/non-interactive/graphql
   webclient_endpoint: ${ALKEMIO_WEBCLIENT_ENDPOINT}:http://localhost:3000
   service_account:
-    username: ${SERVICE_ACCOUNT_USERNAME}:notifications@alkem.io
-    password: ${SERVICE_ACCOUNT_PASSWORD}:change-me-now
+    username: ${SERVICE_ACCOUNT_USERNAME}:admin@alkem.io
+    password: ${SERVICE_ACCOUNT_PASSWORD}:Fin1.tan
 
 kratos:
   public_endpoint: ${KRATOS_API_PUBLIC_ENDPOINT}:http://localhost:3000/identity/ory/kratos/public
@@ -117,6 +117,9 @@ recipients:
             resource_id:
         - rule:
             type: GLOBAL_ADMIN
+            resource_id:
+        - rule:
+            type: GLOBAL_ADMIN_HUBS
             resource_id:
     - name: registrant
       rules:
