@@ -118,6 +118,9 @@ recipients:
         - rule:
             type: GLOBAL_ADMIN
             resource_id:
+        - rule:
+            type: GLOBAL_ADMIN_HUBS
+            resource_id:
     - name: registrant
       rules:
         - rule:
