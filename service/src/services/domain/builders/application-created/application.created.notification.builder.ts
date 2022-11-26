@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib/dist/notification.event.type';
+import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-import { ApplicationCreatedEventPayload } from '@alkemio/notifications-lib/dist/dto';
+import { ApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,

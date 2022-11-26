@@ -9,7 +9,7 @@ import {
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
 import { NotificationStatus } from 'notifme-sdk';
-import { NotificationEventType } from '@alkemio/notifications-lib/dist/notification.event.type';
+import { NotificationEventType } from '@alkemio/notifications-lib';
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
   ApplicationCreatedEventPayload,
@@ -23,7 +23,7 @@ import {
   UserRegistrationEventPayload,
   CalloutPublishedEventPayload,
   BaseEventPayload,
-} from '@alkemio/notifications-lib/dist/dto';
+} from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
 

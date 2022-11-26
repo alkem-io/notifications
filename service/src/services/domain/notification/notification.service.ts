@@ -18,7 +18,7 @@ import {
   CommunityCollaborationInterestPayload,
   CalloutPublishedEventPayload,
   BaseEventPayload,
-} from '@alkemio/notifications-lib/dist/dto';
+} from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';

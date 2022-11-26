@@ -17,7 +17,7 @@ import { NotificationTemplateBuilder } from '@src/services/external';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { BaseEmailPayload } from '@common/email-template-payload';
-import { BaseEventPayload } from '@alkemio/notifications-lib/dist/dto';
+import { BaseEventPayload } from '@alkemio/notifications-lib';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   NOTIFICATION_RECIPIENTS_YML_ADAPTER,

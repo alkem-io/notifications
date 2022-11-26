@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib/dist/notification.event.type';
+import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import {
   CommunityContextReviewSubmittedPayload,
   FeedbackQuestions,
-} from '@alkemio/notifications-lib/dist/dto';
+} from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
