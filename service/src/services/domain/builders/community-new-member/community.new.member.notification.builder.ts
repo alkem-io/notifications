@@ -8,11 +8,11 @@ import {
   RoleConfig,
 } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunityNewMemberPayload } from '@common/dto';
+import { CommunityNewMemberPayload } from '@alkemio/notifications-lib/src/dto';
 import { NotificationTemplateType } from '@src/types';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import { COMMUNITY_NEW_MEMBER } from '@src/common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
@@ -66,7 +66,9 @@ export class CommunityNewMemberNotificationBuilder
     member?: User
   ): CommunityNewMemberEmailPayload {
     if (!member) {
-      throw Error(`member not provided for '${COMMUNITY_NEW_MEMBER} event'`);
+      throw Error(
+        `member not provided for '${NotificationEventType.COMMUNITY_NEW_MEMBER} event'`
+      );
     }
 
     const notificationPreferenceURL =

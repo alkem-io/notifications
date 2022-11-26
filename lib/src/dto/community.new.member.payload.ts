@@ -1,4 +1,4 @@
-import { CommunityType } from '../enums/community.type';
+import { CommunityType } from '@common/enums/community.type';
 import { BaseEventPayload } from './base.event.payload';
 import { HubPayload } from './hub.payload';
 

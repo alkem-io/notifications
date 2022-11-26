@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { USER_REGISTERED } from '@common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 import { User } from '@core/models';
-import { UserRegistrationEventPayload } from '@common/dto';
+import { UserRegistrationEventPayload } from '@alkemio/notifications-lib/src/dto';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
@@ -55,7 +55,9 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
     registrant?: User
   ): UserRegisteredEmailPayload {
     if (!registrant) {
-      throw Error(`Registrant not provided for '${USER_REGISTERED}' event`);
+      throw Error(
+        `Registrant not provided for '${NotificationEventType.USER_REGISTERED}' event`
+      );
     }
 
     const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(

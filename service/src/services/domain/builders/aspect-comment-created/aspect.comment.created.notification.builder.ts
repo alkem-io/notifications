@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { AspectCommentCreatedEventPayload } from '@common/dto';
+import { AspectCommentCreatedEventPayload } from '@alkemio/notifications-lib/src/dto';
 import { AspectCommentCreatedEmailPayload } from '@common/email-template-payload';
 import {
   AlkemioUrlGenerator,
@@ -12,7 +12,7 @@ import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
 import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
-import { COMMENT_CREATED_ON_ASPECT } from '@src/common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 
 @Injectable()
 export class AspectCommentCreatedNotificationBuilder
@@ -58,7 +58,7 @@ export class AspectCommentCreatedNotificationBuilder
   ): AspectCommentCreatedEmailPayload {
     if (!commentAuthor) {
       throw Error(
-        `Comment author not provided for '${COMMENT_CREATED_ON_ASPECT} event'`
+        `Comment author not provided for '${NotificationEventType.COMMENT_CREATED_ON_ASPECT} event'`
       );
     }
     const notificationPreferenceURL =

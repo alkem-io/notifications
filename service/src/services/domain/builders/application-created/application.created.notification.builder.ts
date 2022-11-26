@@ -1,8 +1,8 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { COMMUNITY_APPLICATION_CREATED } from '@common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-import { ApplicationCreatedEventPayload } from '@common/dto';
+import { ApplicationCreatedEventPayload } from '@alkemio/notifications-lib/src/dto';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -67,7 +67,7 @@ export class ApplicationCreatedNotificationBuilder
   ): ApplicationCreatedEmailPayload {
     if (!applicant) {
       throw Error(
-        `Applicant not provided for '${COMMUNITY_APPLICATION_CREATED} event'`
+        `Applicant not provided for '${NotificationEventType.COMMUNITY_APPLICATION_CREATED} event'`
       );
     }
     const applicantProfileURL = this.alkemioUrlGenerator.createUserURL(

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { AspectCreatedEventPayload } from '@common/dto';
+import { AspectCreatedEventPayload } from '@alkemio/notifications-lib/src/dto';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -12,7 +12,7 @@ import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
 import { AspectCreatedEmailPayload } from '@common/email-template-payload';
-import { ASPECT_CREATED } from '@src/common/constants/events';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 
 @Injectable()
 export class AspectCreatedNotificationBuilder implements INotificationBuilder {
@@ -66,7 +66,9 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
     creator?: User
   ): AspectCreatedEmailPayload {
     if (!creator) {
-      throw Error(`Creator not provided for '${ASPECT_CREATED} event'`);
+      throw Error(
+        `Creator not provided for '${NotificationEventType.ASPECT_CREATED} event'`
+      );
     }
 
     const notificationPreferenceURL =

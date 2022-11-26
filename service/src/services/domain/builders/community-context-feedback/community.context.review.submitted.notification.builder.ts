@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { COMMUNITY_CONTEXT_REVIEW_SUBMITTED } from '@common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 import { INotificationBuilder } from '@core/contracts';
 import {
   CommunityContextReviewSubmittedPayload,
   FeedbackQuestions,
-} from '@common/dto';
+} from '@alkemio/notifications-lib/src/dto';
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
@@ -70,7 +70,7 @@ export class CommunityContextReviewSubmittedNotificationBuilder
   ): CommunityContextEmailPayload {
     if (!reviewer) {
       throw Error(
-        `Reviewer not provided for '${COMMUNITY_CONTEXT_REVIEW_SUBMITTED}' event`
+        `Reviewer not provided for '${NotificationEventType.COMMUNITY_CONTEXT_REVIEW_SUBMITTED}' event`
       );
     }
 

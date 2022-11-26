@@ -1,6 +1,6 @@
 import { HubPayload } from './hub.payload';
 import { BaseEventPayload } from './base.event.payload';
-import { CommunityType } from '../enums/community.type';
+import { CommunityType } from '@common/enums/community.type';
 
 export interface CommunicationDiscussionCreatedEventPayload
   extends BaseEventPayload {

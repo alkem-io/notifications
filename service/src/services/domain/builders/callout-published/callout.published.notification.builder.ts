@@ -10,9 +10,9 @@ import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CalloutPublishedEventPayload } from '@common/dto';
+import { CalloutPublishedEventPayload } from '@alkemio/notifications-lib/src/dto';
 import { CalloutPublishedEmailPayload } from '@common/email-template-payload';
-import { CALLOUT_PUBLISHED } from '@src/common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 
 @Injectable()
 export class CalloutPublishedNotificationBuilder
@@ -60,7 +60,9 @@ export class CalloutPublishedNotificationBuilder
     creator?: User
   ): CalloutPublishedEmailPayload {
     if (!creator) {
-      throw Error(`Creator not provided for '${CALLOUT_PUBLISHED} event'`);
+      throw Error(
+        `Creator not provided for '${NotificationEventType.CALLOUT_PUBLISHED} event'`
+      );
     }
 
     const notificationPreferenceURL =

@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { ApplicationCreatedEventPayload } from '@common/dto';
+import { ApplicationCreatedEventPayload } from '@alkemio/notifications-lib/src/dto';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_URL_GENERATOR,

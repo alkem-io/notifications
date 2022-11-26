@@ -3,7 +3,7 @@ import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunicationUpdateEventPayload } from '@common/dto';
+import { CommunicationUpdateEventPayload } from '@alkemio/notifications-lib/src/dto';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import {
   AlkemioUrlGenerator,
@@ -12,7 +12,7 @@ import {
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
-import { COMMUNICATION_UPDATE_SENT } from '@src/common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
@@ -71,7 +71,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
   ): CommunicationUpdateCreatedEmailPayload {
     if (!sender) {
       throw Error(
-        `Sender not provided for '${COMMUNICATION_UPDATE_SENT}' event`
+        `Sender not provided for '${NotificationEventType.COMMUNICATION_UPDATE_SENT}' event`
       );
     }
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(

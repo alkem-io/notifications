@@ -8,11 +8,11 @@ import {
   RoleConfig,
 } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunityCollaborationInterestPayload } from '@common/dto';
+import { CommunityCollaborationInterestPayload } from '@alkemio/notifications-lib/src/dto';
 import { NotificationTemplateType } from '@src/types';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { CommunityCollaborationInterestEmailPayload } from '@common/email-template-payload';
-import { COMMUNITY_COLLABORATION_INTEREST } from '@src/common/constants';
+import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
 
 @Injectable()
 export class CommunityCollaborationInterestNotificationBuilder
@@ -69,7 +69,7 @@ export class CommunityCollaborationInterestNotificationBuilder
   ): CommunityCollaborationInterestEmailPayload {
     if (!user) {
       throw Error(
-        `Interested user not provided for '${COMMUNITY_COLLABORATION_INTEREST} event'`
+        `Interested user not provided for '${NotificationEventType.COMMUNITY_COLLABORATION_INTEREST} event'`
       );
     }
 
