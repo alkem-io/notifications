@@ -1,0 +1,5 @@
+/docs/diagrams/.$*
+
+*.log
+.env
+.~*
