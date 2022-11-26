@@ -3,7 +3,7 @@ import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunicationUpdateEventPayload } from '@alkemio/notifications-lib/src/dto';
+import { CommunicationUpdateEventPayload } from '@alkemio/notifications-lib/dist/dto';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import {
   AlkemioUrlGenerator,
@@ -12,7 +12,7 @@ import {
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
+import { NotificationEventType } from '@alkemio/notifications-lib/dist/notification.event.type';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder

@@ -7,7 +7,7 @@
     "outDir": "./dist",
     "removeComments": true,
     "strict": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -22,8 +22,7 @@
       "@common/*": ["src/common/*"],
       "@core/*": ["src/core/*"]
     }
-    // "types": ["alkemio-templates"]
-    // "typeRoots": ["./src/types"]
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "include": ["./src/**/*.ts", "./test/**/*.ts"]
 }

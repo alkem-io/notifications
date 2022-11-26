@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { AspectCreatedEventPayload } from '@alkemio/notifications-lib/src/dto';
+import { AspectCreatedEventPayload } from '@alkemio/notifications-lib/dist/dto';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -12,7 +12,7 @@ import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
 import { AspectCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
+import { NotificationEventType } from '@alkemio/notifications-lib/dist/notification.event.type';
 
 @Injectable()
 export class AspectCreatedNotificationBuilder implements INotificationBuilder {

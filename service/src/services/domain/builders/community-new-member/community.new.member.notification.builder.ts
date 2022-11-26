@@ -8,11 +8,11 @@ import {
   RoleConfig,
 } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunityNewMemberPayload } from '@alkemio/notifications-lib/src/dto';
+import { CommunityNewMemberPayload } from '@alkemio/notifications-lib/dist/dto';
 import { NotificationTemplateType } from '@src/types';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib/src/notification.event.type';
+import { NotificationEventType } from '@alkemio/notifications-lib/dist/notification.event.type';
 
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
