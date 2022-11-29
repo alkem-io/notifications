@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "module": "commonjs",
+    "lib": ["es2019", "esnext.asynciterable", "ES2020.Promise"],
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declaration": true,
+    "removeComments": true,
+    "strict": true,
+    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@src/*": ["src/*"],
+      "@common/*": ["src/common/*"],
+    }
+  },
+  "exclude": ["./node_modules"],
+  "include": [
+    "./src/**/*.ts"
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "name": "alkemio-notifications",
+  "version": "0.5.10",
+  "description": "Alkemio notifications service",
+  "author": "Alkemio Foundation",
+  "private": false,
+  "license": "EUPL-1.2",
+  "main": "src/main.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alkem-io/notifications.git"
+  },
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "start-nodemon": "nodemon -w src --ext ts --exec ts-node src/main.ts",
+    "start-nodemon-local": "nodemon -w src --ext ts --exec ts-node -r dotenv/config src/main.ts",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "start:services": "docker-compose -f quickstart-mailslurper.yml up --build --force-recreate",
+    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
+    "lint:prod": "tsc --noEmit && cross-env NODE_ENV=production eslint src/**/*.ts{,x}",
+    "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
+    "test": "jest",
+    "test:dev": "jest --config=./test/config/jest.config.js --no-cache --coverage=true --detectOpenHandles --runInBand --logHeapUsage",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:ci:coverage": "jest --runInBand --config ./test/config/jest.config.ci.js && cat ./coverage-ci/lcov.info | coveralls",
+    "test:ci": "jest --runInBand --config ./test/config/jest.config.ci.js",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/config/typeorm.cli.config.ts",
+    "validate-connection": "ts-node src/utils/validate-connection.ts"
+  },
+  "dependencies": {
+    "@alkemio/client-lib": "^0.17.1",
+    "@alkemio/notifications-lib": "^0.1.7",
+    "@nestjs/common": "^8.0.5",
+    "@nestjs/config": "^1.0.1",
+    "@nestjs/core": "^8.0.5",
+    "@nestjs/microservices": "^8.0.11",
+    "@nestjs/platform-express": "^8.0.5",
+    "@types/nunjucks": "^3.2.0",
+    "amqp-connection-manager": "^3.7.0",
+    "amqplib": "^0.8.0",
+    "apollo-server-express": "^3.3.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "module-alias": "^2.2.2",
+    "nest-winston": "^1.5.0",
+    "nodemon": "^2.0.12",
+    "notifme-sdk": "^1.11.0",
+    "notifme-template": "^1.0.0",
+    "nunjucks": "^3.2.3",
+    "winston": "^3.3.3",
+    "winston-elasticsearch": "^0.15.8",
+    "yaml": "^2.0.0-7"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^8.1.0",
+    "@nestjs/testing": "^8.0.5",
+    "@types/amqplib": "^0.8.2",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^26.0.24",
+    "@types/module-alias": "^2.0.1",
+    "@types/node": "^16.4.6",
+    "@types/yaml": "^1.9.7",
+    "@typescript-eslint/eslint-plugin": "^4.28.5",
+    "@typescript-eslint/parser": "^4.28.5",
+    "cd": "^0.3.3",
+    "coveralls": "^3.1.1",
+    "eslint": "^7.31.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^4.3.8",
+    "jest": "^27.0.6",
+    "lint-staged": "^11.1.1",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.4",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  },
+  "_moduleAliases": {
+    "@src": "./dist"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "engines": {
+    "node": ">=16.15.0",
+    "npm": ">=8.5.5"
+  }
+}
