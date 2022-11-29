@@ -4,13 +4,8 @@ import {
   MockNotificationRecipientsYmlProvider,
   MockNotificationTemplateBuilderProvider,
   MockWinstonProvider,
-} from 'service/test/mocks';
-import { asyncToThrow } from 'service/test/utils';
-import {
-  ALKEMIO_CLIENT_ADAPTER,
-  NOTIFICATION_RECIPIENTS_YML_ADAPTER,
-  RolesNotProvidedException,
-} from '@common';
+} from '@test/mocks';
+import { asyncToThrow } from '@test/utils';
 import {
   NotificationBuilder,
   NotificationOptions,
@@ -21,6 +16,11 @@ import {
 } from '@core/contracts';
 import { LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import {
+  ALKEMIO_CLIENT_ADAPTER,
+  NOTIFICATION_RECIPIENTS_YML_ADAPTER,
+} from '@src/common/enums';
+import { RolesNotProvidedException } from '@src/common/exceptions/notification-builder/roles.not.provided.exception';
 
 describe('NotificationBuilder', () => {
   let alkemioAdapter: INotifiedUsersProvider;

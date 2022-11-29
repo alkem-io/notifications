@@ -32,10 +32,10 @@ import {
   MockConfigServiceProvider,
   MockNotificationBuilderProvider,
   MockNotificationRecipientsYmlProvider,
+  MockNotifmeProvider,
   MockWinstonProvider,
-} from 'service/test/mocks';
+} from '@test/mocks';
 import { NotificationBuilder } from '@src/services/application';
-import { MockNotifmeProvider } from 'service/test/mocks/notifme.provider.mock';
 import { NotificationTemplateType } from '@src/types';
 
 const testData = {

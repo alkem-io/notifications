@@ -1,6 +1,5 @@
 import { AlkemioClient } from '@alkemio/client-lib';
 import { Test } from '@nestjs/testing';
-import { ALKEMIO_CLIENT_ADAPTER, ALKEMIO_CLIENT_PROVIDER } from '@common';
 import { AlkemioClientAdapterProvider } from './alkemio.client.adapter.module';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
@@ -11,7 +10,11 @@ import {
   MockAlkemioClientProvider,
   MockConfigServiceProvider,
   MockWinstonProvider,
-} from 'service/test/mocks';
+} from '@test/mocks';
+import {
+  ALKEMIO_CLIENT_ADAPTER,
+  ALKEMIO_CLIENT_PROVIDER,
+} from '@src/common/enums';
 
 const testData = {
   ...challengeAdminsData,
