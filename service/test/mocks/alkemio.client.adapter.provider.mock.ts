@@ -1,6 +1,6 @@
 import { ALKEMIO_CLIENT_ADAPTER } from '@common';
 import { ValueProvider } from '@nestjs/common';
-import { PublicPart } from 'service/test/utils';
+import { PublicPart } from '@test/utils';
 import { AlkemioClientAdapter } from '@src/services';
 
 export const MockAlkemioClientAdapterProvider: ValueProvider<

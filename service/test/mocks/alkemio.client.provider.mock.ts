@@ -1,5 +1,5 @@
 import { ValueProvider } from '@nestjs/common';
-import { PublicPart } from 'service/test/utils';
+import { PublicPart } from '@test/utils';
 import { ALKEMIO_CLIENT_PROVIDER } from '@common';
 import { AlkemioClient } from '@alkemio/client-lib';
 

@@ -1,5 +1,5 @@
 import { ValueProvider } from '@nestjs/common';
-import { PublicPart } from 'service/test/utils';
+import { PublicPart } from '@test/utils';
 import { NotificationTemplateBuilder } from '@src/services/external';
 import { TEMPLATE_PROVIDER } from '@common';
 

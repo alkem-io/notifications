@@ -1,5 +1,5 @@
 import { ValueProvider } from '@nestjs/common';
-import { PublicPart } from 'service/test/utils/public-part';
+import { PublicPart } from '@test/utils/public-part';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { NOTIFICATION_RECIPIENTS_YML_ADAPTER } from '@common';
 
