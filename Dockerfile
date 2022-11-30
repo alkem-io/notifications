@@ -10,8 +10,7 @@ ARG ENV_ARG=production
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-WORKDIR /service
-COPY package*.json ./
+COPY ./service/package*.json ./
 
 RUN npm i -g npm@8.5.5
 RUN npm install
@@ -24,10 +23,10 @@ RUN chmod +x /wait
 # RUN npm ci --only=production
 
 # Bundle app source & config files for TypeORM & TypeScript
-COPY ./src ./src
-COPY ./tsconfig.json .
-COPY ./tsconfig.build.json .
-COPY ./notifications.yml .
+COPY ./service/src ./src
+COPY ./service/tsconfig.json .
+COPY ./service/tsconfig.build.json .
+COPY ./service/notifications.yml .
 
 RUN npm run build
 
