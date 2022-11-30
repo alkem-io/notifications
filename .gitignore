@@ -1,5 +1,10 @@
 /docs/diagrams/.$*
+/service/coverage/*
+/service/coverage-ci/*
 
 *.log
 .env
 .~*
+
+.vscode
+.idea
