@@ -5,3 +5,6 @@
 *.log
 .env
 .~*
+
+.vscode
+.idea
