@@ -12,7 +12,7 @@ module.exports = () => ({
       subject: '[Alkemio] User profile deleted: {{registrant.name}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{recipient.firstname}},<br><br>
+          Hi {{recipient.firstName}},<br><br>
 
           The following user has been removed: {{registrant.name}}, with email {{registrant.email}}<br><br>
 

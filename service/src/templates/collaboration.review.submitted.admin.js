@@ -4,19 +4,19 @@ const templates = require('./alkemio.template.blocks');
 module.exports = () => ({
   name: 'collaboration-review-submitted-admin',
   title:
-    '[{{community.name}}] Member {{reviewer.name}} submitted a review',
+    '[{{journey.displayName}}] Member {{reviewer.name}} submitted a review',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '[{{community.name}}] Member {{reviewer.name}} submitted a review',
+        '[{{journey.displayName}}] Member {{reviewer.name}} submitted a review',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{recipient.firstname}},<br><br>
+          Hi {{recipient.firstName}},<br><br>
 
-          The user {{reviewer.name}} of {{community.name}} submitted the following review
+          The user {{reviewer.name}} of {{journey.displayName}} submitted the following review
           <br/>
           {review}
           <br/>

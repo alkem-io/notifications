@@ -4,19 +4,19 @@ var templates = require('./alkemio.template.blocks');
 module.exports = () => ({
   name: 'collaboration-card-created-member',
   title:
-    '{{community.name}} - New comment received on your Card: "{{aspect.displayName}}"',
+    '{{journey.displayName}} - New comment received on your Card: "{{aspect.displayName}}"',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '{{community.name}} - New comment received on your Card "{{aspect.displayName}}", have a look!',
+        '{{journey.displayName}} - New comment received on your Card "{{aspect.displayName}}", have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{recipient.firstname}},<br><br>
+          Hi {{recipient.firstName}},<br><br>
 
-          A new comment was created by {{createdBy.firstname}} on your '{{aspect.displayName}}' Card in '<a href={{community.url}}>{{community.name}}</a>'.
+          A new comment was created by {{createdBy.firstname}} on your '{{aspect.displayName}}' Card in '<a href={{journey.url}}>{{journey.displayName}}</a>'.
           <br><br>
 
           Sincerely yours,
