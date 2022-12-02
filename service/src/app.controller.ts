@@ -69,7 +69,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_COLLABORATION_INTEREST)
+  @EventPattern(NotificationEventType.COLLABORATION_INTEREST)
   async sendCommunityCollaborationInterestNotification(
     @Payload() eventPayload: CollaborationInterestPayload,
     @Ctx() context: RmqContext
@@ -80,11 +80,11 @@ export class AppController {
       this.notificationService.sendCommunityCollaborationInterestNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_COLLABORATION_INTEREST
+      NotificationEventType.COLLABORATION_INTEREST
     );
   }
 
-  @EventPattern(NotificationEventType.USER_REGISTERED)
+  @EventPattern(NotificationEventType.PLATFORM_USER_REGISTERED)
   async sendUserRegisteredNotification(
     // todo is auto validation possible
     @Payload() eventPayload: PlatformUserRegistrationEventPayload,
@@ -94,7 +94,7 @@ export class AppController {
       eventPayload,
       context,
       this.notificationService.sendUserRegisteredNotification(eventPayload),
-      NotificationEventType.USER_REGISTERED
+      NotificationEventType.PLATFORM_USER_REGISTERED
     );
   }
 
@@ -130,7 +130,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_CONTEXT_REVIEW_SUBMITTED)
+  @EventPattern(NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED)
   async sendCommunityContextFeedbackNotifications(
     @Payload() eventPayload: CollaborationContextReviewSubmittedPayload,
     @Ctx() context: RmqContext
@@ -141,11 +141,11 @@ export class AppController {
       this.notificationService.sendCommunityContextFeedbackNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_CONTEXT_REVIEW_SUBMITTED
+      NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED
     );
   }
 
-  @EventPattern(NotificationEventType.ASPECT_CREATED, Transport.RMQ)
+  @EventPattern(NotificationEventType.COLLABORATION_CARD_CREATED, Transport.RMQ)
   async sendAspectCreatedNotifications(
     @Payload() eventPayload: CollaborationCardCreatedEventPayload,
     @Ctx() context: RmqContext
@@ -154,11 +154,11 @@ export class AppController {
       eventPayload,
       context,
       this.notificationService.sendAspectCreatedNotification(eventPayload),
-      NotificationEventType.ASPECT_CREATED
+      NotificationEventType.COLLABORATION_CARD_CREATED
     );
   }
 
-  @EventPattern(NotificationEventType.COMMENT_CREATED_ON_ASPECT, Transport.RMQ)
+  @EventPattern(NotificationEventType.COLLABORATION_CARD_COMMENT, Transport.RMQ)
   async sendAspectCommentCreatedNotifications(
     @Payload() eventPayload: CollaborationCardCommentEventPayload,
     @Ctx() context: RmqContext
@@ -169,11 +169,14 @@ export class AppController {
       this.notificationService.sendAspectCommentCreatedNotification(
         eventPayload
       ),
-      NotificationEventType.ASPECT_CREATED
+      NotificationEventType.COLLABORATION_CARD_COMMENT
     );
   }
 
-  @EventPattern(NotificationEventType.CALLOUT_PUBLISHED, Transport.RMQ)
+  @EventPattern(
+    NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED,
+    Transport.RMQ
+  )
   async sendCalloutPublishedNotifications(
     @Payload() eventPayload: CollaborationCalloutPublishedEventPayload,
     @Ctx() context: RmqContext
@@ -182,7 +185,7 @@ export class AppController {
       eventPayload,
       context,
       this.notificationService.sendCalloutPublishedNotification(eventPayload),
-      NotificationEventType.CALLOUT_PUBLISHED
+      NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED
     );
   }
 

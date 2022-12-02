@@ -58,7 +58,7 @@ export class CollaborationCardCommentNotificationBuilder
   ): AspectCommentCreatedEmailPayload {
     if (!commentAuthor) {
       throw Error(
-        `Comment author not provided for '${NotificationEventType.COMMENT_CREATED_ON_ASPECT} event'`
+        `Comment author not provided for '${NotificationEventType.COLLABORATION_CARD_COMMENT} event'`
       );
     }
     const notificationPreferenceURL =

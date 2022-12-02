@@ -69,7 +69,7 @@ export class CCollaborationInterestNotificationBuilder
   ): CommunityCollaborationInterestEmailPayload {
     if (!user) {
       throw Error(
-        `Interested user not provided for '${NotificationEventType.COMMUNITY_COLLABORATION_INTEREST} event'`
+        `Interested user not provided for '${NotificationEventType.COLLABORATION_INTEREST} event'`
       );
     }
 

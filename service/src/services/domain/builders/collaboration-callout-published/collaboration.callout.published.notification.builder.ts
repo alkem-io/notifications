@@ -61,7 +61,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
   ): CalloutPublishedEmailPayload {
     if (!creator) {
       throw Error(
-        `Creator not provided for '${NotificationEventType.CALLOUT_PUBLISHED} event'`
+        `Creator not provided for '${NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED} event'`
       );
     }
 

@@ -69,7 +69,7 @@ export class CollaborationCardCreatedNotificationBuilder
   ): AspectCreatedEmailPayload {
     if (!creator) {
       throw Error(
-        `Creator not provided for '${NotificationEventType.ASPECT_CREATED} event'`
+        `Creator not provided for '${NotificationEventType.COLLABORATION_CARD_CREATED} event'`
       );
     }
 

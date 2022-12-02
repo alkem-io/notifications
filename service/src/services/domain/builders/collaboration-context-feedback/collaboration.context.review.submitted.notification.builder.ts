@@ -70,7 +70,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
   ): CommunityContextEmailPayload {
     if (!reviewer) {
       throw Error(
-        `Reviewer not provided for '${NotificationEventType.COMMUNITY_CONTEXT_REVIEW_SUBMITTED}' event`
+        `Reviewer not provided for '${NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED}' event`
       );
     }
 

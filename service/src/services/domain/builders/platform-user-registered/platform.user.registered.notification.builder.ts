@@ -58,7 +58,7 @@ export class PlatformUserRegisteredNotificationBuilder
   ): UserRegisteredEmailPayload {
     if (!registrant) {
       throw Error(
-        `Registrant not provided for '${NotificationEventType.USER_REGISTERED}' event`
+        `Registrant not provided for '${NotificationEventType.PLATFORM_USER_REGISTERED}' event`
       );
     }
 
