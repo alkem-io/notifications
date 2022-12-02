@@ -16,7 +16,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},
           <br><br>
-          A new callout was published by {{publishedBy.firstName}} on your community '<a href="{{journey.url}}">{{journey.displayName}}</a>': {{callout.displayName}}.
+          A new callout was published by {{publishedBy.firstName}} with name: '<a href={{callout.url}}>{{callout.displayName}}</a>'.
           <br><br>
 
           Sincerely yours,

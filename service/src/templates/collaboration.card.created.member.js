@@ -16,7 +16,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},
           <br><br>
-          A new Card was created by {{createdBy.firstName}} on your community '<a href="{{journey.url}}">{{journey.displayName}}</a>' with name '{{aspect.displayName}}'
+          A new Card was created by {{createdBy.firstName}} with name '<a href={{card.url}}>{{card.displayName}}</a>'
           <br><br>
           Sincerely yours,
         {% endblock %}
