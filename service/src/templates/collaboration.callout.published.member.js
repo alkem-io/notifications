@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'callout-published-member',
+  name: 'collaboration-callout-published-member',
   title:
     '{{community.name}} - New callout is published: "{{callout.displayName}}", have a look!',
   version: 1,

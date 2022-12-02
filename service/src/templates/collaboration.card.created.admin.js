@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'aspect-created-admin',
+  name: 'collaboration-card-created-admin',
   title: '[{{community.name}}] New Card created by {{createdBy.firstname}}',
   version: 1,
   channels: {
