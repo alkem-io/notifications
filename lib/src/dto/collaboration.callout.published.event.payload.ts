@@ -5,6 +5,7 @@ export interface CollaborationCalloutPublishedEventPayload extends JourneyBaseEv
     id: string;
     displayName: string;
     description: string;
+    nameID: string;
     type: string;
   };
 }

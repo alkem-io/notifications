@@ -15,7 +15,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          A new discussion was created by {{createdBy.firstname}} on your community <a href="{{journey.url}}">{{journey.displayName}}</a>: {{discussion.title}}<br><br>
+          A new discussion was created by {{createdBy.firstName}} on your community <a href="{{journey.url}}">{{journey.displayName}}</a>: {{discussion.title}}<br><br>
 
           Sincerely yours,
         {% endblock %}

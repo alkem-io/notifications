@@ -83,7 +83,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       sender: {
-        firstname: sender.firstName,
+        firstName: sender.firstName,
       },
       recipient: {
         firstName: recipient.firstName,

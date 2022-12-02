@@ -4,14 +4,14 @@ var templates = require('./alkemio.template.blocks');
 module.exports = () => ({
   name: 'community-user-application-admin',
   title:
-    '[{{journey.displayName}}] Application from {{applicant.firstname}}',
+    '[{{journey.displayName}}] Application from {{applicant.firstName}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '[{{journey.displayName}}] Application from {{applicant.firstname}}',
+        '[{{journey.displayName}}] Application from {{applicant.firstName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.name}},<br><br>

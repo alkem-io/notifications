@@ -3,7 +3,7 @@ import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 export interface CommunicationDiscussionCreatedEmailPayload
   extends BaseJourneyEmailPayload {
   createdBy: {
-    firstname: string;
+    firstName: string;
   };
   discussion: {
     title: string;

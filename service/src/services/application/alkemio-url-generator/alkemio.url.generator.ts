@@ -40,6 +40,18 @@ export class AlkemioUrlGenerator {
     return `${this.webclientEndpoint}/user/${userNameID}`;
   }
 
+  createCalloutURL(journeyURL: string, calloutNameID: string): string {
+    return `${journeyURL}/callouts/${calloutNameID}`;
+  }
+
+  createCardURL(
+    journeyURL: string,
+    calloutNameID: string,
+    cardNameID: string
+  ): string {
+    return `${journeyURL}/callouts/${calloutNameID}/aspects/${cardNameID}`;
+  }
+
   createOrganizationURL(orgNameID: string): string {
     return `${this.webclientEndpoint}/organization/${orgNameID}`;
   }

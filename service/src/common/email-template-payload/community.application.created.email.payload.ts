@@ -4,7 +4,7 @@ export interface CommunityApplicationCreatedEmailPayload
   extends BaseJourneyEmailPayload {
   applicant: {
     name: string;
-    firstname: string;
+    firstName: string;
     email: string;
     profile: string;
   };

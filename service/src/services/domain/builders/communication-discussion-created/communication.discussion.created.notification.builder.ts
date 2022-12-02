@@ -84,7 +84,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       createdBy: {
-        firstname: sender.firstName,
+        firstName: sender.firstName,
       },
       discussion: {
         title: eventPayload.discussion.title,

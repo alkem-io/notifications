@@ -14,7 +14,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          A new update was shared by {{sender.firstname}} on your community <a href="{{journey.url}}">{{journey.displayName}}</a>.<br><br>
+          A new update was shared by {{sender.firstName}} on your community <a href="{{journey.url}}">{{journey.displayName}}</a>.<br><br>
 
           Sincerely yours,
         {% endblock %}

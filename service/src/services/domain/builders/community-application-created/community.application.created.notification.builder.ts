@@ -84,7 +84,7 @@ export class CommunityApplicationCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       applicant: {
-        firstname: applicant.firstName,
+        firstName: applicant.firstName,
         name: applicant.displayName,
         email: applicant.email,
         profile: applicantProfileURL,

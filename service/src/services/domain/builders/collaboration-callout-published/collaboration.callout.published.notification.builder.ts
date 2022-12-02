@@ -71,6 +71,14 @@ export class CollaborationCalloutPublishedNotificationBuilder
       );
 
     const alkemioUrl = this.alkemioUrlGenerator.createPlatformURL();
+    const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
+      eventPayload.journey
+    );
+
+    const calloutURL = this.alkemioUrlGenerator.createCalloutURL(
+      journeyURL,
+      eventPayload.callout.nameID
+    );
 
     return {
       emailFrom: 'info@alkem.io',
@@ -84,6 +92,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       },
       callout: {
         displayName: eventPayload.callout.displayName,
+        url: calloutURL,
       },
       journey: {
         name: eventPayload.journey.displayName,

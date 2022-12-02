@@ -5,6 +5,7 @@ export interface CollaborationCalloutPublishedEmailPayload
   emailFrom: string;
   callout: {
     displayName: string;
+    url: string;
   };
   publishedBy: {
     firstName: string;

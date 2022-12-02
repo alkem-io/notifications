@@ -16,7 +16,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          A new comment was created by {{createdBy.firstname}} on your '{{aspect.displayName}}' Card in '<a href={{journey.url}}>{{journey.displayName}}</a>'.
+          A new comment was created by {{createdBy.firstName}} on your '{{aspect.displayName}}' Card in '<a href={{journey.url}}>{{journey.displayName}}</a>'.
           <br><br>
 
           Sincerely yours,

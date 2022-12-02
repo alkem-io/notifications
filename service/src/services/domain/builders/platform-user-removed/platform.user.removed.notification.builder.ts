@@ -73,7 +73,7 @@ export class PlatformUserRemovedNotificationBuilder
       emailFrom: 'info@alkem.io',
       registrant: {
         name: registrant.displayName,
-        firstname: registrant.firstName,
+        firstName: registrant.firstName,
         email: registrant.email,
         profile: registrantProfileURL,
       },
