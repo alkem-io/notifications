@@ -86,7 +86,7 @@ kratos:
   public_endpoint: ${KRATOS_API_PUBLIC_ENDPOINT}:http://localhost:3000/identity/ory/kratos/public
 
 recipients:
-  application_created:
+  community_application_created:
     - name: admin
       rules:
         - rule:
@@ -109,23 +109,23 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <applicantID>
-  user_registered:
+  community_new_member:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
+            type: HUB_ADMIN
+            resource_id: <hubID>
         - rule:
-            type: GLOBAL_ADMIN
-            resource_id:
+            type: CHALLENGE_ADMIN
+            resource_id: <challengeID>
         - rule:
-            type: GLOBAL_ADMIN_HUBS
-            resource_id:
-    - name: registrant
+            type: OPPORTUNITY_ADMIN
+            resource_id: <opportunityID>
+    - name: member
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
-            resource_id: <registrantID>
+            resource_id: <memberID>
   communication_update_sent:
     - name: admin
       rules:
@@ -166,7 +166,7 @@ recipients:
         - rule:
             type: OPPORTUNITY_MEMBER
             resource_id: <entityID>
-  community_review_submitted:
+  collaboration_review_submitted:
     - name: admin
       rules:
         - rule:
@@ -177,24 +177,7 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <reviewerID>
-  community_new_member:
-    - name: admin
-      rules:
-        - rule:
-            type: HUB_ADMIN
-            resource_id: <hubID>
-        - rule:
-            type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
-        - rule:
-            type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
-    - name: member
-      rules:
-        - rule:
-            type: USER_SELF_MANAGEMENT
-            resource_id: <memberID>
-  community_collaboration_interest:
+  collaboration_interest:
     - name: admin
       rules:
         - rule:
@@ -205,7 +188,7 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <userID>
-  aspect_created:
+  collaboration_card_created:
     - name: admin
       rules:
         - rule:
@@ -228,13 +211,13 @@ recipients:
         - rule:
             type: OPPORTUNITY_MEMBER
             resource_id: <entityID>
-  aspect_comment_created:
+  collaboration_card_comment:
     - name: owner
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <ownerID>
-  callout_published:
+  collaboration_callout_published:
     - name: user
       rules:
         - rule:
@@ -246,3 +229,32 @@ recipients:
         - rule:
             type: OPPORTUNITY_MEMBER
             resource_id: <entityID>
+  platform_user_registered:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_ADMIN_COMMUNITY
+            resource_id:
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id:
+        - rule:
+            type: GLOBAL_ADMIN_HUBS
+            resource_id:
+    - name: registrant
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <registrantID>
+  platform_user_removed:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_ADMIN_COMMUNITY
+            resource_id:
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id:
+        - rule:
+            type: GLOBAL_ADMIN_HUBS
+            resource_id:
