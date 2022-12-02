@@ -2,8 +2,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigurationTypes } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { JourneyPayload } from '@alkemio/notifications-lib';
-import { JourneyType } from '@src/common/enums/journey.type';
+import { JourneyPayload, JourneyType } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class AlkemioUrlGenerator {
