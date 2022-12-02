@@ -35,13 +35,13 @@ export class CCollaborationInterestNotificationBuilder
         role: 'admin',
         preferenceType:
           UserPreferenceType.NotificationCommunityCollaborationInterestAdmin,
-        emailTemplate: EmailTemplate.COMMUNITY_COLLABORATION_INTEREST_ADMIN,
+        emailTemplate: EmailTemplate.COLLABORATION_INTEREST_ADMIN,
       },
       {
         role: 'user',
         preferenceType:
           UserPreferenceType.NotificationCommunityCollaborationInterestUser,
-        emailTemplate: EmailTemplate.COMMUNITY_COLLABORATION_INTEREST_USER,
+        emailTemplate: EmailTemplate.COLLABORATION_INTEREST_USER,
       },
     ];
 

@@ -33,7 +33,7 @@ export class CollaborationCardCommentNotificationBuilder
       {
         role: 'owner',
         preferenceType: UserPreferenceType.NotificationAspectCommentCreated,
-        emailTemplate: EmailTemplate.ASPECT_COMMENT_CREATED_MEMBER,
+        emailTemplate: EmailTemplate.COLLABORATION_CARD_COMMENT_MEMBER,
       },
     ];
 

@@ -33,7 +33,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       {
         role: 'user',
         preferenceType: UserPreferenceType.NotificationCalloutPublished,
-        emailTemplate: EmailTemplate.CALLOUT_PUBLISHED_MEMBER,
+        emailTemplate: EmailTemplate.COLLABORATION_CALLOUT_PUBLISHED_MEMBER,
       },
     ];
 

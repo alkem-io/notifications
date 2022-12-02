@@ -30,12 +30,12 @@ export class PlatformUserRegisteredNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        emailTemplate: EmailTemplate.USER_REGISTRATION_ADMIN,
+        emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN,
         preferenceType: UserPreferenceType.NotificationUserSignUp,
       },
       {
         role: 'registrant',
-        emailTemplate: EmailTemplate.USER_REGISTRATION_REGISTRANT,
+        emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_REGISTRANT,
       },
     ];
 

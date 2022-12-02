@@ -33,12 +33,12 @@ export class CollaborationCardCreatedNotificationBuilder
       {
         role: 'admin',
         preferenceType: UserPreferenceType.NotificationAspectCreatedAdmin,
-        emailTemplate: EmailTemplate.ASPECT_CREATED_ADMIN,
+        emailTemplate: EmailTemplate.COLLABORATION_CARD_CREATED_ADMIN,
       },
       {
         role: 'user',
         preferenceType: UserPreferenceType.NotificationAspectCreated,
-        emailTemplate: EmailTemplate.ASPECT_CREATED_MEMBER,
+        emailTemplate: EmailTemplate.COLLABORATION_CARD_CREATED_MEMBER,
       },
     ];
 

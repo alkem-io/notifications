@@ -36,13 +36,13 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        emailTemplate: EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_ADMIN,
+        emailTemplate: EmailTemplate.COLLABORATION_REVIEW_SUBMITTED_ADMIN,
         preferenceType:
           UserPreferenceType.NotificationCommunityReviewSubmittedAdmin,
       },
       {
         role: 'reviewer',
-        emailTemplate: EmailTemplate.COMMUNITY_REVIEW_SUBMITTED_REVIEWER,
+        emailTemplate: EmailTemplate.COLLABORATION_REVIEW_SUBMITTED_REVIEWER,
         preferenceType: UserPreferenceType.NotificationCommunityReviewSubmitted,
       },
     ];

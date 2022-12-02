@@ -34,11 +34,11 @@ export class CommunityApplicationCreatedNotificationBuilder
       {
         role: 'admin',
         preferenceType: UserPreferenceType.NotificationApplicationReceived,
-        emailTemplate: EmailTemplate.USER_APPLICATION_ADMIN,
+        emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_ADMIN,
       },
       {
         role: 'applicant',
-        emailTemplate: EmailTemplate.USER_APPLICATION_APPLICANT,
+        emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_APPLICANT,
         preferenceType: UserPreferenceType.NotificationApplicationSubmitted,
       },
     ];
