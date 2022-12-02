@@ -73,10 +73,8 @@ export class CommunityApplicationCreatedNotificationBuilder
     const applicantProfileURL = this.alkemioUrlGenerator.createUserURL(
       applicant.nameID
     );
-    const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.journey.hubNameID,
-      eventPayload.journey.challenge?.nameID,
-      eventPayload.journey.challenge?.opportunity?.nameID
+    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
+      eventPayload.journey
     );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(

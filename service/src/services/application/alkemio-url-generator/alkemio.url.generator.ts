@@ -2,6 +2,8 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigurationTypes } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
+import { JourneyPayload } from '@alkemio/notifications-lib';
+import { CommunityType } from '@src/common/enums/community.type';
 
 @Injectable()
 export class AlkemioUrlGenerator {
@@ -20,18 +22,17 @@ export class AlkemioUrlGenerator {
     return this.webclientEndpoint;
   }
 
-  createCommunityURL(
-    hubNameID: string,
-    challengeNameID?: string,
-    opportunityNameID?: string
-  ): string {
-    const baseURL = `${this.webclientEndpoint}/${hubNameID}`;
-    if (opportunityNameID) {
-      return `${baseURL}/challenges/${challengeNameID}/opportunities/${opportunityNameID}`;
+  createJourneyURL(journey: JourneyPayload): string {
+    const baseURL = `${this.webclientEndpoint}/${journey.hubNameID}`;
+    switch (journey.type) {
+      case CommunityType.HUB:
+        return baseURL;
+      case CommunityType.CHALLENGE:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}`;
+      case CommunityType.OPPORTUNITY:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}/opportunities/${journey.challenge?.opportunity?.nameID}`;
     }
-    if (challengeNameID) {
-      return `${baseURL}/challenges/${challengeNameID}`;
-    }
+
     return baseURL;
   }
 

@@ -76,10 +76,8 @@ export class CommunicationDiscussionCreatedNotificationBuilder
       );
     }
 
-    const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.journey.hubID,
-      eventPayload.journey.challenge?.nameID,
-      eventPayload.journey.challenge?.opportunity?.nameID
+    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
+      eventPayload.journey
     );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
