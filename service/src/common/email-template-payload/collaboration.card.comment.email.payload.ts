@@ -1,20 +1,12 @@
-import { BaseEmailPayload } from '@common/email-template-payload/base.email.payload';
+import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 // @ts-
-export interface CollaborationCardCommentEmailPayload extends BaseEmailPayload {
-  aspect: {
+export interface CollaborationCardCommentEmailPayload
+  extends BaseJourneyEmailPayload {
+  card: {
     displayName: string;
-  };
-  recipient: {
-    firstname: string;
-    email: string;
-    notificationPreferences: string;
   };
   createdBy: {
     firstname: string;
     email: string;
-  };
-  community: {
-    name: string;
-    url: string;
   };
 }

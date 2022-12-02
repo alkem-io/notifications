@@ -70,10 +70,6 @@ export class CollaborationCalloutPublishedNotificationBuilder
         recipient.nameID
       );
 
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-
     const alkemioUrl = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
@@ -89,11 +85,12 @@ export class CollaborationCalloutPublishedNotificationBuilder
       callout: {
         displayName: eventPayload.callout.displayName,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
-        url: communityURL,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
+      platform: {
         url: alkemioUrl,
       },
     };

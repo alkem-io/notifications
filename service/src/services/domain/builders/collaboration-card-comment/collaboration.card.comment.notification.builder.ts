@@ -66,19 +66,15 @@ export class CollaborationCardCommentNotificationBuilder
         recipient.nameID
       );
 
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-
     const hubURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
       emailFrom: 'info@alkem.io',
-      aspect: {
+      card: {
         displayName: eventPayload.card.displayName,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
@@ -86,11 +82,12 @@ export class CollaborationCardCommentNotificationBuilder
         firstname: commentAuthor.firstName,
         email: commentAuthor.email,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
-        url: communityURL,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

@@ -76,9 +76,6 @@ export class CommunicationDiscussionCreatedNotificationBuilder
       );
     }
 
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
@@ -93,15 +90,16 @@ export class CommunicationDiscussionCreatedNotificationBuilder
         title: eventPayload.discussion.title,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
-        url: communityURL,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

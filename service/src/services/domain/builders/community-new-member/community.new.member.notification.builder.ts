@@ -89,14 +89,16 @@ export class CommunityNewMemberNotificationBuilder
         profile: memberProfileURL,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

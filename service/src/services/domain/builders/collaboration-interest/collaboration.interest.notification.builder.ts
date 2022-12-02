@@ -80,17 +80,13 @@ export class CollaborationInterestNotificationBuilder
 
     const hubURL = this.alkemioUrlGenerator.createPlatformURL();
 
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-
     return {
       emailFrom: 'info@alkem.io',
       user: {
         name: user.displayName,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
@@ -98,12 +94,12 @@ export class CollaborationInterestNotificationBuilder
         role: eventPayload.relation.role,
         description: eventPayload.relation.description,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
         type: eventPayload.journey.type,
-        url: communityURL,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

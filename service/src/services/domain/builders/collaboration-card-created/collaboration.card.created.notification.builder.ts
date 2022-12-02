@@ -78,10 +78,6 @@ export class CollaborationCardCreatedNotificationBuilder
         recipient.nameID
       );
 
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-
     const hubURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
@@ -90,19 +86,20 @@ export class CollaborationCardCreatedNotificationBuilder
         firstname: creator.firstName,
         email: creator.email,
       },
-      aspect: {
+      card: {
         displayName: eventPayload.card.displayName,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
-        url: communityURL,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

@@ -90,16 +90,16 @@ export class CommunityApplicationCreatedNotificationBuilder
         profile: applicantProfileURL,
       },
       recipient: {
-        name: recipient.displayName,
+        firstName: recipient.displayName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
         type: eventPayload.journey.type,
         url: communityURL,
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

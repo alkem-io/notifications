@@ -74,9 +74,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
         `Sender not provided for '${NotificationEventType.COMMUNICATION_UPDATE_SENT}' event`
       );
     }
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
+
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
@@ -88,15 +86,16 @@ export class CommunicationUpdateCreatedNotificationBuilder
         firstname: sender.firstName,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
-        url: communityURL,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

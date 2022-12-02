@@ -87,15 +87,17 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
         name: reviewer.displayName,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
+      journey: {
         name: eventPayload.journey.displayName,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
       review: toStringReview(eventPayload.questions),
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

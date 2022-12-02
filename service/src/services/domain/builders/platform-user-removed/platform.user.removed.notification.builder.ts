@@ -78,11 +78,11 @@ export class PlatformUserRemovedNotificationBuilder
         profile: registrantProfileURL,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      hub: {
+      platform: {
         url: hubURL,
       },
     };

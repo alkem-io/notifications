@@ -1,24 +1,12 @@
-import { BaseEmailPayload } from './base.email.payload';
+import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 
 export interface CollaborationCalloutPublishedEmailPayload
-  extends BaseEmailPayload {
+  extends BaseJourneyEmailPayload {
   emailFrom: string;
-  recipient: {
-    email: string;
-    firstName: string;
-    notificationPreferences: string;
-  };
-  community: {
-    name: string;
-    url: string;
-  };
   callout: {
     displayName: string;
   };
   publishedBy: {
     firstName: string;
-  };
-  hub: {
-    url: string;
   };
 }

@@ -1,8 +1,9 @@
 import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 
-export interface CommunicationUpdateCreatedEmailPayload
+export interface CollaborationContextReviewEmailPayload
   extends BaseJourneyEmailPayload {
-  sender: {
-    firstname: string;
+  reviewer: {
+    name: string;
   };
+  review: string;
 }

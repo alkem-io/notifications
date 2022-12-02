@@ -7,12 +7,4 @@ export interface PlatformUserRemovedEmailPayload extends BaseEmailPayload {
     email: string;
     profile: string;
   };
-  recipient: {
-    firstname: string;
-    email: string;
-    notificationPreferences: string;
-  };
-  hub: {
-    url: string;
-  };
 }
