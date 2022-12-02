@@ -23,7 +23,7 @@ import {
   CommunityNewMemberNotificationBuilder,
   CollaborationCardCreatedNotificationBuilder,
   CollaborationCardCommentNotificationBuilder,
-  CCollaborationInterestNotificationBuilder,
+  CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
@@ -67,7 +67,7 @@ describe('NotificationService', () => {
         CommunicationDiscussionCreatedNotificationBuilder,
         CollaborationContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
-        CCollaborationInterestNotificationBuilder,
+        CollaborationInterestNotificationBuilder,
         CollaborationCardCreatedNotificationBuilder,
         CollaborationCardCommentNotificationBuilder,
         CollaborationCalloutPublishedNotificationBuilder,

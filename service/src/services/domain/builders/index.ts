@@ -5,6 +5,7 @@ export * from './collaboration-context-feedback/collaboration.context.review.sub
 export * from './community-new-member/community.new.member.notification.builder';
 export * from './collaboration-interest/collaboration.interest.notification.builder';
 export * from './platform-user-registered/platform.user.registered.notification.builder';
+export * from './platform-user-removed/platform.user.removed.notification.builder';
 export * from './collaboration-card-created/collaboration.card.created.notification.builder';
 export * from './collaboration-card-comment/collaboration.card.comment.notification.builder';
 export * from './collaboration-callout-published/collaboration.callout.published.notification.builder';

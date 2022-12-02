@@ -18,6 +18,7 @@ import {
   CollaborationInterestPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
+  PlatformUserRemovedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -30,11 +31,12 @@ import {
   CollaborationContextReviewSubmittedNotificationBuilder,
   CollaborationCardCreatedNotificationBuilder,
   CollaborationCardCommentNotificationBuilder,
-  CCollaborationInterestNotificationBuilder,
+  CollaborationInterestNotificationBuilder as CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
+import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
 
 @Injectable()
 export class NotificationService {
@@ -45,16 +47,17 @@ export class NotificationService {
     private readonly alkemioClientAdapter: AlkemioClientAdapter,
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
-    private applicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
-    private userRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
+    private communityApplicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
+    private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
+    private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
     private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
-    private communityContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
+    private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
-    private aspectCreatedNotificationBuilder: CollaborationCardCreatedNotificationBuilder,
-    private aspectCommentCreatedNotificationBuilder: CollaborationCardCommentNotificationBuilder,
-    private calloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
-    private communityCollaborationInterestNotificationBuilder: CCollaborationInterestNotificationBuilder
+    private collaborationCardCreatedNotificationBuilder: CollaborationCardCreatedNotificationBuilder,
+    private collaborationCardCommentNotificationBuilder: CollaborationCardCommentNotificationBuilder,
+    private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
+    private collaborationInterestNotificationBuilder: CollaborationInterestNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -84,7 +87,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.applicationCreatedNotificationBuilder
+      this.communityApplicationCreatedNotificationBuilder
     );
   }
 
@@ -102,7 +105,16 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.userRegisteredNotificationBuilder
+      this.platformUserRegisteredNotificationBuilder
+    );
+  }
+
+  async sendUserRemovedNotification(
+    payload: PlatformUserRemovedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.platformUserRemovedNotificationBuilder
     );
   }
 
@@ -129,7 +141,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.communityContextReviewSubmittedNotificationBuilder
+      this.collaborationContextReviewSubmittedNotificationBuilder
     );
   }
 
@@ -138,7 +150,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.aspectCreatedNotificationBuilder
+      this.collaborationCardCreatedNotificationBuilder
     );
   }
 
@@ -147,7 +159,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.aspectCommentCreatedNotificationBuilder
+      this.collaborationCardCommentNotificationBuilder
     );
   }
 
@@ -156,7 +168,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.calloutPublishedNotificationBuilder
+      this.collaborationCalloutPublishedNotificationBuilder
     );
   }
 
@@ -165,7 +177,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.communityCollaborationInterestNotificationBuilder
+      this.collaborationInterestNotificationBuilder
     );
   }
 

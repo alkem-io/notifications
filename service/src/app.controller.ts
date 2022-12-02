@@ -9,9 +9,10 @@ import {
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
 import { NotificationStatus } from 'notifme-sdk';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
+  NotificationEventType,
+  PlatformUserRemovedEventPayload,
   CommunityApplicationCreatedEventPayload,
   CollaborationCardCommentEventPayload,
   CollaborationCardCreatedEventPayload,
@@ -95,6 +96,20 @@ export class AppController {
       context,
       this.notificationService.sendUserRegisteredNotification(eventPayload),
       NotificationEventType.PLATFORM_USER_REGISTERED
+    );
+  }
+
+  @EventPattern(NotificationEventType.PLATFORM_USER_REMOVED)
+  async sendUserRemovedNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: PlatformUserRemovedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendUserRemovedNotification(eventPayload),
+      NotificationEventType.PLATFORM_USER_REMOVED
     );
   }
 
