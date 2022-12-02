@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { ApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
+import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_URL_GENERATOR,
@@ -25,6 +25,7 @@ import {
   CollaborationCardCommentNotificationBuilder,
   CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
+  PlatformUserRemovedNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -63,6 +64,7 @@ describe('NotificationService', () => {
         NotificationService,
         CommunityApplicationCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
+        PlatformUserRemovedNotificationBuilder,
         CommunicationUpdateCreatedNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
         CollaborationContextReviewSubmittedNotificationBuilder,
@@ -116,7 +118,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as ApplicationCreatedEventPayload
+        testData.data as CommunityApplicationCreatedEventPayload
       );
       for (const notificationStatus of res) {
         expect(
@@ -156,7 +158,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as ApplicationCreatedEventPayload
+        testData.data as CommunityApplicationCreatedEventPayload
       );
 
       for (const notificationStatus of res) {
@@ -175,7 +177,7 @@ describe('NotificationService', () => {
         .mockResolvedValue(false);
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as ApplicationCreatedEventPayload
+        testData.data as CommunityApplicationCreatedEventPayload
       );
 
       expect(res.length).toBe(0); //shouldn't have any notifications sent
