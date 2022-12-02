@@ -23,15 +23,15 @@ import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-a
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';
 import {
-  ApplicationCreatedNotificationBuilder,
+  CommunityApplicationCreatedNotificationBuilder,
   CommunicationDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
-  UserRegisteredNotificationBuilder,
-  CommunityContextReviewSubmittedNotificationBuilder,
-  AspectCreatedNotificationBuilder,
-  AspectCommentCreatedNotificationBuilder,
-  CommunityCollaborationInterestNotificationBuilder,
-  CalloutPublishedNotificationBuilder,
+  PlatformUserRegisteredNotificationBuilder,
+  CollaborationContextReviewSubmittedNotificationBuilder,
+  CollaborationCardCreatedNotificationBuilder,
+  CollaborationCardCommentNotificationBuilder,
+  CCollaborationInterestNotificationBuilder,
+  CollaborationCalloutPublishedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -45,16 +45,16 @@ export class NotificationService {
     private readonly alkemioClientAdapter: AlkemioClientAdapter,
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
-    private applicationCreatedNotificationBuilder: ApplicationCreatedNotificationBuilder,
-    private userRegisteredNotificationBuilder: UserRegisteredNotificationBuilder,
+    private applicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
+    private userRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
     private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
-    private communityContextReviewSubmittedNotificationBuilder: CommunityContextReviewSubmittedNotificationBuilder,
+    private communityContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
-    private aspectCreatedNotificationBuilder: AspectCreatedNotificationBuilder,
-    private aspectCommentCreatedNotificationBuilder: AspectCommentCreatedNotificationBuilder,
-    private calloutPublishedNotificationBuilder: CalloutPublishedNotificationBuilder,
-    private communityCollaborationInterestNotificationBuilder: CommunityCollaborationInterestNotificationBuilder
+    private aspectCreatedNotificationBuilder: CollaborationCardCreatedNotificationBuilder,
+    private aspectCommentCreatedNotificationBuilder: CollaborationCardCommentNotificationBuilder,
+    private calloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
+    private communityCollaborationInterestNotificationBuilder: CCollaborationInterestNotificationBuilder
   ) {}
 
   async sendNotifications(

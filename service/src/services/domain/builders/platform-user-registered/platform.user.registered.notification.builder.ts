@@ -12,7 +12,9 @@ import { UserRegisteredEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 
 @Injectable()
-export class UserRegisteredNotificationBuilder implements INotificationBuilder {
+export class PlatformUserRegisteredNotificationBuilder
+  implements INotificationBuilder
+{
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,

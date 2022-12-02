@@ -15,7 +15,7 @@ import { CommunityCollaborationInterestEmailPayload } from '@common/email-templa
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class CommunityCollaborationInterestNotificationBuilder
+export class CCollaborationInterestNotificationBuilder
   implements INotificationBuilder
 {
   constructor(

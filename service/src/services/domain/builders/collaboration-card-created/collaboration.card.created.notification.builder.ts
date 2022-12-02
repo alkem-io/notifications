@@ -15,7 +15,9 @@ import { AspectCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class AspectCreatedNotificationBuilder implements INotificationBuilder {
+export class CollaborationCardCreatedNotificationBuilder
+  implements INotificationBuilder
+{
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
       CollaborationCardCreatedEventPayload,

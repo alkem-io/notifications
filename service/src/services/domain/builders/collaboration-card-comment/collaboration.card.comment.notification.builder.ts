@@ -15,7 +15,7 @@ import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class AspectCommentCreatedNotificationBuilder
+export class CollaborationCardCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor(

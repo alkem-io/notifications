@@ -15,7 +15,7 @@ import { ApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 
 @Injectable()
-export class ApplicationCreatedNotificationBuilder
+export class CommunityApplicationCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(

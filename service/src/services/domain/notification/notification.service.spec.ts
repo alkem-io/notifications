@@ -13,18 +13,18 @@ import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
-import { ApplicationCreatedNotificationBuilder } from '@src/services';
+import { CommunityApplicationCreatedNotificationBuilder } from '@src/services';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import {
-  UserRegisteredNotificationBuilder,
+  PlatformUserRegisteredNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
   CommunicationDiscussionCreatedNotificationBuilder,
-  CommunityContextReviewSubmittedNotificationBuilder,
+  CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
-  AspectCreatedNotificationBuilder,
-  AspectCommentCreatedNotificationBuilder,
-  CommunityCollaborationInterestNotificationBuilder,
-  CalloutPublishedNotificationBuilder,
+  CollaborationCardCreatedNotificationBuilder,
+  CollaborationCardCommentNotificationBuilder,
+  CCollaborationInterestNotificationBuilder,
+  CollaborationCalloutPublishedNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -61,16 +61,16 @@ describe('NotificationService', () => {
         MockNotificationRecipientsYmlProvider,
         NotificationRecipientsYmlAdapter,
         NotificationService,
-        ApplicationCreatedNotificationBuilder,
-        UserRegisteredNotificationBuilder,
+        CommunityApplicationCreatedNotificationBuilder,
+        PlatformUserRegisteredNotificationBuilder,
         CommunicationUpdateCreatedNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
-        CommunityContextReviewSubmittedNotificationBuilder,
+        CollaborationContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
-        CommunityCollaborationInterestNotificationBuilder,
-        AspectCreatedNotificationBuilder,
-        AspectCommentCreatedNotificationBuilder,
-        CalloutPublishedNotificationBuilder,
+        CCollaborationInterestNotificationBuilder,
+        CollaborationCardCreatedNotificationBuilder,
+        CollaborationCardCommentNotificationBuilder,
+        CollaborationCalloutPublishedNotificationBuilder,
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,

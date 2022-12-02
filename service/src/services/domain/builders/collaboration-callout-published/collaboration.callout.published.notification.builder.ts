@@ -15,7 +15,7 @@ import { CalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class CalloutPublishedNotificationBuilder
+export class CollaborationCalloutPublishedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
