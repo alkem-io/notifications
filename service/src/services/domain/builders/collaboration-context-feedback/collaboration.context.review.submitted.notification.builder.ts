@@ -79,7 +79,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
       emailFrom: 'info@alkem.io',

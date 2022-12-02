@@ -74,7 +74,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       eventPayload.journey
     );
 
-    const alkemioUrl = this.alkemioUrlGenerator.createHubURL();
+    const alkemioUrl = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
       emailFrom: 'info@alkem.io',

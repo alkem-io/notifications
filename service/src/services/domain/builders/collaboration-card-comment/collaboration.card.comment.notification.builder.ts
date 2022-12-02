@@ -70,7 +70,7 @@ export class CollaborationCardCommentNotificationBuilder
       eventPayload.journey
     );
 
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
       emailFrom: 'info@alkem.io',

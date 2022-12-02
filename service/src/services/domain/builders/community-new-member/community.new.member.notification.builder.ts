@@ -76,7 +76,7 @@ export class CommunityNewMemberNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
     const memberProfileURL = this.alkemioUrlGenerator.createUserURL(
       member.nameID
     );

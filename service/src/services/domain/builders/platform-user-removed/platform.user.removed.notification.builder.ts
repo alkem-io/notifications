@@ -68,7 +68,7 @@ export class PlatformUserRemovedNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
       );
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       registrant: {

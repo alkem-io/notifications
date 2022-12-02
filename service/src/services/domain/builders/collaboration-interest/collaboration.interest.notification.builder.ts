@@ -78,7 +78,7 @@ export class CollaborationInterestNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
 
     const communityURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey

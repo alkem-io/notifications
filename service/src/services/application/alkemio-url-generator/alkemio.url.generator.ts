@@ -18,7 +18,7 @@ export class AlkemioUrlGenerator {
     )?.webclient_endpoint;
   }
 
-  createHubURL(): string {
+  createPlatformURL(): string {
     return this.webclientEndpoint;
   }
 
