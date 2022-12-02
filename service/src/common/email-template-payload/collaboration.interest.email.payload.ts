@@ -1,8 +1,7 @@
-import { CommunityType } from '../enums/community.type';
+import { JourneyType } from '../enums/journey.type';
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface CommunityCollaborationInterestEmailPayload
-  extends BaseEmailPayload {
+export interface CollaborationInterestEmailPayload extends BaseEmailPayload {
   user: {
     name: string;
   };
@@ -17,7 +16,7 @@ export interface CommunityCollaborationInterestEmailPayload
   };
   community: {
     name: string;
-    type: CommunityType;
+    type: JourneyType;
     url: string;
   };
   hub: {

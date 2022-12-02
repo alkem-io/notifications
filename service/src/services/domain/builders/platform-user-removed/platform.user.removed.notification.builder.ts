@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  NotificationEventType,
+  PlatformUserRemovedEventPayload,
+} from '@alkemio/notifications-lib';
 import { User } from '@core/models';
-import { PlatformUserRegistrationEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
@@ -10,32 +12,29 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
+import { PlatformUserRemovedEmailPayload } from '@src/common/email-template-payload/platform.user.removed.email.payload';
 
 @Injectable()
-export class PlatformUserRegisteredNotificationBuilder
+export class PlatformUserRemovedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      PlatformUserRegistrationEventPayload,
+      PlatformUserRemovedEventPayload,
       PlatformUserRegisteredEmailPayload
     >
   ) {}
 
   build(
-    payload: PlatformUserRegistrationEventPayload
+    payload: PlatformUserRemovedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN,
+        emailTemplate: EmailTemplate.PLATFORM_USER_REMOVED_ADMIN,
         preferenceType: UserPreferenceType.NotificationUserSignUp,
-      },
-      {
-        role: 'registrant',
-        emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_REGISTRANT,
       },
     ];
 
@@ -45,20 +44,20 @@ export class PlatformUserRegisteredNotificationBuilder
       payload,
       eventUserId: payload.userID,
       roleConfig,
-      templateType: 'platform_user_registered',
+      templateType: 'platform_user_removed',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
   }
 
   private createTemplatePayload(
-    eventPayload: PlatformUserRegistrationEventPayload,
+    eventPayload: PlatformUserRemovedEventPayload,
     recipient: User,
     registrant?: User
-  ): PlatformUserRegisteredEmailPayload {
+  ): PlatformUserRemovedEmailPayload {
     if (!registrant) {
       throw Error(
-        `Registrant not provided for '${NotificationEventType.PLATFORM_USER_REGISTERED}' event`
+        `Registrant not provided for '${NotificationEventType.PLATFORM_USER_REMOVED}' event`
       );
     }
 

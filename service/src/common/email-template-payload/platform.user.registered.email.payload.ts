@@ -1,20 +1,18 @@
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface AspectCreatedEmailPayload extends BaseEmailPayload {
-  createdBy: {
+export interface PlatformUserRegisteredEmailPayload extends BaseEmailPayload {
+  registrant: {
+    name: string;
     firstname: string;
     email: string;
-  };
-  aspect: {
-    displayName: string;
+    profile: string;
   };
   recipient: {
     firstname: string;
     email: string;
     notificationPreferences: string;
   };
-  community: {
-    name: string;
+  hub: {
     url: string;
   };
 }

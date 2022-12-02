@@ -14,7 +14,7 @@ import {
   RoleConfig,
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
-import { CommunityContextEmailPayload } from '@common/email-template-payload';
+import { CollaborationContextReviewEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CollaborationContextReviewSubmittedPayload,
-      CommunityContextEmailPayload
+      CollaborationContextReviewEmailPayload
     >
   ) {}
 
@@ -57,7 +57,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
       payload,
       eventUserId: payload.triggeredBy,
       roleConfig,
-      templateType: 'community_review_submitted',
+      templateType: 'collaboration_review_submitted',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
@@ -67,7 +67,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
     eventPayload: CollaborationContextReviewSubmittedPayload,
     recipient: User,
     reviewer?: User
-  ): CommunityContextEmailPayload {
+  ): CollaborationContextReviewEmailPayload {
     if (!reviewer) {
       throw Error(
         `Reviewer not provided for '${NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED}' event`

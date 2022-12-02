@@ -11,7 +11,7 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationInterestPayload } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
-import { CommunityCollaborationInterestEmailPayload } from '@common/email-template-payload';
+import { CollaborationInterestEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class CCollaborationInterestNotificationBuilder
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CollaborationInterestPayload,
-      CommunityCollaborationInterestEmailPayload
+      CollaborationInterestEmailPayload
     >
   ) {}
 
@@ -56,7 +56,7 @@ export class CCollaborationInterestNotificationBuilder
       payload,
       eventUserId: payload.triggeredBy,
       roleConfig,
-      templateType: 'community_collaboration_interest',
+      templateType: 'collaboration_interest',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
@@ -66,7 +66,7 @@ export class CCollaborationInterestNotificationBuilder
     eventPayload: CollaborationInterestPayload,
     recipient: User,
     user?: User
-  ): CommunityCollaborationInterestEmailPayload {
+  ): CollaborationInterestEmailPayload {
     if (!user) {
       throw Error(
         `Interested user not provided for '${NotificationEventType.COLLABORATION_INTEREST} event'`

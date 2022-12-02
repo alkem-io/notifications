@@ -3,7 +3,7 @@ import { ConfigurationTypes } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { JourneyPayload } from '@alkemio/notifications-lib';
-import { CommunityType } from '@src/common/enums/community.type';
+import { JourneyType } from '@src/common/enums/journey.type';
 
 @Injectable()
 export class AlkemioUrlGenerator {
@@ -25,11 +25,11 @@ export class AlkemioUrlGenerator {
   createJourneyURL(journey: JourneyPayload): string {
     const baseURL = `${this.webclientEndpoint}/${journey.hubNameID}`;
     switch (journey.type) {
-      case CommunityType.HUB:
+      case JourneyType.HUB:
         return baseURL;
-      case CommunityType.CHALLENGE:
+      case JourneyType.CHALLENGE:
         return `${baseURL}/challenges/${journey.challenge?.nameID}`;
-      case CommunityType.OPPORTUNITY:
+      case JourneyType.OPPORTUNITY:
         return `${baseURL}/challenges/${journey.challenge?.nameID}/opportunities/${journey.challenge?.opportunity?.nameID}`;
     }
 

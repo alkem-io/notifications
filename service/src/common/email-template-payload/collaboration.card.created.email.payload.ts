@@ -1,9 +1,12 @@
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface CollaborationContextReviewEmailPayload
-  extends BaseEmailPayload {
-  reviewer: {
-    name: string;
+export interface CollaborationCardCreatedEmailPayload extends BaseEmailPayload {
+  createdBy: {
+    firstname: string;
+    email: string;
+  };
+  aspect: {
+    displayName: string;
   };
   recipient: {
     firstname: string;
@@ -12,6 +15,6 @@ export interface CollaborationContextReviewEmailPayload
   };
   community: {
     name: string;
+    url: string;
   };
-  review: string;
 }

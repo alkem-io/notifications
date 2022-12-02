@@ -10,4 +10,5 @@ export enum NotificationEventType {
   COLLABORATION_CARD_COMMENT = 'collaborationCommentOnCard',
   COLLABORATION_CALLOUT_PUBLISHED = 'collaborationCalloutPublished',
   PLATFORM_USER_REGISTERED = 'platformUserRegistered',
+  PLATFORM_USER_REMOVED = 'platformUserRemoved',
 }

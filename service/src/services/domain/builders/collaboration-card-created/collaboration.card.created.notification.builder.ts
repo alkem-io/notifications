@@ -11,7 +11,7 @@ import { NotificationTemplateType } from '@src/types';
 import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
-import { AspectCreatedEmailPayload } from '@common/email-template-payload';
+import { CollaborationCardCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class CollaborationCardCreatedNotificationBuilder
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
       CollaborationCardCreatedEventPayload,
-      AspectCreatedEmailPayload
+      CollaborationCardCreatedEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
@@ -56,7 +56,7 @@ export class CollaborationCardCreatedNotificationBuilder
       payload,
       eventUserId: payload.card.createdBy,
       roleConfig,
-      templateType: 'aspect_created',
+      templateType: 'collaboration_card_created',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
@@ -66,7 +66,7 @@ export class CollaborationCardCreatedNotificationBuilder
     eventPayload: CollaborationCardCreatedEventPayload,
     recipient: User,
     creator?: User
-  ): AspectCreatedEmailPayload {
+  ): CollaborationCardCreatedEmailPayload {
     if (!creator) {
       throw Error(
         `Creator not provided for '${NotificationEventType.COLLABORATION_CARD_CREATED} event'`

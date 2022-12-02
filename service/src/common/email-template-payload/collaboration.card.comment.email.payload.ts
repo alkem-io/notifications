@@ -1,6 +1,6 @@
 import { BaseEmailPayload } from '@common/email-template-payload/base.email.payload';
 // @ts-
-export interface AspectCommentCreatedEmailPayload extends BaseEmailPayload {
+export interface CollaborationCardCommentEmailPayload extends BaseEmailPayload {
   aspect: {
     displayName: string;
   };

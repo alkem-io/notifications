@@ -1,6 +1,6 @@
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface UserRegisteredEmailPayload extends BaseEmailPayload {
+export interface PlatformUserRemovedEmailPayload extends BaseEmailPayload {
   registrant: {
     name: string;
     firstname: string;

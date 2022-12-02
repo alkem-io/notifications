@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { CollaborationCardCommentEventPayload } from '@alkemio/notifications-lib';
-import { AspectCommentCreatedEmailPayload } from '@common/email-template-payload';
+import { CollaborationCardCommentEmailPayload } from '@common/email-template-payload';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -21,7 +21,7 @@ export class CollaborationCardCommentNotificationBuilder
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
       CollaborationCardCommentEventPayload,
-      AspectCommentCreatedEmailPayload
+      CollaborationCardCommentEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
@@ -45,7 +45,7 @@ export class CollaborationCardCommentNotificationBuilder
       payload,
       eventUserId: payload.comment.createdBy,
       roleConfig,
-      templateType: 'aspect_comment_created',
+      templateType: 'collaboration_card_comment',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
@@ -55,7 +55,7 @@ export class CollaborationCardCommentNotificationBuilder
     eventPayload: CollaborationCardCommentEventPayload,
     recipient: User,
     commentAuthor?: User
-  ): AspectCommentCreatedEmailPayload {
+  ): CollaborationCardCommentEmailPayload {
     if (!commentAuthor) {
       throw Error(
         `Comment author not provided for '${NotificationEventType.COLLABORATION_CARD_COMMENT} event'`

@@ -1,6 +1,7 @@
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface CalloutPublishedEmailPayload extends BaseEmailPayload {
+export interface CollaborationCalloutPublishedEmailPayload
+  extends BaseEmailPayload {
   emailFrom: string;
   recipient: {
     email: string;

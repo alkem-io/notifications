@@ -11,7 +11,7 @@ import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
-import { CalloutPublishedEmailPayload } from '@common/email-template-payload';
+import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
       CollaborationCalloutPublishedEventPayload,
-      CalloutPublishedEmailPayload
+      CollaborationCalloutPublishedEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
@@ -48,7 +48,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       payload,
       eventUserId: payload.triggeredBy,
       roleConfig,
-      templateType: 'callout_published',
+      templateType: 'collaboration_callout_published',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
@@ -58,7 +58,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     eventPayload: CollaborationCalloutPublishedEventPayload,
     recipient: User,
     creator?: User
-  ): CalloutPublishedEmailPayload {
+  ): CollaborationCalloutPublishedEmailPayload {
     if (!creator) {
       throw Error(
         `Creator not provided for '${NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED} event'`
