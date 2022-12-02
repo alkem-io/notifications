@@ -1,11 +1,10 @@
+
 import { JourneyBaseEventPayload } from './journey.base.event.payload';
 
-export interface CommunicationDiscussionCreatedEventPayload
+export interface CollaborationInterestPayload
   extends JourneyBaseEventPayload {
-  discussion: {
-    id: string;
-    createdBy: string;
-    title: string;
+  relation: {
+    role: string;
     description: string;
   };
 }

@@ -8,7 +8,7 @@ import {
   RoleConfig,
 } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunityCollaborationInterestPayload } from '@alkemio/notifications-lib';
+import { CollaborationInterestPayload } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { CommunityCollaborationInterestEmailPayload } from '@common/email-template-payload';
@@ -22,13 +22,13 @@ export class CommunityCollaborationInterestNotificationBuilder
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      CommunityCollaborationInterestPayload,
+      CollaborationInterestPayload,
       CommunityCollaborationInterestEmailPayload
     >
   ) {}
 
   build(
-    payload: CommunityCollaborationInterestPayload
+    payload: CollaborationInterestPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -46,15 +46,15 @@ export class CommunityCollaborationInterestNotificationBuilder
     ];
 
     const templateVariables = {
-      userID: payload.userID,
-      hubID: payload.hub.id,
-      challengeID: payload.hub.challenge?.id ?? '',
-      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+      userID: payload.triggeredBy,
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey.challenge?.id ?? '',
+      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.userID,
+      eventUserId: payload.triggeredBy,
       roleConfig,
       templateType: 'community_collaboration_interest',
       templateVariables,
@@ -63,7 +63,7 @@ export class CommunityCollaborationInterestNotificationBuilder
   }
 
   private createTemplatePayload(
-    eventPayload: CommunityCollaborationInterestPayload,
+    eventPayload: CollaborationInterestPayload,
     recipient: User,
     user?: User
   ): CommunityCollaborationInterestEmailPayload {
@@ -81,9 +81,9 @@ export class CommunityCollaborationInterestNotificationBuilder
     const hubURL = this.alkemioUrlGenerator.createHubURL();
 
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.nameID,
-      eventPayload.hub.challenge?.nameID,
-      eventPayload.hub.challenge?.opportunity?.nameID
+      eventPayload.journey.hubNameID,
+      eventPayload.journey.challenge?.nameID,
+      eventPayload.journey.challenge?.opportunity?.nameID
     );
 
     return {
@@ -101,8 +101,8 @@ export class CommunityCollaborationInterestNotificationBuilder
         description: eventPayload.relation.description,
       },
       community: {
-        name: eventPayload.community.name,
-        type: eventPayload.community.type,
+        name: eventPayload.journey.displayName,
+        type: eventPayload.journey.type,
         url: communityURL,
       },
       hub: {

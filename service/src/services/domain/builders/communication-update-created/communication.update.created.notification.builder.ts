@@ -45,13 +45,13 @@ export class CommunicationUpdateCreatedNotificationBuilder
     ];
 
     const templateVariables = {
-      hubID: payload.hub.id,
-      challengeID: payload.hub.challenge?.id ?? '',
-      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey.challenge?.id ?? '',
+      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
       entityID:
-        payload.hub?.challenge?.opportunity?.id ??
-        payload.hub?.challenge?.id ??
-        payload.hub.id,
+        payload.journey?.challenge?.opportunity?.id ??
+        payload.journey?.challenge?.id ??
+        payload.journey.hubID,
     };
 
     return this.notificationBuilder.build({
@@ -75,9 +75,9 @@ export class CommunicationUpdateCreatedNotificationBuilder
       );
     }
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.nameID,
-      eventPayload.hub.challenge?.nameID,
-      eventPayload.hub.challenge?.opportunity?.nameID
+      eventPayload.journey.hubNameID,
+      eventPayload.journey.challenge?.nameID,
+      eventPayload.journey.challenge?.opportunity?.nameID
     );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
@@ -95,7 +95,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       community: {
-        name: eventPayload.community.name,
+        name: eventPayload.journey.displayName,
         url: communityURL,
       },
       hub: {

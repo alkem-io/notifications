@@ -12,16 +12,16 @@ import { NotificationStatus } from 'notifme-sdk';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
-  ApplicationCreatedEventPayload,
-  AspectCommentCreatedEventPayload,
-  AspectCreatedEventPayload,
+  CommunityApplicationCreatedEventPayload,
+  CollaborationCardCommentEventPayload,
+  CollaborationCardCreatedEventPayload,
   CommunicationDiscussionCreatedEventPayload,
   CommunicationUpdateEventPayload,
-  CommunityContextReviewSubmittedPayload,
+  CollaborationContextReviewSubmittedPayload,
   CommunityNewMemberPayload,
-  CommunityCollaborationInterestPayload,
-  UserRegistrationEventPayload,
-  CalloutPublishedEventPayload,
+  CollaborationInterestPayload,
+  PlatformUserRegistrationEventPayload,
+  CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
@@ -40,7 +40,7 @@ export class AppController {
   @EventPattern(NotificationEventType.COMMUNITY_APPLICATION_CREATED)
   async sendApplicationNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: ApplicationCreatedEventPayload,
+    @Payload() eventPayload: CommunityApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -71,7 +71,7 @@ export class AppController {
 
   @EventPattern(NotificationEventType.COMMUNITY_COLLABORATION_INTEREST)
   async sendCommunityCollaborationInterestNotification(
-    @Payload() eventPayload: CommunityCollaborationInterestPayload,
+    @Payload() eventPayload: CollaborationInterestPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -87,7 +87,7 @@ export class AppController {
   @EventPattern(NotificationEventType.USER_REGISTERED)
   async sendUserRegisteredNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: UserRegistrationEventPayload,
+    @Payload() eventPayload: PlatformUserRegistrationEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -132,7 +132,7 @@ export class AppController {
 
   @EventPattern(NotificationEventType.COMMUNITY_CONTEXT_REVIEW_SUBMITTED)
   async sendCommunityContextFeedbackNotifications(
-    @Payload() eventPayload: CommunityContextReviewSubmittedPayload,
+    @Payload() eventPayload: CollaborationContextReviewSubmittedPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -147,7 +147,7 @@ export class AppController {
 
   @EventPattern(NotificationEventType.ASPECT_CREATED, Transport.RMQ)
   async sendAspectCreatedNotifications(
-    @Payload() eventPayload: AspectCreatedEventPayload,
+    @Payload() eventPayload: CollaborationCardCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -160,7 +160,7 @@ export class AppController {
 
   @EventPattern(NotificationEventType.COMMENT_CREATED_ON_ASPECT, Transport.RMQ)
   async sendAspectCommentCreatedNotifications(
-    @Payload() eventPayload: AspectCommentCreatedEventPayload,
+    @Payload() eventPayload: CollaborationCardCommentEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -175,7 +175,7 @@ export class AppController {
 
   @EventPattern(NotificationEventType.CALLOUT_PUBLISHED, Transport.RMQ)
   async sendCalloutPublishedNotifications(
-    @Payload() eventPayload: CalloutPublishedEventPayload,
+    @Payload() eventPayload: CollaborationCalloutPublishedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(

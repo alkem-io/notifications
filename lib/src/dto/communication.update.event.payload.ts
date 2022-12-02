@@ -1,15 +1,9 @@
-import { HubPayload } from './hub.payload';
-import { BaseEventPayload } from './base.event.payload';
-import { CommunityType } from '@common/enums/community.type';
+import { JourneyBaseEventPayload } from './journey.base.event.payload';
 
-export interface CommunicationUpdateEventPayload extends BaseEventPayload {
+export interface CommunicationUpdateEventPayload extends JourneyBaseEventPayload {
   update: {
     id: string;
     createdBy: string;
   };
-  community: {
-    name: string;
-    type: CommunityType;
-  };
-  hub: HubPayload;
+
 }

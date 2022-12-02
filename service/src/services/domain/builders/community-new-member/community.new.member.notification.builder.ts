@@ -45,9 +45,9 @@ export class CommunityNewMemberNotificationBuilder
 
     const templateVariables = {
       memberID: payload.userID,
-      hubID: payload.hub.id,
-      challengeID: payload.hub.challenge?.id ?? '',
-      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey.challenge?.id ?? '',
+      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
     return this.notificationBuilder.build({
@@ -94,7 +94,7 @@ export class CommunityNewMemberNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       community: {
-        name: eventPayload.community.name,
+        name: eventPayload.journey.displayName,
       },
       hub: {
         url: hubURL,

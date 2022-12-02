@@ -7,16 +7,16 @@ import {
   NOTIFICATIONS_PROVIDER,
 } from '@common/enums';
 import {
-  ApplicationCreatedEventPayload,
+  CommunityApplicationCreatedEventPayload,
   CommunicationUpdateEventPayload,
   CommunicationDiscussionCreatedEventPayload,
-  CommunityContextReviewSubmittedPayload,
-  UserRegistrationEventPayload,
+  CollaborationContextReviewSubmittedPayload,
+  PlatformUserRegistrationEventPayload,
   CommunityNewMemberPayload,
-  AspectCreatedEventPayload,
-  AspectCommentCreatedEventPayload,
-  CommunityCollaborationInterestPayload,
-  CalloutPublishedEventPayload,
+  CollaborationCardCreatedEventPayload,
+  CollaborationCardCommentEventPayload,
+  CollaborationInterestPayload,
+  CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
@@ -80,7 +80,7 @@ export class NotificationService {
   }
 
   async sendApplicationCreatedNotifications(
-    payload: ApplicationCreatedEventPayload
+    payload: CommunityApplicationCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
@@ -98,7 +98,7 @@ export class NotificationService {
   }
 
   async sendUserRegisteredNotification(
-    payload: UserRegistrationEventPayload
+    payload: PlatformUserRegistrationEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
@@ -125,7 +125,7 @@ export class NotificationService {
   }
 
   async sendCommunityContextFeedbackNotification(
-    payload: CommunityContextReviewSubmittedPayload
+    payload: CollaborationContextReviewSubmittedPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
@@ -134,7 +134,7 @@ export class NotificationService {
   }
 
   async sendAspectCreatedNotification(
-    payload: AspectCreatedEventPayload
+    payload: CollaborationCardCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
@@ -143,7 +143,7 @@ export class NotificationService {
   }
 
   async sendAspectCommentCreatedNotification(
-    payload: AspectCommentCreatedEventPayload
+    payload: CollaborationCardCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
@@ -152,7 +152,7 @@ export class NotificationService {
   }
 
   async sendCalloutPublishedNotification(
-    payload: CalloutPublishedEventPayload
+    payload: CollaborationCalloutPublishedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
@@ -161,7 +161,7 @@ export class NotificationService {
   }
 
   async sendCommunityCollaborationInterestNotification(
-    payload: CommunityCollaborationInterestPayload
+    payload: CollaborationInterestPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,

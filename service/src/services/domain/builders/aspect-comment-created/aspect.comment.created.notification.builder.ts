@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { AspectCommentCreatedEventPayload } from '@alkemio/notifications-lib';
+import { CollaborationCardCommentEventPayload } from '@alkemio/notifications-lib';
 import { AspectCommentCreatedEmailPayload } from '@common/email-template-payload';
 import {
   AlkemioUrlGenerator,
@@ -20,14 +20,14 @@ export class AspectCommentCreatedNotificationBuilder
 {
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
-      AspectCommentCreatedEventPayload,
+      CollaborationCardCommentEventPayload,
       AspectCommentCreatedEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
-    payload: AspectCommentCreatedEventPayload
+    payload: CollaborationCardCommentEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -38,7 +38,7 @@ export class AspectCommentCreatedNotificationBuilder
     ];
 
     const templateVariables = {
-      ownerID: payload.aspect.createdBy,
+      ownerID: payload.card.createdBy,
     };
 
     return this.notificationBuilder.build({
@@ -52,7 +52,7 @@ export class AspectCommentCreatedNotificationBuilder
   }
 
   createTemplatePayload(
-    eventPayload: AspectCommentCreatedEventPayload,
+    eventPayload: CollaborationCardCommentEventPayload,
     recipient: User,
     commentAuthor?: User
   ): AspectCommentCreatedEmailPayload {
@@ -67,9 +67,9 @@ export class AspectCommentCreatedNotificationBuilder
       );
 
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.nameID,
-      eventPayload.hub.challenge?.nameID,
-      eventPayload.hub.challenge?.opportunity?.nameID
+      eventPayload.journey.hubNameID,
+      eventPayload.journey.challenge?.nameID,
+      eventPayload.journey.challenge?.opportunity?.nameID
     );
 
     const hubURL = this.alkemioUrlGenerator.createHubURL();
@@ -77,7 +77,7 @@ export class AspectCommentCreatedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       aspect: {
-        displayName: eventPayload.aspect.displayName,
+        displayName: eventPayload.card.displayName,
       },
       recipient: {
         firstname: recipient.firstName,
@@ -89,7 +89,7 @@ export class AspectCommentCreatedNotificationBuilder
         email: commentAuthor.email,
       },
       community: {
-        name: eventPayload.community.name,
+        name: eventPayload.journey.displayName,
         url: communityURL,
       },
       hub: {

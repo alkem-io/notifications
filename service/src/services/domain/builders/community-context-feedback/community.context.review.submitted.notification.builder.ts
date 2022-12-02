@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import {
-  CommunityContextReviewSubmittedPayload,
+  CollaborationContextReviewSubmittedPayload,
   FeedbackQuestions,
 } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -25,13 +25,13 @@ export class CommunityContextReviewSubmittedNotificationBuilder
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      CommunityContextReviewSubmittedPayload,
+      CollaborationContextReviewSubmittedPayload,
       CommunityContextEmailPayload
     >
   ) {}
 
   build(
-    payload: CommunityContextReviewSubmittedPayload
+    payload: CollaborationContextReviewSubmittedPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -48,14 +48,14 @@ export class CommunityContextReviewSubmittedNotificationBuilder
     ];
 
     const templateVariables = {
-      userID: payload.userId,
-      challengeID: payload.challengeId,
-      reviewerID: payload.userId,
+      userID: payload.triggeredBy,
+      challengeID: payload.journey.challenge?.id || '',
+      reviewerID: payload.triggeredBy,
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.userId,
+      eventUserId: payload.triggeredBy,
       roleConfig,
       templateType: 'community_review_submitted',
       templateVariables,
@@ -64,7 +64,7 @@ export class CommunityContextReviewSubmittedNotificationBuilder
   }
 
   createTemplatePayload(
-    eventPayload: CommunityContextReviewSubmittedPayload,
+    eventPayload: CollaborationContextReviewSubmittedPayload,
     recipient: User,
     reviewer?: User
   ): CommunityContextEmailPayload {
@@ -92,7 +92,7 @@ export class CommunityContextReviewSubmittedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       community: {
-        name: eventPayload.community.name,
+        name: eventPayload.journey.displayName,
       },
       review: toStringReview(eventPayload.questions),
       hub: {

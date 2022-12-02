@@ -1,13 +1,6 @@
-import { CommunityType } from '@common/enums/community.type';
-import { BaseEventPayload } from './base.event.payload';
-import { HubPayload } from './hub.payload';
 
-export interface CommunityNewMemberPayload extends BaseEventPayload {
+import { JourneyBaseEventPayload } from './journey.base.event.payload';
+
+export interface CommunityNewMemberPayload extends JourneyBaseEventPayload {
   userID: string;
-  community: {
-    name: string;
-    url: string;
-    type: CommunityType;
-  };
-  hub: HubPayload;
 }

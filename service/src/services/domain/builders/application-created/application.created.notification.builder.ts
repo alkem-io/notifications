@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
-import { ApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
+import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -22,13 +22,13 @@ export class ApplicationCreatedNotificationBuilder
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      ApplicationCreatedEventPayload,
+      CommunityApplicationCreatedEventPayload,
       ApplicationCreatedEmailPayload
     >
   ) {}
 
   build(
-    payload: ApplicationCreatedEventPayload
+    payload: CommunityApplicationCreatedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -45,9 +45,9 @@ export class ApplicationCreatedNotificationBuilder
 
     const templateVariables = {
       applicantID: payload.applicantID,
-      hubID: payload.hub.id,
-      challengeID: payload.hub.challenge?.id ?? '',
-      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey.challenge?.id ?? '',
+      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
     return this.notificationBuilder.build({
@@ -61,7 +61,7 @@ export class ApplicationCreatedNotificationBuilder
   }
 
   private createTemplatePayload(
-    eventPayload: ApplicationCreatedEventPayload,
+    eventPayload: CommunityApplicationCreatedEventPayload,
     recipient: User,
     applicant?: User
   ): ApplicationCreatedEmailPayload {
@@ -74,9 +74,9 @@ export class ApplicationCreatedNotificationBuilder
       applicant.nameID
     );
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.nameID,
-      eventPayload.hub.challenge?.nameID,
-      eventPayload.hub.challenge?.opportunity?.nameID
+      eventPayload.journey.hubNameID,
+      eventPayload.journey.challenge?.nameID,
+      eventPayload.journey.challenge?.opportunity?.nameID
     );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
@@ -97,8 +97,8 @@ export class ApplicationCreatedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       community: {
-        name: eventPayload.community.name,
-        type: eventPayload.community.type,
+        name: eventPayload.journey.displayName,
+        type: eventPayload.journey.type,
         url: communityURL,
       },
       hub: {

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { User } from '@core/models';
-import { UserRegistrationEventPayload } from '@alkemio/notifications-lib';
+import { PlatformUserRegistrationEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
@@ -17,13 +17,13 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      UserRegistrationEventPayload,
+      PlatformUserRegistrationEventPayload,
       UserRegisteredEmailPayload
     >
   ) {}
 
   build(
-    payload: UserRegistrationEventPayload
+    payload: PlatformUserRegistrationEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -50,7 +50,7 @@ export class UserRegisteredNotificationBuilder implements INotificationBuilder {
   }
 
   private createTemplatePayload(
-    eventPayload: UserRegistrationEventPayload,
+    eventPayload: PlatformUserRegistrationEventPayload,
     recipient: User,
     registrant?: User
   ): UserRegisteredEmailPayload {

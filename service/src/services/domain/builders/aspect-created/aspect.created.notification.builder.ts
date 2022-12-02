@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { AspectCreatedEventPayload } from '@alkemio/notifications-lib';
+import { CollaborationCardCreatedEventPayload } from '@alkemio/notifications-lib';
+import { UserPreferenceType } from '@alkemio/client-lib';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
   RoleConfig,
 } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
-import { UserPreferenceType } from '@alkemio/client-lib';
 import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -18,14 +18,14 @@ import { NotificationEventType } from '@alkemio/notifications-lib';
 export class AspectCreatedNotificationBuilder implements INotificationBuilder {
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
-      AspectCreatedEventPayload,
+      CollaborationCardCreatedEventPayload,
       AspectCreatedEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
-    payload: AspectCreatedEventPayload
+    payload: CollaborationCardCreatedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -41,18 +41,18 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
     ];
 
     const templateVariables = {
-      hubID: payload.hub.id,
-      challengeID: payload.hub?.challenge?.id ?? '',
-      opportunityID: payload.hub?.challenge?.opportunity?.id ?? '',
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey?.challenge?.id ?? '',
+      opportunityID: payload.journey?.challenge?.opportunity?.id ?? '',
       entityID:
-        payload.hub?.challenge?.opportunity?.id ??
-        payload.hub?.challenge?.id ??
-        payload.hub.id,
+        payload.journey?.challenge?.opportunity?.id ??
+        payload.journey?.challenge?.id ??
+        payload.journey.hubID,
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.aspect.createdBy,
+      eventUserId: payload.card.createdBy,
       roleConfig,
       templateType: 'aspect_created',
       templateVariables,
@@ -61,7 +61,7 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
   }
 
   createTemplatePayload(
-    eventPayload: AspectCreatedEventPayload,
+    eventPayload: CollaborationCardCreatedEventPayload,
     recipient: User,
     creator?: User
   ): AspectCreatedEmailPayload {
@@ -77,9 +77,9 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
       );
 
     const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.nameID,
-      eventPayload.hub.challenge?.nameID,
-      eventPayload.hub.challenge?.opportunity?.nameID
+      eventPayload.journey.hubNameID,
+      eventPayload.journey.challenge?.nameID,
+      eventPayload.journey.challenge?.opportunity?.nameID
     );
 
     const hubURL = this.alkemioUrlGenerator.createHubURL();
@@ -91,7 +91,7 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
         email: creator.email,
       },
       aspect: {
-        displayName: eventPayload.aspect.displayName,
+        displayName: eventPayload.card.displayName,
       },
       recipient: {
         firstname: recipient.firstName,
@@ -99,7 +99,7 @@ export class AspectCreatedNotificationBuilder implements INotificationBuilder {
         notificationPreferences: notificationPreferenceURL,
       },
       community: {
-        name: eventPayload.community.name,
+        name: eventPayload.journey.displayName,
         url: communityURL,
       },
       hub: {
