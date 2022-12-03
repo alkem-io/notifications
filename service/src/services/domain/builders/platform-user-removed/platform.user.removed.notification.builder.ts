@@ -10,7 +10,6 @@ import { NotificationBuilder, RoleConfig } from '../../../application';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
-import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 import { PlatformUserRemovedEmailPayload } from '@src/common/email-template-payload/platform.user.removed.email.payload';
 
@@ -23,7 +22,7 @@ export class PlatformUserRemovedNotificationBuilder
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       PlatformUserRemovedEventPayload,
-      PlatformUserRegisteredEmailPayload
+      PlatformUserRemovedEmailPayload
     >
   ) {}
 
@@ -38,11 +37,11 @@ export class PlatformUserRemovedNotificationBuilder
       },
     ];
 
-    const templateVariables = { registrantID: payload.userID };
+    const templateVariables = { registrantID: payload.triggeredBy };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.userID,
+      eventUserId: payload.triggeredBy,
       roleConfig,
       templateType: 'platform_user_removed',
       templateVariables,
@@ -61,21 +60,15 @@ export class PlatformUserRemovedNotificationBuilder
       );
     }
 
-    const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
-      registrant.nameID
-    );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
       );
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       registrant: {
-        name: registrant.displayName,
-        firstName: registrant.firstName,
+        displayName: eventPayload.user.displayName,
         email: registrant.email,
-        profile: registrantProfileURL,
       },
       recipient: {
         firstName: recipient.firstName,
@@ -83,7 +76,7 @@ export class PlatformUserRemovedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       platform: {
-        url: hubURL,
+        url: this.alkemioUrlGenerator.createPlatformURL(),
       },
     };
   }
