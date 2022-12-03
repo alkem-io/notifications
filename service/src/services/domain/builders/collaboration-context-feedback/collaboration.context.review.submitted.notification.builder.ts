@@ -92,7 +92,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       journey: {
-        name: eventPayload.journey.displayName,
+        displayName: eventPayload.journey.displayName,
         type: eventPayload.journey.type,
         url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },

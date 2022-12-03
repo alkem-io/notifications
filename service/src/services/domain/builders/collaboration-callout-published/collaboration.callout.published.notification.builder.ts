@@ -80,7 +80,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       eventPayload.callout.nameID
     );
 
-    return {
+    const result: CollaborationCalloutPublishedEmailPayload = {
       emailFrom: 'info@alkem.io',
       recipient: {
         firstName: recipient.firstName,
@@ -95,7 +95,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
         url: calloutURL,
       },
       journey: {
-        name: eventPayload.journey.displayName,
+        displayName: eventPayload.journey.displayName,
         type: eventPayload.journey.type,
         url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
@@ -103,5 +103,6 @@ export class CollaborationCalloutPublishedNotificationBuilder
         url: alkemioUrl,
       },
     };
+    return result;
   }
 }

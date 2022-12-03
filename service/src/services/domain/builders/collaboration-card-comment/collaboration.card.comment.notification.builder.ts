@@ -100,7 +100,7 @@ export class CollaborationCardCommentNotificationBuilder
         email: commentAuthor.email,
       },
       journey: {
-        name: eventPayload.journey.displayName,
+        displayName: eventPayload.journey.displayName,
         type: eventPayload.journey.type,
         url: journeyURL,
       },

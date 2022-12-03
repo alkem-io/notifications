@@ -40,7 +40,7 @@ export class AlkemioUrlGenerator {
   }
 
   createCalloutURL(journeyURL: string, calloutNameID: string): string {
-    return `${journeyURL}/callouts/${calloutNameID}`;
+    return `${journeyURL}/explore/callouts/${calloutNameID}`;
   }
 
   createCardURL(
@@ -48,7 +48,7 @@ export class AlkemioUrlGenerator {
     calloutNameID: string,
     cardNameID: string
   ): string {
-    return `${journeyURL}/callouts/${calloutNameID}/aspects/${cardNameID}`;
+    return `${journeyURL}/explore/callouts/${calloutNameID}/aspects/${cardNameID}`;
   }
 
   createOrganizationURL(orgNameID: string): string {

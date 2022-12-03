@@ -3,7 +3,7 @@ import { BaseEmailPayload } from './base.email.payload';
 
 export interface BaseJourneyEmailPayload extends BaseEmailPayload {
   journey: {
-    name: string;
+    displayName: string;
     url: string;
     type: JourneyType;
   };
