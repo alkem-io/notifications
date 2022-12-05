@@ -1,50 +1,50 @@
 name: Build & Deploy to Dev
 
 on:
-    push:
-        branches: [develop]
+  push:
+    branches: [develop]
 
 jobs:
-    build-and-deploy:
-        runs-on: ubuntu-latest
-        steps:
-            # checkout the repo
-            - name: 'Checkout GitHub Action'
-              uses: actions/checkout@master
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@master
 
-            - name: 'Login via Azure CLI'
-              uses: azure/login@v1
-              with:
-                  creds: ${{ secrets.AZURE_CRED_K8S_NEW }}
+      - name: "Login via Azure CLI"
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CRED_K8S_NEW }}
 
-            - name: 'Build and push image'
-              uses: azure/docker-login@v1
-              with:
-                  login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-                  username: ${{ secrets.REGISTRY_USERNAME }}
-                  password: ${{ secrets.REGISTRY_PASSWORD }}
-            - run: |
-                  docker build -f Dockerfile . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:latest
-                  docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
+      - name: "Build and push image"
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build -f Dockerfile . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:latest
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
 
-            - uses: Azure/aks-set-context@v1
-              with:
-                  creds: ${{ secrets.AZURE_CRED_K8S_NEW }}
-                  cluster-name: ${{ secrets.CLUSTER_NAME }}
-                  resource-group: ${{ secrets.RESOURCE_GROUP_K8S }}
+      - uses: Azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CRED_K8S_NEW }}
+          cluster-name: ${{ secrets.CLUSTER_NAME }}
+          resource-group: ${{ secrets.RESOURCE_GROUP_K8S }}
 
-            - uses: Azure/k8s-create-secret@v1
-              with:
-                  container-registry-url: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-                  container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
-                  container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-                  secret-name: alkemio-notifications-secret
+      - uses: Azure/k8s-create-secret@v1
+        with:
+          container-registry-url: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+          container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+          secret-name: alkemio-notifications-secret
 
-            - uses: Azure/k8s-deploy@v1
-              with:
-                  manifests: |
-                      service/manifests/25-notifications-deployment-dev.yaml
-                  images: |
-                      ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
-                  imagepullsecrets: |
-                      alkemio-notifications-secret
+      - uses: Azure/k8s-deploy@v1
+        with:
+          manifests: |
+            service/manifests/25-notifications-deployment-dev.yaml
+          images: |
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
+          imagepullsecrets: |
+            alkemio-notifications-secret
