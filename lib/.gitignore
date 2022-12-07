@@ -1,0 +1,8 @@
+
+# Display specific
+/node_modules
+/dist
+
+*.log
+.env
+.~*
