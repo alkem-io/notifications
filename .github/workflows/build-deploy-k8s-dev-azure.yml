@@ -43,7 +43,7 @@ jobs:
       - uses: Azure/k8s-deploy@v1
         with:
           manifests: |
-            manifests/25-notifications-deployment-dev.yaml
+            service/manifests/25-notifications-deployment-dev.yaml
           images: |
             ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
           imagepullsecrets: |
