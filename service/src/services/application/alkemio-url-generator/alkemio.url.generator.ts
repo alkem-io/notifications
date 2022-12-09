@@ -2,6 +2,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigurationTypes } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
+import { JourneyPayload, JourneyType } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class AlkemioUrlGenerator {
@@ -16,27 +17,52 @@ export class AlkemioUrlGenerator {
     )?.webclient_endpoint;
   }
 
-  createHubURL(): string {
+  createPlatformURL(): string {
     return this.webclientEndpoint;
   }
 
-  createCommunityURL(
-    hubNameID: string,
-    challengeNameID?: string,
-    opportunityNameID?: string
-  ): string {
-    const baseURL = `${this.webclientEndpoint}/${hubNameID}`;
-    if (opportunityNameID) {
-      return `${baseURL}/challenges/${challengeNameID}/opportunities/${opportunityNameID}`;
+  createJourneyURL(journey: JourneyPayload): string {
+    const baseURL = `${this.webclientEndpoint}/${journey.hubNameID}`;
+    switch (journey.type) {
+      case JourneyType.HUB:
+        return baseURL;
+      case JourneyType.CHALLENGE:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}`;
+      case JourneyType.OPPORTUNITY:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}/opportunities/${journey.challenge?.opportunity?.nameID}`;
     }
-    if (challengeNameID) {
-      return `${baseURL}/challenges/${challengeNameID}`;
+
+    return baseURL;
+  }
+
+  createJourneyAdminCommunityURL(journey: JourneyPayload): string {
+    const baseURL = `${this.webclientEndpoint}/admin/hubs/${journey.hubNameID}`;
+    switch (journey.type) {
+      case JourneyType.HUB:
+        return `${baseURL}/community`;
+      case JourneyType.CHALLENGE:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}/community`;
+      case JourneyType.OPPORTUNITY:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}/opportunities/${journey.challenge?.opportunity?.nameID}/community`;
     }
+
     return baseURL;
   }
 
   createUserURL(userNameID: string): string {
     return `${this.webclientEndpoint}/user/${userNameID}`;
+  }
+
+  createCalloutURL(journeyURL: string, calloutNameID: string): string {
+    return `${journeyURL}/explore/callouts/${calloutNameID}`;
+  }
+
+  createCardURL(
+    journeyURL: string,
+    calloutNameID: string,
+    cardNameID: string
+  ): string {
+    return `${journeyURL}/explore/callouts/${calloutNameID}/aspects/${cardNameID}`;
   }
 
   createOrganizationURL(orgNameID: string): string {

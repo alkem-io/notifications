@@ -8,20 +8,21 @@ import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import {
   AlkemioClientAdapterModule,
-  ApplicationCreatedNotificationBuilder,
+  CommunityApplicationCreatedNotificationBuilder,
   NotificationRecipientsAdapterModule,
 } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import {
   CommunicationDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
-  CommunityContextReviewSubmittedNotificationBuilder,
-  UserRegisteredNotificationBuilder,
+  CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
-  CommunityCollaborationInterestNotificationBuilder,
-  AspectCreatedNotificationBuilder,
-  AspectCommentCreatedNotificationBuilder,
-  CalloutPublishedNotificationBuilder,
+  CollaborationInterestNotificationBuilder,
+  CollaborationCardCreatedNotificationBuilder,
+  CollaborationCardCommentNotificationBuilder,
+  CollaborationCalloutPublishedNotificationBuilder,
+  PlatformUserRegisteredNotificationBuilder,
+  PlatformUserRemovedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import {
@@ -51,16 +52,17 @@ import {
       useClass: HttpExceptionsFilter,
     },
     NotificationBuilder,
-    ApplicationCreatedNotificationBuilder,
-    UserRegisteredNotificationBuilder,
+    CommunityApplicationCreatedNotificationBuilder,
+    PlatformUserRegisteredNotificationBuilder,
+    PlatformUserRemovedNotificationBuilder,
     CommunicationUpdateCreatedNotificationBuilder,
     CommunicationDiscussionCreatedNotificationBuilder,
-    CommunityContextReviewSubmittedNotificationBuilder,
+    CollaborationContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
-    CommunityCollaborationInterestNotificationBuilder,
-    AspectCreatedNotificationBuilder,
-    AspectCommentCreatedNotificationBuilder,
-    CalloutPublishedNotificationBuilder,
+    CollaborationInterestNotificationBuilder,
+    CollaborationCardCreatedNotificationBuilder,
+    CollaborationCardCommentNotificationBuilder,
+    CollaborationCalloutPublishedNotificationBuilder,
     NotificationService,
   ],
   controllers: [AppController],

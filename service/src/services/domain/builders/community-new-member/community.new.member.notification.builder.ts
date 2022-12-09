@@ -45,9 +45,9 @@ export class CommunityNewMemberNotificationBuilder
 
     const templateVariables = {
       memberID: payload.userID,
-      hubID: payload.hub.id,
-      challengeID: payload.hub.challenge?.id ?? '',
-      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey.challenge?.id ?? '',
+      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
     return this.notificationBuilder.build({
@@ -76,7 +76,7 @@ export class CommunityNewMemberNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const memberProfileURL = this.alkemioUrlGenerator.createUserURL(
       member.nameID
     );
@@ -89,15 +89,17 @@ export class CommunityNewMemberNotificationBuilder
         profile: memberProfileURL,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
-        name: eventPayload.community.name,
+      journey: {
+        displayName: eventPayload.journey.displayName,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
-        url: hubURL,
+      platform: {
+        url: alkemioURL,
       },
     };
   }

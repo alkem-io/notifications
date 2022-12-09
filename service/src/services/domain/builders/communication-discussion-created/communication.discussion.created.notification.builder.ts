@@ -46,13 +46,13 @@ export class CommunicationDiscussionCreatedNotificationBuilder
     ];
 
     const templateVariables = {
-      hubID: payload.hub.id,
-      challengeID: payload.hub.challenge?.id ?? '',
-      opportunityID: payload.hub.challenge?.opportunity?.id ?? '',
-      entityID:
-        payload.hub?.challenge?.opportunity?.id ??
-        payload.hub?.challenge?.id ??
-        payload.hub.id,
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey.challenge?.id ?? '',
+      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
+      journeyID:
+        payload.journey?.challenge?.opportunity?.id ??
+        payload.journey?.challenge?.id ??
+        payload.journey.hubID,
     };
 
     return this.notificationBuilder.build({
@@ -76,35 +76,31 @@ export class CommunicationDiscussionCreatedNotificationBuilder
       );
     }
 
-    const communityURL = this.alkemioUrlGenerator.createCommunityURL(
-      eventPayload.hub.nameID,
-      eventPayload.hub.challenge?.nameID,
-      eventPayload.hub.challenge?.opportunity?.nameID
-    );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
       );
-    const hubURL = this.alkemioUrlGenerator.createHubURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       createdBy: {
-        firstname: sender.firstName,
+        firstName: sender.firstName,
       },
       discussion: {
         title: eventPayload.discussion.title,
       },
       recipient: {
-        firstname: recipient.firstName,
+        firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      community: {
-        name: eventPayload.community.name,
-        url: communityURL,
+      journey: {
+        displayName: eventPayload.journey.displayName,
+        type: eventPayload.journey.type,
+        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
-      hub: {
-        url: hubURL,
+      platform: {
+        url: alkemioURL,
       },
     };
   }
