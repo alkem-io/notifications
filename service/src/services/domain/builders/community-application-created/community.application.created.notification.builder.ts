@@ -76,11 +76,15 @@ export class CommunityApplicationCreatedNotificationBuilder
     const communityURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
     );
+    const communityAdminURL =
+      this.alkemioUrlGenerator.createJourneyAdminCommunityURL(
+        eventPayload.journey
+      );
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
       );
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       applicant: {
@@ -89,6 +93,7 @@ export class CommunityApplicationCreatedNotificationBuilder
         email: applicant.email,
         profile: applicantProfileURL,
       },
+      journeyAdminURL: communityAdminURL,
       recipient: {
         firstName: recipient.displayName,
         email: recipient.email,
@@ -100,7 +105,7 @@ export class CommunityApplicationCreatedNotificationBuilder
         url: communityURL,
       },
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

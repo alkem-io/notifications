@@ -139,13 +139,13 @@ recipients:
       rules:
         - rule:
             type: HUB_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
   communication_discussion_created:
     - name: admin
       rules:
@@ -159,13 +159,13 @@ recipients:
       rules:
         - rule:
             type: HUB_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
   collaboration_review_submitted:
     - name: admin
       rules:
@@ -204,13 +204,13 @@ recipients:
       rules:
         - rule:
             type: HUB_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
   collaboration_card_comment:
     - name: owner
       rules:
@@ -222,13 +222,13 @@ recipients:
       rules:
         - rule:
             type: HUB_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
         - rule:
             type: OPPORTUNITY_MEMBER
-            resource_id: <entityID>
+            resource_id: <journeyID>
   platform_user_registered:
     - name: admin
       rules:

@@ -15,8 +15,12 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.name}},<br><br>
-          We have received an application from {{applicant.name}} for <a href="{{journey.url}}">{{journey.displayName}}</a> [{{journey.type}}].<br><br>
-          The profile of the new applicant is available <a href="{{applicant.profile}}" >here</a>.<br><br>
+          We have received an application from {{applicant.name}} for <a href="{{journey.url}}">{{journey.displayName}}</a> [{{journey.type}}].
+          <br><br>
+          The profile of the new applicant is available <a href="{{applicant.profile}}" >here</a>.
+          <br><br>
+          The application can be reviewed at the following Community administration page: <a href="{{journeyAdminURL}}" >here</a>.
+          <br><br>
 
           Sincerely yours,
         {% endblock %}

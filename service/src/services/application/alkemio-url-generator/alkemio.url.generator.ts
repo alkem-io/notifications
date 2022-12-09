@@ -35,6 +35,20 @@ export class AlkemioUrlGenerator {
     return baseURL;
   }
 
+  createJourneyAdminCommunityURL(journey: JourneyPayload): string {
+    const baseURL = `${this.webclientEndpoint}/admin/hubs/${journey.hubNameID}`;
+    switch (journey.type) {
+      case JourneyType.HUB:
+        return `${baseURL}/community`;
+      case JourneyType.CHALLENGE:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}/community`;
+      case JourneyType.OPPORTUNITY:
+        return `${baseURL}/challenges/${journey.challenge?.nameID}/opportunities/${journey.challenge?.opportunity?.nameID}/community`;
+    }
+
+    return baseURL;
+  }
+
   createUserURL(userNameID: string): string {
     return `${this.webclientEndpoint}/user/${userNameID}`;
   }

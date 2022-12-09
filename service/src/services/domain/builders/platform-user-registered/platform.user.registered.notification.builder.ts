@@ -69,7 +69,7 @@ export class PlatformUserRegisteredNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
       );
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       registrant: {
@@ -84,7 +84,7 @@ export class PlatformUserRegisteredNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

@@ -78,7 +78,7 @@ export class CollaborationInterestNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
       emailFrom: 'info@alkem.io',
@@ -100,7 +100,7 @@ export class CollaborationInterestNotificationBuilder
         url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

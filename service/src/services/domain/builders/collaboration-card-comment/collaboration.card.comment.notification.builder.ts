@@ -66,7 +66,7 @@ export class CollaborationCardCommentNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
     );
@@ -105,7 +105,7 @@ export class CollaborationCardCommentNotificationBuilder
         url: journeyURL,
       },
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

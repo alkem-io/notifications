@@ -46,7 +46,7 @@ export class CollaborationCardCreatedNotificationBuilder
       hubID: payload.journey.hubID,
       challengeID: payload.journey?.challenge?.id ?? '',
       opportunityID: payload.journey?.challenge?.opportunity?.id ?? '',
-      entityID:
+      journeyID:
         payload.journey?.challenge?.opportunity?.id ??
         payload.journey?.challenge?.id ??
         payload.journey.hubID,
@@ -78,7 +78,7 @@ export class CollaborationCardCreatedNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
     );
@@ -117,7 +117,7 @@ export class CollaborationCardCreatedNotificationBuilder
         url: journeyURL,
       },
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

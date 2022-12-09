@@ -79,7 +79,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
       emailFrom: 'info@alkem.io',
@@ -98,7 +98,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
       },
       review: toStringReview(eventPayload.questions),
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

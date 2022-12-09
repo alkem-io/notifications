@@ -49,7 +49,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder
       hubID: payload.journey.hubID,
       challengeID: payload.journey.challenge?.id ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
-      entityID:
+      journeyID:
         payload.journey?.challenge?.opportunity?.id ??
         payload.journey?.challenge?.id ??
         payload.journey.hubID,
@@ -80,7 +80,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
       );
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       createdBy: {
@@ -100,7 +100,7 @@ export class CommunicationDiscussionCreatedNotificationBuilder
         url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

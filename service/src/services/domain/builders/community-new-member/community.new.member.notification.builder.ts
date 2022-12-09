@@ -76,7 +76,7 @@ export class CommunityNewMemberNotificationBuilder
         recipient.nameID
       );
 
-    const hubURL = this.alkemioUrlGenerator.createPlatformURL();
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const memberProfileURL = this.alkemioUrlGenerator.createUserURL(
       member.nameID
     );
@@ -99,7 +99,7 @@ export class CommunityNewMemberNotificationBuilder
         url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
       platform: {
-        url: hubURL,
+        url: alkemioURL,
       },
     };
   }

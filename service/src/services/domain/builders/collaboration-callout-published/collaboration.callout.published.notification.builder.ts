@@ -38,7 +38,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     ];
 
     const templateVariables = {
-      entityID:
+      journeyID:
         payload.journey?.challenge?.opportunity?.id ??
         payload.journey?.challenge?.id ??
         payload.journey.hubID,
