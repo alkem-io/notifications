@@ -29,6 +29,8 @@ import {
   AlkemioUrlGeneratorModule,
   NotificationBuilder,
 } from './services/application';
+import { CollaborationCanvasCreatedNotificationBuilder } from './services/domain/builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 
 @Module({
   imports: [
@@ -60,8 +62,10 @@ import {
     CollaborationContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
     CollaborationInterestNotificationBuilder,
+    CollaborationCanvasCreatedNotificationBuilder,
     CollaborationCardCreatedNotificationBuilder,
     CollaborationCardCommentNotificationBuilder,
+    CollaborationDiscussionCommentNotificationBuilder,
     CollaborationCalloutPublishedNotificationBuilder,
     NotificationService,
   ],

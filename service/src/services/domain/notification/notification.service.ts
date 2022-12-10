@@ -19,6 +19,8 @@ import {
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
   PlatformUserRemovedEventPayload,
+  CollaborationCanvasCreatedEventPayload,
+  CollaborationDiscussionCommentEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -37,6 +39,8 @@ import {
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
+import { CollaborationCanvasCreatedNotificationBuilder } from '../builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 
 @Injectable()
 export class NotificationService {
@@ -54,9 +58,11 @@ export class NotificationService {
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
     private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
+    private collaborationCanvasCreatedNotificationBuilder: CollaborationCanvasCreatedNotificationBuilder,
     private collaborationCardCreatedNotificationBuilder: CollaborationCardCreatedNotificationBuilder,
     private collaborationCardCommentNotificationBuilder: CollaborationCardCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
+    private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private collaborationInterestNotificationBuilder: CollaborationInterestNotificationBuilder
   ) {}
 
@@ -154,12 +160,30 @@ export class NotificationService {
     );
   }
 
+  async sendCanvasCreatedNotification(
+    payload: CollaborationCanvasCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.collaborationCanvasCreatedNotificationBuilder
+    );
+  }
+
   async sendAspectCommentCreatedNotification(
     payload: CollaborationCardCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
       this.collaborationCardCommentNotificationBuilder
+    );
+  }
+
+  async sendDiscussionCommentCreatedNotification(
+    payload: CollaborationDiscussionCommentEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.collaborationDiscussionCommentNotificationBuilder
     );
   }
 

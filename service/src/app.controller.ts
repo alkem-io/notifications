@@ -24,6 +24,8 @@ import {
   PlatformUserRegistrationEventPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
+  CollaborationCanvasCreatedEventPayload,
+  CollaborationDiscussionCommentEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -160,6 +162,22 @@ export class AppController {
     );
   }
 
+  @EventPattern(
+    NotificationEventType.COLLABORATION_CANVAS_CREATED,
+    Transport.RMQ
+  )
+  async sendCanvasCreatedNotifications(
+    @Payload() eventPayload: CollaborationCanvasCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCanvasCreatedNotification(eventPayload),
+      NotificationEventType.COLLABORATION_CANVAS_CREATED
+    );
+  }
+
   @EventPattern(NotificationEventType.COLLABORATION_CARD_CREATED, Transport.RMQ)
   async sendAspectCreatedNotifications(
     @Payload() eventPayload: CollaborationCardCreatedEventPayload,
@@ -185,6 +203,24 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COLLABORATION_CARD_COMMENT
+    );
+  }
+
+  @EventPattern(
+    NotificationEventType.COLLABORATION_DISCUSSION_COMMENT,
+    Transport.RMQ
+  )
+  async sendDiscussionCommentCreatedNotifications(
+    @Payload() eventPayload: CollaborationDiscussionCommentEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendDiscussionCommentCreatedNotification(
+        eventPayload
+      ),
+      NotificationEventType.COLLABORATION_DISCUSSION_COMMENT
     );
   }
 

@@ -1,66 +1,78 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { CollaborationCardCommentEventPayload } from '@alkemio/notifications-lib';
-import { CollaborationCardCommentEmailPayload } from '@common/email-template-payload';
+import { CollaborationCanvasCreatedEventPayload } from '@alkemio/notifications-lib';
+import { UserPreferenceType } from '@alkemio/client-lib';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
   RoleConfig,
 } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
-import { EmailTemplate } from '@common/enums/email.template';
 import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
+import { EmailTemplate } from '@common/enums/email.template';
+import { CollaborationCanvasCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class CollaborationCardCommentNotificationBuilder
+export class CollaborationCanvasCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
-      CollaborationCardCommentEventPayload,
-      CollaborationCardCommentEmailPayload
+      CollaborationCanvasCreatedEventPayload,
+      CollaborationCanvasCreatedEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
-    payload: CollaborationCardCommentEventPayload
+    payload: CollaborationCanvasCreatedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
-        role: 'owner',
-        preferenceType: UserPreferenceType.NotificationAspectCommentCreated,
-        emailTemplate: EmailTemplate.COLLABORATION_CARD_COMMENT_OWNER,
+        role: 'admin',
+        preferenceType: UserPreferenceType.NotificationCanvasCreated,
+        emailTemplate: EmailTemplate.COLLABORATION_CANVAS_CREATED_ADMIN,
+      },
+      {
+        role: 'user',
+        preferenceType: UserPreferenceType.NotificationCanvasCreated,
+        emailTemplate: EmailTemplate.COLLABORATION_CANVAS_CREATED_MEMBER,
       },
     ];
 
     const templateVariables = {
-      ownerID: payload.card.createdBy,
+      hubID: payload.journey.hubID,
+      challengeID: payload.journey?.challenge?.id ?? '',
+      opportunityID: payload.journey?.challenge?.opportunity?.id ?? '',
+      journeyID:
+        payload.journey?.challenge?.opportunity?.id ??
+        payload.journey?.challenge?.id ??
+        payload.journey.hubID,
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.comment.createdBy,
+      eventUserId: payload.canvas.createdBy,
       roleConfig,
-      templateType: 'collaboration_card_comment',
+      templateType: 'collaboration_canvas_created',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
   }
 
   createTemplatePayload(
-    eventPayload: CollaborationCardCommentEventPayload,
+    eventPayload: CollaborationCanvasCreatedEventPayload,
     recipient: User,
-    commentAuthor?: User
-  ): CollaborationCardCommentEmailPayload {
-    if (!commentAuthor) {
+    creator?: User
+  ): CollaborationCanvasCreatedEmailPayload {
+    if (!creator) {
       throw Error(
-        `Comment author not provided for '${NotificationEventType.COLLABORATION_CARD_COMMENT} event'`
+        `Creator not provided for '${NotificationEventType.COLLABORATION_CANVAS_CREATED} event'`
       );
     }
+
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
@@ -70,10 +82,10 @@ export class CollaborationCardCommentNotificationBuilder
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
     );
-    const cardURL = this.alkemioUrlGenerator.createCardURL(
+    const canvasURL = this.alkemioUrlGenerator.createCanvasURL(
       journeyURL,
       eventPayload.callout.nameID,
-      eventPayload.card.nameID
+      eventPayload.canvas.nameID
     );
     const calloutURL = this.alkemioUrlGenerator.createCalloutURL(
       journeyURL,
@@ -82,22 +94,22 @@ export class CollaborationCardCommentNotificationBuilder
 
     return {
       emailFrom: 'info@alkem.io',
+      createdBy: {
+        firstName: creator.firstName,
+        email: creator.email,
+      },
       callout: {
         displayName: eventPayload.callout.displayName,
         url: calloutURL,
       },
-      card: {
-        displayName: eventPayload.card.displayName,
-        url: cardURL,
+      canvas: {
+        displayName: eventPayload.canvas.displayName,
+        url: canvasURL,
       },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
-      },
-      createdBy: {
-        firstName: commentAuthor.firstName,
-        email: commentAuthor.email,
       },
       journey: {
         displayName: eventPayload.journey.displayName,

@@ -18,8 +18,10 @@ export type TemplateConfig = {
   community_new_member?: TemplateRuleSet[];
   communication_update_sent?: TemplateRuleSet[];
   communication_discussion_created?: TemplateRuleSet[];
+  collaboration_canvas_created?: TemplateRuleSet[];
   collaboration_card_created?: TemplateRuleSet[];
   collaboration_card_comment?: TemplateRuleSet[];
+  collaboration_discussion_comment?: TemplateRuleSet[];
   collaboration_review_submitted?: TemplateRuleSet[];
   collaboration_interest?: TemplateRuleSet[];
   collaboration_callout_published?: TemplateRuleSet[];
