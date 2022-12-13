@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { ApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
+import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import {
   ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_URL_GENERATOR,
@@ -13,18 +13,19 @@ import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
-import { ApplicationCreatedNotificationBuilder } from '@src/services';
+import { CommunityApplicationCreatedNotificationBuilder } from '@src/services';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
 import {
-  UserRegisteredNotificationBuilder,
+  PlatformUserRegisteredNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
   CommunicationDiscussionCreatedNotificationBuilder,
-  CommunityContextReviewSubmittedNotificationBuilder,
+  CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
-  AspectCreatedNotificationBuilder,
-  AspectCommentCreatedNotificationBuilder,
-  CommunityCollaborationInterestNotificationBuilder,
-  CalloutPublishedNotificationBuilder,
+  CollaborationCardCreatedNotificationBuilder,
+  CollaborationCardCommentNotificationBuilder,
+  CollaborationInterestNotificationBuilder,
+  CollaborationCalloutPublishedNotificationBuilder,
+  PlatformUserRemovedNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -37,6 +38,8 @@ import {
 } from '@test/mocks';
 import { NotificationBuilder } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
+import { CollaborationCanvasCreatedNotificationBuilder } from '../builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 
 const testData = {
   ...challengeAdminsData,
@@ -61,16 +64,19 @@ describe('NotificationService', () => {
         MockNotificationRecipientsYmlProvider,
         NotificationRecipientsYmlAdapter,
         NotificationService,
-        ApplicationCreatedNotificationBuilder,
-        UserRegisteredNotificationBuilder,
+        CommunityApplicationCreatedNotificationBuilder,
+        PlatformUserRegisteredNotificationBuilder,
+        PlatformUserRemovedNotificationBuilder,
         CommunicationUpdateCreatedNotificationBuilder,
         CommunicationDiscussionCreatedNotificationBuilder,
-        CommunityContextReviewSubmittedNotificationBuilder,
+        CollaborationContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
-        CommunityCollaborationInterestNotificationBuilder,
-        AspectCreatedNotificationBuilder,
-        AspectCommentCreatedNotificationBuilder,
-        CalloutPublishedNotificationBuilder,
+        CollaborationInterestNotificationBuilder,
+        CollaborationCanvasCreatedNotificationBuilder,
+        CollaborationCardCreatedNotificationBuilder,
+        CollaborationCardCommentNotificationBuilder,
+        CollaborationDiscussionCommentNotificationBuilder,
+        CollaborationCalloutPublishedNotificationBuilder,
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,
@@ -116,7 +122,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as ApplicationCreatedEventPayload
+        testData.data as CommunityApplicationCreatedEventPayload
       );
       for (const notificationStatus of res) {
         expect(
@@ -156,7 +162,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as ApplicationCreatedEventPayload
+        testData.data as CommunityApplicationCreatedEventPayload
       );
 
       for (const notificationStatus of res) {
@@ -175,7 +181,7 @@ describe('NotificationService', () => {
         .mockResolvedValue(false);
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as ApplicationCreatedEventPayload
+        testData.data as CommunityApplicationCreatedEventPayload
       );
 
       expect(res.length).toBe(0); //shouldn't have any notifications sent

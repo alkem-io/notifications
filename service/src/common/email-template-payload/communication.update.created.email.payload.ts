@@ -1,20 +1,8 @@
-import { BaseEmailPayload } from './base.email.payload';
+import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 
 export interface CommunicationUpdateCreatedEmailPayload
-  extends BaseEmailPayload {
+  extends BaseJourneyEmailPayload {
   sender: {
-    firstname: string;
-  };
-  recipient: {
-    firstname: string;
-    email: string;
-    notificationPreferences: string;
-  };
-  community: {
-    name: string;
-    url: string;
-  };
-  hub: {
-    url: string;
+    firstName: string;
   };
 }

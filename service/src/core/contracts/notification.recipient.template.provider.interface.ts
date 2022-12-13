@@ -14,16 +14,19 @@ export type TemplateRuleSet = {
 };
 
 export type TemplateConfig = {
-  application_created?: TemplateRuleSet[];
-  aspect_created?: TemplateRuleSet[];
-  aspect_comment_created?: TemplateRuleSet[];
-  user_registered?: TemplateRuleSet[];
+  community_application_created?: TemplateRuleSet[];
+  community_new_member?: TemplateRuleSet[];
   communication_update_sent?: TemplateRuleSet[];
   communication_discussion_created?: TemplateRuleSet[];
-  community_review_submitted?: TemplateRuleSet[];
-  community_new_member?: TemplateRuleSet[];
-  community_collaboration_interest?: TemplateRuleSet[];
-  callout_published?: TemplateRuleSet[];
+  collaboration_canvas_created?: TemplateRuleSet[];
+  collaboration_card_created?: TemplateRuleSet[];
+  collaboration_card_comment?: TemplateRuleSet[];
+  collaboration_discussion_comment?: TemplateRuleSet[];
+  collaboration_review_submitted?: TemplateRuleSet[];
+  collaboration_interest?: TemplateRuleSet[];
+  collaboration_callout_published?: TemplateRuleSet[];
+  platform_user_registered?: TemplateRuleSet[];
+  platform_user_removed?: TemplateRuleSet[];
 };
 
 export interface INotificationRecipientTemplateProvider {

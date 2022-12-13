@@ -1,9 +1,11 @@
 export interface BaseEmailPayload {
   emailFrom: string;
-  hub: {
+  platform: {
     url: string; // the url of alkemio
   };
   recipient: {
+    firstName: string;
+    email: string;
     notificationPreferences: string;
   };
 }

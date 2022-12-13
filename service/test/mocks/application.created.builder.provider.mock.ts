@@ -1,11 +1,11 @@
 import { ValueProvider } from '@nestjs/common';
 import { PublicPart } from '@test/utils';
-import { ApplicationCreatedNotificationBuilder } from '@src/services';
+import { CommunityApplicationCreatedNotificationBuilder } from '@src/services';
 
 export const MockApplicationCreatedBuilderProvider: ValueProvider<
-  PublicPart<ApplicationCreatedNotificationBuilder>
+  PublicPart<CommunityApplicationCreatedNotificationBuilder>
 > = {
-  provide: ApplicationCreatedNotificationBuilder,
+  provide: CommunityApplicationCreatedNotificationBuilder,
   useValue: {
     build: jest.fn(),
   },

@@ -80,7 +80,7 @@ describe('NotificationBuilder', () => {
 
     jest
       .spyOn(recipientTemplateProvider, 'getTemplate')
-      .mockReturnValue({ user_registered: [] });
+      .mockReturnValue({ platform_user_registered: [] });
 
     await expect(await notificationBuilder.build(getBaseOptions())).toEqual([]);
   });
@@ -88,7 +88,7 @@ describe('NotificationBuilder', () => {
 
 const getBaseOptions = (): NotificationOptions<any, any> => ({
   payload: {},
-  templateType: 'application_created',
+  templateType: 'community_application_created',
   templatePayloadBuilderFn: () => ({}),
   roleConfig: [{}] as any,
 });

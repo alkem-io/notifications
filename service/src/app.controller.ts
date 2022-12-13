@@ -9,20 +9,23 @@ import {
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
 import { NotificationStatus } from 'notifme-sdk';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { IFeatureFlagProvider } from '@core/contracts';
 import {
-  ApplicationCreatedEventPayload,
-  AspectCommentCreatedEventPayload,
-  AspectCreatedEventPayload,
+  NotificationEventType,
+  PlatformUserRemovedEventPayload,
+  CommunityApplicationCreatedEventPayload,
+  CollaborationCardCommentEventPayload,
+  CollaborationCardCreatedEventPayload,
   CommunicationDiscussionCreatedEventPayload,
   CommunicationUpdateEventPayload,
-  CommunityContextReviewSubmittedPayload,
+  CollaborationContextReviewSubmittedPayload,
   CommunityNewMemberPayload,
-  CommunityCollaborationInterestPayload,
-  UserRegistrationEventPayload,
-  CalloutPublishedEventPayload,
+  CollaborationInterestPayload,
+  PlatformUserRegistrationEventPayload,
+  CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
+  CollaborationCanvasCreatedEventPayload,
+  CollaborationDiscussionCommentEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -40,7 +43,7 @@ export class AppController {
   @EventPattern(NotificationEventType.COMMUNITY_APPLICATION_CREATED)
   async sendApplicationNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: ApplicationCreatedEventPayload,
+    @Payload() eventPayload: CommunityApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -69,9 +72,9 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_COLLABORATION_INTEREST)
+  @EventPattern(NotificationEventType.COLLABORATION_INTEREST)
   async sendCommunityCollaborationInterestNotification(
-    @Payload() eventPayload: CommunityCollaborationInterestPayload,
+    @Payload() eventPayload: CollaborationInterestPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -80,21 +83,35 @@ export class AppController {
       this.notificationService.sendCommunityCollaborationInterestNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_COLLABORATION_INTEREST
+      NotificationEventType.COLLABORATION_INTEREST
     );
   }
 
-  @EventPattern(NotificationEventType.USER_REGISTERED)
+  @EventPattern(NotificationEventType.PLATFORM_USER_REGISTERED)
   async sendUserRegisteredNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: UserRegistrationEventPayload,
+    @Payload() eventPayload: PlatformUserRegistrationEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
       eventPayload,
       context,
       this.notificationService.sendUserRegisteredNotification(eventPayload),
-      NotificationEventType.USER_REGISTERED
+      NotificationEventType.PLATFORM_USER_REGISTERED
+    );
+  }
+
+  @EventPattern(NotificationEventType.PLATFORM_USER_REMOVED)
+  async sendUserRemovedNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: PlatformUserRemovedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendUserRemovedNotification(eventPayload),
+      NotificationEventType.PLATFORM_USER_REMOVED
     );
   }
 
@@ -130,9 +147,9 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_CONTEXT_REVIEW_SUBMITTED)
+  @EventPattern(NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED)
   async sendCommunityContextFeedbackNotifications(
-    @Payload() eventPayload: CommunityContextReviewSubmittedPayload,
+    @Payload() eventPayload: CollaborationContextReviewSubmittedPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -141,26 +158,42 @@ export class AppController {
       this.notificationService.sendCommunityContextFeedbackNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_CONTEXT_REVIEW_SUBMITTED
+      NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED
     );
   }
 
-  @EventPattern(NotificationEventType.ASPECT_CREATED, Transport.RMQ)
+  @EventPattern(
+    NotificationEventType.COLLABORATION_CANVAS_CREATED,
+    Transport.RMQ
+  )
+  async sendCanvasCreatedNotifications(
+    @Payload() eventPayload: CollaborationCanvasCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCanvasCreatedNotification(eventPayload),
+      NotificationEventType.COLLABORATION_CANVAS_CREATED
+    );
+  }
+
+  @EventPattern(NotificationEventType.COLLABORATION_CARD_CREATED, Transport.RMQ)
   async sendAspectCreatedNotifications(
-    @Payload() eventPayload: AspectCreatedEventPayload,
+    @Payload() eventPayload: CollaborationCardCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
       eventPayload,
       context,
       this.notificationService.sendAspectCreatedNotification(eventPayload),
-      NotificationEventType.ASPECT_CREATED
+      NotificationEventType.COLLABORATION_CARD_CREATED
     );
   }
 
-  @EventPattern(NotificationEventType.COMMENT_CREATED_ON_ASPECT, Transport.RMQ)
+  @EventPattern(NotificationEventType.COLLABORATION_CARD_COMMENT, Transport.RMQ)
   async sendAspectCommentCreatedNotifications(
-    @Payload() eventPayload: AspectCommentCreatedEventPayload,
+    @Payload() eventPayload: CollaborationCardCommentEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -169,20 +202,41 @@ export class AppController {
       this.notificationService.sendAspectCommentCreatedNotification(
         eventPayload
       ),
-      NotificationEventType.ASPECT_CREATED
+      NotificationEventType.COLLABORATION_CARD_COMMENT
     );
   }
 
-  @EventPattern(NotificationEventType.CALLOUT_PUBLISHED, Transport.RMQ)
+  @EventPattern(
+    NotificationEventType.COLLABORATION_DISCUSSION_COMMENT,
+    Transport.RMQ
+  )
+  async sendDiscussionCommentCreatedNotifications(
+    @Payload() eventPayload: CollaborationDiscussionCommentEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendDiscussionCommentCreatedNotification(
+        eventPayload
+      ),
+      NotificationEventType.COLLABORATION_DISCUSSION_COMMENT
+    );
+  }
+
+  @EventPattern(
+    NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED,
+    Transport.RMQ
+  )
   async sendCalloutPublishedNotifications(
-    @Payload() eventPayload: CalloutPublishedEventPayload,
+    @Payload() eventPayload: CollaborationCalloutPublishedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
       eventPayload,
       context,
       this.notificationService.sendCalloutPublishedNotification(eventPayload),
-      NotificationEventType.CALLOUT_PUBLISHED
+      NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED
     );
   }
 

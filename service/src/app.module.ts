@@ -8,26 +8,29 @@ import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import {
   AlkemioClientAdapterModule,
-  ApplicationCreatedNotificationBuilder,
+  CommunityApplicationCreatedNotificationBuilder,
   NotificationRecipientsAdapterModule,
 } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import {
   CommunicationDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
-  CommunityContextReviewSubmittedNotificationBuilder,
-  UserRegisteredNotificationBuilder,
+  CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
-  CommunityCollaborationInterestNotificationBuilder,
-  AspectCreatedNotificationBuilder,
-  AspectCommentCreatedNotificationBuilder,
-  CalloutPublishedNotificationBuilder,
+  CollaborationInterestNotificationBuilder,
+  CollaborationCardCreatedNotificationBuilder,
+  CollaborationCardCommentNotificationBuilder,
+  CollaborationCalloutPublishedNotificationBuilder,
+  PlatformUserRegisteredNotificationBuilder,
+  PlatformUserRemovedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import {
   AlkemioUrlGeneratorModule,
   NotificationBuilder,
 } from './services/application';
+import { CollaborationCanvasCreatedNotificationBuilder } from './services/domain/builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 
 @Module({
   imports: [
@@ -51,16 +54,19 @@ import {
       useClass: HttpExceptionsFilter,
     },
     NotificationBuilder,
-    ApplicationCreatedNotificationBuilder,
-    UserRegisteredNotificationBuilder,
+    CommunityApplicationCreatedNotificationBuilder,
+    PlatformUserRegisteredNotificationBuilder,
+    PlatformUserRemovedNotificationBuilder,
     CommunicationUpdateCreatedNotificationBuilder,
     CommunicationDiscussionCreatedNotificationBuilder,
-    CommunityContextReviewSubmittedNotificationBuilder,
+    CollaborationContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
-    CommunityCollaborationInterestNotificationBuilder,
-    AspectCreatedNotificationBuilder,
-    AspectCommentCreatedNotificationBuilder,
-    CalloutPublishedNotificationBuilder,
+    CollaborationInterestNotificationBuilder,
+    CollaborationCanvasCreatedNotificationBuilder,
+    CollaborationCardCreatedNotificationBuilder,
+    CollaborationCardCommentNotificationBuilder,
+    CollaborationDiscussionCommentNotificationBuilder,
+    CollaborationCalloutPublishedNotificationBuilder,
     NotificationService,
   ],
   controllers: [AppController],
