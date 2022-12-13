@@ -65,6 +65,14 @@ export class AlkemioUrlGenerator {
     return `${journeyURL}/explore/callouts/${calloutNameID}/aspects/${cardNameID}`;
   }
 
+  createCanvasURL(
+    journeyURL: string,
+    calloutNameID: string,
+    canvasNameID: string
+  ): string {
+    return `${journeyURL}/explore/callouts/${calloutNameID}/canvases/${canvasNameID}`;
+  }
+
   createOrganizationURL(orgNameID: string): string {
     return `${this.webclientEndpoint}/organization/${orgNameID}`;
   }

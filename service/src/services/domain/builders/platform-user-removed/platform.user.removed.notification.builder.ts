@@ -33,7 +33,7 @@ export class PlatformUserRemovedNotificationBuilder
       {
         role: 'admin',
         emailTemplate: EmailTemplate.PLATFORM_USER_REMOVED_ADMIN,
-        preferenceType: UserPreferenceType.NotificationUserSignUp,
+        preferenceType: UserPreferenceType.NotificationUserRemoved,
       },
     ];
 

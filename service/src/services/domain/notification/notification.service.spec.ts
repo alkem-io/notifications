@@ -38,6 +38,8 @@ import {
 } from '@test/mocks';
 import { NotificationBuilder } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
+import { CollaborationCanvasCreatedNotificationBuilder } from '../builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 
 const testData = {
   ...challengeAdminsData,
@@ -70,8 +72,10 @@ describe('NotificationService', () => {
         CollaborationContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
         CollaborationInterestNotificationBuilder,
+        CollaborationCanvasCreatedNotificationBuilder,
         CollaborationCardCreatedNotificationBuilder,
         CollaborationCardCommentNotificationBuilder,
+        CollaborationDiscussionCommentNotificationBuilder,
         CollaborationCalloutPublishedNotificationBuilder,
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,

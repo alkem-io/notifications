@@ -211,12 +211,47 @@ recipients:
         - rule:
             type: OPPORTUNITY_MEMBER
             resource_id: <journeyID>
+  collaboration_canvas_created:
+    - name: admin
+      rules:
+        - rule:
+            type: HUB_ADMIN
+            resource_id: <hubID>
+        - rule:
+            type: CHALLENGE_ADMIN
+            resource_id: <challengeID>
+        - rule:
+            type: OPPORTUNITY_ADMIN
+            resource_id: <opportunityID>
+    - name: user
+      rules:
+        - rule:
+            type: HUB_MEMBER
+            resource_id: <journeyID>
+        - rule:
+            type: CHALLENGE_MEMBER
+            resource_id: <journeyID>
+        - rule:
+            type: OPPORTUNITY_MEMBER
+            resource_id: <journeyID>
   collaboration_card_comment:
     - name: owner
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <ownerID>
+  collaboration_discussion_comment:
+    - name: member
+      rules:
+        - rule:
+            type: HUB_MEMBER
+            resource_id: <journeyID>
+        - rule:
+            type: CHALLENGE_MEMBER
+            resource_id: <journeyID>
+        - rule:
+            type: OPPORTUNITY_MEMBER
+            resource_id: <journeyID>
   collaboration_callout_published:
     - name: user
       rules:

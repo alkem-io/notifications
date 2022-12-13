@@ -2,23 +2,22 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'collaboration-card-created-member',
+  name: 'collaboration-canvas-created-member',
   title:
-    '{{journey.displayName}} - New comment received on your Card: "{{card.displayName}}"',
+    '{{journey.displayName}} - New Canvas created by {{createdBy.firstName}}, have a look!',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '{{journey.displayName}} - New comment received on your Card "{{card.displayName}}", have a look!',
+        '{{journey.displayName}} - New Canvas created by {{createdBy.firstName}}, have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
-          Hi {{recipient.firstName}},<br><br>
-
-          A new comment was created by {{createdBy.firstName}} on your '<a href={{card.url}}>{{card.displayName}}</a>' Card.
+          Hi {{recipient.firstName}},
           <br><br>
-
+          A new Canvas was created by {{createdBy.firstName}} with name '<a href={{canvas.url}}>{{canvas.displayName}}</a>'
+          <br><br>
           Sincerely yours,
         {% endblock %}
         ${templates.footerBlock}`,
