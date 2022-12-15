@@ -1,6 +1,7 @@
 /docs/diagrams/.$*
 /service/coverage/*
 /service/coverage-ci/*
+/node_modules/*
 
 *.log
 .env

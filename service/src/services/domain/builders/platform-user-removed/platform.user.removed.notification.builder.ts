@@ -51,15 +51,8 @@ export class PlatformUserRemovedNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: PlatformUserRemovedEventPayload,
-    recipient: User,
-    registrant?: User
+    recipient: User
   ): PlatformUserRemovedEmailPayload {
-    if (!registrant) {
-      throw Error(
-        `Registrant not provided for '${NotificationEventType.PLATFORM_USER_REMOVED}' event`
-      );
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
         recipient.nameID
@@ -68,7 +61,7 @@ export class PlatformUserRemovedNotificationBuilder
       emailFrom: 'info@alkem.io',
       registrant: {
         displayName: eventPayload.user.displayName,
-        email: registrant.email,
+        email: eventPayload.user.email,
       },
       recipient: {
         firstName: recipient.firstName,
