@@ -54,7 +54,7 @@ export class AlkemioUrlGenerator {
   }
 
   createCalloutURL(journeyURL: string, calloutNameID: string): string {
-    return `${journeyURL}/explore/callouts/${calloutNameID}`;
+    return `${journeyURL}/contribute/callouts/${calloutNameID}`;
   }
 
   createCardURL(
@@ -62,7 +62,7 @@ export class AlkemioUrlGenerator {
     calloutNameID: string,
     cardNameID: string
   ): string {
-    return `${journeyURL}/explore/callouts/${calloutNameID}/aspects/${cardNameID}`;
+    return `${journeyURL}/contribute/callouts/${calloutNameID}/aspects/${cardNameID}`;
   }
 
   createCanvasURL(
@@ -70,7 +70,7 @@ export class AlkemioUrlGenerator {
     calloutNameID: string,
     canvasNameID: string
   ): string {
-    return `${journeyURL}/explore/callouts/${calloutNameID}/canvases/${canvasNameID}`;
+    return `${journeyURL}/contribute/callouts/${calloutNameID}/canvases/${canvasNameID}`;
   }
 
   createOrganizationURL(orgNameID: string): string {
