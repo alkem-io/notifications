@@ -35,8 +35,8 @@
     "validate-connection": "ts-node src/utils/validate-connection.ts"
   },
   "dependencies": {
-    "@alkemio/client-lib": "^0.17.2",
-    "@alkemio/notifications-lib": "^0.2.5",
+    "@alkemio/client-lib": "^0.17.3",
+    "@alkemio/notifications-lib": "^0.2.6",
     "@nestjs/common": "^8.0.5",
     "@nestjs/config": "^1.0.1",
     "@nestjs/core": "^8.0.5",
