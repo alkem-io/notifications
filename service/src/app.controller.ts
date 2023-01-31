@@ -17,6 +17,8 @@ import {
   CollaborationCardCommentEventPayload,
   CollaborationCardCreatedEventPayload,
   CommunicationDiscussionCreatedEventPayload,
+  CommunicationUserMessageEventPayload,
+  CommunicationOrganizationMessageEventPayload,
   CommunicationUpdateEventPayload,
   CollaborationContextReviewSubmittedPayload,
   CommunityNewMemberPayload,
@@ -144,6 +146,36 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COMMUNICATION_DISCUSSION_CREATED
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNICATION_USER_MESSAGE)
+  async sendCommunicationUserMessageNotifications(
+    @Payload() eventPayload: CommunicationUserMessageEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunicationUserMessageNotification(
+        eventPayload
+      ),
+      NotificationEventType.COMMUNICATION_USER_MESSAGE
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE)
+  async sendCommunicationOrganizationMessageNotifications(
+    @Payload() eventPayload: CommunicationOrganizationMessageEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunicationOrganizationMessageNotification(
+        eventPayload
+      ),
+      NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE
     );
   }
 
