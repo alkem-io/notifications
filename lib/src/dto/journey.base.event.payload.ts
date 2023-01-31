@@ -3,6 +3,5 @@ import { BaseEventPayload } from './base.event.payload';
 
 export interface JourneyBaseEventPayload
   extends BaseEventPayload {
-
   journey: JourneyPayload;
 }

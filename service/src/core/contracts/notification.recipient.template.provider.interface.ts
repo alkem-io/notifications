@@ -20,7 +20,7 @@ export type TemplateConfig = {
   communication_discussion_created?: TemplateRuleSet[];
   communication_user_message?: TemplateRuleSet[];
   communication_organization_message?: TemplateRuleSet[];
-  communication_community_lead_message?: TemplateRuleSet[];
+  communication_community_leads_message?: TemplateRuleSet[];
   collaboration_canvas_created?: TemplateRuleSet[];
   collaboration_card_created?: TemplateRuleSet[];
   collaboration_card_comment?: TemplateRuleSet[];

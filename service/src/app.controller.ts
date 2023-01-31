@@ -19,6 +19,7 @@ import {
   CommunicationDiscussionCreatedEventPayload,
   CommunicationUserMessageEventPayload,
   CommunicationOrganizationMessageEventPayload,
+  CommunicationCommunityLeadsMessageEventPayload,
   CommunicationUpdateEventPayload,
   CollaborationContextReviewSubmittedPayload,
   CommunityNewMemberPayload,
@@ -176,6 +177,21 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE)
+  async sendCommunicationCommunityLeadsMessageNotifications(
+    @Payload() eventPayload: CommunicationCommunityLeadsMessageEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunicationCommunityLeadsMessageNotification(
+        eventPayload
+      ),
+      NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE
     );
   }
 

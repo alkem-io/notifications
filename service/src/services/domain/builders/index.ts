@@ -3,6 +3,7 @@ export * from './communication-discussion-created/communication.discussion.creat
 export * from './communication-update-created/communication.update.created.notification.builder';
 export * from './communication-user-message/communication.user.message.notification.builder';
 export * from './communication-organization-message/communication.organization.message.notification.builder';
+export * from './communication-community-message/communication.community.leads.message.notification.builder';
 export * from './collaboration-context-feedback/collaboration.context.review.submitted.notification.builder';
 export * from './community-new-member/community.new.member.notification.builder';
 export * from './collaboration-interest/collaboration.interest.notification.builder';

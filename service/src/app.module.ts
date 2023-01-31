@@ -25,6 +25,7 @@ import {
   PlatformUserRemovedNotificationBuilder,
   CommunicationUserMessageNotificationBuilder,
   CommunicationOrganizationMessageNotificationBuilder,
+  CommunicationCommunityLeadsMessageNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import {
@@ -63,6 +64,7 @@ import { CollaborationDiscussionCommentNotificationBuilder } from './services/do
     CommunicationDiscussionCreatedNotificationBuilder,
     CommunicationUserMessageNotificationBuilder,
     CommunicationOrganizationMessageNotificationBuilder,
+    CommunicationCommunityLeadsMessageNotificationBuilder,
     CollaborationContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
     CollaborationInterestNotificationBuilder,

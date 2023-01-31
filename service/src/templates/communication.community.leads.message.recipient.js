@@ -2,23 +2,23 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'communication.organization.message.sender',
-  title: 'You have sent a message to {{organization.displayName}}!',
+  name: 'communication.community.leads.message.recipient',
+  title: '{{messageSender.displayName}} sent a message to your community!',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: 'You have sent a message to {{organization.displayName}}!',
+      replyTo: '{{messageSender.email}}',
+      subject:
+        '{{messageSender.displayName}} sent a message to your community!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          You have sent a message to {{organization.displayName}} organization:<br>
+          User {{messageSender.displayName}} sent a message to {{journey.displayName}} community you are leading: <br>
           {{message}}
 
-          <br><br>
-          They will try to respond as soon as possible.
           <br><br>
           Sincerely yours,
         {% endblock %}

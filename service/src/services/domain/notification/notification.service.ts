@@ -12,6 +12,7 @@ import {
   CommunicationDiscussionCreatedEventPayload,
   CommunicationUserMessageEventPayload,
   CommunicationOrganizationMessageEventPayload,
+  CommunicationCommunityLeadsMessageEventPayload,
   CollaborationContextReviewSubmittedPayload,
   PlatformUserRegistrationEventPayload,
   CommunityNewMemberPayload,
@@ -40,6 +41,7 @@ import {
   CommunityNewMemberNotificationBuilder,
   CommunicationUserMessageNotificationBuilder,
   CommunicationOrganizationMessageNotificationBuilder,
+  CommunicationCommunityLeadsMessageNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
@@ -62,6 +64,7 @@ export class NotificationService {
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
     private communicationUserMessageNotificationBuilder: CommunicationUserMessageNotificationBuilder,
     private communicationOrganizationMessageNotificationBuilder: CommunicationOrganizationMessageNotificationBuilder,
+    private communicationCommunityLeadsMessageNotificationBuilder: CommunicationCommunityLeadsMessageNotificationBuilder,
     private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
     private collaborationCanvasCreatedNotificationBuilder: CollaborationCanvasCreatedNotificationBuilder,
@@ -167,11 +170,11 @@ export class NotificationService {
   }
 
   async sendCommunicationCommunityLeadsMessageNotification(
-    payload: CommunicationUserMessageEventPayload
+    payload: CommunicationCommunityLeadsMessageEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.communicationUserMessageNotificationBuilder
+      this.communicationCommunityLeadsMessageNotificationBuilder
     );
   }
 

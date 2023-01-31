@@ -4,6 +4,7 @@ export * from './communication.discussion.created.event.payload';
 export * from './communication.update.event.payload';
 export * from './communication.user.message.event.payload'
 export * from './communication.organization.message.event.payload'
+export * from './communication.community.leads.message.payload'
 export * from './community.application.created.event.payload';
 export * from './community.new.member.payload';
 export * from './collaboration.interest.payload';

@@ -19,7 +19,7 @@ module.exports = () => ({
           User {{messageSender.displayName}} sent a message to {{organization.displayName}}: <br>
           {{message}}
 
-          <br>
+          <br><br>
           Sincerely yours,
         {% endblock %}
 

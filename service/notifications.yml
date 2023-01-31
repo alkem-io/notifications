@@ -197,8 +197,14 @@ recipients:
     - name: receiver
       rules:
         - rule:
-            type: USER_SELF_MANAGEMENT
-            resource_id: <receiverID>
+            type: HUB_HOST
+            resource_id: <journeyID>
+        - rule:
+            type: CHALLENGE_LEAD
+            resource_id: <journeyID>
+        - rule:
+            type: OPPORTUNITY_LEAD
+            resource_id: <journeyID>
   collaboration_review_submitted:
     - name: admin
       rules:
