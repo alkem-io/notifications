@@ -46,7 +46,7 @@ export class CommunicationUserMessageNotificationBuilder
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.messageSender.id,
+      eventUserId: payload.triggeredBy,
       roleConfig,
       templateType: 'communication_user_message',
       templateVariables,

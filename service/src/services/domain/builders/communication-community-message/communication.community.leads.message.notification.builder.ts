@@ -51,7 +51,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.messageSender.id,
+      eventUserId: payload.triggeredBy,
       roleConfig,
       templateType: 'communication_community_leads_message',
       templateVariables,

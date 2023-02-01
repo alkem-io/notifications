@@ -49,7 +49,7 @@ export class CommunicationOrganizationMessageNotificationBuilder
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.messageSender.id,
+      eventUserId: payload.triggeredBy,
       roleConfig,
       templateType: 'communication_organization_message',
       templateVariables,
