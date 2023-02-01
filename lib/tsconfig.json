@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
-    "lib": ["es2019", "esnext.asynciterable", "ES2018.Promise"],
+    "lib": ["es2019", "esnext.asynciterable", "ES2020.Promise"],
     "sourceMap": true,
     "rootDir": "./src",
     "outDir": "./dist",
