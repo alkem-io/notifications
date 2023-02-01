@@ -1,0 +1,93 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { NotificationEventType } from '@alkemio/notifications-lib';
+import { User } from '@core/models';
+import { CommunicationUserMessageEventPayload } from '@alkemio/notifications-lib';
+import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
+import { NotificationBuilder, RoleConfig } from '../../../application';
+import { EmailTemplate } from '@common/enums/email.template';
+import { NotificationTemplateType } from '@src/types/notification.template.type';
+import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
+import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
+import { UserPreferenceType } from '@alkemio/client-lib';
+
+@Injectable()
+export class CommunicationUserMessageNotificationBuilder
+  implements INotificationBuilder
+{
+  constructor(
+    @Inject(ALKEMIO_URL_GENERATOR)
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
+    private readonly notificationBuilder: NotificationBuilder<
+      CommunicationUserMessageEventPayload,
+      CommunicationUserMessageEmailPayload
+    >
+  ) {}
+
+  build(
+    payload: CommunicationUserMessageEventPayload
+  ): Promise<NotificationTemplateType[]> {
+    const roleConfig: RoleConfig[] = [
+      {
+        role: 'receiver',
+        emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_RECIPIENT,
+        preferenceType: UserPreferenceType.NotificationCommunicationMessage,
+      },
+      {
+        role: 'sender',
+        emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_SENDER,
+      },
+    ];
+
+    const templateVariables = {
+      senderID: payload.triggeredBy,
+      receiverID: payload.messageReceiver.id,
+    };
+
+    return this.notificationBuilder.build({
+      payload,
+      eventUserId: payload.triggeredBy,
+      roleConfig,
+      templateType: 'communication_user_message',
+      templateVariables,
+      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+    });
+  }
+
+  private createTemplatePayload(
+    eventPayload: CommunicationUserMessageEventPayload,
+    recipient: User,
+    sender?: User
+  ): CommunicationUserMessageEmailPayload {
+    if (!sender) {
+      throw Error(
+        `Sender not provided for '${NotificationEventType.COMMUNICATION_USER_MESSAGE}' event`
+      );
+    }
+    const notificationPreferenceURL =
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
+        recipient.nameID
+      );
+    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
+
+    return {
+      emailFrom: 'info@alkem.io',
+      messageSender: {
+        displayName: sender.displayName,
+        email: sender.email,
+      },
+      recipient: {
+        firstName: recipient.firstName,
+        email: recipient.email,
+        notificationPreferences: notificationPreferenceURL,
+      },
+      message: eventPayload.message,
+      platform: {
+        url: alkemioURL,
+      },
+      messageReceiver: {
+        displayName: eventPayload.messageReceiver.displayName,
+      },
+    };
+  }
+}
