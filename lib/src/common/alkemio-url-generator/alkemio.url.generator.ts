@@ -78,3 +78,10 @@ export const createUserNotificationPreferencesURL = (
 ): string => {
   return `${webclientEndpoint}/user/${userNameID}/settings/notifications`;
 };
+
+export const createCalendarEventURL = (
+  journeyURL: string,
+  calendarEventNameId: string
+): string => {
+  return `${journeyURL}/dashboard/calendar/${calendarEventNameId}`;
+};
