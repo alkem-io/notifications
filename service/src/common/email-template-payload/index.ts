@@ -14,4 +14,6 @@ export * from './communication.update.created.email.payload';
 export * from './communication.user.message.email.payload';
 export * from './communication.organization.message.email.payload';
 export * from './communication.community.leads.message.email.payload';
+export * from './communication.user.mention.email.payload';
+export * from './communication.organization.mention.email.payload';
 export * from './platform.user.registered.email.payload';
