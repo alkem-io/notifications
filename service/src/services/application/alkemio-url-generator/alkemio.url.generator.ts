@@ -2,8 +2,18 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ConfigurationTypes } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
-import { JourneyPayload, JourneyType } from '@alkemio/notifications-lib';
-// TODO: generator functions to be imported from lib
+import {
+  JourneyPayload,
+  createJourneyURL as libCreateJourneyURL,
+  createJourneyAdminCommunityURL as libCreateJourneyAdminCommunityURL,
+  createUserURL as libCreateUserURL,
+  createCalloutURL as libCreateCalloutURL,
+  createCardURL as libCreateCardURL,
+  createCanvasURL as libCreateCanvasURL,
+  createOrganizationURL as libCreateOrganizationURL,
+  createUserNotificationPreferencesURL as libCreateUserNotificationPreferencesURL,
+} from '@alkemio/notifications-lib';
+
 @Injectable()
 export class AlkemioUrlGenerator {
   webclientEndpoint: string;
@@ -22,39 +32,19 @@ export class AlkemioUrlGenerator {
   }
 
   createJourneyURL(journey: JourneyPayload): string {
-    const baseURL = `${this.webclientEndpoint}/${journey.hubNameID}`;
-    switch (journey.type) {
-      case JourneyType.HUB:
-        return baseURL;
-      case JourneyType.CHALLENGE:
-        return `${baseURL}/challenges/${journey.challenge?.nameID}`;
-      case JourneyType.OPPORTUNITY:
-        return `${baseURL}/challenges/${journey.challenge?.nameID}/opportunities/${journey.challenge?.opportunity?.nameID}`;
-    }
-
-    return baseURL;
+    return libCreateJourneyURL(this.webclientEndpoint, journey);
   }
 
   createJourneyAdminCommunityURL(journey: JourneyPayload): string {
-    const baseURL = `${this.webclientEndpoint}/admin/hubs/${journey.hubNameID}`;
-    switch (journey.type) {
-      case JourneyType.HUB:
-        return `${baseURL}/community`;
-      case JourneyType.CHALLENGE:
-        return `${baseURL}/challenges/${journey.challenge?.nameID}/community`;
-      case JourneyType.OPPORTUNITY:
-        return `${baseURL}/challenges/${journey.challenge?.nameID}/opportunities/${journey.challenge?.opportunity?.nameID}/community`;
-    }
-
-    return baseURL;
+    return libCreateJourneyAdminCommunityURL(this.webclientEndpoint, journey);
   }
 
   createUserURL(userNameID: string): string {
-    return `${this.webclientEndpoint}/user/${userNameID}`;
+    return libCreateUserURL(this.webclientEndpoint, userNameID);
   }
 
   createCalloutURL(journeyURL: string, calloutNameID: string): string {
-    return `${journeyURL}/contribute/callouts/${calloutNameID}`;
+    return libCreateCalloutURL(journeyURL, calloutNameID);
   }
 
   createCardURL(
@@ -62,7 +52,7 @@ export class AlkemioUrlGenerator {
     calloutNameID: string,
     cardNameID: string
   ): string {
-    return `${journeyURL}/contribute/callouts/${calloutNameID}/aspects/${cardNameID}`;
+    return libCreateCardURL(journeyURL, calloutNameID, cardNameID);
   }
 
   createCanvasURL(
@@ -70,14 +60,17 @@ export class AlkemioUrlGenerator {
     calloutNameID: string,
     canvasNameID: string
   ): string {
-    return `${journeyURL}/contribute/callouts/${calloutNameID}/canvases/${canvasNameID}`;
+    return libCreateCanvasURL(journeyURL, calloutNameID, canvasNameID);
   }
 
   createOrganizationURL(orgNameID: string): string {
-    return `${this.webclientEndpoint}/organization/${orgNameID}`;
+    return libCreateOrganizationURL(this.webclientEndpoint, orgNameID);
   }
 
   createUserNotificationPreferencesURL(userNameID: string): string {
-    return `${this.webclientEndpoint}/user/${userNameID}/settings/notifications`;
+    return libCreateUserNotificationPreferencesURL(
+      this.webclientEndpoint,
+      userNameID
+    );
   }
 }
