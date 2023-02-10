@@ -10,6 +10,9 @@ import {
   CommunityApplicationCreatedEventPayload,
   CommunicationUpdateEventPayload,
   CommunicationDiscussionCreatedEventPayload,
+  CommunicationUserMessageEventPayload,
+  CommunicationOrganizationMessageEventPayload,
+  CommunicationCommunityLeadsMessageEventPayload,
   CollaborationContextReviewSubmittedPayload,
   PlatformUserRegistrationEventPayload,
   CommunityNewMemberPayload,
@@ -36,6 +39,9 @@ import {
   CollaborationInterestNotificationBuilder as CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
+  CommunicationUserMessageNotificationBuilder,
+  CommunicationOrganizationMessageNotificationBuilder,
+  CommunicationCommunityLeadsMessageNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
@@ -56,6 +62,9 @@ export class NotificationService {
     private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
     private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
+    private communicationUserMessageNotificationBuilder: CommunicationUserMessageNotificationBuilder,
+    private communicationOrganizationMessageNotificationBuilder: CommunicationOrganizationMessageNotificationBuilder,
+    private communicationCommunityLeadsMessageNotificationBuilder: CommunicationCommunityLeadsMessageNotificationBuilder,
     private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
     private collaborationCanvasCreatedNotificationBuilder: CollaborationCanvasCreatedNotificationBuilder,
@@ -139,6 +148,33 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.communicationDiscussionCreatedNotificationBuilder
+    );
+  }
+
+  async sendCommunicationUserMessageNotification(
+    payload: CommunicationUserMessageEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communicationUserMessageNotificationBuilder
+    );
+  }
+
+  async sendCommunicationOrganizationMessageNotification(
+    payload: CommunicationOrganizationMessageEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communicationOrganizationMessageNotificationBuilder
+    );
+  }
+
+  async sendCommunicationCommunityLeadsMessageNotification(
+    payload: CommunicationCommunityLeadsMessageEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communicationCommunityLeadsMessageNotificationBuilder
     );
   }
 

@@ -17,6 +17,9 @@ import {
   CollaborationCardCommentEventPayload,
   CollaborationCardCreatedEventPayload,
   CommunicationDiscussionCreatedEventPayload,
+  CommunicationUserMessageEventPayload,
+  CommunicationOrganizationMessageEventPayload,
+  CommunicationCommunityLeadsMessageEventPayload,
   CommunicationUpdateEventPayload,
   CollaborationContextReviewSubmittedPayload,
   CommunityNewMemberPayload,
@@ -144,6 +147,51 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COMMUNICATION_DISCUSSION_CREATED
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNICATION_USER_MESSAGE)
+  async sendCommunicationUserMessageNotifications(
+    @Payload() eventPayload: CommunicationUserMessageEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunicationUserMessageNotification(
+        eventPayload
+      ),
+      NotificationEventType.COMMUNICATION_USER_MESSAGE
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE)
+  async sendCommunicationOrganizationMessageNotifications(
+    @Payload() eventPayload: CommunicationOrganizationMessageEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunicationOrganizationMessageNotification(
+        eventPayload
+      ),
+      NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE)
+  async sendCommunicationCommunityLeadsMessageNotifications(
+    @Payload() eventPayload: CommunicationCommunityLeadsMessageEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunicationCommunityLeadsMessageNotification(
+        eventPayload
+      ),
+      NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE
     );
   }
 

@@ -18,6 +18,9 @@ export type TemplateConfig = {
   community_new_member?: TemplateRuleSet[];
   communication_update_sent?: TemplateRuleSet[];
   communication_discussion_created?: TemplateRuleSet[];
+  communication_user_message?: TemplateRuleSet[];
+  communication_organization_message?: TemplateRuleSet[];
+  communication_community_leads_message?: TemplateRuleSet[];
   collaboration_canvas_created?: TemplateRuleSet[];
   collaboration_card_created?: TemplateRuleSet[];
   collaboration_card_comment?: TemplateRuleSet[];
