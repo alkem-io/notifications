@@ -3,7 +3,7 @@ import { ConfigurationTypes } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { JourneyPayload, JourneyType } from '@alkemio/notifications-lib';
-
+// TODO: generator functions to be imported from lib
 @Injectable()
 export class AlkemioUrlGenerator {
   webclientEndpoint: string;

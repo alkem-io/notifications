@@ -13,6 +13,8 @@ export enum EmailTemplate {
   COMMUNICATION_ORGANIZATION_MESSAGE_RECIPIENT = 'communication.organization.message.recipient',
   COMMUNICATION_COMMUNITY_LEADS_MESSAGE_SENDER = 'communication.community.leads.message.sender',
   COMMUNICATION_COMMUNITY_LEADS_MESSAGE_RECIPIENT = 'communication.community.leads.message.recipient',
+  COMMUNICATION_COMMENT_MENTION_USER = 'communication.comment.mention.user',
+  COMMUNICATION_COMMENT_MENTION_ORGANIZATION = 'communication.comment.mention.organization',
   COLLABORATION_REVIEW_SUBMITTED_ADMIN = 'collaboration.review.submitted.admin',
   COLLABORATION_REVIEW_SUBMITTED_REVIEWER = 'collaboration.review.submitted.reviewer',
   COLLABORATION_INTEREST_USER = 'collaboration.interest.user',

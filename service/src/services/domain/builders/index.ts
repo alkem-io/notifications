@@ -4,6 +4,8 @@ export * from './communication-update-created/communication.update.created.notif
 export * from './communication-user-message/communication.user.message.notification.builder';
 export * from './communication-organization-message/communication.organization.message.notification.builder';
 export * from './communication-community-message/communication.community.leads.message.notification.builder';
+export * from './communication-user-mention/communication.user.mention.notification.builder';
+export * from './communication-organization-mention/communication.organization.mention.notification.builder';
 export * from './collaboration-context-feedback/collaboration.context.review.submitted.notification.builder';
 export * from './community-new-member/community.new.member.notification.builder';
 export * from './collaboration-interest/collaboration.interest.notification.builder';

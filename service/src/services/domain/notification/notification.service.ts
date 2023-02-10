@@ -13,6 +13,8 @@ import {
   CommunicationUserMessageEventPayload,
   CommunicationOrganizationMessageEventPayload,
   CommunicationCommunityLeadsMessageEventPayload,
+  CommunicationUserMentionEventPayload,
+  CommunicationOrganizationMentionEventPayload,
   CollaborationContextReviewSubmittedPayload,
   PlatformUserRegistrationEventPayload,
   CommunityNewMemberPayload,
@@ -42,6 +44,8 @@ import {
   CommunicationUserMessageNotificationBuilder,
   CommunicationOrganizationMessageNotificationBuilder,
   CommunicationCommunityLeadsMessageNotificationBuilder,
+  CommunicationUserMentionNotificationBuilder,
+  CommunicationOrganizationMentionNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
@@ -65,6 +69,8 @@ export class NotificationService {
     private communicationUserMessageNotificationBuilder: CommunicationUserMessageNotificationBuilder,
     private communicationOrganizationMessageNotificationBuilder: CommunicationOrganizationMessageNotificationBuilder,
     private communicationCommunityLeadsMessageNotificationBuilder: CommunicationCommunityLeadsMessageNotificationBuilder,
+    private communicationUserMentionNotificationBuilder: CommunicationUserMentionNotificationBuilder,
+    private communicationOrganizationMentionNotificationBuilder: CommunicationOrganizationMentionNotificationBuilder,
     private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
     private collaborationCanvasCreatedNotificationBuilder: CollaborationCanvasCreatedNotificationBuilder,
@@ -175,6 +181,24 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.communicationCommunityLeadsMessageNotificationBuilder
+    );
+  }
+
+  async sendCommunicationUserMentionNotification(
+    payload: CommunicationUserMentionEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communicationUserMentionNotificationBuilder
+    );
+  }
+
+  async sendCommunicationOrganizationMentionNotification(
+    payload: CommunicationOrganizationMentionEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communicationOrganizationMentionNotificationBuilder
     );
   }
 
