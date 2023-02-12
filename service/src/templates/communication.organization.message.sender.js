@@ -14,11 +14,12 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          You have sent a message to {{organization.displayName}} organization:<br>
+          You have sent a message to {{organization.displayName}} organization:
+          <br><br>======<br>
           {{message}}
+          <br>======<br><br>
 
-          <br><br>
-          They will try to respond as soon as possible.
+
           <br><br>
           Sincerely yours,
         {% endblock %}

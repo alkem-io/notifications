@@ -4,6 +4,7 @@ export interface CommunicationUserMessageEmailPayload extends BaseEmailPayload {
   messageSender: {
     displayName: string;
     email: string;
+    firstName: string;
   };
   message: string;
   messageReceiver: {

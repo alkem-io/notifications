@@ -16,8 +16,11 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          User {{messageSender.displayName}} sent a message to {{journey.displayName}} community you are leading: <br>
+          User {{messageSender.displayName}} sent a message to the {{journey.displayName}} community where you are a lead:
+          <br><br>======<br>
           {{message}}
+          <br>======<br><br>
+          You can reply to this email to respond directly to {{messageSender.firstName}}.
 
           <br><br>
           Sincerely yours,

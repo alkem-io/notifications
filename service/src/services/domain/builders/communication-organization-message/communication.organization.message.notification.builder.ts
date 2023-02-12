@@ -77,6 +77,7 @@ export class CommunicationOrganizationMessageNotificationBuilder
       emailFrom: 'info@alkem.io',
       messageSender: {
         displayName: sender.displayName,
+        firstName: sender.firstName,
         email: sender.email,
       },
       recipient: {

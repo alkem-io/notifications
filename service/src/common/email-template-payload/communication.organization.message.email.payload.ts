@@ -5,6 +5,7 @@ export interface CommunicationOrganizationMessageEmailPayload
   messageSender: {
     displayName: string;
     email: string;
+    firstName: string;
   };
   message: string;
   organization: {

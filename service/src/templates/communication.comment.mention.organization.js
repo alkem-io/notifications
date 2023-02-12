@@ -16,9 +16,11 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          {{commentSender.displayName}} mentioned {{mentionedOrganization.displayName}} in a comment on '<a href={{commentOrigin.url}}>{{commentOrigin.displayName}}</a>' <br>
+          {{commentSender.displayName}} mentioned '{{mentionedOrganization.displayName}}' in a comment on <a href={{commentOrigin.url}}>'{{commentOrigin.displayName}}'</a>:
+          <br><br>======<br>
           {{comment}}
-
+          <br>======<br><br>
+          You can click on the <a href={{commentOrigin.url}}>this link</a> to view the comment in context and respond.
           <br><br>
         {% endblock %}
 
