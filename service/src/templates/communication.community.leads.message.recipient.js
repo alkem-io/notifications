@@ -16,7 +16,7 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          User {{messageSender.displayName}} sent a message to the {{journey.displayName}} community where you are a lead:
+          User {{messageSender.displayName}} sent a message to the <a href={{journey.url}}>'{{journey.displayName}}'</a> community where you are a lead:
           <br><br>======<br>
           {{message}}
           <br>======<br><br>
