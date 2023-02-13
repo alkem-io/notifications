@@ -14,12 +14,12 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          You have sent a message to {{journey.displayName}} community leads:<br>
+          You have sent a message to <a href={{journey.url}}>'{{journey.displayName}}'</a> community leads:
+          <br><br>======<br>
           {{message}}
+          <br>======<br><br>
 
-          <br><br>
-          They will try to respond as soon as possible.
-          <br><br>
+          <br>
           Sincerely yours,
         {% endblock %}
 

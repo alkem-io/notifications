@@ -69,6 +69,7 @@ export class CommunicationOrganizationMentionNotificationBuilder
       emailFrom: 'info@alkem.io',
       commentSender: {
         displayName: sender.displayName,
+        firstName: sender.firstName,
       },
       recipient: {
         firstName: recipient.firstName,

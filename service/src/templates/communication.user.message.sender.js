@@ -14,10 +14,11 @@ module.exports = () => ({
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          You have sent a message to user {{messageReceiver.displayName}}:<br>
+          You have sent a message to user {{messageReceiver.displayName}}:
+          <br><br>======<br>
           {{message}}
-
-          <br><br>
+          <br>======<br><br>
+          <br>
           Sincerely yours,
         {% endblock %}
 

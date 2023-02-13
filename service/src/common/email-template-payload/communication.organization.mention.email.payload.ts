@@ -4,6 +4,7 @@ export interface CommunicationOrganizationMentionEmailPayload
   extends BaseEmailPayload {
   commentSender: {
     displayName: string;
+    firstName: string;
   };
   comment: string;
   mentionedOrganization: {
