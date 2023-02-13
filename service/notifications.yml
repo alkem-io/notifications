@@ -205,6 +205,18 @@ recipients:
         - rule:
             type: OPPORTUNITY_LEAD
             resource_id: <journeyID>
+  communication_user_mention:
+    - name: receiver
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <receiverID>
+  communication_organization_mention:
+    - name: receiver
+      rules:
+        - rule:
+            type: ORGANIZATION_ADMIN
+            resource_id: <organizationID>
   collaboration_review_submitted:
     - name: admin
       rules:
