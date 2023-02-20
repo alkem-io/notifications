@@ -1,6 +1,6 @@
 {
   "name": "alkemio-notifications",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Alkemio notifications service",
   "author": "Alkemio Foundation",
   "private": false,
@@ -48,6 +48,7 @@
     "apollo-server-express": "^3.3.0",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
+    "markdown-to-text": "^0.1.1",
     "module-alias": "^2.2.2",
     "nest-winston": "^1.5.0",
     "nodemon": "^2.0.12",
