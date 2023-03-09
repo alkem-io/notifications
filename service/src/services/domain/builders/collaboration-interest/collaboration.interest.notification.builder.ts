@@ -83,7 +83,7 @@ export class CollaborationInterestNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       user: {
-        name: user.displayName,
+        name: user.profile.displayName,
       },
       recipient: {
         firstName: recipient.firstName,

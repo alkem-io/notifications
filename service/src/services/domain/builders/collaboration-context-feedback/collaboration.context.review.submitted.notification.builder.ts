@@ -84,7 +84,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       reviewer: {
-        name: reviewer.displayName,
+        name: reviewer.profile.displayName,
       },
       recipient: {
         firstName: recipient.firstName,
