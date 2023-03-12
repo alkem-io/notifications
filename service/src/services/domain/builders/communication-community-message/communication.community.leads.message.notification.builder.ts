@@ -81,7 +81,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       messageSender: {
-        displayName: sender.displayName,
+        displayName: sender.profile.displayName,
         firstName: sender.firstName,
         email: sender.email,
       },

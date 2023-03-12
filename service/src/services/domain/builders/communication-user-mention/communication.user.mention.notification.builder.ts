@@ -72,7 +72,7 @@ export class CommunicationUserMentionNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       commentSender: {
-        displayName: sender.displayName,
+        displayName: sender.profile.displayName,
         firstName: sender.firstName,
       },
       recipient: {
@@ -85,7 +85,7 @@ export class CommunicationUserMentionNotificationBuilder
         url: alkemioURL,
       },
       mentionedUser: {
-        displayName: recipient.displayName,
+        displayName: recipient.profile.displayName,
         firstName: recipient.firstName,
       },
       commentOrigin: {

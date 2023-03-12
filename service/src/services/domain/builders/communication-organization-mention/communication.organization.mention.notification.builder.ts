@@ -10,6 +10,7 @@ import { NotificationTemplateType } from '@src/types/notification.template.type'
 import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 import { UserPreferenceType } from '@alkemio/client-lib';
+import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 
 @Injectable()
 export class CommunicationOrganizationMentionNotificationBuilder
@@ -65,10 +66,12 @@ export class CommunicationOrganizationMentionNotificationBuilder
       );
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
 
+    const htmlComment: string = convertMarkdownToText(eventPayload.comment);
+
     return {
       emailFrom: 'info@alkem.io',
       commentSender: {
-        displayName: sender.displayName,
+        displayName: sender.profile.displayName,
         firstName: sender.firstName,
       },
       recipient: {
@@ -76,7 +79,7 @@ export class CommunicationOrganizationMentionNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      comment: eventPayload.comment,
+      comment: htmlComment,
       platform: {
         url: alkemioURL,
       },

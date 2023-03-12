@@ -73,7 +73,7 @@ export class PlatformUserRegisteredNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       registrant: {
-        displayName: registrant.displayName,
+        displayName: registrant.profile.displayName,
         firstName: registrant.firstName,
         email: registrant.email,
         profile: registrantProfileURL,

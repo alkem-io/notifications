@@ -3,9 +3,12 @@ export type User = {
   nameID: string;
   firstName: string;
   lastName: string;
-  displayName: string;
   email: string;
   preferences?: UserPreference[];
+  profile: {
+    id: string;
+    displayName: string;
+  };
 };
 
 export type UserPreference = {

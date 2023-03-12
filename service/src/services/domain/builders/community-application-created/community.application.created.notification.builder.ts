@@ -89,13 +89,13 @@ export class CommunityApplicationCreatedNotificationBuilder
       emailFrom: 'info@alkem.io',
       applicant: {
         firstName: applicant.firstName,
-        name: applicant.displayName,
+        name: applicant.profile.displayName,
         email: applicant.email,
         profile: applicantProfileURL,
       },
       journeyAdminURL: communityAdminURL,
       recipient: {
-        firstName: recipient.displayName,
+        firstName: recipient.profile.displayName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },

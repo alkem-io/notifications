@@ -84,7 +84,7 @@ export class CommunityNewMemberNotificationBuilder
     return {
       emailFrom: 'info@alkem.io',
       member: {
-        name: member.displayName,
+        name: member.profile.displayName,
         email: member.email,
         profile: memberProfileURL,
       },
