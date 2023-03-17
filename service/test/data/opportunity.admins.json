@@ -3,10 +3,13 @@
     {
       "id": "3f31a980-527d-41dd-94d0-e7f3412c0966",
       "nameID": "kathernkeira",
-      "displayName": "Kathern Keira",
       "firstName": "Kathern",
       "lastName": "Keira",
       "email": "Kathern@Keira.com",
+      "profile": {
+        "id": "",
+        "displayName": "Kathern Keira"
+      },
       "preferences": [
         {
           "value": "true",
@@ -73,10 +76,13 @@
     {
       "id": "d2c354a9-afad-4e4d-9969-cba1a925b302",
       "nameID": "madalynjerold",
-      "displayName": "Madalyn Jerold",
       "firstName": "Madalyn",
       "lastName": "Jerold",
       "email": "Madalyn@Jerold.com",
+      "profile": {
+        "id": "",
+        "displayName": "Madalyn Jerold"
+      },
       "preferences": [
         {
           "value": "true",

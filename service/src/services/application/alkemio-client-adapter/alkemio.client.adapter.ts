@@ -67,7 +67,7 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
         if (this.isEmailFormat(user.email)) uniqueUsers.push(user);
         else {
           this.logger.error(
-            `Unable to obtain a valid email address for "${user.displayName}": "${user.email}" is not a valid email address!
+            `Unable to obtain a valid email address for "${user.profile.displayName}": "${user.email}" is not a valid email address!
             Please check the service account running the notifications service, it must have sufficient permissions to see the user email.`,
             LogContext.NOTIFICATIONS
           );

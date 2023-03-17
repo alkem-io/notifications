@@ -200,7 +200,7 @@ export class NotificationBuilder<
 
         if (targetedUserPreference.value !== 'true') {
           this.logger.verbose?.(
-            `[${emailTemplate} - '${recipientRole}'] User ${recipient.displayName} filtered out because of ${extra?.rolePreferenceType}`,
+            `[${emailTemplate} - '${recipientRole}'] User ${recipient.profile.displayName} filtered out because of ${extra?.rolePreferenceType}`,
             LogContext.NOTIFICATIONS
           );
           continue;
