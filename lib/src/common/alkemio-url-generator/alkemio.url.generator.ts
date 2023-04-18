@@ -46,7 +46,7 @@ export const createCalloutURL = (
   journeyURL: string,
   calloutNameID: string
 ): string => {
-  return `${journeyURL}/contribute/callouts/${calloutNameID}`;
+  return `${journeyURL}/collaboration/${calloutNameID}`;
 };
 
 export const createCardURL = (
@@ -54,7 +54,7 @@ export const createCardURL = (
   calloutNameID: string,
   cardNameID: string
 ): string => {
-  return `${journeyURL}/contribute/callouts/${calloutNameID}/aspects/${cardNameID}`;
+  return `${journeyURL}/collaboration/${calloutNameID}/aspects/${cardNameID}`;
 };
 
 export const createCanvasURL = (
@@ -62,7 +62,7 @@ export const createCanvasURL = (
   calloutNameID: string,
   canvasNameID: string
 ): string => {
-  return `${journeyURL}/contribute/callouts/${calloutNameID}/canvases/${canvasNameID}`;
+  return `${journeyURL}/collaboration/${calloutNameID}/canvases/${canvasNameID}`;
 };
 
 export const createOrganizationURL = (
