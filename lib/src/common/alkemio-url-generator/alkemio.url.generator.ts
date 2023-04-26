@@ -85,3 +85,10 @@ export const createCalendarEventURL = (
 ): string => {
   return `${journeyURL}/dashboard/calendar/${calendarEventNameId}`;
 };
+
+export const createForumDiscussionUrl = (
+  webclientEndpoint: string,
+  discussionNameId: string
+): string => {
+  return `${webclientEndpoint}/forum/discussion/${discussionNameId}`;
+};
