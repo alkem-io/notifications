@@ -325,11 +325,11 @@ recipients:
             type: GLOBAL_ADMIN_HUBS
             resource_id:
   platform_forum_discussion_comment:
-    - name: discussionAdmin
+    - name: discussionCreator
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
-            resource_id: <discussionAdminID>
+            resource_id: <discussionCreatorID>
   platform_forum_discussion_created:
     - name: user
       rules:

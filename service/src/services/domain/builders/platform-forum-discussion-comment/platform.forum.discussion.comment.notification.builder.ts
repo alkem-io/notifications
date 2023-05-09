@@ -32,14 +32,14 @@ export class PlatformForumDiscussionCommentNotificationBuilder
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
-        role: 'discussionAdmin',
+        role: 'discussionCreator',
         emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT,
         preferenceType: UserPreferenceType.NotificationForumDiscussionComment,
       },
     ];
 
     const templateVariables = {
-      discussionAdminID: payload.discussion.createdBy,
+      discussionCreatorID: payload.discussion.createdBy,
     };
 
     return this.notificationBuilder.build({
