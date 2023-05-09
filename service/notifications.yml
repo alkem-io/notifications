@@ -334,5 +334,5 @@ recipients:
     - name: user
       rules:
         - rule:
-            type: USER_SELF_MANAGEMENT
+            type: GLOBAL_REGISTERED
             resource_id:
