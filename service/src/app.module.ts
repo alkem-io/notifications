@@ -13,7 +13,7 @@ import {
 } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import {
-  CommunicationDiscussionCreatedNotificationBuilder,
+  PlatformForumDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
   CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
@@ -28,6 +28,7 @@ import {
   CommunicationCommunityLeadsMessageNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
   CommunicationOrganizationMentionNotificationBuilder,
+  PlatformForumDiscussionCommentNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import {
@@ -62,8 +63,9 @@ import { CollaborationDiscussionCommentNotificationBuilder } from './services/do
     CommunityApplicationCreatedNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
+    PlatformForumDiscussionCommentNotificationBuilder,
     CommunicationUpdateCreatedNotificationBuilder,
-    CommunicationDiscussionCreatedNotificationBuilder,
+    PlatformForumDiscussionCreatedNotificationBuilder,
     CommunicationUserMessageNotificationBuilder,
     CommunicationOrganizationMessageNotificationBuilder,
     CommunicationCommunityLeadsMessageNotificationBuilder,

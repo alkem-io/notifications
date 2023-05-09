@@ -3,7 +3,7 @@ import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { INotificationBuilder } from '@core/contracts';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunicationDiscussionCreatedEventPayload } from '@alkemio/notifications-lib';
+import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import {
   AlkemioUrlGenerator,
@@ -11,68 +11,55 @@ import {
   RoleConfig,
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
-import { CommunicationDiscussionCreatedEmailPayload } from '@common/email-template-payload';
+import { PlatformForumDiscussionCommentEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class CommunicationDiscussionCreatedNotificationBuilder
+export class PlatformForumDiscussionCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      CommunicationDiscussionCreatedEventPayload,
-      CommunicationDiscussionCreatedEmailPayload
+      PlatformForumDiscussionCommentEventPayload,
+      PlatformForumDiscussionCommentEmailPayload
     >
   ) {}
 
   build(
-    payload: CommunicationDiscussionCreatedEventPayload
+    payload: PlatformForumDiscussionCommentEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
-        role: 'admin',
-        emailTemplate: EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_ADMIN,
-        preferenceType:
-          UserPreferenceType.NotificationCommunicationDiscussionCreatedAdmin,
-      },
-      {
-        role: 'member',
-        emailTemplate: EmailTemplate.COMMUNICATION_DISCUSSION_CREATED_MEMBER,
-        preferenceType:
-          UserPreferenceType.NotificationCommunicationDiscussionCreated,
+        role: 'discussionAdmin',
+        emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT,
+        preferenceType: UserPreferenceType.NotificationForumDiscussionComment,
       },
     ];
 
     const templateVariables = {
-      hubID: payload.journey.hubID,
-      challengeID: payload.journey.challenge?.id ?? '',
-      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
-      journeyID:
-        payload.journey?.challenge?.opportunity?.id ??
-        payload.journey?.challenge?.id ??
-        payload.journey.hubID,
+      discussionAdminID: payload.discussion.createdBy,
     };
 
     return this.notificationBuilder.build({
       payload,
       eventUserId: payload.discussion.createdBy,
       roleConfig,
-      templateType: 'communication_discussion_created',
+      templateType: 'platform_forum_discussion_comment',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
   }
 
   createTemplatePayload(
-    eventPayload: CommunicationDiscussionCreatedEventPayload,
+    eventPayload: PlatformForumDiscussionCommentEventPayload,
     recipient: User,
     sender?: User
-  ): CommunicationDiscussionCreatedEmailPayload {
+  ): PlatformForumDiscussionCommentEmailPayload {
     if (!sender) {
       throw Error(
-        `Sender not provided for '${NotificationEventType.COMMUNICATION_DISCUSSION_CREATED}' event`
+        `Sender not provided for '${NotificationEventType.PLATFORM_FORUM_DISCUSSION_COMMENT}' event`
       );
     }
 
@@ -83,21 +70,12 @@ export class CommunicationDiscussionCreatedNotificationBuilder
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
-      createdBy: {
-        firstName: sender.firstName,
-      },
-      discussion: {
-        title: eventPayload.discussion.title,
-      },
+      comment: eventPayload.comment,
+      discussion: eventPayload.discussion,
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
-      },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
       },
       platform: {
         url: alkemioURL,

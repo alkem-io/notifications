@@ -29,4 +29,6 @@ export enum EmailTemplate {
   PLATFORM_USER_REGISTRATION_REGISTRANT = 'platform.user.registration.registrant',
   PLATFORM_USER_REGISTRATION_ADMIN = 'platform.user.registration.admin',
   PLATFORM_USER_REMOVED_ADMIN = 'platform.user.removed.admin',
+  PLATFORM_FORUM_DISCUSSION_CREATED = 'platform.forum.discussion.created',
+  PLATFORM_FORUM_DISCUSSION_COMMENT = 'platform.forum.discussion.comment',
 }

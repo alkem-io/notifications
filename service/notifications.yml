@@ -146,26 +146,6 @@ recipients:
         - rule:
             type: OPPORTUNITY_MEMBER
             resource_id: <journeyID>
-  communication_discussion_created:
-    - name: admin
-      rules:
-        - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
-        - rule:
-            type: GLOBAL_ADMIN
-            resource_id:
-    - name: member
-      rules:
-        - rule:
-            type: HUB_MEMBER
-            resource_id: <journeyID>
-        - rule:
-            type: CHALLENGE_MEMBER
-            resource_id: <journeyID>
-        - rule:
-            type: OPPORTUNITY_MEMBER
-            resource_id: <journeyID>
   communication_user_message:
     - name: sender
       rules:
@@ -343,4 +323,16 @@ recipients:
             resource_id:
         - rule:
             type: GLOBAL_ADMIN_HUBS
+            resource_id:
+  platform_forum_discussion_comment:
+    - name: discussionAdmin
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <discussionAdminID>
+  platform_forum_discussion_created:
+    - name: user
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
             resource_id:
