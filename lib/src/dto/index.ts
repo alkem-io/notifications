@@ -1,6 +1,5 @@
 export * from './base.event.payload';
 export * from './journey.payload';
-export * from './communication.discussion.created.event.payload';
 export * from './communication.update.event.payload';
 export * from './communication.user.message.event.payload';
 export * from './communication.organization.message.event.payload';
@@ -18,3 +17,5 @@ export * from './collaboration.callout.published.event.payload';
 export * from './collaboration.discussion.comment.event.payload';
 export * from './platform.user.registration.event.payload';
 export * from './platform.user.removed.event.payload';
+export * from './platform.forum.discussion.comment.event.payload';
+export * from './platform.forum.discussion.created.event.payload';

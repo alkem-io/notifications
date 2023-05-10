@@ -18,7 +18,7 @@ import { NotificationRecipientsYmlAdapter } from '@src/services';
 import {
   PlatformUserRegisteredNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
-  CommunicationDiscussionCreatedNotificationBuilder,
+  PlatformForumDiscussionCreatedNotificationBuilder,
   CommunicationUserMessageNotificationBuilder,
   CommunicationOrganizationMessageNotificationBuilder,
   CommunicationCommunityLeadsMessageNotificationBuilder,
@@ -31,6 +31,7 @@ import {
   CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
+  PlatformForumDiscussionCommentNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -71,9 +72,10 @@ describe('NotificationService', () => {
         NotificationService,
         CommunityApplicationCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
+        PlatformForumDiscussionCommentNotificationBuilder,
         PlatformUserRemovedNotificationBuilder,
         CommunicationUpdateCreatedNotificationBuilder,
-        CommunicationDiscussionCreatedNotificationBuilder,
+        PlatformForumDiscussionCreatedNotificationBuilder,
         CommunicationUserMessageNotificationBuilder,
         CommunicationOrganizationMessageNotificationBuilder,
         CommunicationCommunityLeadsMessageNotificationBuilder,

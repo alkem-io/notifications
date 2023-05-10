@@ -16,7 +16,7 @@ import {
   CommunityApplicationCreatedEventPayload,
   CollaborationCardCommentEventPayload,
   CollaborationCardCreatedEventPayload,
-  CommunicationDiscussionCreatedEventPayload,
+  PlatformForumDiscussionCreatedEventPayload,
   CommunicationUserMessageEventPayload,
   CommunicationOrganizationMessageEventPayload,
   CommunicationCommunityLeadsMessageEventPayload,
@@ -31,6 +31,7 @@ import {
   BaseEventPayload,
   CollaborationCanvasCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
+  PlatformForumDiscussionCommentEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -136,19 +137,34 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_DISCUSSION_CREATED)
-  async sendCommunicationDiscussionCreatedNotifications(
+  @EventPattern(NotificationEventType.PLATFORM_FORUM_DISCUSSION_CREATED)
+  async sendPlatformForumDiscussionCreatedNotifications(
     // todo is auto validation possible
-    @Payload() eventPayload: CommunicationDiscussionCreatedEventPayload,
+    @Payload() eventPayload: PlatformForumDiscussionCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationDiscussionCreatedNotification(
+      this.notificationService.sendPlatformForumDiscussionCreatedNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_DISCUSSION_CREATED
+      NotificationEventType.PLATFORM_FORUM_DISCUSSION_CREATED
+    );
+  }
+
+  @EventPattern(NotificationEventType.PLATFORM_FORUM_DISCUSSION_COMMENT)
+  async sendPlatformForumDiscussionCommentNotifications(
+    @Payload() eventPayload: PlatformForumDiscussionCommentEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendPlatformForumDiscussionCommentNotification(
+        eventPayload
+      ),
+      NotificationEventType.PLATFORM_FORUM_DISCUSSION_COMMENT
     );
   }
 

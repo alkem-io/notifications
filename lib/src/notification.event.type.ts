@@ -3,7 +3,6 @@ export enum NotificationEventType {
   COMMUNITY_NEW_MEMBER = 'communityNewMember',
   COMMUNICATION_COMMENT_SENT = 'communicationCommentSent',
   COMMUNICATION_UPDATE_SENT = 'communicationUpdateSent',
-  COMMUNICATION_DISCUSSION_CREATED = 'communicationDiscussionCreated',
   COMMUNICATION_USER_MESSAGE = 'communicationUserMessage',
   COMMUNICATION_ORGANIZATION_MESSAGE = 'communicationOrganizationMessage',
   COMMUNICATION_COMMUNITY_MESSAGE = 'communicationCommunityMessage',
@@ -18,4 +17,6 @@ export enum NotificationEventType {
   COLLABORATION_CALLOUT_PUBLISHED = 'collaborationCalloutPublished',
   PLATFORM_USER_REGISTERED = 'platformUserRegistered',
   PLATFORM_USER_REMOVED = 'platformUserRemoved',
+  PLATFORM_FORUM_DISCUSSION_COMMENT = 'platformForumDiscussionComment',
+  PLATFORM_FORUM_DISCUSSION_CREATED = 'platformForumDiscussionCreated',
 }

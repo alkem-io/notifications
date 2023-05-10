@@ -3,8 +3,6 @@ export enum EmailTemplate {
   COMMUNITY_NEW_MEMBER_MEMBER = 'community.new.member.member',
   COMMUNITY_USER_APPLICATION_APPLICANT = 'community.user.application.applicant',
   COMMUNITY_USER_APPLICATION_ADMIN = 'community.user.application.admin',
-  COMMUNICATION_DISCUSSION_CREATED_ADMIN = 'communication.discussion.created.admin',
-  COMMUNICATION_DISCUSSION_CREATED_MEMBER = 'communication.discussion.created.member',
   COMMUNICATION_UPDATE_ADMIN = 'communication.update.admin',
   COMMUNICATION_UPDATE_MEMBER = 'communication.update.member',
   COMMUNICATION_USER_MESSAGE_SENDER = 'communication.user.message.sender',
@@ -29,4 +27,6 @@ export enum EmailTemplate {
   PLATFORM_USER_REGISTRATION_REGISTRANT = 'platform.user.registration.registrant',
   PLATFORM_USER_REGISTRATION_ADMIN = 'platform.user.registration.admin',
   PLATFORM_USER_REMOVED_ADMIN = 'platform.user.removed.admin',
+  PLATFORM_FORUM_DISCUSSION_CREATED = 'platform.forum.discussion.created',
+  PLATFORM_FORUM_DISCUSSION_COMMENT = 'platform.forum.discussion.comment',
 }

@@ -2,20 +2,19 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'communication-discussion-created-member',
-  title: '{{journey.displayName}} - New discussion created: {{discussion.title}}, have a look!',
+  name: 'platform-forum-discussion-comment',
+  title: 'New comment on your discussion {{discussion.displayName}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject:
-        '{{journey.displayName}} - New discussion created: {{discussion.title}}, have a look!',
+      subject: 'New comment on discussion: {{discussion.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}
           Hi {{recipient.firstName}},<br><br>
 
-          A new discussion was created by {{createdBy.firstName}} on your community <a href="{{journey.url}}">{{journey.displayName}}</a>: {{discussion.title}}<br><br>
+          A new comment has been added to the discussion you created, check it out here  <a href="{{discussion.url}}">{{discussion.displayName}}</a><br><br>
 
           Sincerely yours,
         {% endblock %}
