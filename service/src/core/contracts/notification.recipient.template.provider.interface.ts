@@ -17,7 +17,7 @@ export type TemplateConfig = {
   community_application_created?: TemplateRuleSet[];
   community_new_member?: TemplateRuleSet[];
   communication_update_sent?: TemplateRuleSet[];
-  communication_discussion_created?: TemplateRuleSet[];
+  platform_forum_discussion_created?: TemplateRuleSet[];
   communication_user_message?: TemplateRuleSet[];
   communication_organization_message?: TemplateRuleSet[];
   communication_community_leads_message?: TemplateRuleSet[];
@@ -32,6 +32,7 @@ export type TemplateConfig = {
   collaboration_callout_published?: TemplateRuleSet[];
   platform_user_registered?: TemplateRuleSet[];
   platform_user_removed?: TemplateRuleSet[];
+  platform_forum_discussion_comment?: TemplateRuleSet[];
 };
 
 export interface INotificationRecipientTemplateProvider {

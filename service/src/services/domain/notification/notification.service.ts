@@ -9,7 +9,7 @@ import {
 import {
   CommunityApplicationCreatedEventPayload,
   CommunicationUpdateEventPayload,
-  CommunicationDiscussionCreatedEventPayload,
+  PlatformForumDiscussionCreatedEventPayload,
   CommunicationUserMessageEventPayload,
   CommunicationOrganizationMessageEventPayload,
   CommunicationCommunityLeadsMessageEventPayload,
@@ -26,15 +26,17 @@ import {
   PlatformUserRemovedEventPayload,
   CollaborationCanvasCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
+  PlatformForumDiscussionCommentEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';
 import {
   CommunityApplicationCreatedNotificationBuilder,
-  CommunicationDiscussionCreatedNotificationBuilder,
+  PlatformForumDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
   PlatformUserRegisteredNotificationBuilder,
+  PlatformForumDiscussionCommentNotificationBuilder,
   CollaborationContextReviewSubmittedNotificationBuilder,
   CollaborationCardCreatedNotificationBuilder,
   CollaborationCardCommentNotificationBuilder,
@@ -64,8 +66,9 @@ export class NotificationService {
     private communityApplicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
     private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
     private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
+    private platformForumDiscussionCommentNotificationBuilder: PlatformForumDiscussionCommentNotificationBuilder,
     private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
-    private communicationDiscussionCreatedNotificationBuilder: CommunicationDiscussionCreatedNotificationBuilder,
+    private communicationDiscussionCreatedNotificationBuilder: PlatformForumDiscussionCreatedNotificationBuilder,
     private communicationUserMessageNotificationBuilder: CommunicationUserMessageNotificationBuilder,
     private communicationOrganizationMessageNotificationBuilder: CommunicationOrganizationMessageNotificationBuilder,
     private communicationCommunityLeadsMessageNotificationBuilder: CommunicationCommunityLeadsMessageNotificationBuilder,
@@ -148,12 +151,21 @@ export class NotificationService {
     );
   }
 
-  async sendCommunicationDiscussionCreatedNotification(
-    payload: CommunicationDiscussionCreatedEventPayload
+  async sendPlatformForumDiscussionCreatedNotification(
+    payload: PlatformForumDiscussionCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
       this.communicationDiscussionCreatedNotificationBuilder
+    );
+  }
+
+  async sendPlatformForumDiscussionCommentNotification(
+    payload: PlatformForumDiscussionCommentEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.platformForumDiscussionCommentNotificationBuilder
     );
   }
 
