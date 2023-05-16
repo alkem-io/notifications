@@ -11,10 +11,9 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: '{{journey.displayName}} - New update, have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},<br><br>
+        {% block content %}Hi {{recipient.firstName}},
 
-          A new update was shared by {{sender.firstName}} on your community <a href="{{journey.url}}">{{journey.displayName}}</a>.<br><br>
+          A new update was shared by {{sender.firstName}} on your community <a href="{{journey.url}}">{{journey.displayName}}</a>.
 
           Sincerely yours,
         {% endblock %}

@@ -13,16 +13,14 @@ module.exports = () => ({
       subject:
         '{{messageSender.displayName}} sent a message to your community!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},<br><br>
+        {% block content %}Hi {{recipient.firstName}},
 
           User {{messageSender.displayName}} sent a message to the <a href={{journey.url}}>'{{journey.displayName}}'</a> community where you are a lead:
-          <br><br>======<br>
+          ======
           {{message}}
-          <br>======<br><br>
+          ======
           You can reply to this email to respond directly to {{messageSender.firstName}}.
 
-          <br><br>
           Sincerely yours,
         {% endblock %}
 

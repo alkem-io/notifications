@@ -9,12 +9,15 @@ module.exports = () => ({
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: '{{journey.displayName}} - Your Application to join was received!',
+      subject:
+        '{{journey.displayName}} - Your Application to join was received!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{applicant.name}},<br><br>
-          We have received your application for <a href="{{journey.url}}">{{journey.displayName}}</a> [{{journey.type}}]!<br><br>
-          Please view the status of your application on your <a href="{{applicant.profile}}">profile</a>.<br><br>
+        {% block content %}Hi {{applicant.name}},
+
+          We have received your application for <a href="{{journey.url}}">{{journey.displayName}}</a> [{{journey.type}}]!
+
+          Please view the status of your application on your <a href="{{applicant.profile}}">profile</a>.
+
           Sincerely yours,
         {% endblock %}
         ${templates.footerBlock}`,

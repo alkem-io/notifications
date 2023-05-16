@@ -11,16 +11,13 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'You have sent a message to {{organization.displayName}}!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},<br><br>
+        {% block content %}Hi {{recipient.firstName}},
 
           You have sent a message to {{organization.displayName}} organization:
-          <br><br>======<br>
+          ======
           {{message}}
-          <br>======<br><br>
+          ======
 
-
-          <br><br>
           Sincerely yours,
         {% endblock %}
 

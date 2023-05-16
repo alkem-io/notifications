@@ -9,15 +9,15 @@ module.exports = () => ({
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: '[{{journey.displayName}}] User {{member.name}} joined the community',
+      subject:
+        '[{{journey.displayName}}] User {{member.name}} joined the community',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},
-          <br><br>
+        {% block content %}Hi {{recipient.firstName}},
+
           User {{member.name}} has joined the {{journey.displayName}} community.
-          <br/>
+
           The profile of the new member is available <a href="{{member.profile}}" >here</a>.
-          <br/>
+
           Sincerely yours,
         {% endblock %}
 

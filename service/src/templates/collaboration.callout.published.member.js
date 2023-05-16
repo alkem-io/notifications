@@ -13,11 +13,9 @@ module.exports = () => ({
       subject:
         '{{journey.displayName}} - New callout is published "{{callout.displayName}}", have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},
-          <br><br>
+        {% block content %}Hi {{recipient.firstName}},
+
           A new callout was published by {{publishedBy.firstName}} with name: '<a href={{callout.url}}>{{callout.displayName}}</a>'.
-          <br><br>
 
           Sincerely yours,
         {% endblock %}

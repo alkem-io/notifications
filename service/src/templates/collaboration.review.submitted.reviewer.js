@@ -11,13 +11,12 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: '{{journey.displayName}} - You have submitted a review',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},<br><br>
+        {% block content %}Hi {{recipient.firstName}},
 
           You have submitted a review about {{journey.displayName}}
-          <br/>
+
           {review}
-          <br/>
+
           Sincerely yours,
         {% endblock %}
 

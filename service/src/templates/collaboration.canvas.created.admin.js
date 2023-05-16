@@ -3,7 +3,8 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'collaboration-canvas-created-admin',
-  title: '[{{journey.displayName}}] New Canvas created by {{createdBy.firstName}}',
+  title:
+    '[{{journey.displayName}}] New Canvas created by {{createdBy.firstName}}',
   version: 1,
   channels: {
     email: {
@@ -12,11 +13,10 @@ module.exports = () => ({
       subject:
         '[{{journey.displayName}}] New Canvas created by {{createdBy.firstName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},
-          <br><br>
+        {% block content %}Hi {{recipient.firstName}},
+
           A new Canvas was created by {{createdBy.firstName}} with name: '<a href={{canvas.url}}>{{canvas.displayName}}</a>'.
-          <br><br>
+
           Sincerely yours,
         {% endblock %}
         ${templates.footerBlock}`,
