@@ -11,10 +11,9 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'New discussion created: {{discussion.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},<br><br>
+        {% block content %}Hi {{recipient.firstName}},
 
-          A new discussion was created by {{createdBy.firstName}}, check it out here  <a href="{{discussion.url}}">{{discussion.displayName}}</a><br><br>
+          A new discussion was created by {{createdBy.firstName}}, check it out here  <a href="{{discussion.url}}">{{discussion.displayName}}</a>
 
           Sincerely yours,
         {% endblock %}

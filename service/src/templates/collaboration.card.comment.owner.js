@@ -13,11 +13,9 @@ module.exports = () => ({
       subject:
         '{{journey.displayName}} - New comment received on your Card "{{card.displayName}}", have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},<br><br>
+        {% block content %}Hi {{recipient.firstName}},
 
           A new comment was created by {{createdBy.firstName}} on your '<a href={{card.url}}>{{card.displayName}}</a>' Card.
-          <br><br>
 
           Sincerely yours,
         {% endblock %}

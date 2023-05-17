@@ -50,6 +50,15 @@
         display: block;
         margin: 13px 0;
       }
+      .content {
+        cursor: auto;
+        color: #000;
+        font-family: Source Sans Pro;
+        font-size: 17px;
+        line-height: 22px;
+        text-align: left;
+        white-space: pre-line;
+      }
     </style>
     <!--[if !mso]><!-->
 
@@ -214,19 +223,7 @@
                             padding: 10px;
                           "
                         >
-                          <div
-                            class=""
-                            style="
-                              cursor: auto;
-                              color: #000;
-                              font-family: Source Sans Pro;
-                              font-size: 17px;
-                              line-height: 22px;
-                              text-align: left;
-                            "
-                          >
-                            {% block content %}{% endblock %}
-                          </div>
+                          <div class="content">{% block content %}{% endblock %}</div>
                         </td>
                       </tr>
                       <tr>
