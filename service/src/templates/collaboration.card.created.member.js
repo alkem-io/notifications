@@ -13,11 +13,10 @@ module.exports = () => ({
       subject:
         '{{journey.displayName}} - New Card created by {{createdBy.firstName}}, have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},
-          <br><br>
+        {% block content %}Hi {{recipient.firstName}},
+
           A new Card was created by {{createdBy.firstName}} with name '<a href={{card.url}}>{{card.displayName}}</a>'
-          <br><br>
+
           Sincerely yours,
         {% endblock %}
         ${templates.footerBlock}`,

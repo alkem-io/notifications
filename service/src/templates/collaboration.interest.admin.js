@@ -13,14 +13,12 @@ module.exports = () => ({
       subject:
         '[{{journey.displayName}}] Interest to collaborate received from {{user.name}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}
-          Hi {{recipient.firstName}},<br><br>
+        {% block content %}Hi {{recipient.firstName}},
 
           The user '{{user.name}}' is interested to participate in '<a href="{{journey.url}}">{{journey.displayName}}</a>' [{{journey.type}}]:
-          <br/>
-          - role: {{relation.role}}<br/>
-          - description: {{relation.description}}<br/>
-          <br/>
+          - role: {{relation.role}}
+          - description: {{relation.description}}
+
           Sincerely yours,
         {% endblock %}
 
