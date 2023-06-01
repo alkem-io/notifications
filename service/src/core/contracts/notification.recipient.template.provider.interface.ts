@@ -15,6 +15,7 @@ export type TemplateRuleSet = {
 
 export type TemplateConfig = {
   community_application_created?: TemplateRuleSet[];
+  community_invitation_created?: TemplateRuleSet[];
   community_new_member?: TemplateRuleSet[];
   communication_update_sent?: TemplateRuleSet[];
   platform_forum_discussion_created?: TemplateRuleSet[];

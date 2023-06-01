@@ -37,6 +37,7 @@ import {
 } from './services/application';
 import { CollaborationCanvasCreatedNotificationBuilder } from './services/domain/builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
+import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { CollaborationDiscussionCommentNotificationBuilder } from './services/do
     },
     NotificationBuilder,
     CommunityApplicationCreatedNotificationBuilder,
+    CommunityInvitationCreatedNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
     PlatformForumDiscussionCommentNotificationBuilder,
