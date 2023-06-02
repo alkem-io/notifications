@@ -12,6 +12,7 @@ import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityInvitationCreatedEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
+import { UserPreferenceType } from '@alkemio/client-lib';
 
 @Injectable()
 export class CommunityInvitationCreatedNotificationBuilder
@@ -33,6 +34,7 @@ export class CommunityInvitationCreatedNotificationBuilder
       {
         role: 'invitee',
         emailTemplate: EmailTemplate.COMMUNITY_INVITATION_INVITEE,
+        preferenceType: UserPreferenceType.NotificationCommunityInvitationUser,
       },
     ];
 
