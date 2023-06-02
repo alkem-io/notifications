@@ -11,9 +11,9 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'Invitation to join {{journey.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.name}},
+        {% block content %}Hi {{recipient.firstName}},
 
-          We would like to invite you to join <a href="{{journey.url}}">{{journey.displayName}}</a>.
+          <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a href="{{journey.url}}">{{journey.displayName}}</a>.
 
           Sincerely yours,
         {% endblock %}

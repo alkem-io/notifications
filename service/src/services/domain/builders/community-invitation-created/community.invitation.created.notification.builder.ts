@@ -46,7 +46,7 @@ export class CommunityInvitationCreatedNotificationBuilder
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.inviteeID,
+      eventUserId: payload.triggeredBy,
       roleConfig,
       templateType: 'community_invitation_created',
       templateVariables,
@@ -57,15 +57,15 @@ export class CommunityInvitationCreatedNotificationBuilder
   private createTemplatePayload(
     eventPayload: CommunityInvitationCreatedEventPayload,
     recipient: User,
-    invitee?: User
+    inviter?: User
   ): CommunityInvitationCreatedEmailPayload {
-    if (!invitee) {
+    if (!inviter) {
       throw Error(
         `Invitee not provided for '${NotificationEventType.COMMUNITY_INVITATION_CREATED} event'`
       );
     }
-    const inviteeProfileURL = this.alkemioUrlGenerator.createUserURL(
-      invitee.nameID
+    const inviterProfileURL = this.alkemioUrlGenerator.createUserURL(
+      inviter.nameID
     );
     const communityURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
@@ -81,11 +81,11 @@ export class CommunityInvitationCreatedNotificationBuilder
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
-      invitee: {
-        firstName: invitee.firstName,
-        name: invitee.profile.displayName,
-        email: invitee.email,
-        profile: inviteeProfileURL,
+      inviter: {
+        firstName: inviter.firstName,
+        name: inviter.profile.displayName,
+        email: inviter.email,
+        profile: inviterProfileURL,
       },
       journeyAdminURL: communityAdminURL,
       recipient: {

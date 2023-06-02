@@ -2,7 +2,7 @@ import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 
 export interface CommunityInvitationCreatedEmailPayload
   extends BaseJourneyEmailPayload {
-  invitee: {
+  inviter: {
     name: string;
     firstName: string;
     email: string;
