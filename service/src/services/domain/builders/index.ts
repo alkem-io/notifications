@@ -1,4 +1,5 @@
 export * from './community-application-created/community.application.created.notification.builder';
+export * from './community-invitation-created/community.invitation.created.notification.builder';
 export * from './communication-update-created/communication.update.created.notification.builder';
 export * from './communication-user-message/communication.user.message.notification.builder';
 export * from './communication-organization-message/communication.organization.message.notification.builder';

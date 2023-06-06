@@ -126,6 +126,12 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <memberID>
+  community_invitation_created:
+    - name: invitee
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <inviteeID>
   communication_update_sent:
     - name: admin
       rules:
