@@ -30,7 +30,7 @@ style="
   font-family: Montserrat;
   padding: 15px 5px;
 "
-href="https://alkem.io/about/"
+href="https://alkemio.foundation/"
 alt="About Alkemio"
 >About</a
 >
