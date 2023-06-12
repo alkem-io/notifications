@@ -2,20 +2,20 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'collaboration-card-comment-owner',
+  name: 'collaboration-post-comment-owner',
   title:
-    '{{journey.displayName}} - New comment received on your Card: "{{card.displayName}}"',
+    '{{journey.displayName}} - New comment received on your Card: "{{post.displayName}}"',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '{{journey.displayName}} - New comment received on your Card "{{card.displayName}}", have a look!',
+        '{{journey.displayName}} - New comment received on your Card "{{post.displayName}}", have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},
 
-          A new comment was created by {{createdBy.firstName}} on your '<a href={{card.url}}>{{card.displayName}}</a>' Card.
+          A new comment was created by {{createdBy.firstName}} on your '<a href={{post.url}}>{{post.displayName}}</a>' Card.
 
           Sincerely yours,
         {% endblock %}

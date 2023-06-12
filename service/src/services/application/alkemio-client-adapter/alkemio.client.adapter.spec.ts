@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { AlkemioClientAdapterProvider } from './alkemio.client.adapter.module';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
-import * as hubAdminsData from '@test/data/hub.admins.json';
+import * as spaceAdminsData from '@test/data/space.admins.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import { AlkemioClientAdapter } from './alkemio.client.adapter';
 import {
@@ -19,7 +19,7 @@ import {
 const testData = {
   ...challengeAdminsData,
   ...opportunityAdminsData,
-  ...hubAdminsData,
+  ...spaceAdminsData,
   ...eventPayload,
 };
 

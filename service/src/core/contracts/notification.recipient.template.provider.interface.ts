@@ -24,9 +24,9 @@ export type TemplateConfig = {
   communication_community_leads_message?: TemplateRuleSet[];
   communication_user_mention?: TemplateRuleSet[];
   communication_organization_mention?: TemplateRuleSet[];
-  collaboration_canvas_created?: TemplateRuleSet[];
-  collaboration_card_created?: TemplateRuleSet[];
-  collaboration_card_comment?: TemplateRuleSet[];
+  collaboration_whiteboard_created?: TemplateRuleSet[];
+  collaboration_post_created?: TemplateRuleSet[];
+  collaboration_post_comment?: TemplateRuleSet[];
   collaboration_discussion_comment?: TemplateRuleSet[];
   collaboration_review_submitted?: TemplateRuleSet[];
   collaboration_interest?: TemplateRuleSet[];

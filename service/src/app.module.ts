@@ -35,7 +35,7 @@ import {
   AlkemioUrlGeneratorModule,
   NotificationBuilder,
 } from './services/application';
-import { CollaborationCanvasCreatedNotificationBuilder } from './services/domain/builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
 
@@ -76,7 +76,7 @@ import { CommunityInvitationCreatedNotificationBuilder } from './services/domain
     CollaborationContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
     CollaborationInterestNotificationBuilder,
-    CollaborationCanvasCreatedNotificationBuilder,
+    CollaborationWhiteboardCreatedNotificationBuilder,
     CollaborationCardCreatedNotificationBuilder,
     CollaborationCardCommentNotificationBuilder,
     CollaborationDiscussionCommentNotificationBuilder,

@@ -24,7 +24,7 @@ import {
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
   PlatformUserRemovedEventPayload,
-  CollaborationCanvasCreatedEventPayload,
+  CollaborationWhiteboardCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
@@ -53,7 +53,7 @@ import {
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
-import { CollaborationCanvasCreatedNotificationBuilder } from '../builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 
 @Injectable()
@@ -79,7 +79,7 @@ export class NotificationService {
     private communicationOrganizationMentionNotificationBuilder: CommunicationOrganizationMentionNotificationBuilder,
     private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
-    private collaborationCanvasCreatedNotificationBuilder: CollaborationCanvasCreatedNotificationBuilder,
+    private collaborationWhiteboardCreatedNotificationBuilder: CollaborationWhiteboardCreatedNotificationBuilder,
     private collaborationCardCreatedNotificationBuilder: CollaborationCardCreatedNotificationBuilder,
     private collaborationCardCommentNotificationBuilder: CollaborationCardCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
@@ -235,7 +235,7 @@ export class NotificationService {
     );
   }
 
-  async sendAspectCreatedNotification(
+  async sendPostCreatedNotification(
     payload: CollaborationCardCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
@@ -244,16 +244,16 @@ export class NotificationService {
     );
   }
 
-  async sendCanvasCreatedNotification(
-    payload: CollaborationCanvasCreatedEventPayload
+  async sendWhiteboardCreatedNotification(
+    payload: CollaborationWhiteboardCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.collaborationCanvasCreatedNotificationBuilder
+      this.collaborationWhiteboardCreatedNotificationBuilder
     );
   }
 
-  async sendAspectCommentCreatedNotification(
+  async sendPostCommentCreatedNotification(
     payload: CollaborationCardCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(

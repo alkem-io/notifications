@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'collaboration-card-created-admin',
+  name: 'collaboration-post-created-admin',
   title:
     '[{{journey.displayName}}] New Card created by {{createdBy.firstName}}',
   version: 1,
@@ -15,7 +15,7 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},
 
-          A new Card was created by {{createdBy.firstName}} with name: '<a href={{card.url}}>{{card.displayName}}</a>'.
+          A new Card was created by {{createdBy.firstName}} with name: '<a href={{post.url}}>{{post.displayName}}</a>'.
 
           Sincerely yours,
         {% endblock %}

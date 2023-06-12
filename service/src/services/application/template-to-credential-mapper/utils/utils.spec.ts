@@ -1,8 +1,8 @@
 describe.skip('ruleToCredentialCriteria', () => {
   it('returns undefined resource_id on unsupported role or missing data', () => {
     // const payload = {
-    //   hub: {
-    //     id: 'hub',
+    //   space: {
+    //     id: 'space',
     //   },
     // } as ApplicationCreatedEventPayload;
     // expect(
@@ -36,8 +36,8 @@ describe.skip('ruleToCredentialCriteria', () => {
   });
   it('returns correct response', () => {
     // const payload = {
-    //   hub: {
-    //     id: 'hub',
+    //   space: {
+    //     id: 'space',
     //   },
     // } as ApplicationCreatedEventPayload;
     // expect(
@@ -57,8 +57,8 @@ describe.skip('ruleToCredentialCriteria', () => {
   });
   it('returns correct response on global admin', () => {
     // const payload = {
-    //   hub: {
-    //     id: 'hub',
+    //   space: {
+    //     id: 'space',
     //   },
     // } as ApplicationCreatedEventPayload;
     // expect(
@@ -81,7 +81,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 // describe.skip('getResourceId', () => {
 //   it('returns undefined on  global admin', () => {
 //     const payload = {
-//       hub: { id: 'hub' },
+//       space: { id: 'space' },
 //     } as ApplicationCreatedEventPayload;
 //     expect(
 //       getResourceId(AuthorizationCredential.GlobalAdmin, '<>', payload)
@@ -89,7 +89,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //   });
 //   it('returns null on missing data', () => {
 //     const payload = {
-//       hub: { id: 'hub' },
+//       space: { id: 'space' },
 //     } as ApplicationCreatedEventPayload;
 //     expect(
 //       getResourceId(AuthorizationCredential.ChallengeAdmin, '<>', payload)
@@ -97,7 +97,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //   });
 //   it('returns null on not supported role', () => {
 //     const payload = {
-//       hub: { id: 'hub' },
+//       space: { id: 'space' },
 //     } as ApplicationCreatedEventPayload;
 //     expect(
 //       getResourceId(AuthorizationCredential.GlobalAdminCommunity, '<>', payload)
@@ -106,8 +106,8 @@ describe.skip('ruleToCredentialCriteria', () => {
 //   describe.skip('fill pattern', () => {
 //     it('returns id from payload on fill pattern', () => {
 //       const payload = {
-//         hub: {
-//           id: 'hub',
+//         space: {
+//           id: 'space',
 //           challenge: {
 //             id: 'ch',
 //             opportunity: {
@@ -118,7 +118,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //       } as ApplicationCreatedEventPayload;
 //       expect(
 //         getResourceId(AuthorizationCredential.HubAdmin, '<>', payload)
-//       ).toEqual('hub');
+//       ).toEqual('space');
 //       expect(
 //         getResourceId(AuthorizationCredential.ChallengeAdmin, '<>', payload)
 //       ).toEqual('ch');
@@ -130,8 +130,8 @@ describe.skip('ruleToCredentialCriteria', () => {
 //   describe.skip('non fill pattern', () => {
 //     it('returns id from template if exist on non fill pattern', () => {
 //       const payload = {
-//         hub: {
-//           id: 'hub',
+//         space: {
+//           id: 'space',
 //           challenge: {
 //             id: 'ch',
 //             opportunity: {
@@ -141,13 +141,13 @@ describe.skip('ruleToCredentialCriteria', () => {
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
-//         getResourceId(AuthorizationCredential.HubAdmin, 'hub', payload)
-//       ).toEqual('hub');
+//         getResourceId(AuthorizationCredential.HubAdmin, 'space', payload)
+//       ).toEqual('space');
 //     });
 //     it('returns null if id does not exist on non fill pattern', () => {
 //       const payload = {
-//         hub: {
-//           id: 'hub',
+//         space: {
+//           id: 'space',
 //           challenge: {
 //             id: 'ch',
 //             opportunity: {
@@ -172,11 +172,11 @@ describe.skip('ruleToCredentialCriteria', () => {
 //     const payload = {} as ApplicationCreatedEventPayload;
 //     expect(() =>
 //       getResourceId(AuthorizationCredential.HubAdmin, payload)
-//     ).toThrowError('"id" field of "hub" not found in the payload');
+//     ).toThrowError('"id" field of "space" not found in the payload');
 //   });
 //   it('return undefined on global admin', () => {
 //     const payload = {
-//       hub: { id: 'hub' },
+//       space: { id: 'space' },
 //     } as ApplicationCreatedEventPayload;
 //     expect(
 //       getResourceId(AuthorizationCredential.GlobalAdmin, payload)
@@ -185,7 +185,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //   describe.skip('return null on missing data in payload', () => {
 //     it('missing challenge', () => {
 //       const payload = {
-//         hub: { id: 'hub' },
+//         space: { id: 'space' },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
 //         getResourceId(AuthorizationCredential.ChallengeAdmin, payload)
@@ -193,7 +193,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //     });
 //     it('missing opportunity', () => {
 //       const payload = {
-//         hub: { id: 'hub' },
+//         space: { id: 'space' },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
 //         getResourceId(AuthorizationCredential.OpportunityAdmin, payload)
@@ -202,16 +202,16 @@ describe.skip('ruleToCredentialCriteria', () => {
 //   });
 //   it('return null on not supported role', () => {
 //     const payload = {
-//       hub: { id: 'hub' },
+//       space: { id: 'space' },
 //     } as ApplicationCreatedEventPayload;
 //     expect(
 //       getResourceId(AuthorizationCredential.GlobalAdminCommunity, payload)
 //     ).toBeNull();
 //   });
 //   describe.skip('returns correct resourceId', () => {
-//     it('hub', () => {
+//     it('space', () => {
 //       const payload = {
-//         hub: {
+//         space: {
 //           id: 'hub-id',
 //         },
 //       } as ApplicationCreatedEventPayload;
@@ -221,8 +221,8 @@ describe.skip('ruleToCredentialCriteria', () => {
 //     });
 //     it('challenge', () => {
 //       const payload = {
-//         hub: {
-//           id: 'hub',
+//         space: {
+//           id: 'space',
 //           challenge: {
 //             id: 'challenge-id',
 //           },
@@ -234,8 +234,8 @@ describe.skip('ruleToCredentialCriteria', () => {
 //     });
 //     it('opportunity', () => {
 //       const payload = {
-//         hub: {
-//           id: 'hub',
+//         space: {
+//           id: 'space',
 //           challenge: {
 //             opportunity: {
 //               id: 'opportunity-id',
@@ -250,8 +250,8 @@ describe.skip('ruleToCredentialCriteria', () => {
 //     it('applicant', () => {
 //       const payload = {
 //         applicantID: 'applicant',
-//         hub: {
-//           id: 'hub',
+//         space: {
+//           id: 'space',
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
