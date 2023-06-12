@@ -27,6 +27,7 @@ import {
   CollaborationCanvasCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
+  CommunityInvitationCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -48,6 +49,7 @@ import {
   CommunicationCommunityLeadsMessageNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
   CommunicationOrganizationMentionNotificationBuilder,
+  CommunityInvitationCreatedNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
@@ -64,6 +66,7 @@ export class NotificationService {
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
     private communityApplicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
+    private communityInvitationCreatedNotificationBuilder: CommunityInvitationCreatedNotificationBuilder,
     private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
     private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
     private platformForumDiscussionCommentNotificationBuilder: PlatformForumDiscussionCommentNotificationBuilder,
@@ -112,6 +115,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.communityApplicationCreatedNotificationBuilder
+    );
+  }
+
+  async sendInvitationCreatedNotifications(
+    payload: CommunityInvitationCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communityInvitationCreatedNotificationBuilder
     );
   }
 

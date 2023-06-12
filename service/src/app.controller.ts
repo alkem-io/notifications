@@ -32,6 +32,7 @@ import {
   CollaborationCanvasCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
+  CommunityInvitationCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -59,6 +60,20 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COMMUNITY_APPLICATION_CREATED
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNITY_INVITATION_CREATED)
+  async sendInvitationNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: CommunityInvitationCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendInvitationCreatedNotifications(eventPayload),
+      NotificationEventType.COMMUNITY_INVITATION_CREATED
     );
   }
 
