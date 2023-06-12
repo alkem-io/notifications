@@ -1,6 +1,6 @@
 import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 // @ts-
-export interface CollaborationCardCommentEmailPayload
+export interface CollaborationPostCommentEmailPayload
   extends BaseJourneyEmailPayload {
   callout: {
     displayName: string;

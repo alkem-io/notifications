@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { CollaborationCardCommentEventPayload } from '@alkemio/notifications-lib';
-import { CollaborationCardCommentEmailPayload } from '@common/email-template-payload';
+import { CollaborationPostCommentEventPayload } from '@alkemio/notifications-lib';
+import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -15,19 +15,19 @@ import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class CollaborationCardCommentNotificationBuilder
+export class CollaborationPostCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
-      CollaborationCardCommentEventPayload,
-      CollaborationCardCommentEmailPayload
+      CollaborationPostCommentEventPayload,
+      CollaborationPostCommentEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
-    payload: CollaborationCardCommentEventPayload
+    payload: CollaborationPostCommentEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -52,10 +52,10 @@ export class CollaborationCardCommentNotificationBuilder
   }
 
   createTemplatePayload(
-    eventPayload: CollaborationCardCommentEventPayload,
+    eventPayload: CollaborationPostCommentEventPayload,
     recipient: User,
     commentAuthor?: User
-  ): CollaborationCardCommentEmailPayload {
+  ): CollaborationPostCommentEmailPayload {
     if (!commentAuthor) {
       throw Error(
         `Comment author not provided for '${NotificationEventType.COLLABORATION_POST_COMMENT} event'`

@@ -18,8 +18,8 @@ import {
   CollaborationContextReviewSubmittedPayload,
   PlatformUserRegistrationEventPayload,
   CommunityNewMemberPayload,
-  CollaborationCardCreatedEventPayload,
-  CollaborationCardCommentEventPayload,
+  CollaborationPostCreatedEventPayload,
+  CollaborationPostCommentEventPayload,
   CollaborationInterestPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
@@ -39,8 +39,8 @@ import {
   PlatformUserRegisteredNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   CollaborationContextReviewSubmittedNotificationBuilder,
-  CollaborationCardCreatedNotificationBuilder,
-  CollaborationCardCommentNotificationBuilder,
+  CollaborationPostCreatedNotificationBuilder,
+  CollaborationPostCommentNotificationBuilder,
   CollaborationInterestNotificationBuilder as CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
@@ -80,8 +80,8 @@ export class NotificationService {
     private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
     private collaborationWhiteboardCreatedNotificationBuilder: CollaborationWhiteboardCreatedNotificationBuilder,
-    private collaborationCardCreatedNotificationBuilder: CollaborationCardCreatedNotificationBuilder,
-    private collaborationCardCommentNotificationBuilder: CollaborationCardCommentNotificationBuilder,
+    private collaborationPostCreatedNotificationBuilder: CollaborationPostCreatedNotificationBuilder,
+    private collaborationPostCommentNotificationBuilder: CollaborationPostCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private collaborationInterestNotificationBuilder: CollaborationInterestNotificationBuilder
@@ -236,11 +236,11 @@ export class NotificationService {
   }
 
   async sendPostCreatedNotification(
-    payload: CollaborationCardCreatedEventPayload
+    payload: CollaborationPostCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.collaborationCardCreatedNotificationBuilder
+      this.collaborationPostCreatedNotificationBuilder
     );
   }
 
@@ -254,11 +254,11 @@ export class NotificationService {
   }
 
   async sendPostCommentCreatedNotification(
-    payload: CollaborationCardCommentEventPayload
+    payload: CollaborationPostCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.collaborationCardCommentNotificationBuilder
+      this.collaborationPostCommentNotificationBuilder
     );
   }
 

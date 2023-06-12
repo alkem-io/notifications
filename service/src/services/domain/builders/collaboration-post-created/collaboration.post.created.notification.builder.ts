@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { CollaborationCardCreatedEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import {
   AlkemioUrlGenerator,
@@ -11,23 +10,24 @@ import { NotificationTemplateType } from '@src/types';
 import { User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CollaborationCardCreatedEmailPayload } from '@common/email-template-payload';
+import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
+import { CollaborationPostCreatedEventPayload } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class CollaborationCardCreatedNotificationBuilder
+export class CollaborationPostCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
-      CollaborationCardCreatedEventPayload,
-      CollaborationCardCreatedEmailPayload
+      CollaborationPostCreatedEventPayload,
+      CollaborationPostCreatedEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
-    payload: CollaborationCardCreatedEventPayload
+    payload: CollaborationPostCreatedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -63,10 +63,10 @@ export class CollaborationCardCreatedNotificationBuilder
   }
 
   createTemplatePayload(
-    eventPayload: CollaborationCardCreatedEventPayload,
+    eventPayload: CollaborationPostCreatedEventPayload,
     recipient: User,
     creator?: User
-  ): CollaborationCardCreatedEmailPayload {
+  ): CollaborationPostCreatedEmailPayload {
     if (!creator) {
       throw Error(
         `Creator not provided for '${NotificationEventType.COLLABORATION_POST_CREATED} event'`

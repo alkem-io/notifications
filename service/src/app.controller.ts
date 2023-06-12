@@ -14,8 +14,8 @@ import {
   NotificationEventType,
   PlatformUserRemovedEventPayload,
   CommunityApplicationCreatedEventPayload,
-  CollaborationCardCommentEventPayload,
-  CollaborationCardCreatedEventPayload,
+  CollaborationPostCommentEventPayload,
+  CollaborationPostCreatedEventPayload,
   PlatformForumDiscussionCreatedEventPayload,
   CommunicationUserMessageEventPayload,
   CommunicationOrganizationMessageEventPayload,
@@ -291,7 +291,7 @@ export class AppController {
 
   @EventPattern(NotificationEventType.COLLABORATION_POST_CREATED, Transport.RMQ)
   async sendPostCreatedNotifications(
-    @Payload() eventPayload: CollaborationCardCreatedEventPayload,
+    @Payload() eventPayload: CollaborationPostCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
@@ -304,7 +304,7 @@ export class AppController {
 
   @EventPattern(NotificationEventType.COLLABORATION_POST_COMMENT, Transport.RMQ)
   async sendPostCommentCreatedNotifications(
-    @Payload() eventPayload: CollaborationCardCommentEventPayload,
+    @Payload() eventPayload: CollaborationPostCommentEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(

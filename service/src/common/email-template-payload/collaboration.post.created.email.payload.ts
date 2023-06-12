@@ -1,6 +1,6 @@
 import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 
-export interface CollaborationCardCreatedEmailPayload
+export interface CollaborationPostCreatedEmailPayload
   extends BaseJourneyEmailPayload {
   createdBy: {
     firstName: string;
