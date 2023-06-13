@@ -34,6 +34,7 @@ export type TemplateConfig = {
   platform_user_registered?: TemplateRuleSet[];
   platform_user_removed?: TemplateRuleSet[];
   platform_forum_discussion_comment?: TemplateRuleSet[];
+  comment_reply?: TemplateRuleSet[];
 };
 
 export interface INotificationRecipientTemplateProvider {
