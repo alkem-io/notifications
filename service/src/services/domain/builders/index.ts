@@ -16,3 +16,4 @@ export * from './platform-forum-discussion-created/platform.forum.discussion.cre
 export * from './collaboration-card-created/collaboration.card.created.notification.builder';
 export * from './collaboration-card-comment/collaboration.card.comment.notification.builder';
 export * from './collaboration-callout-published/collaboration.callout.published.notification.builder';
+export * from './comment-reply/comment.reply.notification.builder';

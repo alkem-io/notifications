@@ -33,6 +33,7 @@ import {
   PlatformUserRemovedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   CommunityInvitationCreatedNotificationBuilder,
+  CommentReplyNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -91,6 +92,7 @@ describe('NotificationService', () => {
         CollaborationCardCommentNotificationBuilder,
         CollaborationDiscussionCommentNotificationBuilder,
         CollaborationCalloutPublishedNotificationBuilder,
+        CommentReplyNotificationBuilder,
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,
