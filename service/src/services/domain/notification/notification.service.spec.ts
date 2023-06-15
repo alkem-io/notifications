@@ -7,7 +7,7 @@ import {
 } from '@common/enums';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
-import * as hubAdminsData from '@test/data/hub.admins.json';
+import * as spaceAdminsData from '@test/data/space.admins.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
@@ -52,7 +52,7 @@ import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/c
 const testData = {
   ...challengeAdminsData,
   ...opportunityAdminsData,
-  ...hubAdminsData,
+  ...spaceAdminsData,
   ...eventPayload,
   ...adminUser,
 };
@@ -123,7 +123,7 @@ describe('NotificationService', () => {
       //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
       jest
         .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
-        .mockResolvedValue(testData.hubAdmins);
+        .mockResolvedValue(testData.spaceAdmins);
 
       jest
         .spyOn(alkemioAdapter, 'getUser')
@@ -150,7 +150,7 @@ describe('NotificationService', () => {
 
     it('Should send 6 application notifications', async () => {
       const admins = [
-        ...testData.hubAdmins,
+        ...testData.spaceAdmins,
         ...testData.challengeAdmins,
         ...testData.opportunityAdmins,
       ];
