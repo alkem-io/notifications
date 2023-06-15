@@ -20,4 +20,5 @@ export enum NotificationEventType {
   PLATFORM_USER_REMOVED = 'platformUserRemoved',
   PLATFORM_FORUM_DISCUSSION_COMMENT = 'platformForumDiscussionComment',
   PLATFORM_FORUM_DISCUSSION_CREATED = 'platformForumDiscussionCreated',
+  COMMENT_REPLY = 'commentReply',
 }

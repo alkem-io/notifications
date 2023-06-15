@@ -33,6 +33,7 @@ import {
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
+  CommentReplyEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -346,6 +347,19 @@ export class AppController {
       context,
       this.notificationService.sendCalloutPublishedNotification(eventPayload),
       NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMENT_REPLY, Transport.RMQ)
+  async sendCommentReplyNotifications(
+    @Payload() eventPayload: CommentReplyEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendCommentReplyNotification(eventPayload),
+      NotificationEventType.COMMENT_REPLY
     );
   }
 

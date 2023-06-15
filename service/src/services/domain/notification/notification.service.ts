@@ -28,6 +28,7 @@ import {
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
+  CommentReplyEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -55,6 +56,7 @@ import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
+import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
 
 @Injectable()
 export class NotificationService {
@@ -84,7 +86,8 @@ export class NotificationService {
     private collaborationPostCommentNotificationBuilder: CollaborationPostCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
-    private collaborationInterestNotificationBuilder: CollaborationInterestNotificationBuilder
+    private collaborationInterestNotificationBuilder: CollaborationInterestNotificationBuilder,
+    private commentReplyNotificationBuilder: CommentReplyNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -277,6 +280,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.collaborationCalloutPublishedNotificationBuilder
+    );
+  }
+
+  async sendCommentReplyNotification(
+    payload: CommentReplyEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.commentReplyNotificationBuilder
     );
   }
 

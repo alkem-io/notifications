@@ -342,3 +342,9 @@ recipients:
         - rule:
             type: GLOBAL_REGISTERED
             resource_id:
+  comment_reply:
+    - name: commentOwner
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <commentOwnerID>

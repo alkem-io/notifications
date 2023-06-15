@@ -38,6 +38,7 @@ import {
 import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
+import { CommentReplyNotificationBuilder } from './services/domain/builders/comment-reply/comment.reply.notification.builder';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { CommunityInvitationCreatedNotificationBuilder } from './services/domain
     CollaborationPostCommentNotificationBuilder,
     CollaborationDiscussionCommentNotificationBuilder,
     CollaborationCalloutPublishedNotificationBuilder,
+    CommentReplyNotificationBuilder,
     NotificationService,
   ],
   controllers: [AppController],
