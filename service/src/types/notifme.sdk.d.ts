@@ -187,7 +187,7 @@ declare module 'notifme-sdk' {
         appSecret: string;
         consumerKey: string;
         account: string;
-        host: string; // https://githxb.com/ovh/node-ovh/blob/master/lib/endpoints.js
+        host: string; // https://github.com/ovh/node-ovh/blob/master/lib/endpoints.js
       }
     | {
         type: 'plivo';
@@ -210,7 +210,7 @@ declare module 'notifme-sdk' {
         send: (request: PushRequest) => Promise<string>;
       }
     | {
-        // Doc: https://githxb.com/node-apn/node-apn/blob/master/doc/provider.markdown
+        // Doc: https://github.com/node-apn/node-apn/blob/master/doc/provider.markdown
         type: 'apn'; // Apple Push Notification
         token?: {
           key: string;
@@ -227,20 +227,20 @@ declare module 'notifme-sdk' {
         connectionRetryLimit?: number;
       }
     | {
-        // Doc: https://githxb.com/ToothlessGear/node-gcm
+        // Doc: https://github.com/ToothlessGear/node-gcm
         type: 'fcm'; // Firebase Cloud Messaging (previously called GCM, Google Cloud Messaging)
         id: string;
         phonegap?: boolean;
       }
     | {
-        // Doc: https://githxb.com/tjanczuk/wns
+        // Doc: https://github.com/tjanczuk/wns
         type: 'wns'; // Windows Push Notification
         clientId: string;
         clientSecret: string;
         notificationMethod: string; // sendTileSquareBlock, sendTileSquareImage...
       }
     | {
-        // Doc: https://githxb.com/umano/node-adm
+        // Doc: https://github.com/umano/node-adm
         type: 'adm'; // Amazon Device Messaging
         clientId: string;
         clientSecret: string;
