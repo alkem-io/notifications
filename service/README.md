@@ -3,9 +3,9 @@
 Alkemio out-of-band notifications service.
 
 [![Build Status](https://app.travis-ci.com/alkem-io/notifications.svg?branch=develop)](https://app.travis-ci.com/alkem-io/notifications.svg?branch=develop)
-[![Coverage Status](https://coveralls.io/repos/github/alkem-io/notifications/badge.svg?branch=develop)](https://coveralls.io/github/alkem-io/notifications?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/githxb/alkem-io/notifications/badge.svg?branch=develop)](https://coveralls.io/githxb/alkem-io/notifications?branch=develop)
 [![BCH compliance](https://bettercodehub.com/edge/badge/alkem-io/notifications?branch=develop)](https://bettercodehub.com/)
-[![Deploy to DockerHub](https://github.com/alkem-io/notifications/actions/workflows/build-release-docker-hub.yml/badge.svg)](https://github.com/alkem-io/notifications/actions/workflows/build-release-docker-hub.yml)
+[![Deploy to DockerHub](https://githxb.com/alkem-io/notifications/actions/workflows/build-release-docker-hub.yml/badge.svg)](https://githxb.com/alkem-io/notifications/actions/workflows/build-release-docker-hub.yml)
 
 ## To test
 
@@ -37,7 +37,7 @@ To add a template:
 1. Create a file under src/templates.
 2. Copy welcome.js
 3. Change the template name
-4. Define your channels. You can use [this](https://github.com/notifme/notifme-template/tree/master/example) as an example.
+4. Define your channels. You can use [this](https://githxb.com/notifme/notifme-template/tree/master/example) as an example.
 5. In the file you want to use the template, import nunjucks and notifme-template.
 6. Render your template
 
@@ -63,7 +63,7 @@ To test the welcome (sample) template, you can use the following payload in Rabb
       "name": "02 Zero Hunger",
       "type": "challenge"
     },
-    "hub": {
+    "space": {
       "id": "32818605-ef2f-4395-bb49-1dc2835c23de",
       "challenge": {
         "id": "7b86f954-d8c3-4fac-a652-b922c80e5c20",
@@ -76,7 +76,7 @@ To test the welcome (sample) template, you can use the following payload in Rabb
 }
 ```
 
-Note: replace applicantionCreatorID, applicantID, and hub + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
+Note: replace applicantionCreatorID, applicantID, and space + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
 
 ```gql
 query {

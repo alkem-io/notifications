@@ -5,9 +5,9 @@ export const createJourneyURL = (
   webclientEndpoint: string,
   journey: JourneyPayload
 ): string => {
-  const baseURL = `${webclientEndpoint}/${journey.hubNameID}`;
+  const baseURL = `${webclientEndpoint}/${journey.spaceNameID}`;
   switch (journey.type) {
-    case JourneyType.HUB:
+    case JourneyType.SPACE:
       return baseURL;
     case JourneyType.CHALLENGE:
       return `${baseURL}/challenges/${journey.challenge?.nameID}`;
@@ -22,9 +22,9 @@ export const createJourneyAdminCommunityURL = (
   webclientEndpoint: string,
   journey: JourneyPayload
 ): string => {
-  const baseURL = `${webclientEndpoint}/admin/hubs/${journey.hubNameID}`;
+  const baseURL = `${webclientEndpoint}/admin/hubs/${journey.spaceNameID}`;
   switch (journey.type) {
-    case JourneyType.HUB:
+    case JourneyType.SPACE:
       return `${baseURL}/community`;
     case JourneyType.CHALLENGE:
       return `${baseURL}/challenges/${journey.challenge?.nameID}/community`;
@@ -52,17 +52,17 @@ export const createCalloutURL = (
 export const createCardURL = (
   journeyURL: string,
   calloutNameID: string,
-  cardNameID: string
+  postNameID: string
 ): string => {
-  return `${journeyURL}/collaboration/${calloutNameID}/aspects/${cardNameID}`;
+  return `${journeyURL}/collaboration/${calloutNameID}/posts/${postNameID}`;
 };
 
-export const createCanvasURL = (
+export const createWhiteboardURL = (
   journeyURL: string,
   calloutNameID: string,
-  canvasNameID: string
+  whiteboardNameID: string
 ): string => {
-  return `${journeyURL}/collaboration/${calloutNameID}/canvases/${canvasNameID}`;
+  return `${journeyURL}/collaboration/${calloutNameID}/whiteboardes/${whiteboardNameID}`;
 };
 
 export const createOrganizationURL = (

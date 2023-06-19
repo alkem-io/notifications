@@ -7,7 +7,7 @@ env:
   ECR_REGISTRY: ${{ secrets.ECR_DEV_TEST_REGISTRY }}
   ECR_REPOSITORY: alkemio-notifications
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA_DEV }}
-  IMAGE_TAG: ${{ github.sha }}
+  IMAGE_TAG: ${{ githxb.sha }}
 
 jobs:
   deploy:

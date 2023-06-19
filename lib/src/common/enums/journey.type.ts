@@ -1,6 +1,6 @@
 // todo: remove once notifications can use the types directly from
 export enum JourneyType {
-  HUB = 'hub',
+  SPACE = 'space',
   CHALLENGE = 'challenge',
   OPPORTUNITY = 'opportunity',
 }

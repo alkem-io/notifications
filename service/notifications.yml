@@ -97,7 +97,7 @@ recipients:
             resource_id: <opportunityID>
         - rule:
             type: HUB_ADMIN
-            resource_id: <hubID>
+            resource_id: <spaceID>
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
             resource_id:
@@ -114,7 +114,7 @@ recipients:
       rules:
         - rule:
             type: HUB_ADMIN
-            resource_id: <hubID>
+            resource_id: <spaceID>
         - rule:
             type: CHALLENGE_ADMIN
             resource_id: <challengeID>
@@ -225,12 +225,12 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <userID>
-  collaboration_card_created:
+  collaboration_post_created:
     - name: admin
       rules:
         - rule:
             type: HUB_ADMIN
-            resource_id: <hubID>
+            resource_id: <spaceID>
         - rule:
             type: CHALLENGE_ADMIN
             resource_id: <challengeID>
@@ -248,12 +248,12 @@ recipients:
         - rule:
             type: OPPORTUNITY_MEMBER
             resource_id: <journeyID>
-  collaboration_canvas_created:
+  collaboration_whiteboard_created:
     - name: admin
       rules:
         - rule:
             type: HUB_ADMIN
-            resource_id: <hubID>
+            resource_id: <spaceID>
         - rule:
             type: CHALLENGE_ADMIN
             resource_id: <challengeID>
@@ -271,7 +271,7 @@ recipients:
         - rule:
             type: OPPORTUNITY_MEMBER
             resource_id: <journeyID>
-  collaboration_card_comment:
+  collaboration_post_comment:
     - name: owner
       rules:
         - rule:

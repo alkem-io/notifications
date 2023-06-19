@@ -7,7 +7,7 @@ import {
 } from '@common/enums';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
-import * as hubAdminsData from '@test/data/hub.admins.json';
+import * as spaceAdminsData from '@test/data/space.admins.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
@@ -26,8 +26,8 @@ import {
   CommunicationOrganizationMentionNotificationBuilder,
   CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
-  CollaborationCardCreatedNotificationBuilder,
-  CollaborationCardCommentNotificationBuilder,
+  CollaborationPostCreatedNotificationBuilder,
+  CollaborationPostCommentNotificationBuilder,
   CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
@@ -46,13 +46,13 @@ import {
 } from '@test/mocks';
 import { NotificationBuilder } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
-import { CollaborationCanvasCreatedNotificationBuilder } from '../builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 
 const testData = {
   ...challengeAdminsData,
   ...opportunityAdminsData,
-  ...hubAdminsData,
+  ...spaceAdminsData,
   ...eventPayload,
   ...adminUser,
 };
@@ -87,9 +87,9 @@ describe('NotificationService', () => {
         CollaborationContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
         CollaborationInterestNotificationBuilder,
-        CollaborationCanvasCreatedNotificationBuilder,
-        CollaborationCardCreatedNotificationBuilder,
-        CollaborationCardCommentNotificationBuilder,
+        CollaborationWhiteboardCreatedNotificationBuilder,
+        CollaborationPostCreatedNotificationBuilder,
+        CollaborationPostCommentNotificationBuilder,
         CollaborationDiscussionCommentNotificationBuilder,
         CollaborationCalloutPublishedNotificationBuilder,
         CommentReplyNotificationBuilder,
@@ -123,7 +123,7 @@ describe('NotificationService', () => {
       //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
       jest
         .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
-        .mockResolvedValue(testData.hubAdmins);
+        .mockResolvedValue(testData.spaceAdmins);
 
       jest
         .spyOn(alkemioAdapter, 'getUser')
@@ -150,7 +150,7 @@ describe('NotificationService', () => {
 
     it('Should send 6 application notifications', async () => {
       const admins = [
-        ...testData.hubAdmins,
+        ...testData.spaceAdmins,
         ...testData.challengeAdmins,
         ...testData.opportunityAdmins,
       ];

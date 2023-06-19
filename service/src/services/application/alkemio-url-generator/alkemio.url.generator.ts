@@ -9,7 +9,7 @@ import {
   createUserURL as libCreateUserURL,
   createCalloutURL as libCreateCalloutURL,
   createCardURL as libCreateCardURL,
-  createCanvasURL as libCreateCanvasURL,
+  createWhiteboardURL as libCreateWhiteboardURL,
   createOrganizationURL as libCreateOrganizationURL,
   createUserNotificationPreferencesURL as libCreateUserNotificationPreferencesURL,
 } from '@alkemio/notifications-lib';
@@ -50,17 +50,17 @@ export class AlkemioUrlGenerator {
   createCardURL(
     journeyURL: string,
     calloutNameID: string,
-    cardNameID: string
+    postNameID: string
   ): string {
-    return libCreateCardURL(journeyURL, calloutNameID, cardNameID);
+    return libCreateCardURL(journeyURL, calloutNameID, postNameID);
   }
 
-  createCanvasURL(
+  createWhiteboardURL(
     journeyURL: string,
     calloutNameID: string,
-    canvasNameID: string
+    whiteboardNameID: string
   ): string {
-    return libCreateCanvasURL(journeyURL, calloutNameID, canvasNameID);
+    return libCreateWhiteboardURL(journeyURL, calloutNameID, whiteboardNameID);
   }
 
   createOrganizationURL(orgNameID: string): string {

@@ -46,7 +46,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
       journeyID:
         payload.journey?.challenge?.opportunity?.id ??
         payload.journey?.challenge?.id ??
-        payload.journey.hubID,
+        payload.journey.spaceID,
     };
 
     return this.notificationBuilder.build({

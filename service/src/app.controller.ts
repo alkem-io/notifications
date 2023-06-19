@@ -14,8 +14,8 @@ import {
   NotificationEventType,
   PlatformUserRemovedEventPayload,
   CommunityApplicationCreatedEventPayload,
-  CollaborationCardCommentEventPayload,
-  CollaborationCardCreatedEventPayload,
+  CollaborationPostCommentEventPayload,
+  CollaborationPostCreatedEventPayload,
   PlatformForumDiscussionCreatedEventPayload,
   CommunicationUserMessageEventPayload,
   CommunicationOrganizationMessageEventPayload,
@@ -29,7 +29,7 @@ import {
   PlatformUserRegistrationEventPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
-  CollaborationCanvasCreatedEventPayload,
+  CollaborationWhiteboardCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
@@ -275,46 +275,44 @@ export class AppController {
   }
 
   @EventPattern(
-    NotificationEventType.COLLABORATION_CANVAS_CREATED,
+    NotificationEventType.COLLABORATION_WHITEBOARD_CREATED,
     Transport.RMQ
   )
-  async sendCanvasCreatedNotifications(
-    @Payload() eventPayload: CollaborationCanvasCreatedEventPayload,
+  async sendWhiteboardCreatedNotifications(
+    @Payload() eventPayload: CollaborationWhiteboardCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
       eventPayload,
       context,
-      this.notificationService.sendCanvasCreatedNotification(eventPayload),
-      NotificationEventType.COLLABORATION_CANVAS_CREATED
+      this.notificationService.sendWhiteboardCreatedNotification(eventPayload),
+      NotificationEventType.COLLABORATION_WHITEBOARD_CREATED
     );
   }
 
-  @EventPattern(NotificationEventType.COLLABORATION_CARD_CREATED, Transport.RMQ)
-  async sendAspectCreatedNotifications(
-    @Payload() eventPayload: CollaborationCardCreatedEventPayload,
+  @EventPattern(NotificationEventType.COLLABORATION_POST_CREATED, Transport.RMQ)
+  async sendPostCreatedNotifications(
+    @Payload() eventPayload: CollaborationPostCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
       eventPayload,
       context,
-      this.notificationService.sendAspectCreatedNotification(eventPayload),
-      NotificationEventType.COLLABORATION_CARD_CREATED
+      this.notificationService.sendPostCreatedNotification(eventPayload),
+      NotificationEventType.COLLABORATION_POST_CREATED
     );
   }
 
-  @EventPattern(NotificationEventType.COLLABORATION_CARD_COMMENT, Transport.RMQ)
-  async sendAspectCommentCreatedNotifications(
-    @Payload() eventPayload: CollaborationCardCommentEventPayload,
+  @EventPattern(NotificationEventType.COLLABORATION_POST_COMMENT, Transport.RMQ)
+  async sendPostCommentCreatedNotifications(
+    @Payload() eventPayload: CollaborationPostCommentEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
       eventPayload,
       context,
-      this.notificationService.sendAspectCommentCreatedNotification(
-        eventPayload
-      ),
-      NotificationEventType.COLLABORATION_CARD_COMMENT
+      this.notificationService.sendPostCommentCreatedNotification(eventPayload),
+      NotificationEventType.COLLABORATION_POST_COMMENT
     );
   }
 
