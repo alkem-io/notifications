@@ -24,8 +24,8 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          docker build -f Dockerfile . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ githxb.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:latest
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ githxb.sha }}
+          docker build -f Dockerfile . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:latest
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
 
       - uses: Azure/aks-set-context@v1
         with:
@@ -45,6 +45,6 @@ jobs:
           manifests: |
             service/manifests/25-notifications-deployment-dev.yaml
           images: |
-            ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ githxb.sha }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
           imagepullsecrets: |
             alkemio-notifications-secret
