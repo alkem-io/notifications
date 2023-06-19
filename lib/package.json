@@ -9,7 +9,7 @@
   "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://githxb.com/alkem-io/notifications.git"
+    "url": "git+https://github.com/alkem-io/notifications.git"
   },
   "scripts": {
     "prebuild": "rimraf dist",
