@@ -96,7 +96,7 @@ recipients:
             type: OPPORTUNITY_ADMIN
             resource_id: <opportunityID>
         - rule:
-            type: HUB_ADMIN
+            type: SPACE_ADMIN
             resource_id: <spaceID>
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
@@ -113,7 +113,7 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: HUB_ADMIN
+            type: SPACE_ADMIN
             resource_id: <spaceID>
         - rule:
             type: CHALLENGE_ADMIN
@@ -144,7 +144,7 @@ recipients:
     - name: member
       rules:
         - rule:
-            type: HUB_MEMBER
+            type: SPACE_MEMBER
             resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
@@ -183,7 +183,7 @@ recipients:
     - name: receiver
       rules:
         - rule:
-            type: HUB_HOST
+            type: SPACE_HOST
             resource_id: <journeyID>
         - rule:
             type: CHALLENGE_LEAD
@@ -229,7 +229,7 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: HUB_ADMIN
+            type: SPACE_ADMIN
             resource_id: <spaceID>
         - rule:
             type: CHALLENGE_ADMIN
@@ -240,7 +240,7 @@ recipients:
     - name: user
       rules:
         - rule:
-            type: HUB_MEMBER
+            type: SPACE_MEMBER
             resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
@@ -252,7 +252,7 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: HUB_ADMIN
+            type: SPACE_ADMIN
             resource_id: <spaceID>
         - rule:
             type: CHALLENGE_ADMIN
@@ -263,7 +263,7 @@ recipients:
     - name: user
       rules:
         - rule:
-            type: HUB_MEMBER
+            type: SPACE_MEMBER
             resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
@@ -281,7 +281,7 @@ recipients:
     - name: member
       rules:
         - rule:
-            type: HUB_MEMBER
+            type: SPACE_MEMBER
             resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
@@ -293,7 +293,7 @@ recipients:
     - name: user
       rules:
         - rule:
-            type: HUB_MEMBER
+            type: SPACE_MEMBER
             resource_id: <journeyID>
         - rule:
             type: CHALLENGE_MEMBER
@@ -311,7 +311,7 @@ recipients:
             type: GLOBAL_ADMIN
             resource_id:
         - rule:
-            type: GLOBAL_ADMIN_HUBS
+            type: GLOBAL_ADMIN_SPACES
             resource_id:
     - name: registrant
       rules:
@@ -328,7 +328,7 @@ recipients:
             type: GLOBAL_ADMIN
             resource_id:
         - rule:
-            type: GLOBAL_ADMIN_HUBS
+            type: GLOBAL_ADMIN_SPACES
             resource_id:
   platform_forum_discussion_comment:
     - name: discussionCreator
