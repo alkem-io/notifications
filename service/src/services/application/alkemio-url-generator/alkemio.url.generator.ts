@@ -8,7 +8,7 @@ import {
   createJourneyAdminCommunityURL as libCreateJourneyAdminCommunityURL,
   createUserURL as libCreateUserURL,
   createCalloutURL as libCreateCalloutURL,
-  createCardURL as libCreateCardURL,
+  createPostURL as libCreatePostURL,
   createWhiteboardURL as libCreateWhiteboardURL,
   createOrganizationURL as libCreateOrganizationURL,
   createUserNotificationPreferencesURL as libCreateUserNotificationPreferencesURL,
@@ -47,12 +47,12 @@ export class AlkemioUrlGenerator {
     return libCreateCalloutURL(journeyURL, calloutNameID);
   }
 
-  createCardURL(
+  createPostURL(
     journeyURL: string,
     calloutNameID: string,
     postNameID: string
   ): string {
-    return libCreateCardURL(journeyURL, calloutNameID, postNameID);
+    return libCreatePostURL(journeyURL, calloutNameID, postNameID);
   }
 
   createWhiteboardURL(

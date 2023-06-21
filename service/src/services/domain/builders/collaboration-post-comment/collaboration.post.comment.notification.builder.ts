@@ -70,7 +70,7 @@ export class CollaborationPostCommentNotificationBuilder
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
     );
-    const postURL = this.alkemioUrlGenerator.createCardURL(
+    const postURL = this.alkemioUrlGenerator.createPostURL(
       journeyURL,
       eventPayload.callout.nameID,
       eventPayload.post.nameID

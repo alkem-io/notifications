@@ -49,7 +49,7 @@ export const createCalloutURL = (
   return `${journeyURL}/collaboration/${calloutNameID}`;
 };
 
-export const createCardURL = (
+export const createPostURL = (
   journeyURL: string,
   calloutNameID: string,
   postNameID: string
