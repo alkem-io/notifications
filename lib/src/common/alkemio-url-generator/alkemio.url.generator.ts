@@ -22,7 +22,7 @@ export const createJourneyAdminCommunityURL = (
   webclientEndpoint: string,
   journey: JourneyPayload
 ): string => {
-  const baseURL = `${webclientEndpoint}/admin/hubs/${journey.spaceNameID}`;
+  const baseURL = `${webclientEndpoint}/admin/spaces/${journey.spaceNameID}`;
   switch (journey.type) {
     case JourneyType.SPACE:
       return `${baseURL}/community`;
@@ -49,7 +49,7 @@ export const createCalloutURL = (
   return `${journeyURL}/collaboration/${calloutNameID}`;
 };
 
-export const createCardURL = (
+export const createPostURL = (
   journeyURL: string,
   calloutNameID: string,
   postNameID: string

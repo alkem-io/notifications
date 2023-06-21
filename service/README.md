@@ -80,7 +80,7 @@ Note: replace applicantionCreatorID, applicantID, and space + challenge + opport
 
 ```gql
 query {
-  hubs {
+  spaces {
     id
     displayName
     challenges {

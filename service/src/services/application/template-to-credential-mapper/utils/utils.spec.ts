@@ -44,14 +44,14 @@ describe.skip('ruleToCredentialCriteria', () => {
     //   ruleToCredentialCriteria(
     //     {
     //       rule: {
-    //         type: AuthorizationCredential.HubAdmin,
+    //         type: AuthorizationCredential.SpaceAdmin,
     //         resource_id: '<>',
     //       },
     //     },
     //     payload
     //   )
     // ).toEqual({
-    //   type: AuthorizationCredential.HubAdmin,
+    //   type: AuthorizationCredential.SpaceAdmin,
     //   resource_id: '<>',
     // });
   });
@@ -117,7 +117,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
-//         getResourceId(AuthorizationCredential.HubAdmin, '<>', payload)
+//         getResourceId(AuthorizationCredential.SpaceAdmin, '<>', payload)
 //       ).toEqual('space');
 //       expect(
 //         getResourceId(AuthorizationCredential.ChallengeAdmin, '<>', payload)
@@ -141,7 +141,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
-//         getResourceId(AuthorizationCredential.HubAdmin, 'space', payload)
+//         getResourceId(AuthorizationCredential.SpaceAdmin, 'space', payload)
 //       ).toEqual('space');
 //     });
 //     it('returns null if id does not exist on non fill pattern', () => {
@@ -158,7 +158,7 @@ describe.skip('ruleToCredentialCriteria', () => {
 //       } as ApplicationCreatedEventPayload;
 //       expect(
 //         getResourceId(
-//           AuthorizationCredential.HubAdmin,
+//           AuthorizationCredential.SpaceAdmin,
 //           'template-id',
 //           payload
 //         )
@@ -168,10 +168,10 @@ describe.skip('ruleToCredentialCriteria', () => {
 // });
 
 // describe.skip('getResourceIdByRole', () => {
-//   it('throws on missing hub id', () => {
+//   it('throws on missing space id', () => {
 //     const payload = {} as ApplicationCreatedEventPayload;
 //     expect(() =>
-//       getResourceId(AuthorizationCredential.HubAdmin, payload)
+//       getResourceId(AuthorizationCredential.SpaceAdmin, payload)
 //     ).toThrowError('"id" field of "space" not found in the payload');
 //   });
 //   it('return undefined on global admin', () => {
@@ -212,12 +212,12 @@ describe.skip('ruleToCredentialCriteria', () => {
 //     it('space', () => {
 //       const payload = {
 //         space: {
-//           id: 'hub-id',
+//           id: 'space-id',
 //         },
 //       } as ApplicationCreatedEventPayload;
 //       expect(
-//         getResourceId(AuthorizationCredential.HubAdmin, payload)
-//       ).toEqual('hub-id');
+//         getResourceId(AuthorizationCredential.SpaceAdmin, payload)
+//       ).toEqual('space-id');
 //     });
 //     it('challenge', () => {
 //       const payload = {
