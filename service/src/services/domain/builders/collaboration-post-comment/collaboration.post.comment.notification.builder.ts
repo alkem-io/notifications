@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { CollaborationCardCommentEventPayload } from '@alkemio/notifications-lib';
-import { CollaborationCardCommentEmailPayload } from '@common/email-template-payload';
+import { CollaborationPostCommentEventPayload } from '@alkemio/notifications-lib';
+import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -15,50 +15,50 @@ import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class CollaborationCardCommentNotificationBuilder
+export class CollaborationPostCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     private readonly notificationBuilder: NotificationBuilder<
-      CollaborationCardCommentEventPayload,
-      CollaborationCardCommentEmailPayload
+      CollaborationPostCommentEventPayload,
+      CollaborationPostCommentEmailPayload
     >,
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
-    payload: CollaborationCardCommentEventPayload
+    payload: CollaborationPostCommentEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
         role: 'owner',
-        preferenceType: UserPreferenceType.NotificationAspectCommentCreated,
-        emailTemplate: EmailTemplate.COLLABORATION_CARD_COMMENT_OWNER,
+        preferenceType: UserPreferenceType.NotificationPostCommentCreated,
+        emailTemplate: EmailTemplate.COLLABORATION_POST_COMMENT_OWNER,
       },
     ];
 
     const templateVariables = {
-      ownerID: payload.card.createdBy,
+      ownerID: payload.post.createdBy,
     };
 
     return this.notificationBuilder.build({
       payload,
       eventUserId: payload.comment.createdBy,
       roleConfig,
-      templateType: 'collaboration_card_comment',
+      templateType: 'collaboration_post_comment',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
   }
 
   createTemplatePayload(
-    eventPayload: CollaborationCardCommentEventPayload,
+    eventPayload: CollaborationPostCommentEventPayload,
     recipient: User,
     commentAuthor?: User
-  ): CollaborationCardCommentEmailPayload {
+  ): CollaborationPostCommentEmailPayload {
     if (!commentAuthor) {
       throw Error(
-        `Comment author not provided for '${NotificationEventType.COLLABORATION_CARD_COMMENT} event'`
+        `Comment author not provided for '${NotificationEventType.COLLABORATION_POST_COMMENT} event'`
       );
     }
     const notificationPreferenceURL =
@@ -70,10 +70,10 @@ export class CollaborationCardCommentNotificationBuilder
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
     );
-    const cardURL = this.alkemioUrlGenerator.createCardURL(
+    const postURL = this.alkemioUrlGenerator.createPostURL(
       journeyURL,
       eventPayload.callout.nameID,
-      eventPayload.card.nameID
+      eventPayload.post.nameID
     );
     const calloutURL = this.alkemioUrlGenerator.createCalloutURL(
       journeyURL,
@@ -86,9 +86,9 @@ export class CollaborationCardCommentNotificationBuilder
         displayName: eventPayload.callout.displayName,
         url: calloutURL,
       },
-      card: {
-        displayName: eventPayload.card.displayName,
-        url: cardURL,
+      post: {
+        displayName: eventPayload.post.displayName,
+        url: postURL,
       },
       recipient: {
         firstName: recipient.firstName,

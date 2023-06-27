@@ -63,7 +63,7 @@ To test the welcome (sample) template, you can use the following payload in Rabb
       "name": "02 Zero Hunger",
       "type": "challenge"
     },
-    "hub": {
+    "space": {
       "id": "32818605-ef2f-4395-bb49-1dc2835c23de",
       "challenge": {
         "id": "7b86f954-d8c3-4fac-a652-b922c80e5c20",
@@ -76,11 +76,11 @@ To test the welcome (sample) template, you can use the following payload in Rabb
 }
 ```
 
-Note: replace applicantionCreatorID, applicantID, and hub + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
+Note: replace applicantionCreatorID, applicantID, and space + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
 
 ```gql
 query {
-  hubs {
+  spaces {
     id
     displayName
     challenges {

@@ -1,15 +1,14 @@
 import { JourneyBaseEventPayload } from './journey.base.event.payload';
 
-export interface CollaborationCardCreatedEventPayload extends JourneyBaseEventPayload {
+export interface CollaborationWhiteboardCreatedEventPayload extends JourneyBaseEventPayload {
   callout: {
     displayName: string;
     nameID: string;
   }
-  card: {
+  whiteboard: {
     id: string;
     createdBy: string;
     displayName: string;
     nameID: string;
-    type: string;
   };
 }

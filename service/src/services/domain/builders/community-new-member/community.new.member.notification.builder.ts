@@ -45,7 +45,7 @@ export class CommunityNewMemberNotificationBuilder
 
     const templateVariables = {
       memberID: payload.userID,
-      hubID: payload.journey.hubID,
+      spaceID: payload.journey.spaceID,
       challengeID: payload.journey.challenge?.id ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };

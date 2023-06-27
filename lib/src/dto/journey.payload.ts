@@ -1,8 +1,8 @@
 import { JourneyType } from "@src/common/enums/journey.type";
 
 export type JourneyPayload = {
-  hubID: string;
-  hubNameID: string;
+  spaceID: string;
+  spaceNameID: string;
   displayName: string;
   type: JourneyType;
   challenge?: {

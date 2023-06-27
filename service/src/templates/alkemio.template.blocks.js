@@ -6,7 +6,7 @@ module.exports = {
     font-family: Montserrat;
     padding: 15px 5px;
   "
-  href="{{hub.url}}"
+  href="{{space.url}}"
   alt="Link to our community"
   >Join our community</a
 >

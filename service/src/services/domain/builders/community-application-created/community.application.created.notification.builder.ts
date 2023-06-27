@@ -45,7 +45,7 @@ export class CommunityApplicationCreatedNotificationBuilder
 
     const templateVariables = {
       applicantID: payload.applicantID,
-      hubID: payload.journey.hubID,
+      spaceID: payload.journey.spaceID,
       challengeID: payload.journey.challenge?.id ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };

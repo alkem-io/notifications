@@ -13,7 +13,7 @@ export * from './platform-user-registered/platform.user.registered.notification.
 export * from './platform-user-removed/platform.user.removed.notification.builder';
 export * from './platform-forum-discussion-comment/platform.forum.discussion.comment.notification.builder';
 export * from './platform-forum-discussion-created/platform.forum.discussion.created.notification.builder';
-export * from './collaboration-card-created/collaboration.card.created.notification.builder';
-export * from './collaboration-card-comment/collaboration.card.comment.notification.builder';
+export * from './collaboration-post-created/collaboration.post.created.notification.builder';
+export * from './collaboration-post-comment/collaboration.post.comment.notification.builder';
 export * from './collaboration-callout-published/collaboration.callout.published.notification.builder';
 export * from './comment-reply/comment.reply.notification.builder';

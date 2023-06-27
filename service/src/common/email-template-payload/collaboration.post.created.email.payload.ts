@@ -1,17 +1,17 @@
 import { BaseJourneyEmailPayload } from './base.journey.email.payload';
-// @ts-
-export interface CollaborationCardCommentEmailPayload
+
+export interface CollaborationPostCreatedEmailPayload
   extends BaseJourneyEmailPayload {
+  createdBy: {
+    firstName: string;
+    email: string;
+  };
   callout: {
     displayName: string;
     url: string;
   };
-  card: {
+  post: {
     displayName: string;
     url: string;
-  };
-  createdBy: {
-    firstName: string;
-    email: string;
   };
 }

@@ -18,13 +18,13 @@ import {
   CollaborationContextReviewSubmittedPayload,
   PlatformUserRegistrationEventPayload,
   CommunityNewMemberPayload,
-  CollaborationCardCreatedEventPayload,
-  CollaborationCardCommentEventPayload,
+  CollaborationPostCreatedEventPayload,
+  CollaborationPostCommentEventPayload,
   CollaborationInterestPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
   PlatformUserRemovedEventPayload,
-  CollaborationCanvasCreatedEventPayload,
+  CollaborationWhiteboardCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
@@ -40,8 +40,8 @@ import {
   PlatformUserRegisteredNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   CollaborationContextReviewSubmittedNotificationBuilder,
-  CollaborationCardCreatedNotificationBuilder,
-  CollaborationCardCommentNotificationBuilder,
+  CollaborationPostCreatedNotificationBuilder,
+  CollaborationPostCommentNotificationBuilder,
   CollaborationInterestNotificationBuilder as CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
@@ -54,7 +54,7 @@ import {
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
-import { CollaborationCanvasCreatedNotificationBuilder } from '../builders/collaboration-canvas-created/collaboration.canvas.created.notification.builder';
+import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
 
@@ -81,9 +81,9 @@ export class NotificationService {
     private communicationOrganizationMentionNotificationBuilder: CommunicationOrganizationMentionNotificationBuilder,
     private collaborationContextReviewSubmittedNotificationBuilder: CollaborationContextReviewSubmittedNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
-    private collaborationCanvasCreatedNotificationBuilder: CollaborationCanvasCreatedNotificationBuilder,
-    private collaborationCardCreatedNotificationBuilder: CollaborationCardCreatedNotificationBuilder,
-    private collaborationCardCommentNotificationBuilder: CollaborationCardCommentNotificationBuilder,
+    private collaborationWhiteboardCreatedNotificationBuilder: CollaborationWhiteboardCreatedNotificationBuilder,
+    private collaborationPostCreatedNotificationBuilder: CollaborationPostCreatedNotificationBuilder,
+    private collaborationPostCommentNotificationBuilder: CollaborationPostCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private collaborationInterestNotificationBuilder: CollaborationInterestNotificationBuilder,
@@ -238,30 +238,30 @@ export class NotificationService {
     );
   }
 
-  async sendAspectCreatedNotification(
-    payload: CollaborationCardCreatedEventPayload
+  async sendPostCreatedNotification(
+    payload: CollaborationPostCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.collaborationCardCreatedNotificationBuilder
+      this.collaborationPostCreatedNotificationBuilder
     );
   }
 
-  async sendCanvasCreatedNotification(
-    payload: CollaborationCanvasCreatedEventPayload
+  async sendWhiteboardCreatedNotification(
+    payload: CollaborationWhiteboardCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.collaborationCanvasCreatedNotificationBuilder
+      this.collaborationWhiteboardCreatedNotificationBuilder
     );
   }
 
-  async sendAspectCommentCreatedNotification(
-    payload: CollaborationCardCommentEventPayload
+  async sendPostCommentCreatedNotification(
+    payload: CollaborationPostCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.collaborationCardCommentNotificationBuilder
+      this.collaborationPostCommentNotificationBuilder
     );
   }
 

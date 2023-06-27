@@ -1,6 +1,6 @@
 import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 
-export interface CollaborationCardCreatedEmailPayload
+export interface CollaborationWhiteboardCreatedEmailPayload
   extends BaseJourneyEmailPayload {
   createdBy: {
     firstName: string;
@@ -10,7 +10,7 @@ export interface CollaborationCardCreatedEmailPayload
     displayName: string;
     url: string;
   };
-  card: {
+  whiteboard: {
     displayName: string;
     url: string;
   };

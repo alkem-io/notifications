@@ -1,17 +1,15 @@
 import { JourneyBaseEventPayload } from './journey.base.event.payload';
 
-export interface CollaborationCardCommentEventPayload extends JourneyBaseEventPayload {
+export interface CollaborationPostCreatedEventPayload extends JourneyBaseEventPayload {
   callout: {
     displayName: string;
     nameID: string;
   }
-  card: {
+  post:  {
+    id: string;
+    createdBy: string;
     displayName: string;
-    createdBy: string;
     nameID: string;
-  };
-  comment: {
-    message: string;
-    createdBy: string;
+    type: string;
   };
 }

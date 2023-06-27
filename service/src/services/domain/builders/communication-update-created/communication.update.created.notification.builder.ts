@@ -45,13 +45,13 @@ export class CommunicationUpdateCreatedNotificationBuilder
     ];
 
     const templateVariables = {
-      hubID: payload.journey.hubID,
+      spaceID: payload.journey.spaceID,
       challengeID: payload.journey.challenge?.id ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
       journeyID:
         payload.journey?.challenge?.opportunity?.id ??
         payload.journey?.challenge?.id ??
-        payload.journey.hubID,
+        payload.journey.spaceID,
     };
 
     return this.notificationBuilder.build({

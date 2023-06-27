@@ -41,7 +41,7 @@ export class CommunityInvitationCreatedNotificationBuilder
     const templateVariables = {
       inviterID: payload.triggeredBy,
       inviteeID: payload.inviteeID,
-      hubID: payload.journey.hubID,
+      spaceID: payload.journey.spaceID,
       challengeID: payload.journey.challenge?.id ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
