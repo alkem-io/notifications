@@ -8,7 +8,7 @@ import {
 } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import {
   CollaborationDiscussionCommentEventPayload,
@@ -58,7 +58,7 @@ export class CollaborationDiscussionCommentNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationDiscussionCommentEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     commentAuthor?: User
   ): CollaborationDiscussionCommentEmailPayload {
     if (!commentAuthor) {
@@ -67,9 +67,7 @@ export class CollaborationDiscussionCommentNotificationBuilder
       );
     }
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(

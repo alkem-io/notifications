@@ -7,7 +7,7 @@ import {
 } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -65,7 +65,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationContextReviewSubmittedPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     reviewer?: User
   ): CollaborationContextReviewEmailPayload {
     if (!reviewer) {
@@ -75,9 +75,7 @@ export class CollaborationContextReviewSubmittedNotificationBuilder
     }
 
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
 

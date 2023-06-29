@@ -3,7 +3,7 @@ import {
   NotificationEventType,
   CommunicationCommunityLeadsMessageEventPayload,
 } from '@alkemio/notifications-lib';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { NotificationBuilder, RoleConfig } from '../../../application';
@@ -61,7 +61,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CommunicationCommunityLeadsMessageEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     sender?: User
   ): CommunicationCommunityLeadsMessageEmailPayload {
     if (!sender) {
@@ -70,9 +70,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
       );
     }
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
