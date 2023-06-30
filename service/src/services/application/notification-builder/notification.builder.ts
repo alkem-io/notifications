@@ -24,6 +24,10 @@ import {
   TEMPLATE_PROVIDER,
 } from '@src/common/enums/providers';
 import { LogContext } from '@src/common/enums';
+import {
+  filterCredentialCriterion,
+  isCredentialCriterionExternalUser,
+} from '../template-to-credential-mapper/utils/utils';
 
 export type RoleConfig = {
   role: string;
@@ -142,7 +146,6 @@ export class NotificationBuilder<
         `No rule set(s) found for roles: [${rolesText}]`
       );
     }
-
     const variableMap = templateVariables
       ? new Map<string, string>(
           Object.keys(templateVariables).map(x => [x, templateVariables[x]])
@@ -156,12 +159,21 @@ export class NotificationBuilder<
         ruleSets
       );
 
+    const filteredCriteria = filterCredentialCriterion(credentialCriteria);
+
     const recipients =
       await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
-        credentialCriteria
+        filteredCriteria
       );
 
-    const externalRecipients = externalUsers;
+    const externalRecipients: ExternalUser[] = [];
+
+    if (
+      isCredentialCriterionExternalUser(credentialCriteria) &&
+      externalUsers
+    ) {
+      externalRecipients.push(...externalUsers);
+    }
 
     if (!recipients.length && !externalRecipients) {
       const criteriaText = credentialCriteria
@@ -226,7 +238,7 @@ export class NotificationBuilder<
 
     const notificationRecipients = [
       ...filteredRecipients,
-      ...(externalUsers ?? []),
+      ...externalRecipients,
     ];
 
     const notifications = notificationRecipients.map(recipient =>

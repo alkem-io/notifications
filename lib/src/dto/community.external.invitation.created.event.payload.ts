@@ -4,4 +4,5 @@ export interface CommunityExternalInvitationCreatedEventPayload
   invitees: {
     email: string;
   }[];
+  welcomeMessage?: string;
 }

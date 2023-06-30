@@ -140,7 +140,9 @@ recipients:
             resource_id: <inviterID>
     - name: invitee
       rules:
-        -
+        - rule:
+            type: EXTERNAL_USER
+            resource_id:
   communication_update_sent:
     - name: admin
       rules:

@@ -14,7 +14,11 @@ module.exports = () => ({
         {% block content %}Hi,
 
           <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a href="{{journey.url}}">{{journey.displayName}}</a>.
+          {% if welcomeMessage %}
+          {{inviter.firstName}} has sent you this message:
           {{welcomeMessage}}
+
+          {% endif %}
 
           Sincerely yours,
         {% endblock %}

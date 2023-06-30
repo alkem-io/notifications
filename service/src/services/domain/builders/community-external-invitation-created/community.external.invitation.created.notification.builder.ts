@@ -56,6 +56,9 @@ export class CommunityExternalInvitationCreatedNotificationBuilder
       templateType: 'community_external_invitation_created',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      externalUsers: [
+        { email: 'john.wick@mail.io', firstName: '', lastName: '' },
+      ],
     });
   }
 
@@ -82,6 +85,10 @@ export class CommunityExternalInvitationCreatedNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
+    const emails = [...eventPayload.invitees]
+      .map(invitedUser => invitedUser.email)
+      .join(' ,');
+
     return {
       emailFrom: 'info@alkem.io',
       inviter: {
@@ -96,6 +103,8 @@ export class CommunityExternalInvitationCreatedNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
+      emails: emails,
+      welcomeMessage: eventPayload.welcomeMessage,
       journey: {
         displayName: eventPayload.journey.displayName,
         type: eventPayload.journey.type,
