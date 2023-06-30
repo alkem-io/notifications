@@ -132,6 +132,15 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <inviteeID>
+  community_external_invitation_created:
+    - name: inviter
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <inviterID>
+    - name: invitee
+      rules:
+        -
   communication_update_sent:
     - name: admin
       rules:
