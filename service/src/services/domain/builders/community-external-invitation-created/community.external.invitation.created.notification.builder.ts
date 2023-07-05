@@ -47,7 +47,11 @@ export class CommunityExternalInvitationCreatedNotificationBuilder
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
-    // const externalUsers = payload.invitees.map();
+    const externalUsers = payload.invitees.map(invitee => ({
+      email: invitee.email,
+      firstName: '',
+      lastName: '',
+    }));
 
     return this.notificationBuilder.build({
       payload,
@@ -56,9 +60,7 @@ export class CommunityExternalInvitationCreatedNotificationBuilder
       templateType: 'community_external_invitation_created',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
-      externalUsers: [
-        { email: 'john.wick@mail.io', firstName: '', lastName: '' },
-      ],
+      externalUsers,
     });
   }
 
