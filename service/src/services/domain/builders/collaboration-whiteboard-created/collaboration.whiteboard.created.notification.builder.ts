@@ -8,7 +8,7 @@ import {
   RoleConfig,
 } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationWhiteboardCreatedEmailPayload } from '@common/email-template-payload';
@@ -64,7 +64,7 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationWhiteboardCreatedEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     creator?: User
   ): CollaborationWhiteboardCreatedEmailPayload {
     if (!creator) {
@@ -74,9 +74,7 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
     }
 
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(

@@ -1,6 +1,6 @@
 {
   "name": "alkemio-notifications",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Alkemio notifications service",
   "author": "Alkemio Foundation",
   "private": false,
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@alkemio/client-lib": "^0.21.0",
-    "@alkemio/notifications-lib": "^0.5.3",
+    "@alkemio/notifications-lib": "^0.6.0",
     "@nestjs/common": "^8.0.5",
     "@nestjs/config": "^1.0.1",
     "@nestjs/core": "^8.0.5",

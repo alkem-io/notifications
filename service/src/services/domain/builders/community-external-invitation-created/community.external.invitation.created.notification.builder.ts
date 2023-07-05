@@ -2,76 +2,80 @@ import { Injectable, Inject } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
-import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
+import { CommunityExternalInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
   RoleConfig,
 } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
-import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
+import { CommunityExternalInvitationCreatedEmailPayload } from '@common/email-template-payload';
 import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 
 @Injectable()
-export class CommunityApplicationCreatedNotificationBuilder
+export class CommunityExternalInvitationCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      CommunityApplicationCreatedEventPayload,
-      CommunityApplicationCreatedEmailPayload
+      CommunityExternalInvitationCreatedEventPayload,
+      CommunityExternalInvitationCreatedEmailPayload
     >
   ) {}
 
   build(
-    payload: CommunityApplicationCreatedEventPayload
+    payload: CommunityExternalInvitationCreatedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
-        role: 'admin',
-        preferenceType: UserPreferenceType.NotificationApplicationReceived,
-        emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_ADMIN,
+        role: 'inviter',
+        emailTemplate: EmailTemplate.COMMUNITY_EXTERNAL_INVITATION_INVITER,
       },
       {
-        role: 'applicant',
-        emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_APPLICANT,
-        preferenceType: UserPreferenceType.NotificationApplicationSubmitted,
+        role: 'invitee',
+        emailTemplate: EmailTemplate.COMMUNITY_EXTERNAL_INVITATION_INVITEE,
       },
     ];
 
     const templateVariables = {
-      applicantID: payload.applicantID,
+      inviterID: payload.triggeredBy,
       spaceID: payload.journey.spaceID,
       challengeID: payload.journey.challenge?.id ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
+    const externalUsers = payload.invitees.map(invitee => ({
+      email: invitee.email,
+      firstName: '',
+      lastName: '',
+    }));
+
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.applicantID,
+      eventUserId: payload.triggeredBy,
       roleConfig,
-      templateType: 'community_application_created',
+      templateType: 'community_external_invitation_created',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      externalUsers,
     });
   }
 
   private createTemplatePayload(
-    eventPayload: CommunityApplicationCreatedEventPayload,
+    eventPayload: CommunityExternalInvitationCreatedEventPayload,
     recipient: User | ExternalUser,
-    applicant?: User
-  ): CommunityApplicationCreatedEmailPayload {
-    if (!applicant) {
+    inviter?: User
+  ): CommunityExternalInvitationCreatedEmailPayload {
+    if (!inviter) {
       throw Error(
-        `Applicant not provided for '${NotificationEventType.COMMUNITY_APPLICATION_CREATED} event'`
+        `Invitee not provided for '${NotificationEventType.COMMUNITY_INVITATION_CREATED} event'`
       );
     }
-    const applicantProfileURL = this.alkemioUrlGenerator.createUserURL(
-      applicant.nameID
+    const inviterProfileURL = this.alkemioUrlGenerator.createUserURL(
+      inviter.nameID
     );
     const communityURL = this.alkemioUrlGenerator.createJourneyURL(
       eventPayload.journey
@@ -83,13 +87,17 @@ export class CommunityApplicationCreatedNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
+    const emails = [...eventPayload.invitees]
+      .map(invitedUser => invitedUser.email)
+      .join(', ');
+
     return {
       emailFrom: 'info@alkem.io',
-      applicant: {
-        firstName: applicant.firstName,
-        name: applicant.profile.displayName,
-        email: applicant.email,
-        profile: applicantProfileURL,
+      inviter: {
+        firstName: inviter.firstName,
+        name: inviter.profile.displayName,
+        email: inviter.email,
+        profile: inviterProfileURL,
       },
       journeyAdminURL: communityAdminURL,
       recipient: {
@@ -97,6 +105,8 @@ export class CommunityApplicationCreatedNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
+      emails: emails,
+      welcomeMessage: eventPayload.welcomeMessage,
       journey: {
         displayName: eventPayload.journey.displayName,
         type: eventPayload.journey.type,

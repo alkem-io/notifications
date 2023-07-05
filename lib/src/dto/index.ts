@@ -9,6 +9,7 @@ export * from './communication.organization.mention.event.payload';
 export * from './community.application.created.event.payload';
 export * from './community.new.member.payload';
 export * from './community.invitation.created.event.payload';
+export * from './community.external.invitation.created.event.payload';
 export * from './collaboration.interest.payload';
 export * from './collaboration.whiteboard.created.event.payload';
 export * from './collaboration.post.created.event.payload';

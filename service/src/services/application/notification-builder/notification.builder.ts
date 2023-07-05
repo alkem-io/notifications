@@ -8,7 +8,7 @@ import {
 import { AlkemioClientAdapter } from '@src/services';
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import {
   INotificationRecipientTemplateProvider,
   TemplateConfig,
@@ -24,6 +24,10 @@ import {
   TEMPLATE_PROVIDER,
 } from '@src/common/enums/providers';
 import { LogContext } from '@src/common/enums';
+import {
+  filterCredentialCriterion,
+  isCredentialCriterionExternalUser,
+} from '../template-to-credential-mapper/utils/utils';
 
 export type RoleConfig = {
   role: string;
@@ -33,7 +37,7 @@ export type RoleConfig = {
 export type TemplateType = keyof TemplateConfig;
 export type TemplateBuilderFn<TPayload, TEmailPayload> = (
   payload: TPayload,
-  recipient: User,
+  recipient: User | ExternalUser,
   eventUser?: User
 ) => TEmailPayload;
 
@@ -53,6 +57,8 @@ export type NotificationOptions<
   eventUserId?: string;
   /** variables to be used into the chosen templateType if any */
   templateVariables?: Record<string, string>;
+  /** external users to which email addresses the notification will be sent */
+  externalUsers?: ExternalUser[];
 };
 
 export class NotificationBuilder<
@@ -124,7 +130,8 @@ export class NotificationBuilder<
       rolePreferenceType?: UserPreferenceType;
     }
   ): Promise<NotificationTemplateType[]> {
-    const { templateType, roleConfig, templateVariables } = options;
+    const { templateType, roleConfig, templateVariables, externalUsers } =
+      options;
     this.logger.verbose?.(
       `[${emailTemplate} - '${recipientRole}'] Building notifications - start'`,
       LogContext.NOTIFICATIONS
@@ -139,7 +146,6 @@ export class NotificationBuilder<
         `No rule set(s) found for roles: [${rolesText}]`
       );
     }
-
     const variableMap = templateVariables
       ? new Map<string, string>(
           Object.keys(templateVariables).map(x => [x, templateVariables[x]])
@@ -153,12 +159,23 @@ export class NotificationBuilder<
         ruleSets
       );
 
+    const filteredCriteria = filterCredentialCriterion(credentialCriteria);
+
     const recipients =
       await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
-        credentialCriteria
+        filteredCriteria
       );
 
-    if (!recipients.length) {
+    const externalRecipients: ExternalUser[] = [];
+
+    if (
+      isCredentialCriterionExternalUser(credentialCriteria) &&
+      externalUsers
+    ) {
+      externalRecipients.push(...externalUsers);
+    }
+
+    if (!recipients.length && !externalRecipients) {
       const criteriaText = credentialCriteria
         .map(x => `<${x.type},${x.resourceID}>`)
         .join(' OR ');
@@ -219,7 +236,12 @@ export class NotificationBuilder<
       LogContext.NOTIFICATIONS
     );
 
-    const notifications = filteredRecipients.map(recipient =>
+    const notificationRecipients = [
+      ...filteredRecipients,
+      ...externalRecipients,
+    ];
+
+    const notifications = notificationRecipients.map(recipient =>
       this.buildNotificationTemplate(
         options,
         recipient,
@@ -252,7 +274,7 @@ export class NotificationBuilder<
 
   private async buildNotificationTemplate(
     options: NotificationOptions<TPayload, TEmailPayload>,
-    recipient: User,
+    recipient: User | ExternalUser,
     templateName: string,
     eventUser?: User
   ): Promise<NotificationTemplateType | undefined> {

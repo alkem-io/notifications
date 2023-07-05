@@ -11,7 +11,8 @@ module.exports = {
   >Join our community</a
 >
 &nbsp;
-<a
+{% if recipient.notificationPreferences !== '' %}
+  <a
   style="
     color: #068293;
     text-decoration: underline;
@@ -21,8 +22,9 @@ module.exports = {
   href="{{recipient.notificationPreferences}}"
   alt="User notification preferences"
   >Notification settings</a
->
-&nbsp;
+  >
+  &nbsp;
+{% endif %}
 <a
 style="
   color: #068293;

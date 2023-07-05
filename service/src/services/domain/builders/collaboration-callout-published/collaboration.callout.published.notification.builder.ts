@@ -7,7 +7,7 @@ import {
 } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
@@ -56,7 +56,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationCalloutPublishedEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     creator?: User
   ): CollaborationCalloutPublishedEmailPayload {
     if (!creator) {
@@ -66,9 +66,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     }
 
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const alkemioUrl = this.alkemioUrlGenerator.createPlatformURL();
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(

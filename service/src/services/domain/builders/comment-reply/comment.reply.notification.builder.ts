@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { INotificationBuilder } from '@core/contracts';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommentReplyEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
@@ -53,7 +53,7 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
 
   createTemplatePayload(
     eventPayload: CommentReplyEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     sender?: User
   ): CommentReplyEmailPayload {
     if (!sender) {
@@ -63,16 +63,14 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
     }
 
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       reply: {
         message: eventPayload.reply,
         createdBy: sender.profile.displayName,
-        createdByUrl: this.alkemioUrlGenerator.createUserURL(recipient.nameID),
+        createdByUrl: this.alkemioUrlGenerator.createUserURL(sender.nameID),
       },
       comment: eventPayload.comment,
       recipient: {

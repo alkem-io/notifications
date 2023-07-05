@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
@@ -64,7 +64,7 @@ export class CollaborationInterestNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CollaborationInterestPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     user?: User
   ): CollaborationInterestEmailPayload {
     if (!user) {
@@ -74,9 +74,7 @@ export class CollaborationInterestNotificationBuilder
     }
 
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
 

@@ -39,6 +39,7 @@ import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/do
 import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
 import { CommentReplyNotificationBuilder } from './services/domain/builders/comment-reply/comment.reply.notification.builder';
+import { CommunityExternalInvitationCreatedNotificationBuilder } from './services/domain/builders/community-external-invitation-created/community.external.invitation.created.notification.builder';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { CommentReplyNotificationBuilder } from './services/domain/builders/comm
     NotificationBuilder,
     CommunityApplicationCreatedNotificationBuilder,
     CommunityInvitationCreatedNotificationBuilder,
+    CommunityExternalInvitationCreatedNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
     PlatformForumDiscussionCommentNotificationBuilder,
