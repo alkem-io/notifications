@@ -89,7 +89,7 @@ export class CommunityExternalInvitationCreatedNotificationBuilder
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const emails = [...eventPayload.invitees]
       .map(invitedUser => invitedUser.email)
-      .join(' ,');
+      .join(', ');
 
     return {
       emailFrom: 'info@alkem.io',
