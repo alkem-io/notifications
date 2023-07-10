@@ -51,12 +51,14 @@ import {
   CommunicationUserMentionNotificationBuilder,
   CommunicationOrganizationMentionNotificationBuilder,
   CommunityInvitationCreatedNotificationBuilder,
+  CommunityExternalInvitationCreatedNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
+import { CommunityExternalInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class NotificationService {
@@ -69,6 +71,7 @@ export class NotificationService {
     private readonly notifmeService: NotifmeSdk,
     private communityApplicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
     private communityInvitationCreatedNotificationBuilder: CommunityInvitationCreatedNotificationBuilder,
+    private communityExternalInvitationCreatedNotificationBuilder: CommunityExternalInvitationCreatedNotificationBuilder,
     private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
     private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
     private platformForumDiscussionCommentNotificationBuilder: PlatformForumDiscussionCommentNotificationBuilder,
@@ -127,6 +130,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.communityInvitationCreatedNotificationBuilder
+    );
+  }
+
+  async sendExternalInvitationCreatedNotifications(
+    payload: CommunityExternalInvitationCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.communityExternalInvitationCreatedNotificationBuilder
     );
   }
 

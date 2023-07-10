@@ -2,6 +2,7 @@ export enum NotificationEventType {
   COMMUNITY_APPLICATION_CREATED = 'communityApplicationCreated',
   COMMUNITY_NEW_MEMBER = 'communityNewMember',
   COMMUNITY_INVITATION_CREATED = 'communityInvitationCreated',
+  COMMUNITY_EXTERNAL_INVITATION_CREATED = 'communityExternalInvitationCreated',
   COMMUNICATION_COMMENT_SENT = 'communicationCommentSent',
   COMMUNICATION_UPDATE_SENT = 'communicationUpdateSent',
   COMMUNICATION_USER_MESSAGE = 'communicationUserMessage',

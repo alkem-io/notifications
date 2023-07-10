@@ -10,7 +10,7 @@ import {
 } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 
@@ -53,7 +53,7 @@ export class CollaborationPostCommentNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationPostCommentEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     commentAuthor?: User
   ): CollaborationPostCommentEmailPayload {
     if (!commentAuthor) {
@@ -62,9 +62,7 @@ export class CollaborationPostCommentNotificationBuilder
       );
     }
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     const journeyURL = this.alkemioUrlGenerator.createJourneyURL(

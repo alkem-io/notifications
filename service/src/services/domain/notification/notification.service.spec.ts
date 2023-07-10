@@ -34,6 +34,7 @@ import {
   PlatformForumDiscussionCommentNotificationBuilder,
   CommunityInvitationCreatedNotificationBuilder,
   CommentReplyNotificationBuilder,
+  CommunityExternalInvitationCreatedNotificationBuilder,
 } from '../builders';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
@@ -74,6 +75,7 @@ describe('NotificationService', () => {
         NotificationService,
         CommunityApplicationCreatedNotificationBuilder,
         CommunityInvitationCreatedNotificationBuilder,
+        CommunityExternalInvitationCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
         PlatformForumDiscussionCommentNotificationBuilder,
         PlatformUserRemovedNotificationBuilder,

@@ -1,6 +1,6 @@
 import { LogContext } from '@common/enums';
 import { TemplateRule } from '@core/contracts';
-import { CredentialCriterion } from '@core/models';
+import { CredentialCriterion, ROLE_EXTERNAL_USER } from '@core/models';
 import { NotSupportedException } from '@src/common/exceptions';
 
 /***
@@ -68,4 +68,34 @@ export const getResourceId = (
   }
 
   return lookupValue;
+};
+
+/***
+ * Filteres credential list from notification service role types
+ * @param credentialCriteria
+ * @returns Credential creiteria list
+ */
+export const filterCredentialCriterion = (
+  credentialCriteria: CredentialCriterion[]
+): CredentialCriterion[] => {
+  return credentialCriteria.filter(
+    criteria => (criteria.type as string) !== ROLE_EXTERNAL_USER
+  );
+};
+
+/***
+ * Filteres credential list from notification service role types
+ * @param credentialCriteria
+ * @returns Credential creiteria list
+ */
+export const isCredentialCriterionExternalUser = (
+  credentialCriteria: CredentialCriterion[]
+): boolean => {
+  const criteria = credentialCriteria.find(
+    criteria => (criteria.type as string) === ROLE_EXTERNAL_USER
+  );
+
+  if (criteria) return true;
+
+  return false;
 };

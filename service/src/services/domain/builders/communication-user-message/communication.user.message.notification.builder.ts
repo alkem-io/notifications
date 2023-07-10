@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { CommunicationUserMessageEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
@@ -56,7 +56,7 @@ export class CommunicationUserMessageNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CommunicationUserMessageEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     sender?: User
   ): CommunicationUserMessageEmailPayload {
     if (!sender) {
@@ -65,9 +65,7 @@ export class CommunicationUserMessageNotificationBuilder
       );
     }
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {

@@ -37,6 +37,7 @@ import {
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
+import { CommunityExternalInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 
 @Controller()
 export class AppController {
@@ -75,6 +76,22 @@ export class AppController {
       context,
       this.notificationService.sendInvitationCreatedNotifications(eventPayload),
       NotificationEventType.COMMUNITY_INVITATION_CREATED
+    );
+  }
+
+  @EventPattern(NotificationEventType.COMMUNITY_EXTERNAL_INVITATION_CREATED)
+  async sendExternalInvitationNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: CommunityExternalInvitationCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendExternalInvitationCreatedNotifications(
+        eventPayload
+      ),
+      NotificationEventType.COMMUNITY_EXTERNAL_INVITATION_CREATED
     );
   }
 

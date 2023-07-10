@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { INotificationBuilder } from '@core/contracts';
-import { User } from '@core/models';
+import { ExternalUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
@@ -54,7 +54,7 @@ export class PlatformForumDiscussionCommentNotificationBuilder
 
   createTemplatePayload(
     eventPayload: PlatformForumDiscussionCommentEventPayload,
-    recipient: User,
+    recipient: User | ExternalUser,
     sender?: User
   ): PlatformForumDiscussionCommentEmailPayload {
     if (!sender) {
@@ -64,9 +64,7 @@ export class PlatformForumDiscussionCommentNotificationBuilder
     }
 
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(
-        recipient.nameID
-      );
+      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',

@@ -13,6 +13,7 @@ import {
   createOrganizationURL as libCreateOrganizationURL,
   createUserNotificationPreferencesURL as libCreateUserNotificationPreferencesURL,
 } from '@alkemio/notifications-lib';
+import { ExternalUser, User, isUser } from '@src/core/models';
 
 @Injectable()
 export class AlkemioUrlGenerator {
@@ -67,10 +68,12 @@ export class AlkemioUrlGenerator {
     return libCreateOrganizationURL(this.webclientEndpoint, orgNameID);
   }
 
-  createUserNotificationPreferencesURL(userNameID: string): string {
-    return libCreateUserNotificationPreferencesURL(
-      this.webclientEndpoint,
-      userNameID
-    );
+  createUserNotificationPreferencesURL(user: User | ExternalUser): string {
+    return isUser(user)
+      ? libCreateUserNotificationPreferencesURL(
+          this.webclientEndpoint,
+          user.nameID
+        )
+      : '';
   }
 }

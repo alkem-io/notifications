@@ -2,8 +2,8 @@
 const templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'community-invitation-created-invitee',
-  title: '[{{journey.displayName}}] Invitation from {{inviter.name}}',
+  name: 'community-external-invitation-created-inviter',
+  title: '[{{journey.displayName}}] Invitation sent',
   version: 1,
   channels: {
     email: {
@@ -11,11 +11,14 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'Invitation to join {{journey.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
+        {% block content %}Hi {{inviter.name}},
 
-          <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a href="{{journey.url}}">{{journey.displayName}}</a>.
+          You have invited {{emails}} to join <a href="{{journey.url}}">{{journey.displayName}}</a>.
+          {% if welcomeMessage %}
+          You have sent him this message:
           {{welcomeMessage}}
 
+          {% endif %}
           Sincerely yours,
         {% endblock %}
         ${templates.footerBlock}`,

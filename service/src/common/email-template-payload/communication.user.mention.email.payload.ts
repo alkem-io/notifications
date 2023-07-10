@@ -6,10 +6,6 @@ export interface CommunicationUserMentionEmailPayload extends BaseEmailPayload {
     firstName: string;
   };
   comment: string;
-  mentionedUser: {
-    displayName: string;
-    firstName: string;
-  };
   commentOrigin: {
     url: string;
     displayName: string;
