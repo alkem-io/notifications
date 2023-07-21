@@ -11,11 +11,26 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'New comment on discussion: {{discussion.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
+        {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          A new comment has been added to the discussion you created, check it out here  <a href="{{discussion.url}}">{{discussion.displayName}}</a>
+          A new comment has been added to <a style="color:#065F6B; text-decoration: none;" href="{{discussion.url}}">{{discussion.displayName}}</a>, the discussion you created in the Alkemio Forum
+          <br><br>
+          <a 
+          style="
+          background-color: #065F6B;
+          border: none;
+          border-radius: 12px;
+          color: white;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 12px;
+          margin: 4px 2px;
+          cursor: pointer;
+          "
+        href="{{discussion.url}}">Have a look!</a><br><br>
 
-          Sincerely yours,
         {% endblock %}
         ${templates.footerBlock}`,
     },

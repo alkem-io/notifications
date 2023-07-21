@@ -11,13 +11,29 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'You have a new reply on your comment, have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
+        {% block content %}Hi {{recipient.firstName}},<br><br>
 
-        <a href={{reply.createdByUrl}}>{{reply.createdBy}}</a> has replied to your comment on '<a href={{comment.commentUrl}}>{{comment.commentOrigin}}</a>':
-          
-        {{reply.message}}
+        <b><a href={{reply.createdByUrl}}>{{reply.createdBy}}</a></b> replied to your comment on "<a style="color:#065F6B; text-decoration: none;" href={{comment.commentUrl}}>{{comment.commentOrigin}}</a>":
+        <br><br>
+        <i>"{{reply.message}}"</i>
 
-          Sincerely yours,
+        <br><br>
+        <a 
+        style="
+        background-color: #065F6B;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin: 4px 2px;
+        cursor: pointer;
+        "
+      href="{{comment.commentUrl}}">Have a look!</a><br><br>
+
         {% endblock %}
         ${templates.footerBlock}`,
     },

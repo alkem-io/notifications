@@ -9,13 +9,26 @@ module.exports = () => ({
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: '[Alkemio] New user registration: {{registrant.displayName}}',
+      subject: 'New user registration on Alkemio: {{registrant.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
-
-          There is a <a href="{{registrant.profile}}" >new user registration </a>: {{registrant.displayName}}, with email '{{registrant.email}}'.
-
-          Sincerely yours,
+        {% block content %}Hi {{recipient.firstName}},<br><br>
+        {{registrant.displayName}} registered on Alkemio with the following email address: {{registrant.email}}.
+          <br><br>
+          <a 
+          style="
+          background-color: #065F6B;
+          border: none;
+          border-radius: 12px;
+          color: white;
+          padding: 10px 20px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 12px;
+          margin: 4px 2px;
+          cursor: pointer;
+          "
+        href="{{registrant.profile}}">Have a look at {{registrant.displayName}}'s profile</a><br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },
