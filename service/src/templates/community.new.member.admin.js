@@ -3,24 +3,19 @@ const templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'community-new-member-admin',
-  title: '[{{journey.displayName}}] User {{member.name}} joined the community',
+  title: '{{member.name}} joined {{journey.displayName}}',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject:
-        '[{{journey.displayName}}] User {{member.name}} joined the community',
+      subject: '{{member.name}} joined {{journey.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
-
-          User {{member.name}} has joined the {{journey.displayName}} community.
-
-          The profile of the new member is available <a href="{{member.profile}}" >here</a>.
-
-          Sincerely yours,
+        {% block content %}Hi {{recipient.firstName}},<br><br>
+          <b>{{member.name}}</b> has joined <a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>, of which you are an admin.
+          <br><br>
+          <a class="action-button" href="{{member.profile}}">Have a look at {{member.name}}'s profile</a><br><br>
         {% endblock %}
-
         ${templates.footerBlock}`,
     },
   },

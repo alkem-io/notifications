@@ -9,17 +9,16 @@ module.exports = () => ({
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: 'You have sent a message to {{journey.displayName}} community!',
+      subject: 'You have sent a message to {{journey.displayName}} community',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
+        {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          You have sent a message to <a href={{journey.url}}>'{{journey.displayName}}'</a> community leads:
-          ======
-          {{message}}
-          ======
-
-          Sincerely yours,
-        {% endblock %}
+          You have sent the following message to the community lead(s) of <a style="color:#065F6B; text-decoration: none;" href={{journey.url}}>{{journey.displayName}}</a>:
+          <br><br>
+          <i>{{message}}</i>
+          <br><br>
+          
+          {% endblock %}
 
         ${templates.footerBlock}`,
     },

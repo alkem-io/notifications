@@ -11,17 +11,18 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       replyTo: '{{messageSender.email}}',
       subject:
-        '{{messageSender.displayName}} sent a message to your community!',
+        '{{messageSender.displayName}} sent a message to your community',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
+        {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          User {{messageSender.displayName}} sent a message to the <a href={{journey.url}}>'{{journey.displayName}}'</a> community where you are a lead:
-          ======
-          {{message}}
-          ======
-          You can reply to this email to respond directly to {{messageSender.firstName}}.
+          <b>{{messageSender.displayName}}</b> sent a message to you in your role as a lead of <a style="color:#065F6B; text-decoration: none;" href={{journey.url}}>'{{journey.displayName}}'</a>:
+          <br><br>
+          <i>{{message}}</i>
+          <br><br>
+          You can reply to this email to respond directly to {{messageSender.firstName}}. 
+          Please keep in mind that this way, your email address will become visible. 
+          If you prefer to communicate through Alkemio, click on the envelope icon on {{messageSender.displayName}}'s profile.<br><br>
 
-          Sincerely yours,
         {% endblock %}
 
         ${templates.footerBlock}`,
