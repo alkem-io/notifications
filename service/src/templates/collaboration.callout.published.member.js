@@ -3,20 +3,19 @@ var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
   name: 'collaboration-callout-published-member',
-  title:
-    '{{journey.displayName}} - New {{callout.type}} is published: "{{callout.displayName}}", have a look!',
   version: 1,
   channels: {
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '{{journey.displayName}} - New callout is published "{{callout.displayName}}", have a look!',
+        '{{journey.displayName}} - New {{callout.type}} is published "{{callout.displayName}}", have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}}, <br><br>        
-          <b>{{publishedBy.firstName}}</b> published a new {{callout.type}} in {{journey.displayName}}: "<a style="color:#065F6B; text-decoration: none;" href={{callout.url}}>{{callout.displayName}}</a>". 
+          {% block content %}
+          Hi {{recipient.firstName}}, <br><br>
+          <b>{{publishedBy.firstName}}</b> published a new {{callout.type}} in {{journey.type}}: "{{journey.displayName}}", with name: "<a style="color:#065F6B; text-decoration: none;" href={{callout.url}}>{{callout.displayName}}</a>".
           <br><br>
-          <a 
+          <a
           style="
           background-color: #065F6B;
           border: none;
