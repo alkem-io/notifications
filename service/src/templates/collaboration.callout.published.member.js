@@ -29,7 +29,7 @@ module.exports = () => ({
           margin: 4px 2px;
           cursor: pointer;
           "
-        href="{{callout.url}}">Have a look!</a>
+        href="{{callout.url}}">HAVE A LOOK!</a>
         {% endblock %}
         ${templates.footerBlock}`,
     },
