@@ -1,7 +1,7 @@
 module.exports = {
   footerBlock: `{% block footer %}
 {% if recipient.notificationPreferences !== '' %}
-  <a
+  Would you like to change your notification preferences? Change the settings <a
   style="
     color: #a9a9a9;
     text-decoration: underline;
@@ -10,7 +10,7 @@ module.exports = {
   "
   href="{{recipient.notificationPreferences}}"
   alt="Notification settings"
-  >Would you like to change your notification preferences? Change the settings here.</a>
+  >here.</a>
   &nbsp;
 {% endif %}
 {% endblock %}`,
