@@ -1,40 +1,16 @@
 module.exports = {
-  footerBlock: `{% block footer %}<a
-  stylstylee="
-    color: #068293;
-    text-decoration: underline;
-    font-family: Montserrat;
-    padding: 15px 5px;
-  "
-  href="{{space.url}}"
-  alt="Link to our community"
-  >Join our community</a
->
-&nbsp;
+  footerBlock: `{% block footer %}
 {% if recipient.notificationPreferences !== '' %}
-  <a
+  <span style="padding: 15px 0; color: #a9a9a9;">
+  Would you like to change your notification preferences? Change the settings <a
   style="
-    color: #068293;
+    color: #a9a9a9;
     text-decoration: underline;
-    font-family: Montserrat;
-    padding: 15px 5px;
   "
   href="{{recipient.notificationPreferences}}"
-  alt="User notification preferences"
-  >Notification settings</a
-  >
-  &nbsp;
+  alt="Notification settings"
+  >here</a>.
+  </span>
 {% endif %}
-<a
-style="
-  color: #068293;
-  text-decoration: underline;
-  font-family: Montserrat;
-  padding: 15px 5px;
-"
-href="https://alkemio.foundation/"
-alt="About Alkemio"
->About</a
->
 {% endblock %}`,
 };

@@ -13,15 +13,13 @@ module.exports = () => ({
       subject:
         '{{commentSender.displayName}} mentioned you in a comment on Alkemio',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
+        {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          {{commentSender.displayName}} mentioned you in a comment on <a href={{commentOrigin.url}}>'{{commentOrigin.displayName}}'</a>
-          ======
-          {{comment}}
-          ======
-          You can click on the <a href={{commentOrigin.url}}>this link</a> to view the comment in context and respond.
-
-          Sincerely yours,
+          <b>{{commentSender.displayName}}</b> mentioned you in a comment on <a style="color:#065F6B; text-decoration: none;" href={{commentOrigin.url}}>"{{commentOrigin.displayName}}"</a>:
+          <br><br>
+          <i>{{comment}}</i>
+          <br><br>
+          <a class="action-button" href="{{commentOrigin.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}
 
         ${templates.footerBlock}`,

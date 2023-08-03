@@ -35,8 +35,6 @@
       table,
       td {
         border-collapse: collapse;
-        mso-table-lspace: 0pt;
-        mso-table-rspace: 0pt;
       }
       img {
         border: 0;
@@ -53,11 +51,24 @@
       .content {
         cursor: auto;
         color: #000;
-        font-family: Source Sans Pro;
+        font-family: inherit;
         font-size: 17px;
         line-height: 22px;
-        text-align: left;
+        text-align: center;
         white-space: pre-line;
+      }
+      .action-button {
+        background-color: #065f6b;
+        border: none;
+        border-radius: 12px;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        margin: 4px 2px;
+        cursor: pointer;
       }
     </style>
     <!--[if !mso]><!-->
@@ -216,6 +227,17 @@
                         </td>
                       </tr>
                       <tr>
+                        <td style="text-align: center">
+                          <a href="https://alkem.io"
+                            ><img
+                              src="https://alkemio.org/uploads/logos/alkemio-logo.png"
+                              width="120"
+                              alt="alkemio-logo"
+                          /></a>
+                          <br />
+                        </td>
+                      </tr>
+                      <tr>
                         <td
                           style="
                             word-break: break-word;
@@ -223,7 +245,9 @@
                             padding: 10px;
                           "
                         >
-                          <div class="content">{% block content %}{% endblock %}</div>
+                          <div class="content">
+                            {% block content %}{% endblock %}
+                          </div>
                         </td>
                       </tr>
                       <tr>
@@ -238,69 +262,31 @@
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding: 0 10px; color: black">
-                          <b>Team Alkemio</b><br />
-                          <br />
-                          <a href="https://alkem.io"
-                            ><img
-                              src="https://alkemio.org/uploads/logos/alkemio-logo.png"
-                              width="175"
-                              alt="alkemio-logo"
-                          /></a>
-                          <br />Website:
-                          <a
+                        <td>
+                          <hr
                             style="
-                              color: #068293;
-                              text-decoration: underline;
-                              display: inline-block;
-                              padding-top: 5px;
+                              border-color: lightgray;
+                              width: 50%;
+                              margin: 15px auto;
                             "
-                            href="https://alkem.io"
-                            >https://alkem.io</a
-                          >
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding-top: 20px">
-                          <a href="https://alkem.io"
-                            ><img
-                              src="https://alkemio.org/uploads/vizualization-email-footer.jpg"
-                              width="100%"
-                              alt="alkemio-logo"
-                          /></a>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td
-                          style="display:table-cell; text-align: center; width:100% height: 100%; padding: 10px 0; font-size: 14px;"
-                        >
-                          {% block footer %}{% endblock %}
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding-top: 3px">
-                          <svg width="max" height="15">
-                            <rect
-                              width="100%"
-                              height="3"
-                              style="fill: rgb(0, 129, 143)"
-                            ></rect>
-                          </svg>
+                          />
                         </td>
                       </tr>
                       <tr>
                         <td
                           style="
-                            color: darkgrey;
+                            color: #666666;
                             font-size: 12px;
                             text-align: center;
                             padding: 0 10px;
                             line-height: 1.6;
                           "
                         >
-                          Don't want to recieve these notifications? Change your
-                          settings on the notifications settings to no longer
-                          recieve them anymore.
+                          Empowering society. Alkemio offers you the platform to
+                          succeed in working on challenges, together.<br />
+                          PURPOSE DRIVEN &nbsp;&nbsp;|&nbsp;&nbsp; OPEN SOURCE
+                          &nbsp;&nbsp;|&nbsp;&nbsp; INNOVATION
+                          <br />
                         </td>
                       </tr>
                       <tr width="100%">
@@ -313,8 +299,8 @@
                               style="
                                 display: inline-block;
                                 padding: 10px 5px;
-                                width: 35px;
-                                height: 35px;
+                                width: 15px;
+                                height: 15px;
                                 display: inline-block;
                               "
                               src="https://i.ibb.co/vcm298P/2048px-Octicons-mark-github-svg.png"
@@ -328,13 +314,28 @@
                               style="
                                 display: inline-block;
                                 padding: 10px 5px;
-                                width: 35px;
-                                height: 35px;
+                                width: 15px;
+                                height: 15px;
                               "
                               src="https://i.ibb.co/RBYFC4Z/174857.png"
                               alt="174857"
                             /> </a
                           ><br />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td
+                          style="
+                            display: table-cell;
+                            text-align: center;
+                            width: 100%;
+                            height: 100%;
+                            padding: 10px 0;
+                            color: #a9a9a9;
+                            font-size: 10px;
+                          "
+                        >
+                          {% block footer %}{% endblock %}
                         </td>
                       </tr>
                     </tbody>

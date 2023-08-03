@@ -11,11 +11,10 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: '{{user.name}} - Your interest to collaborate was received!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{user.name}},
+        {% block content %}Hi {{user.name}},<br><br>
 
-          Thank you for expressing the interest to collaborate on '<a href="{{journey.url}}">{{journey.displayName}}</a>' [{{journey.type}}]!
-
-          Sincerely yours,
+          Thank you for expressing the interest to collaborate on '<a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>' [{{journey.type}}]!
+          <br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },

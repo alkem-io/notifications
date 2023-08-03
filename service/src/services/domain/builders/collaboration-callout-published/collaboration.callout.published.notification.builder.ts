@@ -91,6 +91,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       callout: {
         displayName: eventPayload.callout.displayName,
         url: calloutURL,
+        type: eventPayload.callout.type,
       },
       journey: {
         displayName: eventPayload.journey.displayName,
