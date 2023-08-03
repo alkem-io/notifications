@@ -16,7 +16,7 @@ module.exports = () => ({
           <br>
           <i>{{welcomeMessage}}</i>
           <br>
-          <a class="action-button" href="journey.url">click here to accept or decline</a><br><br>
+          <a class="action-button" href="{{journey.url}}">click here to accept or decline</a><br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },
