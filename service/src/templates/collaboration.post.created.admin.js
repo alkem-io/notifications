@@ -11,13 +11,13 @@ module.exports = () => ({
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
-        '[{{journey.displayName}}] New Post created by {{createdBy.firstName}}',
+        '{{journey.displayName}}: New Post created by {{createdBy.firstName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},
+        {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          A new Post was created by {{createdBy.firstName}} with name: '<a href={{post.url}}>{{post.displayName}}</a>'.
-
-          Sincerely yours,
+        <b>{{createdBy.firstName}}</b> created a new post: "<a style="color:#065F6B; text-decoration: none;" href={{post.url}}>{{post.displayName}}</a>" in {{journey.displayName}}, of which you are an admin.
+        <br><br>
+        <a class="action-button" href="{{post.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },

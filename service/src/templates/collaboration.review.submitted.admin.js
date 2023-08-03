@@ -15,7 +15,7 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},
 
-          The user {{reviewer.name}} of {{journey.displayName}} submitted the following review
+          The user {{reviewer.name}} of {{journey.displayName}} submitted the following review:
 
           {review}
 

@@ -11,16 +11,13 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'Invitation to join {{journey.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi,
-
-          <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a href="{{journey.url}}">{{journey.displayName}}</a>.
+        {% block content %}<a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a href="{{journey.url}}">{{journey.displayName}}</a> on Alkemio.
           {% if welcomeMessage %}
-          {{inviter.firstName}} has sent you this message:
-          {{welcomeMessage}}
-
+          <br>
+          <i>{{welcomeMessage}}</i>
           {% endif %}
-
-          Sincerely yours,
+          <br>
+          <a class="action-button" href="{{journey.url}}">click here to accept or decline</a><br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },
