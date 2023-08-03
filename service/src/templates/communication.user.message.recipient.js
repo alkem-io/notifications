@@ -15,9 +15,9 @@ module.exports = () => ({
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           {{messageSender.displayName}} has sent you a message:
-          <br><br>
+          <br>
           <i>{{message}}</i>
-          <br><br>
+          <br>
           You can reply to this email to respond directly to {{messageSender.firstName}}. 
           Please keep in mind that this way, your email address will become visible. 
           If you prefer to communicate through Alkemio, click on the envelope icon on {{messageSender.displayName}}'s profile.

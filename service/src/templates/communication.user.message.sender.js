@@ -14,9 +14,9 @@ module.exports = () => ({
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           You have sent the following message to {{messageReceiver.displayName}}:
-          <br><br>
+          <br>
           <i>{{message}}</i>
-          <br><br>
+          <br>
         {% endblock %}
 
         ${templates.footerBlock}`,

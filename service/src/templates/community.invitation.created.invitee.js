@@ -11,13 +11,12 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'Invitation to join {{journey.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{recipient.firstName}},<br><br>
-
+        {% block content %}Hi {{recipient.firstName}},<br>
           <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>.
-          <br><br>
+          <br>
           <i>{{welcomeMessage}}</i>
-          <br><br>
-          <a class="action-button" href="">click here to accept or decline</a><br><br>
+          <br>
+          <a class="action-button" href="journey.url">click here to accept or decline</a><br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },

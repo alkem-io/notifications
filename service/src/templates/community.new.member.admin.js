@@ -12,12 +12,10 @@ module.exports = () => ({
       subject: '{{member.name}} joined {{journey.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
-
           <b>{{member.name}}</b> has joined <a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>, of which you are an admin.
           <br><br>
           <a class="action-button" href="{{member.profile}}">Have a look at {{member.name}}'s profile</a><br><br>
         {% endblock %}
-
         ${templates.footerBlock}`,
     },
   },
