@@ -15,21 +15,7 @@ module.exports = () => ({
           Hi {{recipient.firstName}}, <br><br>
           <b>{{publishedBy.firstName}}</b> published a new {{callout.type}} in {{journey.type}}: "{{journey.displayName}}", with name: "<a style="color:#065F6B; text-decoration: none;" href={{callout.url}}>{{callout.displayName}}</a>".
           <br><br>
-          <a
-          style="
-          background-color: #065F6B;
-          border: none;
-          border-radius: 12px;
-          color: white;
-          padding: 10px 20px;
-          text-align: center;
-          text-decoration: none;
-          display: inline-block;
-          font-size: 12px;
-          margin: 4px 2px;
-          cursor: pointer;
-          "
-        href="{{callout.url}}">HAVE A LOOK!</a>
+          <a class="action-button" href="{{callout.url}}">HAVE A LOOK!</a>
         {% endblock %}
         ${templates.footerBlock}`,
     },
