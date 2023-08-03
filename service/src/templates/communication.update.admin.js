@@ -29,7 +29,7 @@ module.exports = () => ({
           margin: 4px 2px;
           cursor: pointer;
           "
-        href="{{journey.url}}">Have a look!</a><br><br>
+        href="{{journey.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}
 
         ${templates.footerBlock}`,

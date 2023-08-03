@@ -29,7 +29,7 @@ module.exports = () => ({
           margin: 4px 2px;
           cursor: pointer;
           "
-        href="{{registrant.profile}}">Your profile</a><br><br>
+        href="{{registrant.profile}}">YOUR PROFILE</a><br><br>
           On the <a style="color:#065F6B; text-decoration: none;" href="https://alkem.io/home">Homepage</a> and <a style="color:#065F6B; text-decoration: none;" href="https://alkem.io/challenges">Challenges page</a> you'll find all available Spaces and Challenges for you to join. 
           <br>
           Looking forward to seeing your interactions and contributions!<br><br>

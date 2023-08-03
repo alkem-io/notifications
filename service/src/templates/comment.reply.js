@@ -32,7 +32,7 @@ module.exports = () => ({
         margin: 4px 2px;
         cursor: pointer;
         "
-      href="{{comment.commentUrl}}">Have a look!</a><br><br>
+      href="{{comment.commentUrl}}">HAVE A LOOK!</a><br><br>
 
         {% endblock %}
         ${templates.footerBlock}`,

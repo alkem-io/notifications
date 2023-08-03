@@ -31,7 +31,7 @@ module.exports = () => ({
         margin: 4px 2px;
         cursor: pointer;
         "
-      href="{{whiteboard.url}}">Have a look!</a><br><br>
+      href="{{whiteboard.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },
