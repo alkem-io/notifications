@@ -16,7 +16,9 @@ module.exports = () => ({
 
           {{messageSender.displayName}} has sent you a message:
           <br>
+          <br>
           <i>{{message}}</i>
+          <br>
           <br>
           You can reply to this email to respond directly to {{messageSender.firstName}}. 
           Please keep in mind that this way, your email address will become visible. 
