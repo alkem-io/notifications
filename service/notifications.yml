@@ -194,7 +194,7 @@ recipients:
     - name: receiver
       rules:
         - rule:
-            type: SPACE_HOST
+            type: SPACE_LEAD
             resource_id: <journeyID>
         - rule:
             type: CHALLENGE_LEAD
