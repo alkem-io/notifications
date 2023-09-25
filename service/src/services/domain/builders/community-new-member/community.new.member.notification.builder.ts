@@ -43,10 +43,20 @@ export class CommunityNewMemberNotificationBuilder
       },
     ];
 
+    const spaceIDTemplateVar =
+      !payload.journey?.challenge?.opportunity?.id &&
+      !payload.journey?.challenge?.id
+        ? payload.journey.spaceID
+        : '';
+
+    const challengeIDTemplateVar = !payload.journey?.challenge?.opportunity?.id
+      ? payload.journey?.challenge?.id
+      : undefined;
+
     const templateVariables = {
       memberID: payload.userID,
-      spaceID: payload.journey.spaceID,
-      challengeID: payload.journey.challenge?.id ?? '',
+      spaceID: spaceIDTemplateVar,
+      challengeID: challengeIDTemplateVar ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
