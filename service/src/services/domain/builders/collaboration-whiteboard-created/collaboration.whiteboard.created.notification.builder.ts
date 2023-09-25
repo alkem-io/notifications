@@ -42,9 +42,19 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
       },
     ];
 
+    const spaceIDTemplateVar =
+      !payload.journey?.challenge?.opportunity?.id &&
+      !payload.journey?.challenge?.id
+        ? payload.journey.spaceID
+        : '';
+
+    const challengeIDTemplateVar = !payload.journey?.challenge?.opportunity?.id
+      ? payload.journey?.challenge?.id
+      : undefined;
+
     const templateVariables = {
-      spaceID: payload.journey.spaceID,
-      challengeID: payload.journey?.challenge?.id ?? '',
+      spaceID: spaceIDTemplateVar,
+      challengeID: challengeIDTemplateVar ?? '',
       opportunityID: payload.journey?.challenge?.opportunity?.id ?? '',
       journeyID:
         payload.journey?.challenge?.opportunity?.id ??
