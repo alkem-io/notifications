@@ -42,11 +42,20 @@ export class CommunityApplicationCreatedNotificationBuilder
         preferenceType: UserPreferenceType.NotificationApplicationSubmitted,
       },
     ];
+    const spaceIDTemplateVar =
+      !payload.journey?.challenge?.opportunity?.id &&
+      !payload.journey?.challenge?.id
+        ? payload.journey.spaceID
+        : '';
+
+    const challengeIDTemplateVar = !payload.journey?.challenge?.opportunity?.id
+      ? payload.journey?.challenge?.id
+      : undefined;
 
     const templateVariables = {
       applicantID: payload.applicantID,
-      spaceID: payload.journey.spaceID,
-      challengeID: payload.journey.challenge?.id ?? '',
+      spaceID: spaceIDTemplateVar,
+      challengeID: challengeIDTemplateVar ?? '',
       opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
     };
 
