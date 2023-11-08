@@ -15,7 +15,7 @@ module.exports = () => ({
         {% block content %}Hi {{applicant.name}},<br><br>
           We have received your application for the {{journey.type}} <a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>.
 
-          Please view the status of your application on your <a href="{{applicant.profile}}">profile</a>.
+          Once your application is accepted, you will find this {{journey.type}} on your <a href="{{applicant.profile}}">profile</a> and homepage. As long as your application is pending, you can find it under "Pending Memberships" in your platform menu.
         <br><br>
         {% endblock %}
         ${templates.footerBlock}`,
