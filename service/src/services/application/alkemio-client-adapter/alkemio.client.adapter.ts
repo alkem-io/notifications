@@ -1,5 +1,5 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { AlkemioClient } from '@alkemio/client-lib';
+import { AlkemioClient, PlatformFeatureFlagName } from '@alkemio/client-lib';
 import { ALKEMIO_CLIENT_PROVIDER, LogContext } from '@common/enums';
 import { IFeatureFlagProvider } from '@core/contracts';
 import { CredentialCriterion, User } from '@core/models';
@@ -17,7 +17,10 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
   async areNotificationsEnabled(): Promise<boolean> {
     const featureFlags = await this.alkemioClient.featureFlags();
     if (
-      featureFlags?.find(x => x.name === 'notifications' && x.enabled === true)
+      featureFlags?.find(
+        x =>
+          x.name === PlatformFeatureFlagName.Notifications && x.enabled === true
+      )
     ) {
       return true;
     }
