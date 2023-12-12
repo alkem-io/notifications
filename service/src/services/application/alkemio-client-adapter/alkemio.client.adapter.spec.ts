@@ -1,4 +1,4 @@
-import { AlkemioClient } from '@alkemio/client-lib';
+import { AlkemioClient, PlatformFeatureFlagName } from '@alkemio/client-lib';
 import { Test } from '@nestjs/testing';
 import { AlkemioClientAdapterProvider } from './alkemio.client.adapter.module';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
@@ -53,19 +53,19 @@ describe('AlkemioAdapter', () => {
     it('Should return true', async () => {
       jest.spyOn(alkemioClient, 'featureFlags').mockResolvedValue([
         {
-          name: 'ssi',
+          name: PlatformFeatureFlagName.Ssi,
           enabled: false,
         },
         {
-          name: 'communications',
+          name: PlatformFeatureFlagName.Communications,
           enabled: true,
         },
         {
-          name: 'subscriptions',
+          name: PlatformFeatureFlagName.Subscriptions,
           enabled: false,
         },
         {
-          name: 'notifications',
+          name: PlatformFeatureFlagName.Notifications,
           enabled: true,
         },
       ]);
@@ -76,19 +76,19 @@ describe('AlkemioAdapter', () => {
     it('Should return false', async () => {
       jest.spyOn(alkemioClient, 'featureFlags').mockResolvedValue([
         {
-          name: 'ssi',
+          name: PlatformFeatureFlagName.Ssi,
           enabled: false,
         },
         {
-          name: 'communications',
+          name: PlatformFeatureFlagName.Communications,
           enabled: true,
         },
         {
-          name: 'subscriptions',
+          name: PlatformFeatureFlagName.Subscriptions,
           enabled: false,
         },
         {
-          name: 'notifications',
+          name: PlatformFeatureFlagName.Notifications,
           enabled: false,
         },
       ]);
