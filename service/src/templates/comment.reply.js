@@ -15,8 +15,7 @@ module.exports = () => ({
 
         <b><a href={{reply.createdByUrl}}>{{reply.createdBy}}</a></b> replied to your comment on "<a style="color:#065F6B; text-decoration: none;" href={{comment.commentUrl}}>{{comment.commentOrigin}}</a>":
         <br><br>
-        <i>"{{reply.message}}"</i>
-
+        <pre><i>"{{reply.message}}"</i></pre>
         <br><br>
         <a class="action-button" href="{{comment.commentUrl}}">HAVE A LOOK!</a><br><br>
 

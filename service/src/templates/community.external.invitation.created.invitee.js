@@ -14,7 +14,7 @@ module.exports = () => ({
         {% block content %}<a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a href="{{journey.url}}">{{journey.displayName}}</a> on Alkemio.
           {% if welcomeMessage %}
           <br>
-          <i>{{welcomeMessage}}</i>
+          <pre><i>{{welcomeMessage}}</i></pre>
           {% endif %}
           <br>
           <a class="action-button" href="{{journey.url}}">click here to accept or decline</a><br><br>

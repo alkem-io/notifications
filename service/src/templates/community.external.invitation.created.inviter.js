@@ -15,7 +15,7 @@ module.exports = () => ({
           You have invited {{emails}} to join <a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>.
           {% if welcomeMessage %}
           <br>
-          <i>{{welcomeMessage}}</i>
+          <pre><i>{{welcomeMessage}}</i></pre>
           {% endif %}
           <br>
         {% endblock %}

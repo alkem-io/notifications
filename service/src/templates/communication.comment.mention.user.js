@@ -16,9 +16,9 @@ module.exports = () => ({
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           <b>{{commentSender.displayName}}</b> mentioned you in a comment on <a style="color:#065F6B; text-decoration: none;" href={{commentOrigin.url}}>"{{commentOrigin.displayName}}"</a>:
-          <br><br>
-          <i>{{comment}}</i>
-          <br><br>
+          <br>
+          <pre><i>{{comment}}</i></pre>
+          <br>
           <a class="action-button" href="{{commentOrigin.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}
 
