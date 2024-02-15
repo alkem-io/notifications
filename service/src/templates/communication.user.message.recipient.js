@@ -13,12 +13,9 @@ module.exports = () => ({
       subject: '{{messageSender.displayName}} sent you a message!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
-
           {{messageSender.displayName}} has sent you a message:
           <br>
-          <br>
-          <i>{{message}}</i>
-          <br>
+          <pre><i>{{message}}</i></pre>
           <br>
           You can reply to this email to respond directly to {{messageSender.firstName}}. 
           Please keep in mind that this way, your email address will become visible. 

@@ -14,7 +14,7 @@ module.exports = () => ({
         {% block content %}Hi {{recipient.firstName}},<br>
           <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>.
           <br>
-          <i>{{welcomeMessage}}</i>
+          <pre><i>{{welcomeMessage}}</i></pre>
           <br>
           <a class="action-button" href="{{journey.url}}">click here to accept or decline</a><br><br>
         {% endblock %}
