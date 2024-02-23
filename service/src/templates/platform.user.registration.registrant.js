@@ -11,19 +11,19 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'Alkemio - Registration successful!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}Hi {{registrant.firstName}}, welcome to the Alkemio platform! <br>
-        <br>
-          Your account has been successfully created. Please spend some time to further populate your <a style="color:#065F6B; text-decoration: none;" href="{{registrant.profile}}" >profile</a> so that other users and organizations can find you.
-          <br><br>
-          <a class="action-button" href="{{registrant.profile}}">YOUR PROFILE</a><br><br>
-          On the <a style="color:#065F6B; text-decoration: none;" href="https://alkem.io/home">Homepage</a> and <a style="color:#065F6B; text-decoration: none;" href="https://alkem.io/challenges">Challenges page</a> you'll find all available Spaces and Challenges for you to join. 
-          <br>
-          Looking forward to seeing your interactions and contributions!<br><br>
-
-          Sincerely yours,<br><br>
-
-          The Alkemio team
-          <br><br>
+        {% block content %}
+            <h1>Dear {{registrant.firstName}},</h1>
+    <p>Welcome aboard the Alkemio platform! 🚀 Your account creation was a success—congratulations! 🎉 You’ve likely already explored your Dashboard and some Spaces, but let’s ensure you’re fully equipped to dive in.</p>
+    <ul>
+        <li>🌐 <b>Explore Spaces</b>: Alkemio thrives on collaboration within Spaces. Use your Dashboard’s search functionality to discover Spaces that pique your interest.</li>
+        <li>🚀 <b>Welcome Space</b>: Take a peek at our Welcome Space—it’s a treasure trove of tips and tricks waiting for you.</li>
+        <li>📸 <b>Personalize Your Profile</b>: Add a friendly photo to your profile so fellow users can put a face to your name.</li>
+        <li>💌 <b>Need Assistance?</b>: Whether you’re keen on starting your own Space or require support, our Community team is here for you. Reach out anytime at <a href="mailto:community@alkem.io"><b>community@alkem.io</b></a>.</li>
+        <li>🌐 Learn More: For additional details about Alkemio, check out our <a href="https://www.alkem.io">website</a>.</li>
+    </ul>
+    <p>We’re looking forward to seeing your interactions and contributions! 🌈</p>
+    <p>Warm regards,</p>
+    <p>The Alkemio Team 🌟</p>
         {% endblock %}
         ${templates.footerBlock}`,
     },
