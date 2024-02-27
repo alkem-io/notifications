@@ -26,6 +26,10 @@ export class AlkemioUrlGenerator {
     this.webclientEndpoint = this.configService.get(
       ConfigurationTypes.ALKEMIO
     )?.webclient_endpoint;
+    console.log(
+      '\n\n alkemio config:',
+      this.configService.get(ConfigurationTypes.ALKEMIO)
+    );
   }
 
   createPlatformURL(): string {
