@@ -77,7 +77,7 @@ hosting:
 
 alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/api/private/non-interactive/graphql
-  webclient_endpoint: ${ALKEMIO_WEBCLIENT_ENDPOINT}:http://localhost:3000
+  webclient_endpoint: ${ENDPOINT_CLUSTER}:http://localhost:3000
   service_account:
     username: ${SERVICE_ACCOUNT_USERNAME}:notifications@alkem.io
     password: ${SERVICE_ACCOUNT_PASSWORD}:change-me-now
