@@ -41,6 +41,8 @@ export class AlkemioUrlGenerator {
   }
 
   createUserURL(userNameID: string): string {
+    console.log('\n\n\nwebclientEndpoint:', this.webclientEndpoint);
+    console.log('\n\n\n');
     return libCreateUserURL(this.webclientEndpoint, userNameID);
   }
 

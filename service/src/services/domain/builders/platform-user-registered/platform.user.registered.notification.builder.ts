@@ -62,6 +62,9 @@ export class PlatformUserRegisteredNotificationBuilder
       );
     }
 
+    console.log('\n\n\nregistrant:\n', registrant);
+    console.log('\n\n');
+
     const registrantProfileURL = this.alkemioUrlGenerator.createUserURL(
       registrant.nameID
     );
