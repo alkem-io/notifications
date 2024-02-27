@@ -26,10 +26,6 @@ export class AlkemioUrlGenerator {
     this.webclientEndpoint = this.configService.get(
       ConfigurationTypes.ALKEMIO
     )?.webclient_endpoint;
-    console.log(
-      '\n\n alkemio config:',
-      this.configService.get(ConfigurationTypes.ALKEMIO)
-    );
   }
 
   createPlatformURL(): string {
@@ -45,8 +41,6 @@ export class AlkemioUrlGenerator {
   }
 
   createUserURL(userNameID: string): string {
-    console.log('\n\n\nwebclientEndpoint:', this.webclientEndpoint);
-    console.log('\n\n\n');
     return libCreateUserURL(this.webclientEndpoint, userNameID);
   }
 
