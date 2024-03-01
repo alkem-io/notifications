@@ -18,3 +18,7 @@ So that <some business value>
 - [ ] …
 
 ## Additional Context
+
+## Areas that will be affected 
+ 
+_To be added during the refinement_
