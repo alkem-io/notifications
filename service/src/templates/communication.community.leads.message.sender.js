@@ -14,9 +14,9 @@ module.exports = () => ({
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           You have sent the following message to the community lead(s) of <a style="color:#065F6B; text-decoration: none;" href={{journey.url}}>{{journey.displayName}}</a>:
-          <br><br>
-          <i>{{message}}</i>
-          <br><br>
+          <br>
+          <pre><i>{{message}}</i></pre>
+          <br>
           
           {% endblock %}
 
