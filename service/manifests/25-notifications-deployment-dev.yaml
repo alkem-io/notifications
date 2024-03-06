@@ -40,6 +40,11 @@ spec:
                 secretKeyRef:
                   name: alkemio-rabbitmq-cluster-default-user
                   key: password
+            - name: ALKEMIO_WEBCLIENT_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: alkemio-config
+                  key: ENDPOINT_CLUSTER
           envFrom:
             - secretRef:
                 name: alkemio-secrets
