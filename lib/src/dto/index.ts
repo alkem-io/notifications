@@ -1,5 +1,7 @@
 export * from './base.event.payload';
+export * from './space.base.event.payload';
 export * from './space.payload';
+export * from './contributor.payload';
 export * from './communication.update.event.payload';
 export * from './communication.user.message.event.payload';
 export * from './communication.organization.message.event.payload';
