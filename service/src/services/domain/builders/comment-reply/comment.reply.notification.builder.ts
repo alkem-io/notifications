@@ -1,23 +1,18 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ALKEMIO_URL_GENERATOR } from '@common/enums';
+import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommentReplyEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { CommentReplyEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CommentReplyNotificationBuilder implements INotificationBuilder {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommentReplyEventPayload,
@@ -64,13 +59,13 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
 
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
+
     return {
       emailFrom: 'info@alkem.io',
       reply: {
         message: eventPayload.reply,
         createdBy: sender.profile.displayName,
-        createdByUrl: this.alkemioUrlGenerator.createUserURL(sender.nameID),
+        createdByUrl: sender.profile.url,
       },
       comment: eventPayload.comment,
       recipient: {
@@ -79,7 +74,7 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
         notificationPreferences: notificationPreferenceURL,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

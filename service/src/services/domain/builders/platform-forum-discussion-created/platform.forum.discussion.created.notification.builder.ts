@@ -1,25 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ALKEMIO_URL_GENERATOR } from '@common/enums';
+import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCreatedEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { PlatformForumDiscussionCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class PlatformForumDiscussionCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       PlatformForumDiscussionCreatedEventPayload,
@@ -63,7 +58,6 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
 
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       createdBy: {
@@ -79,7 +73,7 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

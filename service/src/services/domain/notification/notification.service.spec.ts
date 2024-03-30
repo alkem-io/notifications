@@ -24,11 +24,9 @@ import {
   CommunicationCommunityLeadsMessageNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
   CommunicationOrganizationMentionNotificationBuilder,
-  CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
   CollaborationPostCreatedNotificationBuilder,
   CollaborationPostCommentNotificationBuilder,
-  CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
@@ -36,7 +34,6 @@ import {
   CommentReplyNotificationBuilder,
   CommunityExternalInvitationCreatedNotificationBuilder,
 } from '../builders';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
   MockAlkemioClientAdapterProvider,
   MockConfigServiceProvider,
@@ -49,6 +46,7 @@ import { NotificationBuilder } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 const testData = {
   ...challengeAdminsData,
@@ -86,9 +84,7 @@ describe('NotificationService', () => {
         CommunicationCommunityLeadsMessageNotificationBuilder,
         CommunicationUserMentionNotificationBuilder,
         CommunicationOrganizationMentionNotificationBuilder,
-        CollaborationContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
-        CollaborationInterestNotificationBuilder,
         CollaborationWhiteboardCreatedNotificationBuilder,
         CollaborationPostCreatedNotificationBuilder,
         CollaborationPostCommentNotificationBuilder,

@@ -8,6 +8,7 @@ export type User = {
   profile: {
     id: string;
     displayName: string;
+    url: string;
   };
 };
 
@@ -21,6 +22,7 @@ export type InternalUser = {
   profile: {
     id: string;
     displayName: string;
+    url: string;
   };
 };
 

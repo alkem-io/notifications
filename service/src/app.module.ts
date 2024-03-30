@@ -15,9 +15,7 @@ import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import {
   PlatformForumDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
-  CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
-  CollaborationInterestNotificationBuilder,
   CollaborationPostCreatedNotificationBuilder,
   CollaborationPostCommentNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
@@ -32,7 +30,7 @@ import {
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import {
-  AlkemioUrlGeneratorModule,
+  AlkemioUrlGenerator,
   NotificationBuilder,
 } from './services/application';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
@@ -40,6 +38,7 @@ import { CollaborationDiscussionCommentNotificationBuilder } from './services/do
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
 import { CommentReplyNotificationBuilder } from './services/domain/builders/comment-reply/comment.reply.notification.builder';
 import { CommunityExternalInvitationCreatedNotificationBuilder } from './services/domain/builders/community-external-invitation-created/community.external.invitation.created.notification.builder';
+import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator/alkemio.url.generator.module';
 
 @Module({
   imports: [
@@ -63,6 +62,7 @@ import { CommunityExternalInvitationCreatedNotificationBuilder } from './service
       useClass: HttpExceptionsFilter,
     },
     NotificationBuilder,
+    AlkemioUrlGenerator,
     CommunityApplicationCreatedNotificationBuilder,
     CommunityInvitationCreatedNotificationBuilder,
     CommunityExternalInvitationCreatedNotificationBuilder,
@@ -76,9 +76,7 @@ import { CommunityExternalInvitationCreatedNotificationBuilder } from './service
     CommunicationCommunityLeadsMessageNotificationBuilder,
     CommunicationUserMentionNotificationBuilder,
     CommunicationOrganizationMentionNotificationBuilder,
-    CollaborationContextReviewSubmittedNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
-    CollaborationInterestNotificationBuilder,
     CollaborationWhiteboardCreatedNotificationBuilder,
     CollaborationPostCreatedNotificationBuilder,
     CollaborationPostCommentNotificationBuilder,
