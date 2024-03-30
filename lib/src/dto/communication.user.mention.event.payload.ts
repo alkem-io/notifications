@@ -4,6 +4,7 @@ export interface CommunicationUserMentionEventPayload extends BaseEventPayload {
   mentionedUser: {
     id: string;
     displayName: string;
+    url: string;
   };
   commentOrigin: {
     url: string;

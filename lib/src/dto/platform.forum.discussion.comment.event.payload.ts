@@ -10,5 +10,6 @@ export interface PlatformForumDiscussionCommentEventPayload
   comment: {
     message: string;
     createdBy: string;
+    url: string;
   };
 }

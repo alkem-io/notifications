@@ -4,5 +4,6 @@ export interface CommunicationUserMessageEventPayload extends BaseEventPayload {
   messageReceiver: {
     id: string;
     displayName: string;
+    url: string;
   };
 }

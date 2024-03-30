@@ -1,4 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BaseEventPayload {
     triggeredBy: string;
+    platform: {
+        url: string;
+    }
 } 

@@ -2,5 +2,9 @@ import { BaseEventPayload } from "./base.event.payload";
 
 export interface PlatformUserRegistrationEventPayload
   extends BaseEventPayload {
-  userID: string;
+    user: {
+      id: string;
+      url: string;
+      displayName: string;
+    }
 };

@@ -1,6 +1,10 @@
 
-import { JourneyBaseEventPayload } from './journey.base.event.payload';
+import { SpaceBaseEventPayload } from './space.base.event.payload';
 
-export interface CommunityNewMemberPayload extends JourneyBaseEventPayload {
-  userID: string;
+export interface CommunityNewMemberPayload extends SpaceBaseEventPayload {
+  user: {
+    id: string;
+    url: string;
+    displayName: string;
+  }
 }

@@ -1,6 +1,6 @@
-import { JourneyBaseEventPayload } from './journey.base.event.payload';
+import { SpaceBaseEventPayload } from './space.base.event.payload';
 
 export interface CommunicationCommunityLeadsMessageEventPayload
-    extends JourneyBaseEventPayload {
+    extends SpaceBaseEventPayload {
     message: string;
 }

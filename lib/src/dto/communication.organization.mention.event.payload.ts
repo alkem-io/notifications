@@ -4,7 +4,10 @@ export interface CommunicationOrganizationMentionEventPayload
   comment: string;
   mentionedOrganization: {
     id: string;
-    displayName: string;
+    profile: {
+      displayName: string;
+      url: string;
+    }
   };
   commentOrigin: {
     url: string;

@@ -5,5 +5,6 @@ export interface CommunicationOrganizationMessageEventPayload
   organization: {
     id: string;
     displayName: string;
+    url: string;
   };
 }
