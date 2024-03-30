@@ -39,7 +39,7 @@ export class CommunityApplicationCreatedNotificationBuilder
     ];
 
     const templateVariables = {
-      applicantID: payload.applicant.url,
+      applicantID: payload.applicant.profile.url,
       spaceID: payload.space.id,
     };
 

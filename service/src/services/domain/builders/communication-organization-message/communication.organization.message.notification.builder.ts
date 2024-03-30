@@ -82,7 +82,7 @@ export class CommunicationOrganizationMessageNotificationBuilder
       },
       message: eventPayload.message,
       organization: {
-        displayName: eventPayload.organization.displayName,
+        displayName: eventPayload.organization.profile.displayName,
       },
       platform: {
         url: eventPayload.platform.url,

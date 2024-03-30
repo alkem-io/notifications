@@ -82,7 +82,7 @@ export class CommunicationUserMessageNotificationBuilder
         url: eventPayload.platform.url,
       },
       messageReceiver: {
-        displayName: eventPayload.messageReceiver.displayName,
+        displayName: eventPayload.messageReceiver.profile.displayName,
       },
     };
   }
