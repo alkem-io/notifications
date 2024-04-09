@@ -77,7 +77,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
         url: calloutURL,
         type: eventPayload.callout.type,
       },
-      space: {
+      journey: {
         displayName: eventPayload.space.profile.displayName,
         type: eventPayload.space.type,
         url: eventPayload.space.profile.url,

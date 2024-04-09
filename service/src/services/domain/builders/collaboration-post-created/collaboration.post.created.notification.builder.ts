@@ -84,7 +84,7 @@ export class CollaborationPostCreatedNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      space: {
+      journey: {
         displayName: eventPayload.space.profile.displayName,
         type: eventPayload.space.type,
         url: eventPayload.space.profile.url,
