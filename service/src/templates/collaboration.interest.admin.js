@@ -15,7 +15,7 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          {{user.name}} is interested to participate in '<a style="color:#065F6B; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>' [{{journey.type}}]:
+          {{user.name}} is interested to participate in '<a style="color:#1d384a; text-decoration: none;" href="{{journey.url}}">{{journey.displayName}}</a>' [{{journey.type}}]:
           - role: {{relation.role}}
           - description: {{relation.description}}
           <br><br>
