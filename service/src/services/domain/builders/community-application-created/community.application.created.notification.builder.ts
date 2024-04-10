@@ -80,7 +80,7 @@ export class CommunityApplicationCreatedNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      journey: {
+      space: {
         displayName: eventPayload.space.profile.displayName,
         type: eventPayload.space.type,
         url: eventPayload.space.profile.url,

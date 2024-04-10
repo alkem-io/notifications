@@ -78,7 +78,7 @@ export class CollaborationPostCommentNotificationBuilder
         firstName: commentAuthor.firstName,
         email: commentAuthor.email,
       },
-      journey: {
+      space: {
         displayName: eventPayload.space.profile.displayName,
         type: eventPayload.space.type,
         url: eventPayload.space.profile.url,
