@@ -13,7 +13,7 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
-        <b><a href={{reply.createdByUrl}}>{{reply.createdBy}}</a></b> replied to your comment on "<a style="color:#065F6B; text-decoration: none;" href={{comment.commentUrl}}>{{comment.commentOrigin}}</a>":
+        <b><a href={{reply.createdByUrl}}>{{reply.createdBy}}</a></b> replied to your comment on "<a style="color:#1d384a; text-decoration: none;" href={{comment.commentUrl}}>{{comment.commentOrigin}}</a>":
         <br><br>
         <pre><i>"{{reply.message}}"</i></pre>
         <br><br>
