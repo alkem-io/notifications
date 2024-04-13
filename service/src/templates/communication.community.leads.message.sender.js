@@ -13,11 +13,11 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          You have sent the following message to the community lead(s) of <a style="color:#065F6B; text-decoration: none;" href={{space.url}}>{{space.displayName}}</a>:
+          You have sent the following message to the community lead(s) of <a style="color:#1d384a; text-decoration: none;" href={{space.url}}>{{space.displayName}}</a>:
           <br>
           <pre><i>{{message}}</i></pre>
           <br>
-          
+
           {% endblock %}
 
         ${templates.footerBlock}`,

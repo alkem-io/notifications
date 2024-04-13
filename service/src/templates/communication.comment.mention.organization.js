@@ -15,7 +15,7 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
-          <b>{{commentSender.displayName}}</b> mentioned '{{mentionedOrganization.displayName}}' in a comment on <a style="color:#065F6B; text-decoration: none;" href={{commentOrigin.url}}>'{{commentOrigin.displayName}}'</a>:
+          <b>{{commentSender.displayName}}</b> mentioned '{{mentionedOrganization.displayName}}' in a comment on <a style="color:#1d384a; text-decoration: none;" href={{commentOrigin.url}}>'{{commentOrigin.displayName}}'</a>:
           <br>
           <pre><i>{{comment}}</i></pre>
           <br>

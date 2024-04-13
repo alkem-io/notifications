@@ -12,7 +12,7 @@ module.exports = () => ({
       subject: 'Invitation to join {{space.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br>
-          <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a style="color:#065F6B; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a>.
+          <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a>.
           <br>
           <pre><i>{{welcomeMessage}}</i></pre>
           <br>
