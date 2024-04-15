@@ -1,25 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
 import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
-import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CommunityApplicationCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommunityApplicationCreatedEventPayload,
@@ -42,26 +37,15 @@ export class CommunityApplicationCreatedNotificationBuilder
         preferenceType: UserPreferenceType.NotificationApplicationSubmitted,
       },
     ];
-    const spaceIDTemplateVar =
-      !payload.journey?.challenge?.opportunity?.id &&
-      !payload.journey?.challenge?.id
-        ? payload.journey.spaceID
-        : '';
-
-    const challengeIDTemplateVar = !payload.journey?.challenge?.opportunity?.id
-      ? payload.journey?.challenge?.id
-      : undefined;
 
     const templateVariables = {
-      applicantID: payload.applicantID,
-      spaceID: spaceIDTemplateVar,
-      challengeID: challengeIDTemplateVar ?? '',
-      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
+      applicantID: payload.applicant.profile.url,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.applicantID,
+      eventUserId: payload.applicant.id,
       roleConfig,
       templateType: 'community_application_created',
       templateVariables,
@@ -79,40 +63,30 @@ export class CommunityApplicationCreatedNotificationBuilder
         `Applicant not provided for '${NotificationEventType.COMMUNITY_APPLICATION_CREATED} event'`
       );
     }
-    const applicantProfileURL = this.alkemioUrlGenerator.createUserURL(
-      applicant.nameID
-    );
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-    const communityAdminURL =
-      this.alkemioUrlGenerator.createJourneyAdminCommunityURL(
-        eventPayload.journey
-      );
+
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
     return {
       emailFrom: 'info@alkem.io',
       applicant: {
         firstName: applicant.firstName,
         name: applicant.profile.displayName,
         email: applicant.email,
-        profile: applicantProfileURL,
+        profile: applicant.profile.url,
       },
-      journeyAdminURL: communityAdminURL,
+      spaceAdminURL: eventPayload.space.adminURL,
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: communityURL,
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

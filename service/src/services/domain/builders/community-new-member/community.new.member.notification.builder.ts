@@ -1,30 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunityNewMemberPayload } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types';
-import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  CommunityNewMemberPayload,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommunityNewMemberPayload,
       CommunityNewMemberEmailPayload
-    >,
-    @Inject(ALKEMIO_URL_GENERATOR)
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
+    >
   ) {}
 
   build(
@@ -43,26 +40,14 @@ export class CommunityNewMemberNotificationBuilder
       },
     ];
 
-    const spaceIDTemplateVar =
-      !payload.journey?.challenge?.opportunity?.id &&
-      !payload.journey?.challenge?.id
-        ? payload.journey.spaceID
-        : '';
-
-    const challengeIDTemplateVar = !payload.journey?.challenge?.opportunity?.id
-      ? payload.journey?.challenge?.id
-      : undefined;
-
     const templateVariables = {
-      memberID: payload.userID,
-      spaceID: spaceIDTemplateVar,
-      challengeID: challengeIDTemplateVar ?? '',
-      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
+      memberID: payload.user.id,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.userID,
+      eventUserId: payload.user.id,
       roleConfig,
       templateType: 'community_new_member',
       templateVariables,
@@ -84,10 +69,7 @@ export class CommunityNewMemberNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
-    const memberProfileURL = this.alkemioUrlGenerator.createUserURL(
-      member.nameID
-    );
+    const memberProfileURL = member.profile.url;
 
     return {
       emailFrom: 'info@alkem.io',
@@ -101,13 +83,13 @@ export class CommunityNewMemberNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

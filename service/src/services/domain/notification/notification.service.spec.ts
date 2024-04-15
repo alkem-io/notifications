@@ -1,10 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
-import {
-  ALKEMIO_CLIENT_ADAPTER,
-  ALKEMIO_URL_GENERATOR,
-  NOTIFICATIONS_PROVIDER,
-} from '@common/enums';
+import { ALKEMIO_CLIENT_ADAPTER, NOTIFICATIONS_PROVIDER } from '@common/enums';
 import * as challengeAdminsData from '@test/data/challenge.admins.json';
 import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
 import * as spaceAdminsData from '@test/data/space.admins.json';
@@ -24,11 +20,9 @@ import {
   CommunicationCommunityLeadsMessageNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
   CommunicationOrganizationMentionNotificationBuilder,
-  CollaborationContextReviewSubmittedNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
   CollaborationPostCreatedNotificationBuilder,
   CollaborationPostCommentNotificationBuilder,
-  CollaborationInterestNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
@@ -36,7 +30,6 @@ import {
   CommentReplyNotificationBuilder,
   CommunityExternalInvitationCreatedNotificationBuilder,
 } from '../builders';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import {
   MockAlkemioClientAdapterProvider,
   MockConfigServiceProvider,
@@ -45,7 +38,10 @@ import {
   MockNotifmeProvider,
   MockWinstonProvider,
 } from '@test/mocks';
-import { NotificationBuilder } from '@src/services/application';
+import {
+  AlkemioUrlGenerator,
+  NotificationBuilder,
+} from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
@@ -86,9 +82,7 @@ describe('NotificationService', () => {
         CommunicationCommunityLeadsMessageNotificationBuilder,
         CommunicationUserMentionNotificationBuilder,
         CommunicationOrganizationMentionNotificationBuilder,
-        CollaborationContextReviewSubmittedNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
-        CollaborationInterestNotificationBuilder,
         CollaborationWhiteboardCreatedNotificationBuilder,
         CollaborationPostCreatedNotificationBuilder,
         CollaborationPostCommentNotificationBuilder,
@@ -98,10 +92,7 @@ describe('NotificationService', () => {
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,
-        {
-          provide: ALKEMIO_URL_GENERATOR,
-          useClass: AlkemioUrlGenerator,
-        },
+        AlkemioUrlGenerator,
       ],
     }).compile();
 

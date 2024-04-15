@@ -1,25 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
 import { CommunityInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityInvitationCreatedEmailPayload } from '@common/email-template-payload';
-import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 import { UserPreferenceType } from '@alkemio/client-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CommunityInvitationCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommunityInvitationCreatedEventPayload,
@@ -40,10 +35,8 @@ export class CommunityInvitationCreatedNotificationBuilder
 
     const templateVariables = {
       inviterID: payload.triggeredBy,
-      inviteeID: payload.inviteeID,
-      spaceID: payload.journey.spaceID,
-      challengeID: payload.journey.challenge?.id ?? '',
-      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
+      inviteeID: payload.invitee.id,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
@@ -66,40 +59,31 @@ export class CommunityInvitationCreatedNotificationBuilder
         `Invitee not provided for '${NotificationEventType.COMMUNITY_INVITATION_CREATED} event'`
       );
     }
-    const inviterProfileURL = this.alkemioUrlGenerator.createUserURL(
-      inviter.nameID
-    );
-    const communityURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-    const communityAdminURL =
-      this.alkemioUrlGenerator.createJourneyAdminCommunityURL(
-        eventPayload.journey
-      );
+
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
+
     return {
       emailFrom: 'info@alkem.io',
       inviter: {
         firstName: inviter.firstName,
         name: inviter.profile.displayName,
         email: inviter.email,
-        profile: inviterProfileURL,
+        profile: inviter.profile.url,
       },
-      journeyAdminURL: communityAdminURL,
+      spaceAdminURL: eventPayload.space.adminURL,
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: communityURL,
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

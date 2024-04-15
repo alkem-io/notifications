@@ -1,6 +1,7 @@
-import { JourneyPayload } from './journey.payload';
-import { JourneyBaseEventPayload } from './journey.base.event.payload';
+import { SpacePayload } from './space.payload';
+import { SpaceBaseEventPayload } from './space.base.event.payload';
+import { ContributorPayload } from './contributor.payload';
 
-export interface CommunityApplicationCreatedEventPayload extends JourneyBaseEventPayload {
-  applicantID: string;
+export interface CommunityApplicationCreatedEventPayload extends SpaceBaseEventPayload {
+  applicant: ContributorPayload;
 }

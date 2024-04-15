@@ -1,6 +1,6 @@
-import { JourneyBaseEventPayload } from './journey.base.event.payload';
+import { SpaceBaseEventPayload } from './space.base.event.payload';
 export interface CommunityExternalInvitationCreatedEventPayload
-  extends JourneyBaseEventPayload {
+  extends SpaceBaseEventPayload {
   invitees: {
     email: string;
   }[];

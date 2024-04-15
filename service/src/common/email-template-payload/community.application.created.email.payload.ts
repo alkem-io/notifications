@@ -8,5 +8,5 @@ export interface CommunityApplicationCreatedEmailPayload
     email: string;
     profile: string;
   };
-  journeyAdminURL: string;
+  spaceAdminURL: string;
 }

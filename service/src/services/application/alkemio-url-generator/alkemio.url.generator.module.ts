@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ALKEMIO_URL_GENERATOR } from '@common/enums';
-import { AlkemioUrlGenerator } from '.';
+import { AlkemioUrlGenerator } from './alkemio.url.generator';
 
 @Module({
   imports: [],

@@ -1,33 +1,29 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '@src/services/application';
+import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
 import { ExternalUser, User } from '@core/models';
-import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import {
   CollaborationDiscussionCommentEventPayload,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { CollaborationDiscussionCommentEmailPayload } from '@src/common/email-template-payload';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CollaborationDiscussionCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CollaborationDiscussionCommentEventPayload,
       CollaborationDiscussionCommentEmailPayload
-    >,
-    @Inject(ALKEMIO_URL_GENERATOR)
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
+    >
   ) {}
+
   build(
     payload: CollaborationDiscussionCommentEventPayload
   ): Promise<NotificationTemplateType[]> {
@@ -40,10 +36,7 @@ export class CollaborationDiscussionCommentNotificationBuilder
     ];
 
     const templateVariables = {
-      journeyID:
-        payload.journey?.challenge?.opportunity?.id ??
-        payload.journey?.challenge?.id ??
-        payload.journey.spaceID,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
@@ -69,21 +62,11 @@ export class CollaborationDiscussionCommentNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
-    const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-
-    const calloutURL = this.alkemioUrlGenerator.createCalloutURL(
-      journeyURL,
-      eventPayload.callout.nameID
-    );
-
     const result: CollaborationDiscussionCommentEmailPayload = {
       emailFrom: 'info@alkem.io',
       callout: {
         displayName: eventPayload.callout.displayName,
-        url: calloutURL,
+        url: eventPayload.callout.url,
       },
 
       recipient: {
@@ -95,13 +78,13 @@ export class CollaborationDiscussionCommentNotificationBuilder
         firstName: commentAuthor.firstName,
         email: commentAuthor.email,
       },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: journeyURL,
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
       message: eventPayload.comment.message,
     };

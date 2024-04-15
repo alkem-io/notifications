@@ -10,5 +10,5 @@ export interface CommunityExternalInvitationCreatedEmailPayload
   };
   welcomeMessage?: string;
   emails?: string;
-  journeyAdminURL: string;
+  spaceAdminURL: string;
 }

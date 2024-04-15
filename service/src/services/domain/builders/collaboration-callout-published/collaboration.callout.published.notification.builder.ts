@@ -1,18 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '@src/services/application';
+import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { ExternalUser, User } from '@core/models';
-import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CollaborationCalloutPublishedNotificationBuilder
@@ -23,7 +19,6 @@ export class CollaborationCalloutPublishedNotificationBuilder
       CollaborationCalloutPublishedEventPayload,
       CollaborationCalloutPublishedEmailPayload
     >,
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
@@ -38,10 +33,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     ];
 
     const templateVariables = {
-      journeyID:
-        payload.journey?.challenge?.opportunity?.id ??
-        payload.journey?.challenge?.id ??
-        payload.journey.spaceID,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
@@ -68,15 +60,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const alkemioUrl = this.alkemioUrlGenerator.createPlatformURL();
-    const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-
-    const calloutURL = this.alkemioUrlGenerator.createCalloutURL(
-      journeyURL,
-      eventPayload.callout.nameID
-    );
+    const calloutURL = eventPayload.callout.url;
 
     const result: CollaborationCalloutPublishedEmailPayload = {
       emailFrom: 'info@alkem.io',
@@ -93,13 +77,13 @@ export class CollaborationCalloutPublishedNotificationBuilder
         url: calloutURL,
         type: eventPayload.callout.type,
       },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioUrl,
+        url: eventPayload.platform.url,
       },
     };
     return result;

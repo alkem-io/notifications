@@ -1,21 +1,19 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PlatformUserRemovedEventPayload } from '@alkemio/notifications-lib';
 import { ExternalUser, User } from '@core/models';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
-import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 import { PlatformUserRemovedEmailPayload } from '@src/common/email-template-payload/platform.user.removed.email.payload';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class PlatformUserRemovedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       PlatformUserRemovedEventPayload,
@@ -64,7 +62,7 @@ export class PlatformUserRemovedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       platform: {
-        url: this.alkemioUrlGenerator.createPlatformURL(),
+        url: eventPayload.platform.url,
       },
     };
   }

@@ -8,6 +8,7 @@ export type User = {
   profile: {
     id: string;
     displayName: string;
+    url: string;
   };
 };
 
@@ -21,6 +22,7 @@ export type InternalUser = {
   profile: {
     id: string;
     displayName: string;
+    url: string;
   };
 };
 
@@ -30,7 +32,9 @@ export type ExternalUser = {
   email: string;
 };
 
-export const isUser = (user: User | ExternalUser): user is User => {
+export const isExistingAlkemioUser = (
+  user: User | ExternalUser
+): user is User => {
   return (user as User).nameID !== undefined;
 };
 
