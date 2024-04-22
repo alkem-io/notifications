@@ -17,9 +17,7 @@ module.exports = () => ({
           <br>
           <pre><i>{{message}}</i></pre>
           <br>
-          You can reply to this email to respond directly to {{messageSender.firstName}}. 
-          Please keep in mind that this way, your email address will become visible. 
-          If you prefer to communicate through Alkemio, click on the envelope icon on {{messageSender.displayName}}'s profile.
+          You can reply to this email to communicate directly with {{messageSender.firstName}}. Please note that your email address will become visible to the recipient.
           <br><br>
 
         {% endblock %}
