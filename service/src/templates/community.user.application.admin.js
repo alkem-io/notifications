@@ -15,8 +15,8 @@ module.exports = () => ({
         {% block content %}Hi {{recipient.firstName}},<br><br>
           We have received an application from <b>{{applicant.name}}</b> for the {{space.type}} <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a>, of which you are an admin.
           <br>
-          <a class="action-button" href="{{applicant.profile}}">Have a look at {{applicant.firstName}}'s profile</a><br><br>
-          Review {{applicant.firstName}}'s application on the Community tab on the settings page <a style="color:#1d384a;" href="{{spaceAdminURL}}" >here</a>.
+          <a class="action-button" href="{{spaceAdminURL}}">Review {{applicant.firstName}}'s application</a><br><br>
+          Have a look at {{applicant.firstName}}'s profile <a style="color:#1d384a;" href="{{applicant.profile}}" >here</a>.
           <br><br>
         {% endblock %}
         ${templates.footerBlock}`,
