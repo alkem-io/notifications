@@ -32,6 +32,7 @@ export type TemplateConfig = {
   collaboration_review_submitted?: TemplateRuleSet[];
   collaboration_interest?: TemplateRuleSet[];
   collaboration_callout_published?: TemplateRuleSet[];
+  platform_global_role_change?: TemplateRuleSet[];
   platform_user_registered?: TemplateRuleSet[];
   platform_user_removed?: TemplateRuleSet[];
   platform_forum_discussion_comment?: TemplateRuleSet[];

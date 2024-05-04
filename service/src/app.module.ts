@@ -39,6 +39,7 @@ import { CommunityInvitationCreatedNotificationBuilder } from './services/domain
 import { CommentReplyNotificationBuilder } from './services/domain/builders/comment-reply/comment.reply.notification.builder';
 import { CommunityExternalInvitationCreatedNotificationBuilder } from './services/domain/builders/community-external-invitation-created/community.external.invitation.created.notification.builder';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator/alkemio.url.generator.module';
+import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform-global-role-change/platform.global.role.change.notification.builder';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-ge
     CommunityApplicationCreatedNotificationBuilder,
     CommunityInvitationCreatedNotificationBuilder,
     CommunityExternalInvitationCreatedNotificationBuilder,
+    PlatformGlobalRoleChangeNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
     PlatformForumDiscussionCommentNotificationBuilder,

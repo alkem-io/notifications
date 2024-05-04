@@ -96,7 +96,7 @@ recipients:
             type: SUBSPACE_ADMIN
             resource_id: <spaceID>
         - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
+            type: GLOBAL_SUPPORT
             resource_id:
         - rule:
             type: GLOBAL_ADMIN
@@ -140,9 +140,6 @@ recipients:
   communication_update_sent:
     - name: admin
       rules:
-        - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
         - rule:
             type: GLOBAL_ADMIN
             resource_id:
@@ -264,30 +261,30 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
-        - rule:
             type: GLOBAL_ADMIN
             resource_id:
         - rule:
-            type: GLOBAL_ADMIN_SPACES
+            type: GLOBAL_SUPPORT
             resource_id:
     - name: registrant
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <registrantID>
+  platform_global_role_change:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id:
   platform_user_removed:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
-        - rule:
             type: GLOBAL_ADMIN
             resource_id:
         - rule:
-            type: GLOBAL_ADMIN_SPACES
+            type: GLOBAL_SUPPORT
             resource_id:
   platform_forum_discussion_comment:
     - name: discussionCreator
