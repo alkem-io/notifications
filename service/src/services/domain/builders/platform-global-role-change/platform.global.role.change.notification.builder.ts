@@ -66,6 +66,10 @@ export class PlatformGlobalRoleChangeNotificationBuilder
         email: user.email,
         profile: user.profile.url,
       },
+      actor: {
+        displayName: eventPayload.actor.profile.displayName,
+        url: eventPayload.actor.profile.url,
+      },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
@@ -76,6 +80,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+      triggeredBy: eventPayload.triggeredBy,
     };
   }
 }

@@ -13,8 +13,9 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
         {{user.displayName}} with the following email address: {{user.email}} - {{type}} - {{role}}.
-          <br><br>
-          <a class="action-button" href="{{user.profile}}">Have a look at {{user.displayName}}'s profile</a><br><br>
+        <br><br>
+        Action carried out by: {{actor.displayName}}.
+        <br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },

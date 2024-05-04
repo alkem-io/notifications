@@ -8,6 +8,11 @@ export interface PlatformGlobalRoleChangeEmailPayload extends BaseEmailPayload {
     email: string;
     profile: string;
   };
+  actor: {
+    displayName: string;
+    url: string;
+  };
   type: RoleChangeType;
   role: string;
+  triggeredBy: string;
 }
