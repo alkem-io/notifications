@@ -7,4 +7,5 @@ export interface PlatformGlobalRoleChangeEventPayload
   type: RoleChangeType;
   user: ContributorPayload
   role: string;
+  actor: ContributorPayload;
 };
