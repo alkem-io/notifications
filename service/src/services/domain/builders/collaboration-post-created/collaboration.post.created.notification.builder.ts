@@ -1,18 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '@src/services/application';
+import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { ExternalUser, User } from '@core/models';
-import { ALKEMIO_URL_GENERATOR } from '@common/enums';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { CollaborationPostCreatedEventPayload } from '@alkemio/notifications-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CollaborationPostCreatedNotificationBuilder
@@ -23,7 +19,6 @@ export class CollaborationPostCreatedNotificationBuilder
       CollaborationPostCreatedEventPayload,
       CollaborationPostCreatedEmailPayload
     >,
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
@@ -42,24 +37,8 @@ export class CollaborationPostCreatedNotificationBuilder
       },
     ];
 
-    const spaceIDTemplateVar =
-      !payload.journey?.challenge?.opportunity?.id &&
-      !payload.journey?.challenge?.id
-        ? payload.journey.spaceID
-        : '';
-
-    const challengeIDTemplateVar = !payload.journey?.challenge?.opportunity?.id
-      ? payload.journey?.challenge?.id
-      : undefined;
-
     const templateVariables = {
-      spaceID: spaceIDTemplateVar,
-      challengeID: challengeIDTemplateVar ?? '',
-      opportunityID: payload.journey?.challenge?.opportunity?.id ?? '',
-      journeyID:
-        payload.journey?.challenge?.opportunity?.id ??
-        payload.journey?.challenge?.id ??
-        payload.journey.spaceID,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
@@ -86,20 +65,6 @@ export class CollaborationPostCreatedNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
-    const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
-    const postURL = this.alkemioUrlGenerator.createPostURL(
-      journeyURL,
-      eventPayload.callout.nameID,
-      eventPayload.post.nameID
-    );
-    const calloutURL = this.alkemioUrlGenerator.createCalloutURL(
-      journeyURL,
-      eventPayload.callout.nameID
-    );
-
     return {
       emailFrom: 'info@alkem.io',
       createdBy: {
@@ -108,24 +73,24 @@ export class CollaborationPostCreatedNotificationBuilder
       },
       callout: {
         displayName: eventPayload.callout.displayName,
-        url: calloutURL,
+        url: eventPayload.callout.url,
       },
       post: {
         displayName: eventPayload.post.displayName,
-        url: postURL,
+        url: eventPayload.post.url,
       },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: journeyURL,
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

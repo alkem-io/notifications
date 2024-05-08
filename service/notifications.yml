@@ -90,13 +90,10 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
-        - rule:
-            type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
-        - rule:
             type: SPACE_ADMIN
+            resource_id: <spaceID>
+        - rule:
+            type: SUBSPACE_ADMIN
             resource_id: <spaceID>
         - rule:
             type: GLOBAL_ADMIN_COMMUNITY
@@ -116,11 +113,8 @@ recipients:
             type: SPACE_ADMIN
             resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
-        - rule:
-            type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
+            type: SUBSPACE_ADMIN
+            resource_id: <spaceID>
     - name: member
       rules:
         - rule:
@@ -156,13 +150,10 @@ recipients:
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <journeyID>
+            resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_MEMBER
-            resource_id: <journeyID>
-        - rule:
-            type: OPPORTUNITY_MEMBER
-            resource_id: <journeyID>
+            type: SUBSPACE_MEMBER
+            resource_id: <spaceID>
   communication_user_message:
     - name: sender
       rules:
@@ -195,13 +186,10 @@ recipients:
       rules:
         - rule:
             type: SPACE_LEAD
-            resource_id: <journeyID>
+            resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_LEAD
-            resource_id: <journeyID>
-        - rule:
-            type: OPPORTUNITY_LEAD
-            resource_id: <journeyID>
+            type: SUBSPACE_LEAD
+            resource_id: <spaceID>
   communication_user_mention:
     - name: receiver
       rules:
@@ -214,28 +202,6 @@ recipients:
         - rule:
             type: ORGANIZATION_ADMIN
             resource_id: <organizationID>
-  collaboration_review_submitted:
-    - name: admin
-      rules:
-        - rule:
-            type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
-    - name: reviewer
-      rules:
-        - rule:
-            type: USER_SELF_MANAGEMENT
-            resource_id: <reviewerID>
-  collaboration_interest:
-    - name: admin
-      rules:
-        - rule:
-            type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
-    - name: user
-      rules:
-        - rule:
-            type: USER_SELF_MANAGEMENT
-            resource_id: <userID>
   collaboration_post_created:
     - name: admin
       rules:
@@ -243,22 +209,16 @@ recipients:
             type: SPACE_ADMIN
             resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
-        - rule:
-            type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
+            type: SUBSPACE_ADMIN
+            resource_id: <spaceID>
     - name: user
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <journeyID>
+            resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_MEMBER
-            resource_id: <journeyID>
-        - rule:
-            type: OPPORTUNITY_MEMBER
-            resource_id: <journeyID>
+            type: SUBSPACE_MEMBER
+            resource_id: <spaceID>
   collaboration_whiteboard_created:
     - name: admin
       rules:
@@ -266,22 +226,16 @@ recipients:
             type: SPACE_ADMIN
             resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_ADMIN
-            resource_id: <challengeID>
-        - rule:
-            type: OPPORTUNITY_ADMIN
-            resource_id: <opportunityID>
+            type: SUBSPACE_ADMIN
+            resource_id: <spaceID>
     - name: user
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <journeyID>
+            resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_MEMBER
-            resource_id: <journeyID>
-        - rule:
-            type: OPPORTUNITY_MEMBER
-            resource_id: <journeyID>
+            type: SUBSPACE_MEMBER
+            resource_id: <spaceID>
   collaboration_post_comment:
     - name: owner
       rules:
@@ -293,25 +247,19 @@ recipients:
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <journeyID>
+            resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_MEMBER
-            resource_id: <journeyID>
-        - rule:
-            type: OPPORTUNITY_MEMBER
-            resource_id: <journeyID>
+            type: SUBSPACE_MEMBER
+            resource_id: <spaceID>
   collaboration_callout_published:
     - name: user
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <journeyID>
+            resource_id: <spaceID>
         - rule:
-            type: CHALLENGE_MEMBER
-            resource_id: <journeyID>
-        - rule:
-            type: OPPORTUNITY_MEMBER
-            resource_id: <journeyID>
+            type: SUBSPACE_MEMBER
+            resource_id: <spaceID>
   platform_user_registered:
     - name: admin
       rules:

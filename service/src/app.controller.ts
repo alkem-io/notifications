@@ -23,9 +23,7 @@ import {
   CommunicationUserMentionEventPayload,
   CommunicationOrganizationMentionEventPayload,
   CommunicationUpdateEventPayload,
-  CollaborationContextReviewSubmittedPayload,
   CommunityNewMemberPayload,
-  CollaborationInterestPayload,
   PlatformUserRegistrationEventPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
@@ -108,21 +106,6 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COMMUNITY_NEW_MEMBER
-    );
-  }
-
-  @EventPattern(NotificationEventType.COLLABORATION_INTEREST)
-  async sendCommunityCollaborationInterestNotification(
-    @Payload() eventPayload: CollaborationInterestPayload,
-    @Ctx() context: RmqContext
-  ) {
-    this.sendNotifications(
-      eventPayload,
-      context,
-      this.notificationService.sendCommunityCollaborationInterestNotification(
-        eventPayload
-      ),
-      NotificationEventType.COLLABORATION_INTEREST
     );
   }
 
@@ -273,21 +256,6 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION
-    );
-  }
-
-  @EventPattern(NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED)
-  async sendCommunityContextFeedbackNotifications(
-    @Payload() eventPayload: CollaborationContextReviewSubmittedPayload,
-    @Ctx() context: RmqContext
-  ) {
-    this.sendNotifications(
-      eventPayload,
-      context,
-      this.notificationService.sendCommunityContextFeedbackNotification(
-        eventPayload
-      ),
-      NotificationEventType.COLLABORATION_CONTEXT_REVIEW_SUBMITTED
     );
   }
 

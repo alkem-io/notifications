@@ -1,22 +1,20 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { ExternalUser, User } from '@core/models';
 import { CommunicationUserMessageEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
-import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
 import { UserPreferenceType } from '@alkemio/client-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CommunicationUserMessageNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommunicationUserMessageEventPayload,
@@ -66,7 +64,6 @@ export class CommunicationUserMessageNotificationBuilder
     }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
 
     return {
       emailFrom: 'info@alkem.io',
@@ -82,10 +79,10 @@ export class CommunicationUserMessageNotificationBuilder
       },
       message: eventPayload.message,
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
       messageReceiver: {
-        displayName: eventPayload.messageReceiver.displayName,
+        displayName: eventPayload.messageReceiver.profile.displayName,
       },
     };
   }

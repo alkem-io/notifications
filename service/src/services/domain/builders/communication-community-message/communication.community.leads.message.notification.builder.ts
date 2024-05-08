@@ -1,23 +1,21 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   NotificationEventType,
   CommunicationCommunityLeadsMessageEventPayload,
 } from '@alkemio/notifications-lib';
 import { ExternalUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationCommunityLeadsMessageEmailPayload } from '@common/email-template-payload';
-import { ALKEMIO_URL_GENERATOR } from '@src/common/enums/providers';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CommunicationCommunityLeadsMessageNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommunicationCommunityLeadsMessageEventPayload,
@@ -43,10 +41,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
 
     const templateVariables = {
       senderID: payload.triggeredBy,
-      journeyID:
-        payload.journey?.challenge?.opportunity?.id ??
-        payload.journey?.challenge?.id ??
-        payload.journey.spaceID,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
@@ -71,10 +66,6 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
     }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
-    const journeyURL = this.alkemioUrlGenerator.createJourneyURL(
-      eventPayload.journey
-    );
 
     return {
       emailFrom: 'info@alkem.io',
@@ -89,13 +80,13 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       message: eventPayload.message,
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: journeyURL,
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

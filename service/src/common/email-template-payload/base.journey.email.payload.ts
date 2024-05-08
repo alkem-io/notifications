@@ -1,10 +1,10 @@
-import { JourneyType } from '@alkemio/notifications-lib';
+import { SpaceType } from '@alkemio/notifications-lib';
 import { BaseEmailPayload } from './base.email.payload';
 
 export interface BaseJourneyEmailPayload extends BaseEmailPayload {
-  journey: {
+  space: {
     displayName: string;
     url: string;
-    type: JourneyType;
+    type: SpaceType;
   };
 }

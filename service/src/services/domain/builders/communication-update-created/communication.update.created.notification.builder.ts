@@ -1,25 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { ALKEMIO_URL_GENERATOR } from '@common/enums';
+import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUpdateEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application';
+import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    @Inject(ALKEMIO_URL_GENERATOR)
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommunicationUpdateEventPayload,
@@ -45,13 +40,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
     ];
 
     const templateVariables = {
-      spaceID: payload.journey.spaceID,
-      challengeID: payload.journey.challenge?.id ?? '',
-      opportunityID: payload.journey.challenge?.opportunity?.id ?? '',
-      journeyID:
-        payload.journey?.challenge?.opportunity?.id ??
-        payload.journey?.challenge?.id ??
-        payload.journey.spaceID,
+      spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
@@ -77,7 +66,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
 
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const alkemioURL = this.alkemioUrlGenerator.createPlatformURL();
+
     return {
       emailFrom: 'info@alkem.io',
       sender: {
@@ -88,13 +77,13 @@ export class CommunicationUpdateCreatedNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      journey: {
-        displayName: eventPayload.journey.displayName,
-        type: eventPayload.journey.type,
-        url: this.alkemioUrlGenerator.createJourneyURL(eventPayload.journey),
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        type: eventPayload.space.type,
+        url: eventPayload.space.profile.url,
       },
       platform: {
-        url: alkemioURL,
+        url: eventPayload.platform.url,
       },
     };
   }

@@ -1,9 +1,10 @@
-import { JourneyBaseEventPayload } from './journey.base.event.payload';
+import { SpaceBaseEventPayload } from './space.base.event.payload';
 
-export interface CollaborationPostCreatedEventPayload extends JourneyBaseEventPayload {
+export interface CollaborationPostCreatedEventPayload extends SpaceBaseEventPayload {
   callout: {
     displayName: string;
     nameID: string;
+    url: string;
   }
   post:  {
     id: string;
@@ -11,5 +12,6 @@ export interface CollaborationPostCreatedEventPayload extends JourneyBaseEventPa
     displayName: string;
     nameID: string;
     type: string;
+    url: string;
   };
 }

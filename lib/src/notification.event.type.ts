@@ -10,8 +10,6 @@ export enum NotificationEventType {
   COMMUNICATION_COMMUNITY_MESSAGE = 'communicationCommunityMessage',
   COMMUNICATION_USER_MENTION = 'communicationUserMention',
   COMMUNICATION_ORGANIZATION_MENTION = 'communicationOrganizationMention',
-  COLLABORATION_INTEREST = 'collaborationInterest',
-  COLLABORATION_CONTEXT_REVIEW_SUBMITTED = 'collaborationContextReviewSubmitted',
   COLLABORATION_WHITEBOARD_CREATED = 'collaborationWhiteboardCreated',
   COLLABORATION_POST_CREATED = 'collaborationPostCreated',
   COLLABORATION_POST_COMMENT = 'collaborationPostComment',
