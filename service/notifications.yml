@@ -96,7 +96,7 @@ recipients:
             type: SUBSPACE_ADMIN
             resource_id: <spaceID>
         - rule:
-            type: GLOBAL_SUPPORT
+            type: GLOBAL_COMMUNITY_READ
             resource_id:
         - rule:
             type: GLOBAL_ADMIN
