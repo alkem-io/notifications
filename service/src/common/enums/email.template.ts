@@ -29,6 +29,7 @@ export enum EmailTemplate {
   COLLABORATION_WHITEBOARD_CREATED_MEMBER = 'collaboration.whiteboard.created.member',
   COLLABORATION_CALLOUT_PUBLISHED_MEMBER = 'collaboration.callout.published.member',
   COLLABORATION_DISCUSSION_COMMENT_MEMBER = 'collaboration.discussion.comment.member',
+  PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN = 'platform.global.role.change.admin',
   PLATFORM_USER_REGISTRATION_REGISTRANT = 'platform.user.registration.registrant',
   PLATFORM_USER_REGISTRATION_ADMIN = 'platform.user.registration.admin',
   PLATFORM_USER_REMOVED_ADMIN = 'platform.user.removed.admin',

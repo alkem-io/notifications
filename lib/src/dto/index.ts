@@ -17,6 +17,7 @@ export * from './collaboration.post.created.event.payload';
 export * from './collaboration.post.comment.event.payload';
 export * from './collaboration.callout.published.event.payload';
 export * from './collaboration.discussion.comment.event.payload';
+export * from './platform.global.role.change.event.payload';
 export * from './platform.user.registration.event.payload';
 export * from './platform.user.removed.event.payload';
 export * from './platform.forum.discussion.comment.event.payload';

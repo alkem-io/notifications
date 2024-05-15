@@ -55,6 +55,8 @@ import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/c
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
 import { CommunityExternalInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
+import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
+import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class NotificationService {
@@ -68,6 +70,7 @@ export class NotificationService {
     private communityApplicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
     private communityInvitationCreatedNotificationBuilder: CommunityInvitationCreatedNotificationBuilder,
     private communityExternalInvitationCreatedNotificationBuilder: CommunityExternalInvitationCreatedNotificationBuilder,
+    private platformGlobalRoleChangeNotificationBuilder: PlatformGlobalRoleChangeNotificationBuilder,
     private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
     private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
     private platformForumDiscussionCommentNotificationBuilder: PlatformForumDiscussionCommentNotificationBuilder,
@@ -142,6 +145,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.communityNewMemberNotificationBuilder
+    );
+  }
+
+  async sendGlobalRoleChangeNotification(
+    payload: PlatformGlobalRoleChangeEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.platformGlobalRoleChangeNotificationBuilder
     );
   }
 
