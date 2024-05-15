@@ -45,6 +45,7 @@ import {
 import { NotificationTemplateType } from '@src/types';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
+import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 
 const testData = {
   ...challengeAdminsData,
@@ -89,6 +90,7 @@ describe('NotificationService', () => {
         CollaborationDiscussionCommentNotificationBuilder,
         CollaborationCalloutPublishedNotificationBuilder,
         CommentReplyNotificationBuilder,
+        PlatformGlobalRoleChangeNotificationBuilder,
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,

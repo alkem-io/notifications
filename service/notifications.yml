@@ -92,11 +92,13 @@ recipients:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
+        # We don't have SUBSPACE_ADMIN any more. We have SPACE_SUBSPACE_ADMIN, but it's different payload that needs to be provided for this to work (the resource_id should be the parent of the entity).
+        # toDo - clarify this rule
+        # - rule:
+        #     type: SUBSPACE_ADMIN
+        #     resource_id: <spaceID>
         - rule:
-            type: SUBSPACE_ADMIN
-            resource_id: <spaceID>
-        - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
+            type: GLOBAL_COMMUNITY_READ
             resource_id:
         - rule:
             type: GLOBAL_ADMIN
@@ -112,9 +114,9 @@ recipients:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_ADMIN
-            resource_id: <spaceID>
+        # - rule:
+        #     type: SUBSPACE_ADMIN
+        #     resource_id: <spaceID>
     - name: member
       rules:
         - rule:
@@ -140,9 +142,6 @@ recipients:
   communication_update_sent:
     - name: admin
       rules:
-        - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
         - rule:
             type: GLOBAL_ADMIN
             resource_id:
@@ -208,9 +207,9 @@ recipients:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_ADMIN
-            resource_id: <spaceID>
+        # - rule:
+        #     type: SUBSPACE_ADMIN
+        #     resource_id: <spaceID>
     - name: user
       rules:
         - rule:
@@ -225,9 +224,9 @@ recipients:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_ADMIN
-            resource_id: <spaceID>
+        # - rule:
+        #     type: SUBSPACE_ADMIN
+        #     resource_id: <spaceID>
     - name: user
       rules:
         - rule:
@@ -264,30 +263,30 @@ recipients:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
-        - rule:
             type: GLOBAL_ADMIN
             resource_id:
         - rule:
-            type: GLOBAL_ADMIN_SPACES
+            type: GLOBAL_SUPPORT
             resource_id:
     - name: registrant
       rules:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <registrantID>
+  platform_global_role_change:
+    - name: admin
+      rules:
+        - rule:
+            type: GLOBAL_ADMIN
+            resource_id:
   platform_user_removed:
     - name: admin
       rules:
         - rule:
-            type: GLOBAL_ADMIN_COMMUNITY
-            resource_id:
-        - rule:
             type: GLOBAL_ADMIN
             resource_id:
         - rule:
-            type: GLOBAL_ADMIN_SPACES
+            type: GLOBAL_SUPPORT
             resource_id:
   platform_forum_discussion_comment:
     - name: discussionCreator

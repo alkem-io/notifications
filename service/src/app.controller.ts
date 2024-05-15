@@ -24,6 +24,7 @@ import {
   CommunicationOrganizationMentionEventPayload,
   CommunicationUpdateEventPayload,
   CommunityNewMemberPayload,
+  PlatformGlobalRoleChangeEventPayload,
   PlatformUserRegistrationEventPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
@@ -106,6 +107,20 @@ export class AppController {
         eventPayload
       ),
       NotificationEventType.COMMUNITY_NEW_MEMBER
+    );
+  }
+
+  @EventPattern(NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE)
+  async sendGlobalRoleChangeNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: PlatformGlobalRoleChangeEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendGlobalRoleChangeNotification(eventPayload),
+      NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE
     );
   }
 
