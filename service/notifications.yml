@@ -92,11 +92,6 @@ recipients:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
-        # We don't have SUBSPACE_ADMIN any more. We have SPACE_SUBSPACE_ADMIN, but it's different payload that needs to be provided for this to work (the resource_id should be the parent of the entity).
-        # toDo - clarify this rule
-        # - rule:
-        #     type: SUBSPACE_ADMIN
-        #     resource_id: <spaceID>
         - rule:
             type: GLOBAL_COMMUNITY_READ
             resource_id:
@@ -114,9 +109,6 @@ recipients:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
-        # - rule:
-        #     type: SUBSPACE_ADMIN
-        #     resource_id: <spaceID>
     - name: member
       rules:
         - rule:
@@ -149,9 +141,6 @@ recipients:
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_MEMBER
             resource_id: <spaceID>
   communication_user_message:
     - name: sender
@@ -186,9 +175,6 @@ recipients:
         - rule:
             type: SPACE_LEAD
             resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_LEAD
-            resource_id: <spaceID>
   communication_user_mention:
     - name: receiver
       rules:
@@ -207,33 +193,23 @@ recipients:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
-        # - rule:
-        #     type: SUBSPACE_ADMIN
-        #     resource_id: <spaceID>
     - name: user
       rules:
         - rule:
             type: SPACE_MEMBER
             resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_MEMBER
-            resource_id: <spaceID>
+
   collaboration_whiteboard_created:
     - name: admin
       rules:
         - rule:
             type: SPACE_ADMIN
             resource_id: <spaceID>
-        # - rule:
-        #     type: SUBSPACE_ADMIN
-        #     resource_id: <spaceID>
+
     - name: user
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_MEMBER
             resource_id: <spaceID>
   collaboration_post_comment:
     - name: owner
@@ -247,17 +223,11 @@ recipients:
         - rule:
             type: SPACE_MEMBER
             resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_MEMBER
-            resource_id: <spaceID>
   collaboration_callout_published:
     - name: user
       rules:
         - rule:
             type: SPACE_MEMBER
-            resource_id: <spaceID>
-        - rule:
-            type: SUBSPACE_MEMBER
             resource_id: <spaceID>
   platform_user_registered:
     - name: admin

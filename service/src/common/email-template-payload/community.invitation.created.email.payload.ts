@@ -8,5 +8,6 @@ export interface CommunityInvitationCreatedEmailPayload
     email: string;
     profile: string;
   };
+  welcomeMessage?: string;
   spaceAdminURL: string;
 }
