@@ -77,6 +77,7 @@ export class CommunityInvitationCreatedNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
+      welcomeMessage: eventPayload.welcomeMessage,
       space: {
         displayName: eventPayload.space.profile.displayName,
         type: eventPayload.space.type,
