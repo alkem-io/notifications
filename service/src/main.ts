@@ -14,6 +14,10 @@ const bootstrap = async () => {
   const connectionOptions = configService.get(
     ConfigurationTypes.RABBIT_MQ
   )?.connection;
+  const port = configService.get(ConfigurationTypes.HOSTING)?.port;
+  await app.listen(port, () => {
+    logger.verbose(`Server is listening on port ${port}`);
+  });
 
   const amqpEndpoint = `amqp://${connectionOptions.user}:${connectionOptions.password}@${connectionOptions.host}:${connectionOptions.port}?heartbeat=30`;
 

@@ -32,4 +32,6 @@ RUN npm run build
 
 ENV NODE_ENV=${ENV_ARG}
 
+EXPOSE 4004
+
 CMD ["/bin/sh", "-c", "npm run start:prod"]
