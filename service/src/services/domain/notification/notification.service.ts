@@ -57,6 +57,8 @@ import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comme
 import { CommunityExternalInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib';
+import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
+import { SpaceCreatedEventPayload } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class NotificationService {
@@ -87,7 +89,8 @@ export class NotificationService {
     private collaborationPostCommentNotificationBuilder: CollaborationPostCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
-    private commentReplyNotificationBuilder: CommentReplyNotificationBuilder
+    private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
+    private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -298,6 +301,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.commentReplyNotificationBuilder
+    );
+  }
+
+  async sendSpaceCreatedNotification(
+    payload: SpaceCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.spaceCreatedNotificationBuilder
     );
   }
 

@@ -36,4 +36,5 @@ export enum EmailTemplate {
   PLATFORM_FORUM_DISCUSSION_CREATED = 'platform.forum.discussion.created',
   PLATFORM_FORUM_DISCUSSION_COMMENT = 'platform.forum.discussion.comment',
   COMMENT_REPLY = 'comment.reply',
+  SPACE_CREATED_ADMIN = 'space.created.admin',
 }

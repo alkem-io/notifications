@@ -276,3 +276,9 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <commentOwnerID>
+  space_created:
+    - name: admin
+      rules:
+        - rule:
+            type: LICENSE_MANAGER
+            resource_id:
