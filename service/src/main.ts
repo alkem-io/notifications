@@ -29,6 +29,10 @@ const bootstrap = async () => {
       queueOptions: {
         durable: true,
       },
+      socketOptions: {
+        reconnectTimeInSeconds: 5,
+        heartbeatIntervalInSeconds: 30,
+      },
       //be careful with this flag, if set to true, message acknowledgment will be automatic. Double acknowledgment throws an error and disconnects the queue.
       noAck: false,
     },
