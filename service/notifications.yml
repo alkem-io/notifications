@@ -74,6 +74,8 @@ hosting:
   #
   # Options: Dev, Prod
   environment: ${ENVIRONMENT}:Dev
+  # The port exposing the REST endpoint
+  port: ${PORT}:4004
 
 alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/api/private/non-interactive/graphql
