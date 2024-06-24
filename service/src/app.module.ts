@@ -40,6 +40,7 @@ import { CommentReplyNotificationBuilder } from './services/domain/builders/comm
 import { CommunityExternalInvitationCreatedNotificationBuilder } from './services/domain/builders/community-external-invitation-created/community.external.invitation.created.notification.builder';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator/alkemio.url.generator.module';
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform-global-role-change/platform.global.role.change.notification.builder';
+import { VirtualContributorInvitationCreatedNotificationBuilder } from './services/domain/builders/virtual-contributor-invitation-created/virtual.contributor.invitation.created.notification.builder';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/b
     CollaborationCalloutPublishedNotificationBuilder,
     CommentReplyNotificationBuilder,
     NotificationService,
+    VirtualContributorInvitationCreatedNotificationBuilder,
   ],
   controllers: [AppController],
 })

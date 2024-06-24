@@ -276,3 +276,15 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <commentOwnerID>
+  community_invitation_created_vc_host:
+    - name: host
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <hostUserID>
+        - rule:
+            type: ORGANIZATION_OWNER
+            resource_id: <hostOrganizationID>
+        - rule:
+            type: ORGANIZATION_ADMIN
+            resource_id: <hostOrganizationID>
