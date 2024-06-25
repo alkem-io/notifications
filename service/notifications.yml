@@ -74,6 +74,8 @@ hosting:
   #
   # Options: Dev, Prod
   environment: ${ENVIRONMENT}:Dev
+  # The port exposing the REST endpoint
+  port: ${PORT}:4004
 
 alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/api/private/non-interactive/graphql
@@ -276,3 +278,15 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <commentOwnerID>
+  community_invitation_created_vc:
+    - name: host
+      rules:
+        - rule:
+            type: USER_SELF_MANAGEMENT
+            resource_id: <hostUserID>
+        - rule:
+            type: ORGANIZATION_OWNER
+            resource_id: <hostOrganizationID>
+        - rule:
+            type: ORGANIZATION_ADMIN
+            resource_id: <hostOrganizationID>

@@ -21,4 +21,5 @@ export enum NotificationEventType {
   PLATFORM_FORUM_DISCUSSION_COMMENT = 'platformForumDiscussionComment',
   PLATFORM_FORUM_DISCUSSION_CREATED = 'platformForumDiscussionCreated',
   COMMENT_REPLY = 'commentReply',
+  COMMUNITY_INVITATION_CREATED_VC = 'communityInvitationCreatedVC',
 }
