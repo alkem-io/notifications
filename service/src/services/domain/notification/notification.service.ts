@@ -28,6 +28,7 @@ import {
   CommunityInvitationCreatedEventPayload,
   CommentReplyEventPayload,
   PlatformGlobalRoleChangeEventPayload,
+  VirtualContributorInvitationCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -58,7 +59,6 @@ import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comme
 import { CommunityExternalInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { VirtualContributorInvitationCreatedNotificationBuilder } from '../builders/virtual-contributor-invitation-created/virtual.contributor.invitation.created.notification.builder';
-import { VirtualContributorInvitationCreatedEventPayload } from '@alkemio/notifications-lib/dist/dto/virtual.contributor.invitation.created.event.payload';
 
 @Injectable()
 export class NotificationService {

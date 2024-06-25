@@ -278,7 +278,7 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <commentOwnerID>
-  community_invitation_created_vc_host:
+  community_invitation_created_vc:
     - name: host
       rules:
         - rule:

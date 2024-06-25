@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  NotificationEventType,
+  VirtualContributorInvitationCreatedEventPayload,
+} from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { ExternalUser, User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -8,7 +11,6 @@ import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { VirtualContributorInvitationCreatedEmailPayload } from '@src/common/email-template-payload';
-import { VirtualContributorInvitationCreatedEventPayload } from '@alkemio/notifications-lib/dist/dto/virtual.contributor.invitation.created.event.payload';
 
 @Injectable()
 export class VirtualContributorInvitationCreatedNotificationBuilder
@@ -35,7 +37,6 @@ export class VirtualContributorInvitationCreatedNotificationBuilder
 
     const templateVariables = {
       inviterID: payload.triggeredBy,
-      virtualContributorID: '-1',
       spaceID: payload.space.id,
       hostUserID: payload.host.id,
       hostOrganizationID: payload.host.id,
@@ -45,7 +46,7 @@ export class VirtualContributorInvitationCreatedNotificationBuilder
       payload,
       eventUserId: payload.triggeredBy,
       roleConfig,
-      templateType: 'community_invitation_created_vc_host',
+      templateType: 'community_invitation_created_vc',
       templateVariables,
       templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
     });
@@ -83,8 +84,8 @@ export class VirtualContributorInvitationCreatedNotificationBuilder
         url: eventPayload.space.profile.url,
       },
       virtualContributor: {
-        name: (eventPayload as any).virtualContributor.name,
-        url: (eventPayload as any).virtualContributor.url,
+        name: eventPayload.virtualContributor.name,
+        url: eventPayload.virtualContributor.url,
       },
       platform: {
         url: eventPayload.platform.url,
