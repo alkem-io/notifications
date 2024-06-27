@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@alkemio/client-lib": "^0.32.0",
-    "@alkemio/notifications-lib": "^0.8.5",
+    "@alkemio/notifications-lib": "^0.9.0",
     "@nestjs/common": "^8.0.5",
     "@nestjs/config": "^1.0.1",
     "@nestjs/core": "^8.0.5",
@@ -72,6 +72,7 @@
     "@typescript-eslint/parser": "^4.28.5",
     "cd": "^0.3.3",
     "coveralls": "^3.1.1",
+    "dotenv": "^16.0.1",
     "eslint": "^7.31.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",

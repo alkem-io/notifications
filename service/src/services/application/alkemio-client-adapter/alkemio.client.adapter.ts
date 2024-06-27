@@ -15,6 +15,12 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
   ) {}
 
   async areNotificationsEnabled(): Promise<boolean> {
+    if (!this.alkemioClient) {
+      this.logger.error(
+        'Alkemio Client is not initialised + set',
+        LogContext.NOTIFICATIONS
+      );
+    }
     const featureFlags = await this.alkemioClient.featureFlags();
     if (
       featureFlags?.find(
