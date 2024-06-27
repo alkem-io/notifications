@@ -26,9 +26,12 @@ import {
   CollaborationDiscussionCommentEventPayload,
   PlatformForumDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
+  CommunityExternalInvitationCreatedEventPayload,
   CommentReplyEventPayload,
   PlatformGlobalRoleChangeEventPayload,
   VirtualContributorInvitationCreatedEventPayload,
+  SpacePayload,
+  // SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -56,11 +59,8 @@ import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-use
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
-import { CommunityExternalInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
-import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
-import { SpaceCreatedEventPayload } from '@alkemio/notifications-lib';
 import { VirtualContributorInvitationCreatedNotificationBuilder } from '../builders/virtual-contributor-invitation-created/virtual.contributor.invitation.created.notification.builder';
 
 @Injectable()
@@ -318,7 +318,16 @@ export class NotificationService {
   }
 
   async sendSpaceCreatedNotification(
-    payload: SpaceCreatedEventPayload
+    payload: {
+      host: string;
+      plan: string;
+      space: SpacePayload;
+      triggeredBy: string;
+      platform: {
+        url: string;
+      };
+    }
+    // SpaceCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,

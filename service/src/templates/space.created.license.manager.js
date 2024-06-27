@@ -13,7 +13,7 @@ module.exports = () => ({
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
-        <b>{{createdBy.firstName}}</b> created a new space: "<a style="color:#1d384a; text-decoration: none;" href={{space.url}}>{{space.profile.displayName}}</a>".
+        <b>{{host.name}}</b> created a new space: "<a style="color:#1d384a; text-decoration: none;" href={{space.url}}>{{space.displayName}}</a>" on {{space.dateCreated}} at {{space.timeCreated}} with <b>{{space.plan}}</b> plan.
         <br><br>
         <a class="action-button" href="{{space.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}

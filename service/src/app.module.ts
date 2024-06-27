@@ -42,6 +42,7 @@ import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-ge
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { VirtualContributorInvitationCreatedNotificationBuilder } from './services/domain/builders/virtual-contributor-invitation-created/virtual.contributor.invitation.created.notification.builder';
 import { HealthController } from './health.controller';
+import { SpaceCreatedNotificationBuilder } from './services/domain/builders/space-created/space.created.notification.builder';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { HealthController } from './health.controller';
     CommentReplyNotificationBuilder,
     NotificationService,
     VirtualContributorInvitationCreatedNotificationBuilder,
+    SpaceCreatedNotificationBuilder,
   ],
   controllers: [AppController, HealthController],
 })
