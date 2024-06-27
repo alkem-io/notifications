@@ -71,7 +71,8 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
       inviter: {
         firstName: inviter.firstName,
         name: inviter.profile.displayName,
-        url: inviter.profile.url,
+        profile: inviter.profile.url,
+        email: inviter.email,
       },
       recipient: {
         firstName: recipient.firstName,
@@ -90,6 +91,8 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+      welcomeMessage: eventPayload.welcomeMessage,
+      spaceAdminURL: eventPayload.space.adminURL,
     };
   }
 }

@@ -1,12 +1,7 @@
-import { BaseJourneyEmailPayload } from './base.journey.email.payload';
+import { CommunityInvitationCreatedEmailPayload } from './community.invitation.created.email.payload';
 
 export interface CommunityInvitationVirtualContributorCreatedEmailPayload
-  extends BaseJourneyEmailPayload {
-  inviter: {
-    name: string;
-    firstName: string;
-    url: string;
-  };
+  extends CommunityInvitationCreatedEmailPayload {
   virtualContributor: {
     name: string;
     url: string;
