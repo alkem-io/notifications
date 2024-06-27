@@ -41,13 +41,13 @@ export class CommunityNewMemberNotificationBuilder
     ];
 
     const templateVariables = {
-      memberID: payload.user.id,
+      memberID: payload.contributor.id,
       spaceID: payload.space.id,
     };
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.user.id,
+      eventUserId: payload.contributor.id,
       roleConfig,
       templateType: 'community_new_member',
       templateVariables,
