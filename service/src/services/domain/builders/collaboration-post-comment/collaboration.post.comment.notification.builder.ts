@@ -6,7 +6,7 @@ import { CollaborationPostCommentEmailPayload } from '@common/email-template-pay
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
@@ -48,7 +48,7 @@ export class CollaborationPostCommentNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationPostCommentEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     commentAuthor?: User
   ): CollaborationPostCommentEmailPayload {
     if (!commentAuthor) {

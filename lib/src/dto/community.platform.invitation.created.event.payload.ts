@@ -1,5 +1,5 @@
 import { SpaceBaseEventPayload } from './space.base.event.payload';
-export interface CommunityExternalInvitationCreatedEventPayload
+export interface CommunityPlatformInvitationCreatedEventPayload
   extends SpaceBaseEventPayload {
   invitees: {
     email: string;

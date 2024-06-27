@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { UserPreferenceType } from '@alkemio/client-lib';
@@ -47,7 +47,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: PlatformGlobalRoleChangeEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     user?: User
   ): PlatformGlobalRoleChangeEmailPayload {
     if (!user) {

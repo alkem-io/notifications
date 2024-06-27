@@ -28,7 +28,7 @@ import {
   PlatformForumDiscussionCommentNotificationBuilder,
   CommunityInvitationCreatedNotificationBuilder,
   CommentReplyNotificationBuilder,
-  CommunityExternalInvitationCreatedNotificationBuilder,
+  CommunityPlatformInvitationCreatedNotificationBuilder,
 } from '../builders';
 import {
   MockAlkemioClientAdapterProvider,
@@ -73,7 +73,7 @@ describe('NotificationService', () => {
         NotificationService,
         CommunityApplicationCreatedNotificationBuilder,
         CommunityInvitationCreatedNotificationBuilder,
-        CommunityExternalInvitationCreatedNotificationBuilder,
+        CommunityPlatformInvitationCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
         PlatformForumDiscussionCommentNotificationBuilder,
         PlatformUserRemovedNotificationBuilder,

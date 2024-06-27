@@ -2,7 +2,7 @@ export * from './base.email.payload';
 export * from './base.journey.email.payload';
 export * from './community.application.created.email.payload';
 export * from './community.invitation.created.email.payload';
-export * from './community.external.invitation.created.email.payload';
+export * from './community.platform.invitation.created.email.payload';
 export * from './community.new.member.email.payload';
 export * from './collaboration.whiteboard.created.email.payload';
 export * from './collaboration.post.comment.email.payload';

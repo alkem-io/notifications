@@ -4,7 +4,7 @@ import {
   VirtualContributorInvitationCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
@@ -54,7 +54,7 @@ export class VirtualContributorInvitationCreatedNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: VirtualContributorInvitationCreatedEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     inviter?: User
   ): VirtualContributorInvitationCreatedEmailPayload {
     if (!inviter) {

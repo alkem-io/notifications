@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { CommunityInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
@@ -51,7 +51,7 @@ export class CommunityInvitationCreatedNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CommunityInvitationCreatedEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     inviter?: User
   ): CommunityInvitationCreatedEmailPayload {
     if (!inviter) {

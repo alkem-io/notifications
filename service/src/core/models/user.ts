@@ -26,14 +26,14 @@ export type InternalUser = {
   };
 };
 
-export type ExternalUser = {
+export type PlatformUser = {
   firstName: string;
   lastName: string;
   email: string;
 };
 
 export const isExistingAlkemioUser = (
-  user: User | ExternalUser
+  user: User | PlatformUser
 ): user is User => {
   return (user as User).nameID !== undefined;
 };
