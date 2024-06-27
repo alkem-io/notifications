@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
+  CommunityInvitationVirtualContributorCreatedEventPayload,
   NotificationEventType,
-  VirtualContributorInvitationCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
@@ -10,22 +10,22 @@ import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { VirtualContributorInvitationCreatedEmailPayload } from '@src/common/email-template-payload';
+import { CommunityInvitationVirtualContributorCreatedEmailPayload } from '@src/common/email-template-payload';
 
 @Injectable()
-export class VirtualContributorInvitationCreatedNotificationBuilder
+export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      VirtualContributorInvitationCreatedEventPayload,
-      VirtualContributorInvitationCreatedEmailPayload
+      CommunityInvitationVirtualContributorCreatedEventPayload,
+      CommunityInvitationVirtualContributorCreatedEmailPayload
     >
   ) {}
 
   build(
-    payload: VirtualContributorInvitationCreatedEventPayload
+    payload: CommunityInvitationVirtualContributorCreatedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -53,10 +53,10 @@ export class VirtualContributorInvitationCreatedNotificationBuilder
   }
 
   private createTemplatePayload(
-    eventPayload: VirtualContributorInvitationCreatedEventPayload,
+    eventPayload: CommunityInvitationVirtualContributorCreatedEventPayload,
     recipient: User | PlatformUser,
     inviter?: User
-  ): VirtualContributorInvitationCreatedEmailPayload {
+  ): CommunityInvitationVirtualContributorCreatedEmailPayload {
     if (!inviter) {
       throw Error(
         `Invitee not provided for '${NotificationEventType.COMMUNITY_INVITATION_CREATED_VC} event'`
@@ -84,8 +84,8 @@ export class VirtualContributorInvitationCreatedNotificationBuilder
         url: eventPayload.space.profile.url,
       },
       virtualContributor: {
-        name: eventPayload.virtualContributor.name,
-        url: eventPayload.virtualContributor.url,
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
       },
       platform: {
         url: eventPayload.platform.url,

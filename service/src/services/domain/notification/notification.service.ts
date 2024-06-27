@@ -28,7 +28,7 @@ import {
   CommunityInvitationCreatedEventPayload,
   CommentReplyEventPayload,
   PlatformGlobalRoleChangeEventPayload,
-  VirtualContributorInvitationCreatedEventPayload,
+  CommunityInvitationVirtualContributorCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -58,7 +58,7 @@ import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/c
 import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
 import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
-import { VirtualContributorInvitationCreatedNotificationBuilder } from '../builders/virtual-contributor-invitation-created/virtual.contributor.invitation.created.notification.builder';
+import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 
 @Injectable()
 export class NotificationService {
@@ -90,7 +90,7 @@ export class NotificationService {
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
-    private virtualContributorInvitationCreatedNotificationBuilder: VirtualContributorInvitationCreatedNotificationBuilder
+    private communityInvitationvirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -134,11 +134,11 @@ export class NotificationService {
   }
 
   async sendVirtualContributorInvitationCreatedNotifications(
-    payload: VirtualContributorInvitationCreatedEventPayload
+    payload: CommunityInvitationVirtualContributorCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,
-      this.virtualContributorInvitationCreatedNotificationBuilder
+      this.communityInvitationvirtualContributorCreatedNotificationBuilder
     );
   }
 

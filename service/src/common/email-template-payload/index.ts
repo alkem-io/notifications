@@ -21,4 +21,4 @@ export * from './platform.user.registered.email.payload';
 export * from './platform.forum.discussion.comment.email.payload';
 export * from './platform.forum.discussion.created.email.payload';
 export * from './comment.reply.email.payload';
-export * from './virtual.contributor.invitation.created.email.payload';
+export * from './community.invitation.virtual.contributor.created.email.payload';

@@ -24,4 +24,4 @@ export * from './platform.user.invited.to.role.event.payload';
 export * from './platform.forum.discussion.comment.event.payload';
 export * from './platform.forum.discussion.created.event.payload';
 export * from './comment.reply.event.payload';
-export * from './virtual.contributor.invitation.created.event.payload';
+export * from './community.invitation.virtual.contributor.created.event.payload';
