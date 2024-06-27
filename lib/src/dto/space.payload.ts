@@ -1,9 +1,7 @@
-import { SpaceType } from "@alkemio/client-lib";
-
 export type SpacePayload = {
   id: string;
   nameID: string;
-  type: SpaceType;
+  type: string;
   profile: {
     displayName: string;
     url: string;

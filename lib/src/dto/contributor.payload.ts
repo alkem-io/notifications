@@ -1,5 +1,3 @@
-import { CommunityContributorType } from '@alkemio/client-lib';
-
 export type ContributorPayload = {
   id: string;
   nameID: string;
@@ -7,5 +5,5 @@ export type ContributorPayload = {
     displayName: string;
     url: string;
   }
-  type: CommunityContributorType
+  type: string
 };
