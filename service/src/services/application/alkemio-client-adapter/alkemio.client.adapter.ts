@@ -89,11 +89,11 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
     userID: string,
     retry: number
   ): Promise<User | undefined> {
-    let user = await this.alkemioClient.user(userID);
+    const user: User | undefined = await this.alkemioClient.user(userID);
     if (!user && retry < 1) {
       await this.alkemioClient.enableAuthentication(); // workaround as currently the cli doesn't pass the error through}
       retry++;
-      user = await this.tryGetUser(userID, retry);
+      return await this.tryGetUser(userID, retry);
     }
 
     return user;
