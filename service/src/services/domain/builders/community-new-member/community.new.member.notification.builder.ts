@@ -1,15 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { UserPreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
-import { Contributor, PlatformUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import {
-  CommunityNewMemberPayload,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
+import { CommunityNewMemberPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
@@ -47,7 +44,7 @@ export class CommunityNewMemberNotificationBuilder
 
     return this.notificationBuilder.build({
       payload,
-      eventUserId: payload.contributor.id,
+      eventUserId: undefined,
       roleConfig,
       templateType: 'community_new_member',
       templateVariables,
@@ -57,26 +54,23 @@ export class CommunityNewMemberNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CommunityNewMemberPayload,
-    recipient: User | PlatformUser,
-    member?: Contributor
+    recipient: User | PlatformUser
   ): CommunityNewMemberEmailPayload {
-    if (!member) {
-      throw Error(
-        `member not provided for '${NotificationEventType.COMMUNITY_NEW_MEMBER} event'`
-      );
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const memberProfileURL = member.profile.url;
+    const newMember = eventPayload.contributor;
+    let type = newMember.type;
+    if (type === 'virtual') {
+      type = 'virtual contributor';
+    }
 
     return {
       emailFrom: 'info@alkem.io',
       member: {
-        name: member.profile.displayName,
-        profile: memberProfileURL,
-        type: eventPayload.contributor.type,
+        name: newMember.profile.displayName,
+        profile: newMember.profile.url,
+        type: type,
       },
       recipient: {
         firstName: recipient.firstName,
