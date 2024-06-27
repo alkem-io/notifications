@@ -1,4 +1,4 @@
-import { SpaceType } from "@src/common/enums/space.type";
+import { SpaceType } from "@alkemio/client-lib";
 
 export type SpacePayload = {
   id: string;
