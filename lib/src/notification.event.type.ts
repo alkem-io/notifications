@@ -16,6 +16,7 @@ export enum NotificationEventType {
   COLLABORATION_DISCUSSION_COMMENT = 'collaborationCommentOnDiscussion',
   COLLABORATION_CALLOUT_PUBLISHED = 'collaborationCalloutPublished',
   PLATFORM_USER_REGISTERED = 'platformUserRegistered',
+  PLATFORM_USER_INVITED_TO_ROLE = 'platformUserInvitedToRole',
   PLATFORM_USER_REMOVED = 'platformUserRemoved',
   PLATFORM_GLOBAL_ROLE_CHANGE = 'platformGlobalRoleChange', 
   PLATFORM_FORUM_DISCUSSION_COMMENT = 'platformForumDiscussionComment',

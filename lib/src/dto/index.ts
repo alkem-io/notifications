@@ -20,6 +20,7 @@ export * from './collaboration.discussion.comment.event.payload';
 export * from './platform.global.role.change.event.payload';
 export * from './platform.user.registration.event.payload';
 export * from './platform.user.removed.event.payload';
+export * from './platform.user.invited.to.role.event.payload';
 export * from './platform.forum.discussion.comment.event.payload';
 export * from './platform.forum.discussion.created.event.payload';
 export * from './comment.reply.event.payload';

@@ -1,6 +1,6 @@
 {
   "name": "@alkemio/notifications-lib",
-  "version": "0.8.5",
+  "version": "0.9.0",
   "description": "Library for interacting with Alkemio notifications service",
   "author": "Alkemio Foundation",
   "private": false,
