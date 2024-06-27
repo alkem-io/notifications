@@ -3,7 +3,7 @@ import {
   NotificationEventType,
   CommunicationOrganizationMessageEventPayload,
 } from '@alkemio/notifications-lib';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -57,7 +57,7 @@ export class CommunicationOrganizationMessageNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CommunicationOrganizationMessageEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     sender?: User
   ): CommunicationOrganizationMessageEmailPayload {
     if (!sender) {

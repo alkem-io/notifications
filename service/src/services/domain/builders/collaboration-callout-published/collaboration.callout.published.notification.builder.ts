@@ -3,7 +3,7 @@ import { INotificationBuilder } from '@core/contracts';
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
@@ -48,7 +48,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationCalloutPublishedEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     creator?: User
   ): CollaborationCalloutPublishedEmailPayload {
     if (!creator) {

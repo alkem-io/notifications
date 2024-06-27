@@ -1,6 +1,6 @@
 import { LogContext } from '@common/enums';
 import { TemplateRule } from '@core/contracts';
-import { CredentialCriterion, ROLE_EXTERNAL_USER } from '@core/models';
+import { CredentialCriterion, ROLE_PLATFORM_USER } from '@core/models';
 import { NotSupportedException } from '@src/common/exceptions';
 
 /***
@@ -79,7 +79,7 @@ export const filterCredentialCriterion = (
   credentialCriteria: CredentialCriterion[]
 ): CredentialCriterion[] => {
   return credentialCriteria.filter(
-    criteria => (criteria.type as string) !== ROLE_EXTERNAL_USER
+    criteria => (criteria.type as string) !== ROLE_PLATFORM_USER
   );
 };
 
@@ -88,11 +88,11 @@ export const filterCredentialCriterion = (
  * @param credentialCriteria
  * @returns Credential creiteria list
  */
-export const isCredentialCriterionExternalUser = (
+export const isCredentialCriterionPlatformUser = (
   credentialCriteria: CredentialCriterion[]
 ): boolean => {
   const criteria = credentialCriteria.find(
-    criteria => (criteria.type as string) === ROLE_EXTERNAL_USER
+    criteria => (criteria.type as string) === ROLE_PLATFORM_USER
   );
 
   if (criteria) return true;

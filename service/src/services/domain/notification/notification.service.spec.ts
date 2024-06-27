@@ -28,7 +28,7 @@ import {
   PlatformForumDiscussionCommentNotificationBuilder,
   CommunityInvitationCreatedNotificationBuilder,
   CommentReplyNotificationBuilder,
-  CommunityExternalInvitationCreatedNotificationBuilder,
+  CommunityPlatformInvitationCreatedNotificationBuilder,
 } from '../builders';
 import {
   MockAlkemioClientAdapterProvider,
@@ -46,7 +46,7 @@ import { NotificationTemplateType } from '@src/types';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
-import { VirtualContributorInvitationCreatedNotificationBuilder } from '../builders/virtual-contributor-invitation-created/virtual.contributor.invitation.created.notification.builder';
+import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 
 const testData = {
   ...challengeAdminsData,
@@ -73,7 +73,7 @@ describe('NotificationService', () => {
         NotificationService,
         CommunityApplicationCreatedNotificationBuilder,
         CommunityInvitationCreatedNotificationBuilder,
-        CommunityExternalInvitationCreatedNotificationBuilder,
+        CommunityPlatformInvitationCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
         PlatformForumDiscussionCommentNotificationBuilder,
         PlatformUserRemovedNotificationBuilder,
@@ -92,7 +92,7 @@ describe('NotificationService', () => {
         CollaborationCalloutPublishedNotificationBuilder,
         CommentReplyNotificationBuilder,
         PlatformGlobalRoleChangeNotificationBuilder,
-        VirtualContributorInvitationCreatedNotificationBuilder,
+        CommunityInvitationVirtualContributorCreatedNotificationBuilder,
         MockNotificationBuilderProvider,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,
