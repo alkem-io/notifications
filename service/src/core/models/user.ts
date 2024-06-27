@@ -1,10 +1,13 @@
-export type User = {
-  id: string;
-  nameID: string;
+export type User = Contributor & {
   firstName: string;
   lastName: string;
   email: string;
   preferences?: UserPreference[];
+};
+
+export type Contributor = {
+  id: string;
+  nameID: string;
   profile: {
     id: string;
     displayName: string;
