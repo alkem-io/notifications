@@ -37,10 +37,10 @@ import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/do
 import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
 import { CommentReplyNotificationBuilder } from './services/domain/builders/comment-reply/comment.reply.notification.builder';
-import { CommunityExternalInvitationCreatedNotificationBuilder } from './services/domain/builders/community-external-invitation-created/community.external.invitation.created.notification.builder';
+import { CommunityPlatformInvitationCreatedNotificationBuilder } from './services/domain/builders/community-platform-invitation-created/community.platform.invitation.created.notification.builder';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator/alkemio.url.generator.module';
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform-global-role-change/platform.global.role.change.notification.builder';
-import { VirtualContributorInvitationCreatedNotificationBuilder } from './services/domain/builders/virtual-contributor-invitation-created/virtual.contributor.invitation.created.notification.builder';
+import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
 import { SpaceCreatedNotificationBuilder } from './services/domain/builders/space-created/space.created.notification.builder';
 
@@ -69,7 +69,7 @@ import { SpaceCreatedNotificationBuilder } from './services/domain/builders/spac
     AlkemioUrlGenerator,
     CommunityApplicationCreatedNotificationBuilder,
     CommunityInvitationCreatedNotificationBuilder,
-    CommunityExternalInvitationCreatedNotificationBuilder,
+    CommunityPlatformInvitationCreatedNotificationBuilder,
     PlatformGlobalRoleChangeNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
@@ -89,7 +89,7 @@ import { SpaceCreatedNotificationBuilder } from './services/domain/builders/spac
     CollaborationCalloutPublishedNotificationBuilder,
     CommentReplyNotificationBuilder,
     NotificationService,
-    VirtualContributorInvitationCreatedNotificationBuilder,
+    CommunityInvitationVirtualContributorCreatedNotificationBuilder,
     SpaceCreatedNotificationBuilder,
   ],
   controllers: [AppController, HealthController],

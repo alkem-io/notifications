@@ -8,7 +8,7 @@ import {
 import { AlkemioClientAdapter } from '@src/services';
 import { EmailTemplate } from '@common/enums/email.template';
 import { UserPreferenceType } from '@alkemio/client-lib';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import {
   INotificationRecipientTemplateProvider,
   TemplateConfig,
@@ -26,7 +26,7 @@ import {
 import { LogContext } from '@src/common/enums';
 import {
   filterCredentialCriterion,
-  isCredentialCriterionExternalUser,
+  isCredentialCriterionPlatformUser,
 } from '../template-to-credential-mapper/utils/utils';
 
 export type RoleConfig = {
@@ -37,7 +37,7 @@ export type RoleConfig = {
 export type TemplateType = keyof TemplateConfig;
 export type TemplateBuilderFn<TPayload, TEmailPayload> = (
   payload: TPayload,
-  recipient: User | ExternalUser,
+  recipient: User | PlatformUser,
   eventUser?: User
 ) => TEmailPayload;
 
@@ -57,8 +57,8 @@ export type NotificationOptions<
   eventUserId?: string;
   /** variables to be used into the chosen templateType if any */
   templateVariables?: Record<string, string>;
-  /** external users to which email addresses the notification will be sent */
-  externalUsers?: ExternalUser[];
+  /** New platform users to which email addresses the notification will be sent */
+  platformUsers?: PlatformUser[];
 };
 
 export class NotificationBuilder<
@@ -130,7 +130,7 @@ export class NotificationBuilder<
       rolePreferenceType?: UserPreferenceType;
     }
   ): Promise<NotificationTemplateType[]> {
-    const { templateType, roleConfig, templateVariables, externalUsers } =
+    const { templateType, roleConfig, templateVariables, platformUsers } =
       options;
     this.logger.verbose?.(
       `[${emailTemplate} - '${recipientRole}'] Building notifications - start'`,
@@ -166,13 +166,13 @@ export class NotificationBuilder<
         filteredCriteria
       );
 
-    const externalRecipients: ExternalUser[] = [];
+    const externalRecipients: PlatformUser[] = [];
 
     if (
-      isCredentialCriterionExternalUser(credentialCriteria) &&
-      externalUsers
+      isCredentialCriterionPlatformUser(credentialCriteria) &&
+      platformUsers
     ) {
-      externalRecipients.push(...externalUsers);
+      externalRecipients.push(...platformUsers);
     }
 
     if (!recipients.length && !externalRecipients) {
@@ -274,7 +274,7 @@ export class NotificationBuilder<
 
   private async buildNotificationTemplate(
     options: NotificationOptions<TPayload, TEmailPayload>,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     templateName: string,
     eventUser?: User
   ): Promise<NotificationTemplateType | undefined> {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCreatedEventPayload } from '@alkemio/notifications-lib';
 import { UserPreferenceType } from '@alkemio/client-lib';
@@ -47,7 +47,7 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
 
   createTemplatePayload(
     eventPayload: PlatformForumDiscussionCreatedEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     sender?: User
   ): PlatformForumDiscussionCreatedEmailPayload {
     if (!sender) {

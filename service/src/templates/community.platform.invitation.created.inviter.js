@@ -2,7 +2,7 @@
 const templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'community-external-invitation-created-inviter',
+  name: 'community-platform-invitation-created-inviter',
   title: '[{{space.displayName}}] Invitation sent',
   version: 1,
   channels: {

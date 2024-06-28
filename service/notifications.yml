@@ -122,7 +122,7 @@ recipients:
         - rule:
             type: USER_SELF_MANAGEMENT
             resource_id: <inviteeID>
-  community_external_invitation_created:
+  community_platform_invitation_created:
     - name: inviter
       rules:
         - rule:
@@ -131,7 +131,7 @@ recipients:
     - name: invitee
       rules:
         - rule:
-            type: EXTERNAL_USER
+            type: PLATFORM_USER
             resource_id:
   communication_update_sent:
     - name: admin

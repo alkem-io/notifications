@@ -3,7 +3,7 @@ import {
   NotificationEventType,
   CommunicationCommunityLeadsMessageEventPayload,
 } from '@alkemio/notifications-lib';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -56,7 +56,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CommunicationCommunityLeadsMessageEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     sender?: User
   ): CommunicationCommunityLeadsMessageEmailPayload {
     if (!sender) {

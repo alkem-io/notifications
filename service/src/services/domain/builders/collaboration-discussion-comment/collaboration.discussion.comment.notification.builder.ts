@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@core/contracts';
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import {
   CollaborationDiscussionCommentEventPayload,
   NotificationEventType,
@@ -51,7 +51,7 @@ export class CollaborationDiscussionCommentNotificationBuilder
 
   createTemplatePayload(
     eventPayload: CollaborationDiscussionCommentEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     commentAuthor?: User
   ): CollaborationDiscussionCommentEmailPayload {
     if (!commentAuthor) {

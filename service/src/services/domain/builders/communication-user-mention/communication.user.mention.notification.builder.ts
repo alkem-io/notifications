@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NotificationEventType } from '@alkemio/notifications-lib';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { CommunicationUserMentionEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
@@ -51,7 +51,7 @@ export class CommunicationUserMentionNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: CommunicationUserMentionEventPayload,
-    recipient: User | ExternalUser,
+    recipient: User | PlatformUser,
     sender?: User
   ): CommunicationUserMentionEmailPayload {
     if (!sender) {
