@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformUserRemovedEventPayload } from '@alkemio/notifications-lib';
-import { ExternalUser, User } from '@core/models';
+import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { UserPreferenceType } from '@alkemio/client-lib';
@@ -46,7 +46,7 @@ export class PlatformUserRemovedNotificationBuilder
 
   private createTemplatePayload(
     eventPayload: PlatformUserRemovedEventPayload,
-    recipient: User | ExternalUser
+    recipient: User | PlatformUser
   ): PlatformUserRemovedEmailPayload {
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);

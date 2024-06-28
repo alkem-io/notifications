@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalUser, User, isExistingAlkemioUser } from '@src/core/models';
+import { PlatformUser, User, isExistingAlkemioUser } from '@src/core/models';
 
 @Injectable()
 export class AlkemioUrlGenerator {
-  createUserNotificationPreferencesURL(user: User | ExternalUser): string {
+  createUserNotificationPreferencesURL(user: User | PlatformUser): string {
     if (!isExistingAlkemioUser(user)) {
       return '';
     }
