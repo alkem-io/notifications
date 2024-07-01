@@ -108,11 +108,15 @@ export class NotificationService {
       return [];
     }
 
-    return notificationBuilder
-      .build(payload)
-      .then(x => x.map(y => this.sendNotification(y)))
-      .then(x => Promise.allSettled(x))
-      .catch((error: Error) => this.logger.error(error.message));
+    const notifications = await notificationBuilder.build(payload);
+    try {
+      return Promise.allSettled(
+        notifications.map(x => this.sendNotification(x))
+      );
+    } catch (error: any) {
+      this.logger.error(error.message);
+    }
+    return [];
   }
 
   async sendApplicationCreatedNotifications(
