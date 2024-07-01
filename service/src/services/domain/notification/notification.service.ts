@@ -117,11 +117,6 @@ export class NotificationService {
       this.logger.error(error.message);
     }
     return [];
-    // return notificationBuilder
-    //   .build(payload)
-    //   .then(x => x.map(y => this.sendNotification(y)))
-    //   .then(x => Promise.allSettled(x))
-    //   .catch((error: Error) => this.logger.error(error.message));
   }
 
   async sendApplicationCreatedNotifications(
