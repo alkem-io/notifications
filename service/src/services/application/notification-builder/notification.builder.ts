@@ -92,33 +92,32 @@ export class NotificationBuilder<
       );
     }
 
-    const notificationsForRoles = roleConfig.flatMap(
-      ({ role, emailTemplate, preferenceType }) =>
+    const notificationsForRoles: Promise<NotificationTemplateType[]>[] = [];
+    roleConfig.forEach(({ role, emailTemplate, preferenceType }) => {
+      const notifications: Promise<NotificationTemplateType[]> =
         this.buildNotificationsForRole(options, role, emailTemplate, {
           eventUser,
           rolePreferenceType: preferenceType,
-        })
-    );
+        });
+      notificationsForRoles.push(notifications);
+    });
 
     // when the build process of all notification is finished
     // flatten the notification by role a single array of notifications
     // filter the rejected once and log them
-    return Promise.allSettled(notificationsForRoles)
-      .then(x =>
-        x
-          .flatMap(y => {
-            if (isPromiseFulfilledResult(y)) {
-              return y.value;
-            } else {
-              this.logger.warn(
-                `Filtering rejected notification content: ${y.reason}`
-              );
-              return undefined;
-            }
-          })
-          .filter(x => x)
-      )
-      .then(x => x as NotificationTemplateType[]);
+    const notifications = await Promise.allSettled(notificationsForRoles);
+    const notificationResults: NotificationTemplateType[] = [];
+    notifications.forEach(notification => {
+      if (isPromiseFulfilledResult(notification)) {
+        notificationResults.push(...notification.value);
+      } else {
+        this.logger.warn(
+          `Filtering rejected notification content: ${notification.reason}`,
+          LogContext.NOTIFICATIONS
+        );
+      }
+    });
+    return notificationResults;
   }
 
   private async buildNotificationsForRole(
@@ -256,20 +255,20 @@ export class NotificationBuilder<
     );
 
     // filter all rejected notifications and log them
-    return Promise.allSettled(notifications)
-      .then(x =>
-        x
-          .map(y => {
-            if (isPromiseFulfilledResult(y)) {
-              return y.value;
-            } else {
-              this.logger.warn(`Filtering rejected notifications: ${y.reason}`);
-              return undefined;
-            }
-          })
-          .filter(x => x)
-      )
-      .then(x => x as NotificationTemplateType[]);
+    const notificationResults = await Promise.allSettled(notifications);
+    const notificationTemplateTypes: NotificationTemplateType[] = [];
+    notificationResults.forEach(notification => {
+      if (isPromiseFulfilledResult(notification)) {
+        const value = notification.value;
+        if (value) notificationTemplateTypes.push(value);
+      } else {
+        this.logger.warn(
+          `Filtering rejected notification content: ${notification.reason}`,
+          LogContext.NOTIFICATIONS
+        );
+      }
+    });
+    return notificationTemplateTypes;
   }
 
   private async buildNotificationTemplate(
