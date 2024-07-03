@@ -26,7 +26,7 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
-        role: 'license manager',
+        role: 'licenseManager',
         emailTemplate: EmailTemplate.SPACE_CREATED_ADMIN,
       },
     ];

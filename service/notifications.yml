@@ -291,7 +291,7 @@ recipients:
             type: ORGANIZATION_ADMIN
             resource_id: <hostOrganizationID>
   space_created:
-    - name: license manager
+    - name: licenseManager
       rules:
         - rule:
             type: GLOBAL_LICENSE_MANAGER
