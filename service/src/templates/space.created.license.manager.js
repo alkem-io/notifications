@@ -9,11 +9,11 @@ module.exports = () => ({
     email: {
       from: '{{emailFrom}}',
       to: '{{recipient.email}}',
-      subject: '',
+      subject: 'New space created - {{space.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
-        <b>{{host.name}}</b> created a new space: "<a style="color:#1d384a; text-decoration: none;" href={{space.url}}>{{space.displayName}}</a>" on {{space.dateCreated}} at {{space.timeCreated}} with <b>{{space.plan}}</b> plan.
+        <b>{{sender.name}}</b> created a new space "<a style="color:#1d384a; text-decoration: none;" href={{space.url}}>{{space.displayName}}</a>" on {{dateCreated}} UTC.
         <br><br>
         <a class="action-button" href="{{space.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}

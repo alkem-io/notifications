@@ -1,19 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { NotificationTemplateType } from '@src/types';
-import {
-  NotificationEventType,
-  SpacePayload,
-  // SpaceCreatedEventPayload,
-} from '@alkemio/notifications-lib'; // Import or define the type 'SpaceCreatedEventPayload'
-// import { User } from '@alkemio/client-lib';
+import { SpaceCreatedEventPayload } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import {
   AlkemioUrlGenerator,
   NotificationBuilder,
   RoleConfig,
 } from '../../../application';
-import { ExternalUser, User } from '@src/core/models';
+import { PlatformUser, User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
 
 @Injectable()
@@ -21,30 +16,13 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
-      //SpaceCreatedEventPayload,
-      {
-        host: string;
-        plan: string;
-        space: SpacePayload;
-        triggeredBy: string;
-        platform: {
-          url: string;
-        };
-      },
+      SpaceCreatedEventPayload,
       SpaceCreatedEmailPayload
     >
   ) {}
 
   build(
-    payload: {
-      host: string;
-      plan: string;
-      space: SpacePayload;
-      triggeredBy: string;
-      platform: {
-        url: string;
-      };
-    } //SpaceCreatedEventPayload
+    payload: SpaceCreatedEventPayload
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
@@ -55,12 +33,12 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
 
     const templateVariables = {
       spaceID: payload.space.id,
-      hostID: payload.host,
+      senderID: payload.triggeredBy,
     };
 
     return this.notificationBuilder.build({
       payload,
-      // eventUserId: payload.user.id,
+      eventUserId: undefined,
       roleConfig,
       templateType: 'space_created',
       templateVariables,
@@ -69,24 +47,9 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
   }
 
   createTemplatePayload(
-    eventPayload: {
-      host: string;
-      plan: string;
-      space: SpacePayload;
-      triggeredBy: string;
-      platform: {
-        url: string;
-      };
-    }, //SpaceCreatedEventPayload,
-    recipient: User | ExternalUser,
-    sender?: User
+    eventPayload: SpaceCreatedEventPayload,
+    recipient: User | PlatformUser
   ): SpaceCreatedEmailPayload {
-    if (!sender) {
-      throw Error(
-        `Sender not provided for '${NotificationEventType.SPACE_CREATED}' event`
-      );
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
@@ -97,15 +60,15 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      host: 'name',
       space: {
         displayName: eventPayload.space.profile.displayName,
         type: eventPayload.space.type,
         url: eventPayload.space.profile.url,
-        dateCreated: 'string',
-        timeCreated: 'string',
-        plan: 'string',
       },
+      sender: eventPayload.sender,
+      dateCreated: new Date(eventPayload.created).toLocaleString('en-GB', {
+        timeZone: 'UTC',
+      }),
       platform: {
         url: eventPayload.platform.url,
       },

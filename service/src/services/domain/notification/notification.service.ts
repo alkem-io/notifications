@@ -29,8 +29,7 @@ import {
   CommentReplyEventPayload,
   PlatformGlobalRoleChangeEventPayload,
   CommunityInvitationVirtualContributorCreatedEventPayload,
-  SpacePayload,
-  // SpaceCreatedEventPayload,
+  SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -318,16 +317,7 @@ export class NotificationService {
   }
 
   async sendSpaceCreatedNotification(
-    payload: {
-      host: string;
-      plan: string;
-      space: SpacePayload;
-      triggeredBy: string;
-      platform: {
-        url: string;
-      };
-    }
-    // SpaceCreatedEventPayload
+    payload: SpaceCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.sendNotifications(
       payload,

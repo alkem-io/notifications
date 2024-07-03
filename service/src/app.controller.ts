@@ -34,8 +34,8 @@ import {
   CommunityInvitationCreatedEventPayload,
   CommentReplyEventPayload,
   CommunityInvitationVirtualContributorCreatedEventPayload,
-  SpacePayload,
-  // SpaceCreatedEventPayload,
+  CommunityPlatformInvitationCreatedEventPayload,
+  SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -385,15 +385,7 @@ export class AppController {
   async sendSpaceCreatedNotifications(
     // eslint-disable-next-line prettier/prettier
     @Payload()
-    eventPayload: {
-      host: string;
-      plan: string;
-      space: SpacePayload;
-      triggeredBy: string;
-      platform: {
-        url: string;
-      };
-    }, // SpaceCreatedEventPayload,
+    eventPayload: SpaceCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.sendNotifications(
