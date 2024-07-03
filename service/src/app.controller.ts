@@ -383,7 +383,6 @@ export class AppController {
 
   @EventPattern(NotificationEventType.SPACE_CREATED)
   async sendSpaceCreatedNotifications(
-    // eslint-disable-next-line prettier/prettier
     @Payload()
     eventPayload: SpaceCreatedEventPayload,
     @Ctx() context: RmqContext
