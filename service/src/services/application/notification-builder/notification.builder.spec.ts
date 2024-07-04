@@ -62,7 +62,8 @@ describe('NotificationBuilder', () => {
       await notificationBuilder.build(getBaseOptions());
 
       expect(loggerSpy).toBeCalledWith(
-        expect.stringContaining('No rule set(s) found for roles')
+        expect.stringContaining('No rule set(s) found for roles'),
+        expect.stringMatching('notifications')
       );
     });
   });
