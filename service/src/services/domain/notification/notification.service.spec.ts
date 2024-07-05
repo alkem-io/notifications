@@ -47,6 +47,7 @@ import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/c
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
+import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
 
 const testData = {
   ...challengeAdminsData,
@@ -97,6 +98,7 @@ describe('NotificationService', () => {
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,
         AlkemioUrlGenerator,
+        SpaceCreatedNotificationBuilder,
       ],
     }).compile();
 
