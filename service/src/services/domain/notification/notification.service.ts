@@ -29,6 +29,7 @@ import {
   CommentReplyEventPayload,
   PlatformGlobalRoleChangeEventPayload,
   CommunityInvitationVirtualContributorCreatedEventPayload,
+  SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
@@ -59,6 +60,7 @@ import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comme
 import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
+import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
 
 @Injectable()
 export class NotificationService {
@@ -90,7 +92,8 @@ export class NotificationService {
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
-    private communityInvitationvirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder
+    private communityInvitationvirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder,
+    private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder
   ) {}
 
   async sendNotifications(
@@ -314,6 +317,15 @@ export class NotificationService {
     return this.sendNotifications(
       payload,
       this.commentReplyNotificationBuilder
+    );
+  }
+
+  async sendSpaceCreatedNotification(
+    payload: SpaceCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.sendNotifications(
+      payload,
+      this.spaceCreatedNotificationBuilder
     );
   }
 

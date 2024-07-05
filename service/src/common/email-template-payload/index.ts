@@ -22,3 +22,4 @@ export * from './platform.forum.discussion.comment.email.payload';
 export * from './platform.forum.discussion.created.email.payload';
 export * from './comment.reply.email.payload';
 export * from './community.invitation.virtual.contributor.created.email.payload';
+export * from './space.created.email.payload';

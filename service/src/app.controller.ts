@@ -34,10 +34,11 @@ import {
   CommunityInvitationCreatedEventPayload,
   CommentReplyEventPayload,
   CommunityInvitationVirtualContributorCreatedEventPayload,
+  CommunityPlatformInvitationCreatedEventPayload,
+  SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
-import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 
 @Controller()
 export class AppController {
@@ -377,6 +378,20 @@ export class AppController {
       context,
       this.notificationService.sendCommentReplyNotification(eventPayload),
       NotificationEventType.COMMENT_REPLY
+    );
+  }
+
+  @EventPattern(NotificationEventType.SPACE_CREATED)
+  async sendSpaceCreatedNotifications(
+    @Payload()
+    eventPayload: SpaceCreatedEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.sendNotifications(
+      eventPayload,
+      context,
+      this.notificationService.sendSpaceCreatedNotification(eventPayload),
+      NotificationEventType.SPACE_CREATED
     );
   }
 

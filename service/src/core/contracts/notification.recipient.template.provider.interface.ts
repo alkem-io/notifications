@@ -38,6 +38,7 @@ export type TemplateConfig = {
   platform_forum_discussion_comment?: TemplateRuleSet[];
   comment_reply?: TemplateRuleSet[];
   community_invitation_created_vc?: TemplateRuleSet[];
+  space_created?: TemplateRuleSet[];
 };
 
 export interface INotificationRecipientTemplateProvider {
