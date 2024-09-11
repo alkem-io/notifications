@@ -8,7 +8,6 @@ module.exports = () => ({
   version: 1,
   channels: {
     email: {
-      from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
         '{{space.displayName}} - New comment received on Callout "{{callout.displayName}}", have a look!',

@@ -68,7 +68,6 @@ export class CommunicationUpdateCreatedNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
-      emailFrom: 'info@alkem.io',
       sender: {
         firstName: sender.firstName,
       },

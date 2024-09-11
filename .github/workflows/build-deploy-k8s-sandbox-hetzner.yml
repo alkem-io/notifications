@@ -1,0 +1,50 @@
+name: Build & Deploy to Sandbox on Hetzner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # checkout the repo
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@v4.1.7
+
+      - name: "Build and push image"
+        uses: azure/docker-login@v2
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - run: |
+          docker build -f Dockerfile . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }} -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:latest
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
+
+      - name: Install Kubectl
+        uses: azure/setup-kubectl@v4.0.0
+        with:
+          version: "v1.27.6" # Ensure this matches the version used in your cluster
+
+      - name: Set up Kubeconfig for Hetzner k3s
+        run: |
+          mkdir -p $HOME/.kube  # Ensure the .kube directory exists
+          echo "${{ secrets.KUBECONFIG_SECRET_HETZNER_SANDBOX }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Create Image Pull Secret
+        run: |
+          kubectl create secret docker-registry alkemio-notifications-secret \
+            --docker-server=${{ secrets.REGISTRY_LOGIN_SERVER }} \
+            --docker-username=${{ secrets.REGISTRY_USERNAME }} \
+            --docker-password=${{ secrets.REGISTRY_PASSWORD }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - uses: Azure/k8s-deploy@v5.0.0
+        with:
+          manifests: |
+            service/manifests/25-notifications-deployment-dev.yaml
+          images: |
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
+          imagepullsecrets: |
+            alkemio-notifications-secret
