@@ -7,7 +7,6 @@ module.exports = () => ({
   version: 1,
   channels: {
     email: {
-      from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject: 'Global role change on Alkemio: {{user.displayName}} - {{type}} - {{role}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}

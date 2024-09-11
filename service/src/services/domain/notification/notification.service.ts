@@ -1,4 +1,4 @@
-import { Injectable, Inject, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import {
@@ -8,57 +8,57 @@ import {
   NOTIFICATIONS_PROVIDER,
 } from '@common/enums';
 import {
-  CommunityApplicationCreatedEventPayload,
-  CommunicationUpdateEventPayload,
-  PlatformForumDiscussionCreatedEventPayload,
-  CommunicationUserMessageEventPayload,
-  CommunicationOrganizationMessageEventPayload,
-  CommunicationCommunityLeadsMessageEventPayload,
-  CommunicationUserMentionEventPayload,
-  CommunicationOrganizationMentionEventPayload,
-  PlatformUserRegistrationEventPayload,
-  CommunityNewMemberPayload,
-  CollaborationPostCreatedEventPayload,
-  CollaborationPostCommentEventPayload,
-  CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
-  PlatformUserRemovedEventPayload,
-  CollaborationWhiteboardCreatedEventPayload,
+  CollaborationCalloutPublishedEventPayload,
   CollaborationDiscussionCommentEventPayload,
-  PlatformForumDiscussionCommentEventPayload,
-  CommunityInvitationCreatedEventPayload,
+  CollaborationPostCommentEventPayload,
+  CollaborationPostCreatedEventPayload,
+  CollaborationWhiteboardCreatedEventPayload,
   CommentReplyEventPayload,
-  PlatformGlobalRoleChangeEventPayload,
+  CommunicationCommunityLeadsMessageEventPayload,
+  CommunicationOrganizationMentionEventPayload,
+  CommunicationOrganizationMessageEventPayload,
+  CommunicationUpdateEventPayload,
+  CommunicationUserMentionEventPayload,
+  CommunicationUserMessageEventPayload,
+  CommunityApplicationCreatedEventPayload,
+  CommunityInvitationCreatedEventPayload,
   CommunityInvitationVirtualContributorCreatedEventPayload,
+  CommunityNewMemberPayload,
+  CommunityPlatformInvitationCreatedEventPayload,
+  PlatformForumDiscussionCommentEventPayload,
+  PlatformForumDiscussionCreatedEventPayload,
+  PlatformGlobalRoleChangeEventPayload,
+  PlatformUserRegistrationEventPayload,
+  PlatformUserRemovedEventPayload,
   SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';
 import {
-  CommunityApplicationCreatedNotificationBuilder,
-  PlatformForumDiscussionCreatedNotificationBuilder,
-  CommunicationUpdateCreatedNotificationBuilder,
-  PlatformUserRegisteredNotificationBuilder,
-  PlatformForumDiscussionCommentNotificationBuilder,
-  CollaborationPostCreatedNotificationBuilder,
-  CollaborationPostCommentNotificationBuilder,
   CollaborationCalloutPublishedNotificationBuilder,
-  CommunityNewMemberNotificationBuilder,
-  CommunicationUserMessageNotificationBuilder,
-  CommunicationOrganizationMessageNotificationBuilder,
+  CollaborationPostCommentNotificationBuilder,
+  CollaborationPostCreatedNotificationBuilder,
   CommunicationCommunityLeadsMessageNotificationBuilder,
-  CommunicationUserMentionNotificationBuilder,
   CommunicationOrganizationMentionNotificationBuilder,
+  CommunicationOrganizationMessageNotificationBuilder,
+  CommunicationUpdateCreatedNotificationBuilder,
+  CommunicationUserMentionNotificationBuilder,
+  CommunicationUserMessageNotificationBuilder,
+  CommunityApplicationCreatedNotificationBuilder,
   CommunityInvitationCreatedNotificationBuilder,
+  CommunityNewMemberNotificationBuilder,
   CommunityPlatformInvitationCreatedNotificationBuilder,
+  PlatformForumDiscussionCommentNotificationBuilder,
+  PlatformForumDiscussionCreatedNotificationBuilder,
+  PlatformUserRegisteredNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
-import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
@@ -341,13 +341,18 @@ export class NotificationService {
         `Notification (${notification.name}) - (${notification.title}) no channels provided`
       );
     }
-
-    if (notification.channels.email) {
-      const mailFrom = this.configService.get(
-        ConfigurationTypes.NOTIFICATION_PROVIDERS
-      )?.email?.from;
-      notification.channels.email.from = mailFrom;
+    // since this is the only channel we have; log an error if it's not provided
+    if (!notification.channels.email) {
+      this.logger.error?.(
+        `Notification (${notification.name}) - (${notification.title}) no email channel provided`,
+        LogContext.NOTIFICATIONS
+      );
+      return { status: 'error' };
     }
+
+    notification.channels.email.from = this.configService.get(
+      ConfigurationTypes.NOTIFICATION_PROVIDERS
+    )?.email?.from;
 
     return this.notifmeService.send(notification.channels).then(
       res => {
@@ -358,11 +363,11 @@ export class NotificationService {
         return res;
       },
       reason => {
-        this.logger.verbose?.(
+        this.logger.warn?.(
           `Notification rejected with reason: ${reason}`,
           LogContext.NOTIFICATIONS
         );
-        return reason;
+        return { status: 'error' };
       }
     );
   }
