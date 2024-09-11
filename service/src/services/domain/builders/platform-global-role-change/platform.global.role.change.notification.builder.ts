@@ -59,7 +59,6 @@ export class PlatformGlobalRoleChangeNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
-      emailFrom: 'info@alkem.io',
       user: {
         displayName: user.profile.displayName,
         firstName: user.firstName,

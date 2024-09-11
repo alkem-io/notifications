@@ -54,7 +54,6 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
-      emailFrom: 'info@alkem.io',
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,

@@ -65,7 +65,6 @@ export class CommunicationUserMentionNotificationBuilder
     const htmlComment: string = convertMarkdownToText(eventPayload.comment);
 
     return {
-      emailFrom: 'info@alkem.io',
       commentSender: {
         displayName: sender.profile.displayName,
         firstName: sender.firstName,

@@ -63,7 +63,6 @@ export class PlatformUserRegisteredNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
-      emailFrom: 'info@alkem.io',
       registrant: {
         displayName: registrant.profile.displayName,
         firstName: registrant.firstName,

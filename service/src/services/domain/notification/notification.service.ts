@@ -3,6 +3,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import {
   ALKEMIO_CLIENT_ADAPTER,
+  ConfigurationTypes,
   LogContext,
   NOTIFICATIONS_PROVIDER,
 } from '@common/enums';
@@ -61,6 +62,7 @@ import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notific
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotificationService {
@@ -71,6 +73,7 @@ export class NotificationService {
     private readonly alkemioClientAdapter: AlkemioClientAdapter,
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
+    private readonly configService: ConfigService,
     private communityApplicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
     private communityInvitationCreatedNotificationBuilder: CommunityInvitationCreatedNotificationBuilder,
     private communityPlatformInvitationCreatedNotificationBuilder: CommunityPlatformInvitationCreatedNotificationBuilder,
@@ -112,6 +115,7 @@ export class NotificationService {
     }
 
     const notifications = await notificationBuilder.build(payload);
+
     try {
       return Promise.allSettled(
         notifications.map(x => this.sendNotification(x))
@@ -336,6 +340,13 @@ export class NotificationService {
       throw new NotificationNoChannelsException(
         `Notification (${notification.name}) - (${notification.title}) no channels provided`
       );
+    }
+
+    if (notification.channels.email) {
+      const mailFrom = this.configService.get(
+        ConfigurationTypes.NOTIFICATION_PROVIDERS
+      )?.email?.from;
+      notification.channels.email.from = mailFrom;
     }
 
     return this.notifmeService.send(notification.channels).then(
