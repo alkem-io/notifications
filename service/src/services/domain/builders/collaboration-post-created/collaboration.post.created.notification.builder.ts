@@ -66,7 +66,6 @@ export class CollaborationPostCreatedNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
-      emailFrom: 'info@alkem.io',
       createdBy: {
         firstName: creator.firstName,
         email: creator.email,

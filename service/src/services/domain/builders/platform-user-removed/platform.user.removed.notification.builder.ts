@@ -51,7 +51,6 @@ export class PlatformUserRemovedNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
-      emailFrom: 'info@alkem.io',
       registrant: {
         displayName: eventPayload.user.displayName,
         email: eventPayload.user.email,

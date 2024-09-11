@@ -75,7 +75,6 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
       .join(', ');
 
     return {
-      emailFrom: 'info@alkem.io',
       inviter: {
         firstName: inviter.firstName,
         name: inviter.profile.displayName,

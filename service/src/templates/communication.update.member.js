@@ -7,7 +7,6 @@ module.exports = () => ({
   version: 1,
   channels: {
     email: {
-      from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject: '{{space.displayName}} - New update, have a look!',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}

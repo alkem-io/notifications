@@ -60,7 +60,6 @@ export class CollaborationPostCommentNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
-      emailFrom: 'info@alkem.io',
       callout: {
         displayName: eventPayload.callout.displayName,
         url: eventPayload.callout.url,
