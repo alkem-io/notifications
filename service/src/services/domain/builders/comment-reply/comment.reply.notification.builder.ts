@@ -61,7 +61,6 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
-      emailFrom: 'info@alkem.io',
       reply: {
         message: eventPayload.reply,
         createdBy: sender.profile.displayName,

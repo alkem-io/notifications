@@ -59,7 +59,6 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
-      emailFrom: 'info@alkem.io',
       createdBy: {
         firstName: sender.firstName,
       },

@@ -67,7 +67,6 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
-      emailFrom: 'info@alkem.io',
       inviter: {
         firstName: inviter.firstName,
         name: inviter.profile.displayName,
