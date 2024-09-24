@@ -7,7 +7,6 @@ module.exports = () => ({
   version: 1,
   channels: {
     email: {
-      from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       replyTo: '{{messageSender.email}}',
       subject: '{{messageSender.displayName}} sent a message to your community',

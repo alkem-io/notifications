@@ -66,7 +66,6 @@ export class CommunityNewMemberNotificationBuilder
     }
 
     return {
-      emailFrom: 'info@alkem.io',
       member: {
         name: newMember.profile.displayName,
         profile: newMember.profile.url,
