@@ -67,7 +67,6 @@ export class CommunityApplicationCreatedNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
-      emailFrom: 'info@alkem.io',
       applicant: {
         firstName: applicant.firstName,
         name: applicant.profile.displayName,

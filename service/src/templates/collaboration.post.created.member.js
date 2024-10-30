@@ -8,7 +8,6 @@ module.exports = () => ({
   version: 1,
   channels: {
     email: {
-      from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
         '{{space.displayName}}: New Post created by {{createdBy.firstName}}, have a look!',

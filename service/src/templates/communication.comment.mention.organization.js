@@ -8,7 +8,6 @@ module.exports = () => ({
   version: 1,
   channels: {
     email: {
-      from: '{{emailFrom}}',
       to: '{{recipient.email}}',
       subject:
         '{{commentSender.displayName}} mentioned {{mentionedOrganization.displayName}} in a comment on Alkemio',
