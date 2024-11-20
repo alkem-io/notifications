@@ -50,6 +50,9 @@
     "node": ">=16.15.0",
     "npm": ">=8.5.5"
   },
+  "volta": {
+    "node": "20.15.1"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
