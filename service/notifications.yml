@@ -12,6 +12,8 @@ rabbitmq:
 
     # RabbitMQ password
     password: ${RABBITMQ_PASSWORD}:alkemio!
+    # heartbeat
+    heartbeat: ${RABBITMQ_HEARTBEAT}:30
 
 ## MONITORING ##
 # This section defines settings used for DevOps - MONITORING providers, endpoints, logging configuration.
@@ -65,6 +67,9 @@ notification_providers:
         pass: ${EMAIL_SMTP_PASSWORD}:test
       tls:
         rejectUnauthorized: ${EMAIL_SMTP_REJECT_UNAUTHORIZED}:false
+  in_app:
+    # The name of the queue used for sending in-app notifications
+    queue: ${IN_APP_QUEUE_NAME}:alkemio-in-app-notifications
 
 ## hosting ##
 # The hosting configuration for the Alkemio Server

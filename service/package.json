@@ -18,7 +18,7 @@
     "start-nodemon-local": "nodemon -w src --ext ts --exec ts-node -r dotenv/config src/main.ts",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:debug": "nest start --debug=0.0.0.0:9230 --watch",
     "start:prod": "node dist/main",
     "start:services": "docker-compose -f quickstart-mailslurper.yml up --build --force-recreate",
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
@@ -97,5 +97,8 @@
   "engines": {
     "node": ">=16.15.0",
     "npm": ">=8.5.5"
+  },
+  "volta": {
+    "node": "20.15.1"
   }
 }

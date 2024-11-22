@@ -43,6 +43,8 @@ import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/b
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
 import { SpaceCreatedNotificationBuilder } from './services/domain/builders/space-created/space.created.notification.builder';
+import { InAppNotificationBuilderModule } from '@src/services/domain/in-app';
+import { InAppNotificationSenderModule } from '@src/services/external/in-app-notifications';
 
 @Module({
   imports: [
@@ -59,6 +61,8 @@ import { SpaceCreatedNotificationBuilder } from './services/domain/builders/spac
     AlkemioClientAdapterModule,
     AlkemioUrlGeneratorModule,
     NotificationRecipientsAdapterModule,
+    InAppNotificationBuilderModule,
+    InAppNotificationSenderModule,
   ],
   providers: [
     {

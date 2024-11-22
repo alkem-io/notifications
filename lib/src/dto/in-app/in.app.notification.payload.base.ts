@@ -7,5 +7,4 @@ export interface InAppNotificationPayloadBase {
   type: NotificationEventType;
   triggeredByID: string;
   category: string; // todo type
-  // action: string; // todo type ???
 }
