@@ -130,6 +130,10 @@ export class AppController {
       ),
       NotificationEventType.COMMUNITY_NEW_MEMBER
     );
+    const compressedNotifications = await this.inAppBuilder.buildNewMember(
+      eventPayload
+    );
+    this.inAppSender.send(compressedNotifications);
   }
 
   @EventPattern(NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE)
@@ -279,6 +283,9 @@ export class AppController {
       ),
       NotificationEventType.COMMUNICATION_USER_MENTION
     );
+    const compressedNotifications =
+      await this.inAppBuilder.buildContributorMention(eventPayload);
+    this.inAppSender.send(compressedNotifications);
   }
 
   @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION)

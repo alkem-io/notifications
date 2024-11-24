@@ -4,7 +4,10 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { inAppClientProxyFactory } from './in.app.client.proxy.factory';
 import { ClientProxy } from '@nestjs/microservices';
 import { RMQConnectionError } from '@src/types';
-import { CompressedInAppNotificationPayload } from '@alkemio/notifications-lib';
+import {
+  CompressedInAppNotificationPayload,
+  InAppNotificationPayload,
+} from '@alkemio/notifications-lib';
 
 @Injectable()
 export class InAppNotificationSender {
@@ -42,7 +45,9 @@ export class InAppNotificationSender {
       );
   }
 
-  public send(data: CompressedInAppNotificationPayload[]) {
+  public send(
+    data: CompressedInAppNotificationPayload<InAppNotificationPayload>[]
+  ) {
     try {
       return this.sendWithoutResponse(data);
     } catch (e) {
