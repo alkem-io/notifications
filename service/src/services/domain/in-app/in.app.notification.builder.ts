@@ -17,7 +17,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ALKEMIO_CLIENT_ADAPTER } from '@common/enums';
 import { AlkemioClientAdapter } from '@src/services';
 import { InAppNotificationPayloadBase } from '@alkemio/notifications-lib/dist/dto/in-app/in.app.notification.payload.base';
-import { EmailTemplate } from '@common/enums/email.template';
 
 type InAppCategory = string;
 type RoleConfig = {
@@ -174,15 +173,15 @@ export class InAppNotificationBuilder {
     }
 
     const recipientsWithActivePreference = recipients.filter(r => {
-      const userPreference = r.preferences?.find(
+      const targetPreference = r.preferences?.find(
         p => p.definition.type === preferenceType
       );
 
-      if (!userPreference) {
+      if (!targetPreference) {
         return false;
       }
       // later to take into account the preference value type and test against the proper value
-      return userPreference?.value === 'true';
+      return targetPreference?.value === 'true';
     });
 
     return extractId(recipientsWithActivePreference);
@@ -223,7 +222,7 @@ const newMemberBuilder = (
   const {
     space: { id: spaceID },
     triggeredBy: triggeredByID,
-    contributor: { id: newMemberID },
+    contributor: { id: newMemberID, type: contributorType },
   } = event;
 
   return {
@@ -234,6 +233,7 @@ const newMemberBuilder = (
     spaceID,
     triggeredByID,
     newMemberID,
+    contributorType: contributorType as CommunityContributorType,
     receiverID: '',
   };
 };

@@ -61,7 +61,7 @@ export class InAppNotificationSender {
    * @param data
    */
   private sendWithoutResponse = <TInput>(data: TInput): void | never => {
-    const pattern = 'in-app-notification-receive';
+    const pattern = 'in-app-notification-incoming';
     if (!this.client) {
       throw new Error('Connection was not established. Sending failed.');
     }
