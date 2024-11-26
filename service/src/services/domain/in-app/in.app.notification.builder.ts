@@ -7,6 +7,8 @@ import {
   InAppNotificationCommunityNewMemberPayload,
   InAppNotificationContributorMentionedPayload,
   NotificationEventType,
+  InAppNotificationPayloadBase,
+  InAppNotificationCategory,
 } from '@alkemio/notifications-lib';
 import {
   CommunityContributorType,
@@ -16,11 +18,9 @@ import { AuthorizationCredential } from '@alkemio/client-lib/dist/generated/grap
 import { Inject, Injectable } from '@nestjs/common';
 import { ALKEMIO_CLIENT_ADAPTER } from '@common/enums';
 import { AlkemioClientAdapter } from '@src/services';
-import { InAppNotificationPayloadBase } from '@alkemio/notifications-lib/dist/dto/in-app/in.app.notification.payload.base';
 
-type InAppCategory = string;
 type RoleConfig = {
-  category: InAppCategory;
+  category: InAppNotificationCategory;
   credential: {
     type: AuthorizationCredential;
     resourceID: string;
@@ -29,7 +29,7 @@ type RoleConfig = {
 };
 
 type BuilderFn<TEvent, TPayload extends InAppNotificationPayloadBase> = (
-  category: string,
+  category: InAppNotificationCategory,
   receiverIDs: string[],
   event: TEvent
 ) => CompressedInAppNotificationPayload<TPayload>;
@@ -55,7 +55,7 @@ export class InAppNotificationBuilder {
     // and retrieved using the config service
     const roleConfig: RoleConfig[] = [
       {
-        category: 'member',
+        category: InAppNotificationCategory.MEMBER,
         credential: {
           type: AuthorizationCredential.SpaceMember,
           resourceID: event.space.id,
@@ -75,7 +75,7 @@ export class InAppNotificationBuilder {
     // and retrieved using the config service
     const roleConfig: RoleConfig[] = [
       {
-        category: 'admin',
+        category: InAppNotificationCategory.ADMIN,
         preferenceType: UserPreferenceType.NotificationCommunityNewMemberAdmin,
         credential: {
           type: AuthorizationCredential.SpaceAdmin,
@@ -83,7 +83,7 @@ export class InAppNotificationBuilder {
         },
       },
       {
-        category: 'member',
+        category: InAppNotificationCategory.MEMBER,
         preferenceType: UserPreferenceType.NotificationCommunityNewMember,
         credential: {
           type: AuthorizationCredential.UserSelfManagement,
@@ -103,7 +103,7 @@ export class InAppNotificationBuilder {
     // and retrieved using the config service
     const roleConfig: RoleConfig[] = [
       {
-        category: 'self',
+        category: InAppNotificationCategory.SELF,
         preferenceType: UserPreferenceType.NotificationCommunicationMention,
         credential: {
           type: AuthorizationCredential.UserSelfManagement,
@@ -192,7 +192,7 @@ const extractId = <T extends { id: string }>(data: T[]): string[] =>
   data.map(({ id }) => id);
 
 const calloutPublishedBuilder = (
-  category: InAppCategory,
+  category: InAppNotificationCategory,
   receiverIDs: string[],
   event: CollaborationCalloutPublishedEventPayload
 ): CompressedInAppNotificationPayload<InAppNotificationCalloutPublishedPayload> => {
@@ -215,7 +215,7 @@ const calloutPublishedBuilder = (
 };
 
 const newMemberBuilder = (
-  category: InAppCategory,
+  category: InAppNotificationCategory,
   receiverIDs: string[],
   event: CommunityNewMemberPayload
 ): CompressedInAppNotificationPayload<InAppNotificationCommunityNewMemberPayload> => {
@@ -239,7 +239,7 @@ const newMemberBuilder = (
 };
 
 const contributorMentionBuilder = (
-  category: InAppCategory,
+  category: InAppNotificationCategory,
   receiverIDs: string[],
   event: CommunicationUserMentionEventPayload
 ): CompressedInAppNotificationPayload<InAppNotificationContributorMentionedPayload> => {

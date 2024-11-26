@@ -1,3 +1,4 @@
+import { InAppNotificationCategory } from "@common/enums";
 import { NotificationEventType } from "../../notification.event.type";
 
 export interface InAppNotificationPayloadBase {
@@ -6,5 +7,5 @@ export interface InAppNotificationPayloadBase {
   triggeredAt: Date;
   type: NotificationEventType;
   triggeredByID: string;
-  category: string; // todo type
+  category: InAppNotificationCategory; // todo type
 }
