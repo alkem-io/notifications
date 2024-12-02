@@ -42,9 +42,20 @@ import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-ge
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
+// todo fix imports
 import { SpaceCreatedNotificationBuilder } from './services/domain/builders/space-created/space.created.notification.builder';
-import { InAppNotificationBuilderModule } from '@src/services/domain/in-app';
-import { InAppNotificationSenderModule } from '@src/services/external/in-app-notifications';
+import { CalloutPublishedEventSubject } from '@src/services/event-subjects/callout.published.event.subject';
+import {
+  CalloutPublishedInAppNotificationBuilder,
+  CommunityNewContributorInAppNotificationBuilder,
+  ContributorMentionedInAppNotificationBuilder,
+} from '@src/services/builders/in-app';
+import { InAppDispatcher } from '@src/services/dispatchers';
+import { BuilderUtil } from '@src/services/builders/utils/builder.util';
+import {
+  CommunityNewContributorEventSubject,
+  ContributorMentionedEventSubject,
+} from '@src/services/event-subjects';
 
 @Module({
   imports: [
@@ -61,8 +72,6 @@ import { InAppNotificationSenderModule } from '@src/services/external/in-app-not
     AlkemioClientAdapterModule,
     AlkemioUrlGeneratorModule,
     NotificationRecipientsAdapterModule,
-    InAppNotificationBuilderModule,
-    InAppNotificationSenderModule,
   ],
   providers: [
     {
@@ -95,6 +104,19 @@ import { InAppNotificationSenderModule } from '@src/services/external/in-app-not
     NotificationService,
     CommunityInvitationVirtualContributorCreatedNotificationBuilder,
     SpaceCreatedNotificationBuilder,
+    //
+    InAppDispatcher,
+    //
+    BuilderUtil,
+    //
+    CalloutPublishedEventSubject,
+    CalloutPublishedInAppNotificationBuilder,
+    //
+    CommunityNewContributorEventSubject,
+    CommunityNewContributorInAppNotificationBuilder,
+    //
+    ContributorMentionedEventSubject,
+    ContributorMentionedInAppNotificationBuilder,
   ],
   controllers: [AppController, HealthController],
 })

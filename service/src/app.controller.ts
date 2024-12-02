@@ -39,19 +39,24 @@ import {
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
-import { InAppNotificationBuilder } from '@src/services/domain/in-app';
-import { InAppNotificationSender } from '@src/services/external/in-app-notifications';
+// todo fix imports
+import { CalloutPublishedEventSubject } from '@src/services/event-subjects/callout.published.event.subject';
+import {
+  CommunityNewContributorEventSubject,
+  ContributorMentionedEventSubject,
+} from '@src/services/event-subjects';
 
 @Controller()
 export class AppController {
   constructor(
     private notificationService: NotificationService,
-    private inAppBuilder: InAppNotificationBuilder,
-    private inAppSender: InAppNotificationSender,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly featureFlagProvider: IFeatureFlagProvider
+    private readonly featureFlagProvider: IFeatureFlagProvider,
+    private calloutPublishedEventSubject: CalloutPublishedEventSubject,
+    private contributorMentionedEventSubject: ContributorMentionedEventSubject,
+    private newContributorEventSubject: CommunityNewContributorEventSubject
   ) {}
 
   @EventPattern(NotificationEventType.COMMUNITY_APPLICATION_CREATED)
@@ -130,10 +135,8 @@ export class AppController {
       ),
       NotificationEventType.COMMUNITY_NEW_MEMBER
     );
-    const compressedNotifications = await this.inAppBuilder.buildNewMember(
-      eventPayload
-    );
-    this.inAppSender.send(compressedNotifications);
+
+    this.newContributorEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE)
@@ -283,9 +286,8 @@ export class AppController {
       ),
       NotificationEventType.COMMUNICATION_USER_MENTION
     );
-    const compressedNotifications =
-      await this.inAppBuilder.buildContributorMention(eventPayload);
-    this.inAppSender.send(compressedNotifications);
+
+    this.contributorMentionedEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION)
@@ -377,9 +379,8 @@ export class AppController {
       this.notificationService.sendCalloutPublishedNotification(eventPayload),
       NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED
     );
-    const compressedNotifications =
-      await this.inAppBuilder.buildCalloutPublished(eventPayload);
-    this.inAppSender.send(compressedNotifications);
+
+    this.calloutPublishedEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.COMMENT_REPLY, Transport.RMQ)

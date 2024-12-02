@@ -1,16 +1,17 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { inAppClientProxyFactory } from './in.app.client.proxy.factory';
-import { ClientProxy } from '@nestjs/microservices';
-import { RMQConnectionError } from '@src/types';
 import {
   CompressedInAppNotificationPayload,
   InAppNotificationPayload,
 } from '@alkemio/notifications-lib';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { ConfigService } from '@nestjs/config';
+import { RMQConnectionError } from '@src/types';
+import { Dispatcher } from '../dispatcher';
+import { inAppClientProxyFactory } from './in.app.client.proxy.factory';
 
 @Injectable()
-export class InAppNotificationSender {
+export class InAppDispatcher implements Dispatcher {
   private readonly client: ClientProxy | undefined;
 
   constructor(
@@ -29,7 +30,7 @@ export class InAppNotificationSender {
     );
 
     if (!this.client) {
-      this.logger.error(`${InAppNotificationSender.name} not initialized`);
+      this.logger.error(`${InAppDispatcher.name} not initialized`);
       return;
     }
     // don't block the constructor
@@ -45,9 +46,12 @@ export class InAppNotificationSender {
       );
   }
 
-  public send(
+  dispatch(
     data: CompressedInAppNotificationPayload<InAppNotificationPayload>[]
-  ) {
+  ): void {
+    this.logger.verbose?.(
+      `Dispatching ${data.length} in-app compressed notification payloads`
+    );
     try {
       return this.sendWithoutResponse(data);
     } catch (e) {
