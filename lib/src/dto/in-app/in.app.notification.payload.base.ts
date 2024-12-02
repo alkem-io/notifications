@@ -1,5 +1,5 @@
-import { InAppNotificationCategory } from "@common/enums";
-import { NotificationEventType } from "@src/notification.event.type";
+import { InAppNotificationCategory } from "../../common/enums";
+import { NotificationEventType } from "../../notification.event.type";
 
 export interface InAppNotificationPayloadBase {
   receiverID: string;
