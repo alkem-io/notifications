@@ -13,8 +13,8 @@ import {
 import { Injectable } from '@nestjs/common';
 import { NotificationBuilder } from '../notification.builder';
 import { InAppDispatcher } from '../../dispatchers';
-import { BuilderUtil } from '@src/services/builders/utils/builder.util';
-import { RoleConfig } from '../role.config';
+import { InAppBuilderUtil } from '../utils';
+import { InAppReceiverConfig } from '../in.app.receiver.config';
 
 @Injectable()
 export class ContributorMentionedInAppNotificationBuilder
@@ -22,14 +22,14 @@ export class ContributorMentionedInAppNotificationBuilder
 {
   constructor(
     private readonly inAppDispatcher: InAppDispatcher,
-    private readonly util: BuilderUtil
+    private readonly util: InAppBuilderUtil
   ) {}
   public async buildAndSend(
     event: CommunicationUserMentionEventPayload
   ): Promise<void> {
     // the config can be defined per notification type in a centralized place
     // and retrieved using the config service
-    const roleConfig: RoleConfig[] = [
+    const roleConfig: InAppReceiverConfig[] = [
       {
         category: InAppNotificationCategory.SELF,
         preferenceType: UserPreferenceType.NotificationCommunicationMention,
