@@ -7,8 +7,8 @@ export abstract class BaseEventSubject<T extends BaseEventPayload>
 {
   protected readonly builders: NotificationBuilder[] = [];
 
-  protected registerBuilder(builder: NotificationBuilder): void {
-    this.builders.push(builder);
+  protected registerBuilders(builders: NotificationBuilder[]): void {
+    this.builders.push(...builders);
   }
 
   notifyAll(event: T): void {

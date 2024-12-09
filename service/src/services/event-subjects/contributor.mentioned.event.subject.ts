@@ -9,6 +9,6 @@ export class ContributorMentionedEventSubject extends BaseEventSubject<Communica
     private readonly inAppBuilder: CalloutPublishedInAppNotificationBuilder
   ) {
     super();
-    this.registerBuilder(this.inAppBuilder);
+    this.registerBuilders([this.inAppBuilder]);
   }
 }

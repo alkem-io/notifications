@@ -9,6 +9,6 @@ export class CommunityNewContributorEventSubject extends BaseEventSubject<Commun
     private readonly inAppBuilder: CommunityNewContributorInAppNotificationBuilder
   ) {
     super();
-    this.registerBuilder(this.inAppBuilder);
+    this.registerBuilders([this.inAppBuilder]);
   }
 }

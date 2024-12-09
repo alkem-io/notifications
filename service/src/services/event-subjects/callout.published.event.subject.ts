@@ -9,6 +9,6 @@ export class CalloutPublishedEventSubject extends BaseEventSubject<Collaboration
     private readonly inAppBuilder: CalloutPublishedInAppNotificationBuilder
   ) {
     super();
-    this.registerBuilder(this.inAppBuilder);
+    this.registerBuilders([this.inAppBuilder]);
   }
 }

@@ -81,7 +81,7 @@ export class InAppDispatcher implements Dispatcher {
     try {
       this.sendWithoutResponse(data);
     } catch (e: any) {
-      throw new Error(e);
+      throw e;
     }
   }
 
