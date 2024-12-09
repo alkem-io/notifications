@@ -4,7 +4,7 @@ import {
   InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
 
-export type PayloadBuilderFn<
+export type InAppPayloadBuilderFn<
   TEvent,
   TPayload extends InAppNotificationPayloadBase
 > = (

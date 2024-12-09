@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { RMQConnectionError } from '@src/types';
 import { Dispatcher } from '../dispatcher';
 import { inAppClientProxyFactory } from './in.app.client.proxy.factory';
+import { LogContext } from '@common/enums';
 
 @Injectable()
 export class InAppDispatcher implements Dispatcher {
@@ -30,7 +31,11 @@ export class InAppDispatcher implements Dispatcher {
     );
 
     if (!this.client) {
-      this.logger.error(`${InAppDispatcher.name} not initialized`);
+      this.logger.error(
+        `${InAppDispatcher.name} not initialized`,
+        undefined,
+        LogContext.IN_APP_DISPATCHER
+      );
       return;
     }
     // don't block the constructor
@@ -38,20 +43,41 @@ export class InAppDispatcher implements Dispatcher {
       .connect()
       .then(() => {
         this.logger.verbose?.(
-          'Client proxy successfully connected to RabbitMQ'
+          'Client proxy successfully connected to RabbitMQ',
+          LogContext.IN_APP_DISPATCHER
         );
       })
       .catch((error: RMQConnectionError | undefined) =>
-        this.logger.error(error?.err, error?.err.stack)
+        this.logger.error(
+          error?.err,
+          error?.err.stack,
+          LogContext.IN_APP_DISPATCHER
+        )
       );
   }
 
   dispatch(
     data: CompressedInAppNotificationPayload<InAppNotificationPayload>[]
   ): void {
-    this.logger.verbose?.(
-      `Dispatching ${data.length} in-app compressed notification payloads`
-    );
+    if (data.length === 0) {
+      this.logger.verbose?.(
+        'Zero in-app compressed notification payload were given for dispatch',
+        LogContext.IN_APP_DISPATCHER
+      );
+      return;
+    }
+
+    if (this.logger.verbose) {
+      const receiversCount = data.reduce(
+        (acc, value) => acc + value.receiverIDs.length,
+        0
+      );
+      this.logger.verbose(
+        `Dispatching ${data.length} in-app compressed notification payloads for a total of ${receiversCount} receivers`,
+        LogContext.IN_APP_DISPATCHER
+      );
+    }
+
     try {
       return this.sendWithoutResponse(data);
     } catch (e) {

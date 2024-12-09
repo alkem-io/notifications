@@ -42,20 +42,19 @@ import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-ge
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
-// todo fix imports
 import { SpaceCreatedNotificationBuilder } from './services/domain/builders/space-created/space.created.notification.builder';
-import { CalloutPublishedEventSubject } from '@src/services/event-subjects/callout.published.event.subject';
 import {
   CalloutPublishedInAppNotificationBuilder,
   CommunityNewContributorInAppNotificationBuilder,
   ContributorMentionedInAppNotificationBuilder,
-} from '@src/services/builders/in-app';
-import { InAppDispatcher } from '@src/services/dispatchers';
-import { BuilderUtil } from '@src/services/builders/utils/builder.util';
+} from './services/builders/in-app';
+import { InAppDispatcher } from './services/dispatchers';
+import { InAppBuilderUtil } from './services/builders/utils';
 import {
   CommunityNewContributorEventSubject,
   ContributorMentionedEventSubject,
-} from '@src/services/event-subjects';
+  CalloutPublishedEventSubject,
+} from './services/event-subjects';
 
 @Module({
   imports: [
@@ -107,7 +106,7 @@ import {
     //
     InAppDispatcher,
     //
-    BuilderUtil,
+    InAppBuilderUtil,
     //
     CalloutPublishedEventSubject,
     CalloutPublishedInAppNotificationBuilder,

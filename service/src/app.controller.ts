@@ -39,12 +39,11 @@ import {
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
-// todo fix imports
-import { CalloutPublishedEventSubject } from '@src/services/event-subjects/callout.published.event.subject';
 import {
   CommunityNewContributorEventSubject,
   ContributorMentionedEventSubject,
-} from '@src/services/event-subjects';
+  CalloutPublishedEventSubject,
+} from './services/event-subjects';
 
 @Controller()
 export class AppController {

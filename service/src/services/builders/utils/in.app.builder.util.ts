@@ -1,7 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ALKEMIO_CLIENT_ADAPTER } from '@common/enums';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { ALKEMIO_CLIENT_ADAPTER, LogContext } from '@common/enums';
 import { AlkemioClientAdapter } from '@src/services';
 import {
+  BaseEventPayload,
   CompressedInAppNotificationPayload,
   InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
@@ -9,35 +11,58 @@ import {
   AuthorizationCredential,
   UserPreferenceType,
 } from '@alkemio/client-lib';
-import { RoleConfig } from '../role.config';
-import { PayloadBuilderFn } from './payload.builder.fn';
+import { InAppReceiverConfig } from '../in.app.receiver.config';
+import { InAppPayloadBuilderFn } from '../in.app.payload.builder.fn';
 
 @Injectable()
-export class BuilderUtil {
+export class InAppBuilderUtil {
   constructor(
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private alkemioAdapter: AlkemioClientAdapter
+    private alkemioAdapter: AlkemioClientAdapter,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private logger: LoggerService
   ) {}
 
   public async genericBuild<
-    TEvent,
+    TEvent extends BaseEventPayload,
     TPayload extends InAppNotificationPayloadBase
   >(
-    config: RoleConfig[],
+    config: InAppReceiverConfig[],
     event: TEvent,
-    payloadBuilder: PayloadBuilderFn<TEvent, TPayload>
+    payloadBuilder: InAppPayloadBuilderFn<TEvent, TPayload>
   ): Promise<CompressedInAppNotificationPayload<TPayload>[]> {
-    const receiversByCategory: Record<string, string[]> = {};
+    const notifications: CompressedInAppNotificationPayload<TPayload>[] = [];
     for (const { category, credential, preferenceType } of config) {
-      receiversByCategory[category] = await this.getReceivers({
+      // get receivers for this role
+      const receiversByCategory = await this.getReceivers({
         credential,
         preferenceType,
       });
+      // do not continue if there are no receivers
+      if (receiversByCategory.length === 0) {
+        this.logger.verbose?.(
+          `Skipping in-app notification for receivers with preference '${preferenceType}' and category of '${category}' because there are not any`,
+          LogContext.IN_APP_BUILDER
+        );
+        continue;
+      }
+      // build notifications per roleConfig entry
+      const compressedNotification = payloadBuilder(
+        category,
+        receiversByCategory,
+        event
+      );
+
+      if (this.logger.verbose) {
+        this.logger.verbose(
+          `Built in-app notification of type '${compressedNotification.type}' and category '${category}' for ${compressedNotification.receiverIDs.length} receivers`,
+          LogContext.IN_APP_BUILDER
+        );
+      }
+
+      notifications.push(compressedNotification);
     }
-    // build notifications per roleConfig entry
-    return config.map(({ category }) =>
-      payloadBuilder(category, receiversByCategory[category], event)
-    );
+
+    return notifications;
   }
 
   /**
