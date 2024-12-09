@@ -23,8 +23,13 @@ const bootstrap = async () => {
   const heartbeat = process.env.NODE_ENV === 'production' ? 30 : 120;
   const amqpEndpoint = `amqp://${connectionOptions.user}:${connectionOptions.password}@${connectionOptions.host}:${connectionOptions.port}?heartbeat=${heartbeat}`;
 
-  connectMicroservice(app, amqpEndpoint, 'alkemio-notifications');
-  await app.startAllMicroservices();
+  try {
+    connectMicroservice(app, amqpEndpoint, 'alkemio-notifications');
+    await app.startAllMicroservices();
+  } catch (e: any) {
+    logger.error(`Failed to start microservices: ${e.message}`);
+    process.exit(1);
+  }
 };
 
 const connectMicroservice = (

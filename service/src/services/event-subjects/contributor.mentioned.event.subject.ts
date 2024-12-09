@@ -1,19 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CommunicationUserMentionEventPayload } from '@alkemio/notifications-lib';
-import { EventSubject } from './event.subject';
-import { NotificationBuilder } from '../builders';
-import { ContributorMentionedInAppNotificationBuilder } from '../builders/in-app';
+import { CalloutPublishedInAppNotificationBuilder } from '../builders/in-app';
+import { BaseEventSubject } from './base.event.subject';
 
 @Injectable()
-export class ContributorMentionedEventSubject implements EventSubject {
-  private readonly builders: NotificationBuilder[];
+export class ContributorMentionedEventSubject extends BaseEventSubject<CommunicationUserMentionEventPayload> {
   constructor(
-    private readonly inAppBuilder: ContributorMentionedInAppNotificationBuilder
+    private readonly inAppBuilder: CalloutPublishedInAppNotificationBuilder
   ) {
-    this.builders = [this.inAppBuilder];
-  }
-
-  notifyAll(event: CommunicationUserMentionEventPayload): void {
-    this.builders.forEach(builder => builder.buildAndSend(event));
+    super();
+    this.registerBuilder(this.inAppBuilder);
   }
 }

@@ -10,7 +10,8 @@ import {
   CommunityContributorType,
   UserPreferenceType,
 } from '@alkemio/client-lib';
-import { Injectable } from '@nestjs/common';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NotificationBuilder } from '../notification.builder';
 import { InAppDispatcher } from '../../dispatchers';
 import { InAppBuilderUtil } from '../utils';
@@ -22,7 +23,8 @@ export class CommunityNewContributorInAppNotificationBuilder
 {
   constructor(
     private readonly inAppDispatcher: InAppDispatcher,
-    private readonly util: InAppBuilderUtil
+    private readonly util: InAppBuilderUtil,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private logger: LoggerService
   ) {}
   public async buildAndSend(event: CommunityNewMemberPayload): Promise<void> {
     // the config can be defined per notification type in a centralized place
@@ -51,7 +53,14 @@ export class CommunityNewContributorInAppNotificationBuilder
       newMemberBuilder
     );
 
-    this.inAppDispatcher.dispatch(notifications);
+    try {
+      this.inAppDispatcher.dispatch(notifications);
+    } catch (e: any) {
+      this.logger.error(
+        `${CommunityNewContributorInAppNotificationBuilder.name} failed to dispatch in-app notification`,
+        e?.stack
+      );
+    }
   }
 }
 
