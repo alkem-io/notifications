@@ -39,6 +39,11 @@ import {
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
+import {
+  CommunityNewContributorEventSubject,
+  ContributorMentionedEventSubject,
+  CalloutPublishedEventSubject,
+} from './services/event-subjects';
 
 @Controller()
 export class AppController {
@@ -47,7 +52,10 @@ export class AppController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly featureFlagProvider: IFeatureFlagProvider
+    private readonly featureFlagProvider: IFeatureFlagProvider,
+    private calloutPublishedEventSubject: CalloutPublishedEventSubject,
+    private contributorMentionedEventSubject: ContributorMentionedEventSubject,
+    private newContributorEventSubject: CommunityNewContributorEventSubject
   ) {}
 
   @EventPattern(NotificationEventType.COMMUNITY_APPLICATION_CREATED)
@@ -56,7 +64,7 @@ export class AppController {
     @Payload() eventPayload: CommunityApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendApplicationCreatedNotifications(
@@ -72,7 +80,7 @@ export class AppController {
     @Payload() eventPayload: CommunityInvitationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendInvitationCreatedNotifications(eventPayload),
@@ -86,7 +94,7 @@ export class AppController {
     eventPayload: CommunityInvitationVirtualContributorCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendVirtualContributorInvitationCreatedNotifications(
@@ -102,7 +110,7 @@ export class AppController {
     @Payload() eventPayload: CommunityPlatformInvitationCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunityPlatformInvitationCreatedNotifications(
@@ -118,7 +126,7 @@ export class AppController {
     @Payload() eventPayload: CommunityNewMemberPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunityNewMemberNotifications(
@@ -126,6 +134,8 @@ export class AppController {
       ),
       NotificationEventType.COMMUNITY_NEW_MEMBER
     );
+
+    this.newContributorEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE)
@@ -134,7 +144,7 @@ export class AppController {
     @Payload() eventPayload: PlatformGlobalRoleChangeEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendGlobalRoleChangeNotification(eventPayload),
@@ -148,7 +158,7 @@ export class AppController {
     @Payload() eventPayload: PlatformUserRegistrationEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendUserRegisteredNotification(eventPayload),
@@ -162,7 +172,7 @@ export class AppController {
     @Payload() eventPayload: PlatformUserRemovedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendUserRemovedNotification(eventPayload),
@@ -176,7 +186,7 @@ export class AppController {
     @Payload() eventPayload: CommunicationUpdateEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunicationUpdatedNotification(
@@ -192,7 +202,7 @@ export class AppController {
     @Payload() eventPayload: PlatformForumDiscussionCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendPlatformForumDiscussionCreatedNotification(
@@ -207,7 +217,7 @@ export class AppController {
     @Payload() eventPayload: PlatformForumDiscussionCommentEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendPlatformForumDiscussionCommentNotification(
@@ -222,7 +232,7 @@ export class AppController {
     @Payload() eventPayload: CommunicationUserMessageEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunicationUserMessageNotification(
@@ -237,7 +247,7 @@ export class AppController {
     @Payload() eventPayload: CommunicationOrganizationMessageEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunicationOrganizationMessageNotification(
@@ -252,7 +262,7 @@ export class AppController {
     @Payload() eventPayload: CommunicationCommunityLeadsMessageEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunicationCommunityLeadsMessageNotification(
@@ -267,7 +277,7 @@ export class AppController {
     @Payload() eventPayload: CommunicationUserMentionEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunicationUserMentionNotification(
@@ -275,6 +285,8 @@ export class AppController {
       ),
       NotificationEventType.COMMUNICATION_USER_MENTION
     );
+
+    this.contributorMentionedEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION)
@@ -282,7 +294,7 @@ export class AppController {
     @Payload() eventPayload: CommunicationOrganizationMentionEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommunicationOrganizationMentionNotification(
@@ -300,7 +312,7 @@ export class AppController {
     @Payload() eventPayload: CollaborationWhiteboardCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendWhiteboardCreatedNotification(eventPayload),
@@ -313,7 +325,7 @@ export class AppController {
     @Payload() eventPayload: CollaborationPostCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendPostCreatedNotification(eventPayload),
@@ -326,7 +338,7 @@ export class AppController {
     @Payload() eventPayload: CollaborationPostCommentEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendPostCommentCreatedNotification(eventPayload),
@@ -342,7 +354,7 @@ export class AppController {
     @Payload() eventPayload: CollaborationDiscussionCommentEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendDiscussionCommentCreatedNotification(
@@ -360,12 +372,14 @@ export class AppController {
     @Payload() eventPayload: CollaborationCalloutPublishedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCalloutPublishedNotification(eventPayload),
       NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED
     );
+
+    this.calloutPublishedEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.COMMENT_REPLY, Transport.RMQ)
@@ -373,7 +387,7 @@ export class AppController {
     @Payload() eventPayload: CommentReplyEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
       this.notificationService.sendCommentReplyNotification(eventPayload),
@@ -387,15 +401,17 @@ export class AppController {
     eventPayload: SpaceCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
-    this.sendNotifications(
+    this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCreatedNotification(eventPayload),
+      this.notificationService.buildAndSendSpaceCreatedNotification(
+        eventPayload
+      ),
       NotificationEventType.SPACE_CREATED
     );
   }
 
-  private async sendNotifications(
+  private async processSent(
     @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext,
     sentNotifications: Promise<PromiseSettledResult<NotificationStatus>[]>,
