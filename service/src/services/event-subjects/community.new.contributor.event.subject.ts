@@ -6,9 +6,9 @@ import { BaseEventSubject } from './base.event.subject';
 @Injectable()
 export class CommunityNewContributorEventSubject extends BaseEventSubject<CommunityNewMemberPayload> {
   constructor(
-    private readonly inAppBuilder: CommunityNewContributorInAppNotificationBuilder
+    private readonly newContributorBuilder: CommunityNewContributorInAppNotificationBuilder
   ) {
     super();
-    this.registerBuilders([this.inAppBuilder]);
+    this.registerBuilders([this.newContributorBuilder]);
   }
 }
