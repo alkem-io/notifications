@@ -6,9 +6,9 @@ import { BaseEventSubject } from './base.event.subject';
 @Injectable()
 export class CalloutPublishedEventSubject extends BaseEventSubject<CollaborationCalloutPublishedEventPayload> {
   constructor(
-    private readonly inAppBuilder: CalloutPublishedInAppNotificationBuilder
+    private readonly calloutPublishedBuilder: CalloutPublishedInAppNotificationBuilder
   ) {
     super();
-    this.registerBuilders([this.inAppBuilder]);
+    this.registerBuilders([this.calloutPublishedBuilder]);
   }
 }
