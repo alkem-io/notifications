@@ -26,3 +26,4 @@ export * from './platform.forum.discussion.created.event.payload';
 export * from './comment.reply.event.payload';
 export * from './community.invitation.virtual.contributor.created.event.payload';
 export * from './space.created.event.payload';
+
