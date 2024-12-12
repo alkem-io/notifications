@@ -77,7 +77,10 @@ const contributorMentionBuilder = (
     category,
     triggeredByID,
     comment,
-    commentOrigin: { url: commentOrigin.url, type: '' },
+    commentOrigin: {
+      url: commentOrigin.url,
+      displayName: commentOrigin.displayName,
+    },
     contributorType: contributorType as CommunityContributorType,
     receiverID: '',
   };
