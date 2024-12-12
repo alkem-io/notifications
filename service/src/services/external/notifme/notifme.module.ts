@@ -4,6 +4,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { NOTIFICATIONS_PROVIDER, TEMPLATE_PROVIDER } from '@common/enums';
 import { NotificationTemplateBuilder } from './notification.templates.builder';
 import { notifmeSdkFactory } from './notifme.sdk.factory';
+
 @Global()
 @Module({
   imports: [ConfigModule],
@@ -16,7 +17,6 @@ import { notifmeSdkFactory } from './notifme.sdk.factory';
     {
       provide: TEMPLATE_PROVIDER,
       useClass: NotificationTemplateBuilder,
-      inject: [WINSTON_MODULE_NEST_PROVIDER],
     },
   ],
   exports: [NOTIFICATIONS_PROVIDER, TEMPLATE_PROVIDER],
