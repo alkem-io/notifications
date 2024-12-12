@@ -43,6 +43,18 @@ import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/b
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
 import { SpaceCreatedNotificationBuilder } from './services/domain/builders/space-created/space.created.notification.builder';
+import {
+  CalloutPublishedInAppNotificationBuilder,
+  CommunityNewContributorInAppNotificationBuilder,
+  ContributorMentionedInAppNotificationBuilder,
+} from './services/builders/in-app';
+import { InAppDispatcher } from './services/dispatchers';
+import { InAppBuilderUtil } from './services/builders/utils';
+import {
+  CommunityNewContributorEventSubject,
+  ContributorMentionedEventSubject,
+  CalloutPublishedEventSubject,
+} from './services/event-subjects';
 
 @Module({
   imports: [
@@ -91,6 +103,19 @@ import { SpaceCreatedNotificationBuilder } from './services/domain/builders/spac
     NotificationService,
     CommunityInvitationVirtualContributorCreatedNotificationBuilder,
     SpaceCreatedNotificationBuilder,
+    //
+    InAppDispatcher,
+    //
+    InAppBuilderUtil,
+    //
+    CalloutPublishedEventSubject,
+    CalloutPublishedInAppNotificationBuilder,
+    //
+    CommunityNewContributorEventSubject,
+    CommunityNewContributorInAppNotificationBuilder,
+    //
+    ContributorMentionedEventSubject,
+    ContributorMentionedInAppNotificationBuilder,
   ],
   controllers: [AppController, HealthController],
 })

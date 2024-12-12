@@ -9,7 +9,6 @@ import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notification
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CollaborationCalloutPublishedNotificationBuilder
@@ -20,8 +19,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       CollaborationCalloutPublishedEventPayload,
       CollaborationCalloutPublishedEmailPayload
     >,
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly configService: ConfigService
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
   ) {}
   build(
     payload: CollaborationCalloutPublishedEventPayload

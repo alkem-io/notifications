@@ -1,6 +1,6 @@
 {
   "name": "alkemio-notifications",
-  "version": "0.19.1",
+  "version": "0.20.0",
   "description": "Alkemio notifications service",
   "author": "Alkemio Foundation",
   "private": false,
@@ -18,7 +18,7 @@
     "start-nodemon-local": "nodemon -w src --ext ts --exec ts-node -r dotenv/config src/main.ts",
     "start": "nest start",
     "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:debug": "nest start --debug=0.0.0.0:9230 --watch",
     "start:prod": "node dist/main",
     "start:services": "docker-compose -f quickstart-mailslurper.yml up --build --force-recreate",
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@alkemio/client-lib": "^0.32.0",
-    "@alkemio/notifications-lib": "^0.9.6",
+    "@alkemio/notifications-lib": "0.10.0",
     "@nestjs/common": "^8.0.5",
     "@nestjs/config": "^1.0.1",
     "@nestjs/core": "^8.0.5",
@@ -95,7 +95,10 @@
     }
   },
   "engines": {
-    "node": ">=16.15.0",
+    "node": ">=20.15.0",
     "npm": ">=8.5.5"
+  },
+  "volta": {
+    "node": "20.15.1"
   }
 }
