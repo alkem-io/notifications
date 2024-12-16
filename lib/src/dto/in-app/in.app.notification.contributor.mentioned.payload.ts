@@ -7,7 +7,7 @@ export interface InAppNotificationContributorMentionedPayload extends InAppNotif
   comment: string; // probably will be removed; can be too large; can be replaced with roomID, commentID
   contributorType: CommunityContributorType
   commentOrigin: {
-    type: string; // forum, reply, event, post, callout
+    displayName: string;
     url: string;
   }
 }
