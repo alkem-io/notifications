@@ -1,6 +1,6 @@
 {
   "name": "@alkemio/notifications-lib",
-  "version": "0.9.6",
+  "version": "0.10.1",
   "description": "Library for interacting with Alkemio notifications service",
   "author": "Alkemio Foundation",
   "private": false,
@@ -49,6 +49,9 @@
   "engines": {
     "node": ">=16.15.0",
     "npm": ">=8.5.5"
+  },
+  "volta": {
+    "node": "20.15.1"
   },
   "publishConfig": {
     "access": "public",

@@ -11,7 +11,6 @@ export interface CollaborationPostCreatedEventPayload extends SpaceBaseEventPayl
     createdBy: string;
     displayName: string;
     nameID: string;
-    type: string;
     url: string;
   };
 }

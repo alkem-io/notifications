@@ -99,7 +99,208 @@ export class NotificationService {
     private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder
   ) {}
 
-  async sendNotifications(
+  async sendApplicationCreatedNotifications(
+    payload: CommunityApplicationCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communityApplicationCreatedNotificationBuilder
+    );
+  }
+
+  async sendInvitationCreatedNotifications(
+    payload: CommunityInvitationCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communityInvitationCreatedNotificationBuilder
+    );
+  }
+
+  async sendVirtualContributorInvitationCreatedNotifications(
+    payload: CommunityInvitationVirtualContributorCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communityInvitationvirtualContributorCreatedNotificationBuilder
+    );
+  }
+
+  async sendCommunityPlatformInvitationCreatedNotifications(
+    payload: CommunityPlatformInvitationCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communityPlatformInvitationCreatedNotificationBuilder
+    );
+  }
+
+  async sendCommunityNewMemberNotifications(
+    payload: CommunityNewMemberPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communityNewMemberNotificationBuilder
+    );
+  }
+
+  async sendGlobalRoleChangeNotification(
+    payload: PlatformGlobalRoleChangeEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.platformGlobalRoleChangeNotificationBuilder
+    );
+  }
+
+  async sendUserRegisteredNotification(
+    payload: PlatformUserRegistrationEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.platformUserRegisteredNotificationBuilder
+    );
+  }
+
+  async sendUserRemovedNotification(
+    payload: PlatformUserRemovedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.platformUserRemovedNotificationBuilder
+    );
+  }
+
+  async sendCommunicationUpdatedNotification(
+    payload: CommunicationUpdateEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communicationUpdatedNotificationBuilder
+    );
+  }
+
+  async sendPlatformForumDiscussionCreatedNotification(
+    payload: PlatformForumDiscussionCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communicationDiscussionCreatedNotificationBuilder
+    );
+  }
+
+  async sendPlatformForumDiscussionCommentNotification(
+    payload: PlatformForumDiscussionCommentEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.platformForumDiscussionCommentNotificationBuilder
+    );
+  }
+
+  async sendCommunicationUserMessageNotification(
+    payload: CommunicationUserMessageEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communicationUserMessageNotificationBuilder
+    );
+  }
+
+  async sendCommunicationOrganizationMessageNotification(
+    payload: CommunicationOrganizationMessageEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communicationOrganizationMessageNotificationBuilder
+    );
+  }
+
+  async sendCommunicationCommunityLeadsMessageNotification(
+    payload: CommunicationCommunityLeadsMessageEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communicationCommunityLeadsMessageNotificationBuilder
+    );
+  }
+
+  async sendCommunicationUserMentionNotification(
+    payload: CommunicationUserMentionEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communicationUserMentionNotificationBuilder
+    );
+  }
+
+  async sendCommunicationOrganizationMentionNotification(
+    payload: CommunicationOrganizationMentionEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.communicationOrganizationMentionNotificationBuilder
+    );
+  }
+
+  async sendPostCreatedNotification(
+    payload: CollaborationPostCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.collaborationPostCreatedNotificationBuilder
+    );
+  }
+
+  async sendWhiteboardCreatedNotification(
+    payload: CollaborationWhiteboardCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.collaborationWhiteboardCreatedNotificationBuilder
+    );
+  }
+
+  async sendPostCommentCreatedNotification(
+    payload: CollaborationPostCommentEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.collaborationPostCommentNotificationBuilder
+    );
+  }
+
+  async sendDiscussionCommentCreatedNotification(
+    payload: CollaborationDiscussionCommentEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.collaborationDiscussionCommentNotificationBuilder
+    );
+  }
+
+  async sendCalloutPublishedNotification(
+    payload: CollaborationCalloutPublishedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(
+      payload,
+      this.collaborationCalloutPublishedNotificationBuilder
+    );
+  }
+
+  async sendCommentReplyNotification(
+    payload: CommentReplyEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(payload, this.commentReplyNotificationBuilder);
+  }
+
+  async buildAndSendSpaceCreatedNotification(
+    payload: SpaceCreatedEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.buildAndSend(payload, this.spaceCreatedNotificationBuilder);
+  }
+
+  private async buildAndSend(
     payload: BaseEventPayload,
     notificationBuilder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
@@ -124,213 +325,6 @@ export class NotificationService {
       this.logger.error(error.message);
     }
     return [];
-  }
-
-  async sendApplicationCreatedNotifications(
-    payload: CommunityApplicationCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communityApplicationCreatedNotificationBuilder
-    );
-  }
-
-  async sendInvitationCreatedNotifications(
-    payload: CommunityInvitationCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communityInvitationCreatedNotificationBuilder
-    );
-  }
-
-  async sendVirtualContributorInvitationCreatedNotifications(
-    payload: CommunityInvitationVirtualContributorCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communityInvitationvirtualContributorCreatedNotificationBuilder
-    );
-  }
-
-  async sendCommunityPlatformInvitationCreatedNotifications(
-    payload: CommunityPlatformInvitationCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communityPlatformInvitationCreatedNotificationBuilder
-    );
-  }
-
-  async sendCommunityNewMemberNotifications(
-    payload: CommunityNewMemberPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communityNewMemberNotificationBuilder
-    );
-  }
-
-  async sendGlobalRoleChangeNotification(
-    payload: PlatformGlobalRoleChangeEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.platformGlobalRoleChangeNotificationBuilder
-    );
-  }
-
-  async sendUserRegisteredNotification(
-    payload: PlatformUserRegistrationEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.platformUserRegisteredNotificationBuilder
-    );
-  }
-
-  async sendUserRemovedNotification(
-    payload: PlatformUserRemovedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.platformUserRemovedNotificationBuilder
-    );
-  }
-
-  async sendCommunicationUpdatedNotification(
-    payload: CommunicationUpdateEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communicationUpdatedNotificationBuilder
-    );
-  }
-
-  async sendPlatformForumDiscussionCreatedNotification(
-    payload: PlatformForumDiscussionCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communicationDiscussionCreatedNotificationBuilder
-    );
-  }
-
-  async sendPlatformForumDiscussionCommentNotification(
-    payload: PlatformForumDiscussionCommentEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.platformForumDiscussionCommentNotificationBuilder
-    );
-  }
-
-  async sendCommunicationUserMessageNotification(
-    payload: CommunicationUserMessageEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communicationUserMessageNotificationBuilder
-    );
-  }
-
-  async sendCommunicationOrganizationMessageNotification(
-    payload: CommunicationOrganizationMessageEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communicationOrganizationMessageNotificationBuilder
-    );
-  }
-
-  async sendCommunicationCommunityLeadsMessageNotification(
-    payload: CommunicationCommunityLeadsMessageEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communicationCommunityLeadsMessageNotificationBuilder
-    );
-  }
-
-  async sendCommunicationUserMentionNotification(
-    payload: CommunicationUserMentionEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communicationUserMentionNotificationBuilder
-    );
-  }
-
-  async sendCommunicationOrganizationMentionNotification(
-    payload: CommunicationOrganizationMentionEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.communicationOrganizationMentionNotificationBuilder
-    );
-  }
-
-  async sendPostCreatedNotification(
-    payload: CollaborationPostCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.collaborationPostCreatedNotificationBuilder
-    );
-  }
-
-  async sendWhiteboardCreatedNotification(
-    payload: CollaborationWhiteboardCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.collaborationWhiteboardCreatedNotificationBuilder
-    );
-  }
-
-  async sendPostCommentCreatedNotification(
-    payload: CollaborationPostCommentEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.collaborationPostCommentNotificationBuilder
-    );
-  }
-
-  async sendDiscussionCommentCreatedNotification(
-    payload: CollaborationDiscussionCommentEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.collaborationDiscussionCommentNotificationBuilder
-    );
-  }
-
-  async sendCalloutPublishedNotification(
-    payload: CollaborationCalloutPublishedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.collaborationCalloutPublishedNotificationBuilder
-    );
-  }
-
-  async sendCommentReplyNotification(
-    payload: CommentReplyEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.commentReplyNotificationBuilder
-    );
-  }
-
-  async sendSpaceCreatedNotification(
-    payload: SpaceCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.sendNotifications(
-      payload,
-      this.spaceCreatedNotificationBuilder
-    );
   }
 
   private async sendNotification(

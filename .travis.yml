@@ -1,6 +1,7 @@
+dist: focal
 language: node_js
 node_js:
-  - v16.15.0
+  - v20.15.1
 cache:
   directories:
     - node_modules
@@ -10,6 +11,6 @@ services:
   - mysql
 before_install:
   - cd service
-  - npm i -g npm@8.5.5
+  - npm i -g npm@10.5.0
 script:
   - npm run test:ci:coverage
