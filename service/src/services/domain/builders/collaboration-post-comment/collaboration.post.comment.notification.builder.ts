@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { CollaborationPostCommentEventPayload } from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
@@ -27,7 +27,7 @@ export class CollaborationPostCommentNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'owner',
-        preferenceType: UserPreferenceType.NotificationPostCommentCreated,
+        preferenceType: PreferenceType.NotificationPostCommentCreated,
         emailTemplate: EmailTemplate.COLLABORATION_POST_COMMENT_OWNER,
       },
     ];

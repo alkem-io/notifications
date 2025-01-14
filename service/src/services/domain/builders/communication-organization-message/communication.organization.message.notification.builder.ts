@@ -9,7 +9,7 @@ import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationOrganizationMessageEmailPayload } from '@common/email-template-payload';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class CommunicationOrganizationMessageNotificationBuilder
         role: 'receiver',
         emailTemplate:
           EmailTemplate.COMMUNICATION_ORGANIZATION_MESSAGE_RECIPIENT,
-        preferenceType: UserPreferenceType.NotificationOrganizationMessage,
+        preferenceType: PreferenceType.NotificationOrganizationMessage,
       },
       {
         role: 'sender',

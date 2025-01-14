@@ -4,7 +4,7 @@ import { PlatformUser, User } from '@core/models';
 import { PlatformUserRegistrationEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
@@ -29,7 +29,7 @@ export class PlatformUserRegisteredNotificationBuilder
       {
         role: 'admin',
         emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN,
-        preferenceType: UserPreferenceType.NotificationUserSignUp,
+        preferenceType: PreferenceType.NotificationUserSignUp,
       },
       {
         role: 'registrant',

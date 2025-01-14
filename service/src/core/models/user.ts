@@ -3,6 +3,7 @@ export type User = Contributor & {
   lastName: string;
   email: string;
   preferences?: UserPreference[];
+  settings?: UserSettings;
 };
 
 export type Contributor = {
@@ -44,6 +45,12 @@ export const isExistingAlkemioUser = (
 export type UserPreference = {
   definition: UserPreferenceDefinition;
   value: string;
+};
+
+export type UserSettings = {
+  communication: {
+    allowOtherUsersToSendMessages: boolean;
+  };
 };
 
 export type UserPreferenceDefinition = {
