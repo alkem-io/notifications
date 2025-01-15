@@ -5,7 +5,7 @@ import { PlatformUser, User } from '@core/models';
 import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -28,13 +28,13 @@ export class CommunityApplicationCreatedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        preferenceType: UserPreferenceType.NotificationApplicationReceived,
+        preferenceType: PreferenceType.NotificationApplicationReceived,
         emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_ADMIN,
       },
       {
         role: 'applicant',
         emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_APPLICANT,
-        preferenceType: UserPreferenceType.NotificationApplicationSubmitted,
+        preferenceType: PreferenceType.NotificationApplicationSubmitted,
       },
     ];
 

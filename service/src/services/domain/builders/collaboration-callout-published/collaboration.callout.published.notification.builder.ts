@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
@@ -27,7 +27,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'user',
-        preferenceType: UserPreferenceType.NotificationCalloutPublished,
+        preferenceType: PreferenceType.NotificationCalloutPublished,
         emailTemplate: EmailTemplate.COLLABORATION_CALLOUT_PUBLISHED_MEMBER,
       },
     ];

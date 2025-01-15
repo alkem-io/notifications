@@ -6,10 +6,7 @@ import {
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AuthorizationCredential } from '@alkemio/client-lib/dist/generated/graphql';
-import {
-  CommunityContributorType,
-  UserPreferenceType,
-} from '@alkemio/client-lib';
+import { CommunityContributorType, PreferenceType } from '@alkemio/client-lib';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { NotificationBuilder } from '../notification.builder';
@@ -32,7 +29,7 @@ export class CommunityNewContributorInAppNotificationBuilder
     const roleConfig: InAppReceiverConfig[] = [
       {
         category: InAppNotificationCategory.ADMIN,
-        preferenceType: UserPreferenceType.NotificationCommunityNewMemberAdmin,
+        preferenceType: PreferenceType.NotificationCommunityNewMemberAdmin,
         credential: {
           type: AuthorizationCredential.SpaceAdmin,
           resourceID: event.space.id,
@@ -40,7 +37,7 @@ export class CommunityNewContributorInAppNotificationBuilder
       },
       {
         category: InAppNotificationCategory.MEMBER,
-        preferenceType: UserPreferenceType.NotificationCommunityNewMember,
+        preferenceType: PreferenceType.NotificationCommunityNewMember,
         credential: {
           type: AuthorizationCredential.UserSelfManagement,
           resourceID: event.contributor.id,

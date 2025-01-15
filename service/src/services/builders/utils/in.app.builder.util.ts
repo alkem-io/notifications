@@ -7,10 +7,7 @@ import {
   CompressedInAppNotificationPayload,
   InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
-import {
-  AuthorizationCredential,
-  UserPreferenceType,
-} from '@alkemio/client-lib';
+import { AuthorizationCredential, PreferenceType } from '@alkemio/client-lib';
 import { InAppReceiverConfig } from '../in.app.receiver.config';
 import { InAppPayloadBuilderFn } from '../in.app.payload.builder.fn';
 
@@ -76,13 +73,15 @@ export class InAppBuilderUtil {
       type: AuthorizationCredential;
       resourceID?: string;
     };
-    preferenceType?: UserPreferenceType;
+    preferenceType?: PreferenceType;
   }): Promise<string[]> {
     const { credential, preferenceType } = options;
     const recipients =
-      await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria([
-        credential,
-      ]);
+      await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
+        [credential],
+        true,
+        false
+      );
 
     if (!preferenceType) {
       return extractId(recipients);

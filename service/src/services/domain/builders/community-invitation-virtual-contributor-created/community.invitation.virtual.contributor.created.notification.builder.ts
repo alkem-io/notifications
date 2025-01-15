@@ -9,7 +9,7 @@ import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-gener
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { CommunityInvitationVirtualContributorCreatedEmailPayload } from '@src/common/email-template-payload';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
       {
         role: 'host',
         emailTemplate: EmailTemplate.COMMUNITY_INVITATION_CREATED_VC_HOST,
-        preferenceType: UserPreferenceType.NotificationCommunityInvitationUser,
+        preferenceType: PreferenceType.NotificationCommunityInvitationUser,
       },
     ];
 

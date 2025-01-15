@@ -3,7 +3,7 @@ import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUpdateEventPayload } from '@alkemio/notifications-lib';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
@@ -29,13 +29,12 @@ export class CommunicationUpdateCreatedNotificationBuilder
       {
         role: 'admin',
         emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
-        preferenceType:
-          UserPreferenceType.NotificationCommunicationUpdateSentAdmin,
+        preferenceType: PreferenceType.NotificationCommunicationUpdateSentAdmin,
       },
       {
         role: 'member',
         emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
-        preferenceType: UserPreferenceType.NotificationCommunicationUpdates,
+        preferenceType: PreferenceType.NotificationCommunicationUpdates,
       },
     ];
 

@@ -3,7 +3,7 @@ import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommentReplyEventPayload } from '@alkemio/notifications-lib';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { CommentReplyEmailPayload } from '@common/email-template-payload';
@@ -27,7 +27,7 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
       {
         role: 'commentOwner',
         emailTemplate: EmailTemplate.COMMENT_REPLY,
-        preferenceType: UserPreferenceType.NotificationCommentReply,
+        preferenceType: PreferenceType.NotificationCommentReply,
       },
     ];
 

@@ -42,28 +42,34 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
   }
 
   async getUsersMatchingCredentialCriteria(
-    credentialCriteria: CredentialCriterion
+    credentialCriteria: CredentialCriterion,
+    options?: { includePreferences?: boolean; includeSettings?: boolean }
   ): Promise<User[]> {
     let resourceID: string | undefined = undefined;
-    if (credentialCriteria.resourceID)
+    if (credentialCriteria.resourceID) {
       resourceID = credentialCriteria.resourceID;
-
-    const users = await this.alkemioClient.usersWithAuthorizationCredential(
+    }
+    const { includePreferences, includeSettings } = options || {};
+    const users = await this.alkemioClient.usersForNotification(
       credentialCriteria.type,
       resourceID,
-      true
+      includePreferences,
+      includeSettings
     );
     if (!users) return [];
     return users;
   }
 
   async getUniqueUsersMatchingCredentialCriteria(
-    credentialCriteria: CredentialCriterion[]
+    credentialCriteria: CredentialCriterion[],
+    includePreferences: boolean,
+    includeSettings: boolean
   ): Promise<User[]> {
     const users: User[] = [];
     for (const criterion of credentialCriteria) {
       const matchedUsers = await this.getUsersMatchingCredentialCriteria(
-        criterion
+        criterion,
+        { includePreferences, includeSettings }
       );
       users.push(...matchedUsers);
     }

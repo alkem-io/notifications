@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
@@ -30,7 +30,7 @@ export class CollaborationDiscussionCommentNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'member',
-        preferenceType: UserPreferenceType.NotificationDiscussionCommentCreated,
+        preferenceType: PreferenceType.NotificationDiscussionCommentCreated,
         emailTemplate: EmailTemplate.COLLABORATION_DISCUSSION_COMMENT_MEMBER,
       },
     ];
