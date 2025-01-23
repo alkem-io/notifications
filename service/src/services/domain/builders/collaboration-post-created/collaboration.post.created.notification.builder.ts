@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { PlatformUser, User } from '@core/models';
@@ -27,12 +27,12 @@ export class CollaborationPostCreatedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        preferenceType: UserPreferenceType.NotificationPostCreatedAdmin,
+        preferenceType: PreferenceType.NotificationPostCreatedAdmin,
         emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_ADMIN,
       },
       {
         role: 'user',
-        preferenceType: UserPreferenceType.NotificationPostCreated,
+        preferenceType: PreferenceType.NotificationPostCreated,
         emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_MEMBER,
       },
     ];

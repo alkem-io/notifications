@@ -7,7 +7,7 @@ import {
 } from '@common/exceptions';
 import { AlkemioClientAdapter } from '@src/services';
 import { EmailTemplate } from '@common/enums/email.template';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { PlatformUser, User } from '@core/models';
 import {
   INotificationRecipientTemplateProvider,
@@ -32,7 +32,8 @@ import {
 export type RoleConfig = {
   role: string;
   emailTemplate: EmailTemplate;
-  preferenceType?: UserPreferenceType;
+  preferenceType?: PreferenceType;
+  checkIsUserMessagingAllowed?: boolean;
 };
 export type TemplateType = keyof TemplateConfig;
 export type TemplateBuilderFn<TPayload, TEmailPayload> = (
@@ -93,18 +94,26 @@ export class NotificationBuilder<
     }
 
     const notificationsForRoles: Promise<NotificationTemplateType[]>[] = [];
-    roleConfig.forEach(({ role, emailTemplate, preferenceType }) => {
-      const notifications: Promise<NotificationTemplateType[]> =
-        this.buildNotificationsForRole(options, role, emailTemplate, {
-          eventUser,
-          rolePreferenceType: preferenceType,
-        });
-      notificationsForRoles.push(notifications);
-    });
+    roleConfig.forEach(
+      ({
+        role,
+        emailTemplate,
+        preferenceType,
+        checkIsUserMessagingAllowed,
+      }) => {
+        const notifications: Promise<NotificationTemplateType[]> =
+          this.buildNotificationsForRole(options, role, emailTemplate, {
+            eventUser,
+            rolePreferenceType: preferenceType,
+            checkIsUserMessagingAllowed,
+          });
+        notificationsForRoles.push(notifications);
+      }
+    );
 
     // when the build process of all notification is finished
     // flatten the notification by role a single array of notifications
-    // filter the rejected once and log them
+    // filters the rejected once and log them
     const notifications = await Promise.allSettled(notificationsForRoles);
     const notificationResults: NotificationTemplateType[] = [];
     notifications.forEach(notification => {
@@ -126,7 +135,9 @@ export class NotificationBuilder<
     emailTemplate: EmailTemplate,
     extra?: {
       eventUser?: User;
-      rolePreferenceType?: UserPreferenceType;
+      rolePreferenceType?: PreferenceType;
+      checkIsUserMessagingAllowed?: boolean;
+      // how to query the settings and is it the best idea
     }
   ): Promise<NotificationTemplateType[]> {
     const { templateType, roleConfig, templateVariables, platformUsers } =
@@ -135,6 +146,12 @@ export class NotificationBuilder<
       `[${emailTemplate} - '${recipientRole}'] Building notifications - start'`,
       LogContext.NOTIFICATIONS
     );
+    // validate early
+    if (extra?.rolePreferenceType && extra?.checkIsUserMessagingAllowed) {
+      throw new Error(
+        'You cannot use both "rolePreferenceType" and "checkIsUserMessagingAllowed" at the same time'
+      );
+    }
 
     const ruleSets =
       this.recipientTemplateProvider.getTemplate()?.[templateType];
@@ -162,7 +179,9 @@ export class NotificationBuilder<
 
     const recipients =
       await this.alkemioAdapter.getUniqueUsersMatchingCredentialCriteria(
-        filteredCriteria
+        filteredCriteria,
+        !!extra?.rolePreferenceType,
+        !!extra?.checkIsUserMessagingAllowed
       );
 
     const externalRecipients: PlatformUser[] = [];
@@ -196,9 +215,8 @@ export class NotificationBuilder<
 
     const filteredRecipients: User[] = [];
 
-    if (!extra?.rolePreferenceType) {
-      filteredRecipients.push(...recipients);
-    } else {
+    // filter by user preferences
+    if (extra?.rolePreferenceType) {
       for (const recipient of recipients) {
         const targetedUserPreference =
           recipient.preferences &&
@@ -224,6 +242,30 @@ export class NotificationBuilder<
 
         filteredRecipients.push(recipient);
       }
+    } else if (extra?.checkIsUserMessagingAllowed) {
+      // filter by user settings
+      for (const recipient of recipients) {
+        const { settings } = recipient;
+
+        if (!settings) {
+          this.logger.verbose?.(
+            `[${emailTemplate} - '${recipientRole}'] ...skipping recipient ${recipient.nameID} - settings not found`
+          );
+          continue;
+        }
+
+        if (!settings.communication.allowOtherUsersToSendMessages) {
+          this.logger.verbose?.(
+            `[${emailTemplate} - '${recipientRole}'] ...skipping recipient ${recipient.nameID} - User has disabled messaging`
+          );
+          continue;
+        }
+
+        filteredRecipients.push(recipient);
+      }
+    } else {
+      // not filtering - include all
+      filteredRecipients.push(...recipients);
     }
 
     this.logger.verbose?.(

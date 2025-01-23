@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { CollaborationWhiteboardCreatedEventPayload } from '@alkemio/notifications-lib';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { NotificationBuilder, RoleConfig } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { PlatformUser, User } from '@core/models';
@@ -27,12 +27,12 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
     const roleConfig: RoleConfig[] = [
       {
         role: 'admin',
-        preferenceType: UserPreferenceType.NotificationWhiteboardCreated,
+        preferenceType: PreferenceType.NotificationWhiteboardCreated,
         emailTemplate: EmailTemplate.COLLABORATION_WHITEBOARD_CREATED_ADMIN,
       },
       {
         role: 'user',
-        preferenceType: UserPreferenceType.NotificationWhiteboardCreated,
+        preferenceType: PreferenceType.NotificationWhiteboardCreated,
         emailTemplate: EmailTemplate.COLLABORATION_WHITEBOARD_CREATED_MEMBER,
       },
     ];

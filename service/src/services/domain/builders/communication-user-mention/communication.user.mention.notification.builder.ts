@@ -7,7 +7,7 @@ import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationUserMentionEmailPayload } from '@common/email-template-payload';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
@@ -30,7 +30,7 @@ export class CommunicationUserMentionNotificationBuilder
       {
         role: 'receiver',
         emailTemplate: EmailTemplate.COMMUNICATION_COMMENT_MENTION_USER,
-        preferenceType: UserPreferenceType.NotificationCommunicationMention,
+        preferenceType: PreferenceType.NotificationCommunicationMention,
       },
     ];
 

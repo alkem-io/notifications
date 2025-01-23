@@ -3,7 +3,7 @@ import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { NotificationBuilder, RoleConfig } from '../../../application';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -29,7 +29,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
       {
         role: 'admin',
         emailTemplate: EmailTemplate.PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN,
-        preferenceType: UserPreferenceType.NotificationUserSignUp,
+        preferenceType: PreferenceType.NotificationUserSignUp,
       },
     ];
 

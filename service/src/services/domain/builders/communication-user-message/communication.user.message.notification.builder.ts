@@ -7,7 +7,6 @@ import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
-import { UserPreferenceType } from '@alkemio/client-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
@@ -29,7 +28,7 @@ export class CommunicationUserMessageNotificationBuilder
       {
         role: 'receiver',
         emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_RECIPIENT,
-        preferenceType: UserPreferenceType.NotificationCommunicationMessage,
+        checkIsUserMessagingAllowed: true,
       },
       {
         role: 'sender',

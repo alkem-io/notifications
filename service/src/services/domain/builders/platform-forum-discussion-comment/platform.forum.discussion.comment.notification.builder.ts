@@ -3,7 +3,7 @@ import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
-import { UserPreferenceType } from '@alkemio/client-lib';
+import { PreferenceType } from '@alkemio/client-lib';
 import { NotificationBuilder, RoleConfig } from '../../../application';
 import { NotificationTemplateType } from '@src/types';
 import { PlatformForumDiscussionCommentEmailPayload } from '@common/email-template-payload';
@@ -29,7 +29,7 @@ export class PlatformForumDiscussionCommentNotificationBuilder
       {
         role: 'discussionCreator',
         emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT,
-        preferenceType: UserPreferenceType.NotificationForumDiscussionComment,
+        preferenceType: PreferenceType.NotificationForumDiscussionComment,
       },
     ];
 
