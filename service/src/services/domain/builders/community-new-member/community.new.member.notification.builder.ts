@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PreferenceType } from '@alkemio/client-lib';
+import { PreferenceType, RoleSetContributorType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { NotificationBuilder, RoleConfig } from '../../../application';
@@ -60,16 +60,16 @@ export class CommunityNewMemberNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const newMember = eventPayload.contributor;
-    let type = newMember.type;
-    if (type === 'virtual') {
-      type = 'virtual contributor';
-    }
+    const typeName =
+      newMember.type === RoleSetContributorType.Virtual
+        ? 'virtual contributor'
+        : newMember.type;
 
     return {
       member: {
         name: newMember.profile.displayName,
         profile: newMember.profile.url,
-        type: type,
+        type: typeName,
       },
       recipient: {
         firstName: recipient.firstName,
