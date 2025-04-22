@@ -9,6 +9,9 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityPlatformInvitationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
+// defined in client-web
+const INVITATIONS_PATH = '?dialog=invitations';
+
 @Injectable()
 export class CommunityPlatformInvitationCreatedNotificationBuilder
   implements INotificationBuilder
@@ -96,6 +99,7 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
       },
       platform: {
         url: eventPayload.platform.url,
+        invitationsURL: `eventPayload.platform.url${INVITATIONS_PATH}`,
       },
     };
   }
