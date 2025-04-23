@@ -10,4 +10,5 @@ export interface CommunityInvitationCreatedEmailPayload
   };
   welcomeMessage?: string;
   spaceAdminURL: string;
+  invitationsURL?: string;
 }
