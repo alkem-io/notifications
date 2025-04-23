@@ -92,8 +92,8 @@ export class CommunityInvitationCreatedNotificationBuilder
       },
       platform: {
         url: eventPayload.platform.url,
-        invitationsURL: `${eventPayload.platform.url}${this.invitationsPath}`,
       },
+      invitationsURL: `${eventPayload.platform.url}${this.invitationsPath}`,
     };
   }
 }
