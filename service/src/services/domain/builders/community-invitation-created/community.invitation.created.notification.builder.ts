@@ -9,18 +9,26 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityInvitationCreatedEmailPayload } from '@common/email-template-payload';
 import { PreferenceType } from '@alkemio/client-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { ConfigService } from '@nestjs/config';
+import { ConfigurationTypes } from '@src/common/enums';
 
 @Injectable()
 export class CommunityInvitationCreatedNotificationBuilder
   implements INotificationBuilder
 {
+  invitationsPath: string;
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly notificationBuilder: NotificationBuilder<
       CommunityInvitationCreatedEventPayload,
       CommunityInvitationCreatedEmailPayload
-    >
-  ) {}
+    >,
+    private readonly configService: ConfigService
+  ) {
+    this.invitationsPath = this.configService.get(
+      ConfigurationTypes.ALKEMIO
+    )?.webclient_invitations_path;
+  }
 
   build(
     payload: CommunityInvitationCreatedEventPayload
@@ -84,6 +92,7 @@ export class CommunityInvitationCreatedNotificationBuilder
       },
       platform: {
         url: eventPayload.platform.url,
+        invitationsURL: `${eventPayload.platform.url}${this.invitationsPath}`,
       },
     };
   }
