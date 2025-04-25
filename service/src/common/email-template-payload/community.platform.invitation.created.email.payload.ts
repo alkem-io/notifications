@@ -11,4 +11,5 @@ export interface CommunityPlatformInvitationCreatedEmailPayload
   welcomeMessage?: string;
   emails?: string;
   spaceAdminURL: string;
+  invitationsURL?: string;
 }
