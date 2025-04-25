@@ -16,18 +16,14 @@ module.exports = () => ({
           <pre><i>{{welcomeMessage}}</i></pre>
 </p>
           {% endif %}
-          <a class="action-button" href="{{space.url}}">click here to go to the (Sub)Space</a><br><br>
+          <a class="action-button" href="{{space.url}}">click here to accept the invitation</a><br><br>
 <strong>How to Get Started:</strong>
     <ol>
-        <li><strong><a style="color:#000000; text-decoration: none;" href="{{space.url}}">🔗 Click the Link:</a></strong> Simply click on the link above to open the (Sub)Space you've been invited to. It will take you directly to the heart of our collaborative platform.</li>
-        <li><strong>✏️ Create Your Account:</strong> Once there, you'll notice a prominent button inviting you to sign in to apply. Follow the steps to <b>create a new account</b>. Remember, this invitation is tied to the email address it was sent to, so use that same address during registration.</li>
-        <li><strong>✅ Verify and Accept:</strong> After verifying your account and signing in, you'll land back in the (Sub)Space. Look for the button to accept the invitation. Click it to officially become part of the Space community.</li>
-        <li><strong>🎉 You're In!</strong> Congratulations! You're now part of <a href="{{space.url}}">{{space.displayName}}</a>. Feel free to explore, connect with fellow members, and contribute to the discussions. If you ever feel lost during the process, don't worry—use the button in this email to return to the (Sub)Space you were invited to.</li>
+        <li><strong>Sign Up & Join:</strong> Click the button above to sign up to our platform and access your pending invitation 🔗</li> 
+        <li><strong>Use This Email:</strong> When creating an account, make sure to use the same email address this invitation was sent to (<strong>{{recipient.email}}</strong>).</li> 
+        <li><strong>Accept & Explore:</strong> Once you've created an account, you'll be able to accept the invitation and start exploring the space!</li>
     </ol>
-    <p>We are looking forward to your valuable contributions!</p>
-
-    <p>Warm regards,</p>
-    <p>The Alkemio Team</p>
+    <p>We look forward to your contributions! 🎉 If the space is public, you can also <a href="{{space.url}}">explore it without signing in</a> by clicking on the Space title.</p>
     <br><br>
         {% endblock %}
         ${templates.footerBlock}`,
