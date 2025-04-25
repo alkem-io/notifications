@@ -10,7 +10,7 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject: 'Invitation to join {{space.displayName}}',
       html: `{% extends "src/templates/_layouts/email-transactional.html" %}
-        {% block content %}    <p><a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join <a href="{{space.url}}">{{space.displayName}}</a> on Alkemio.</p><br>
+        {% block content %}    <p><a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join {{space.displayName}} on Alkemio.</p><br>
           {% if welcomeMessage %}
           <p>
           <pre><i>{{welcomeMessage}}</i></pre>
@@ -23,7 +23,7 @@ module.exports = () => ({
         <li><strong>Use This Email:</strong> When creating an account, make sure to use the same email address this invitation was sent to (<strong>{{recipient.email}}</strong>).</li> 
         <li><strong>Accept & Explore:</strong> Once you've created an account, you'll be able to accept the invitation and start exploring the space!</li>
     </ol>
-    <p>We look forward to your contributions! 🎉 If the space is public, you can also <a href="{{space.url}}">explore it without signing in</a> by clicking on the Space title.</p>
+    <p>We look forward to your contributions! 🎉 Note that if the space is public, you can also <a href="{{space.url}}">explore it without signing in</a>.</p>
     <br><br>
         {% endblock %}
         ${templates.footerBlock}`,
