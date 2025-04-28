@@ -70,6 +70,9 @@ export class CommunityInvitationCreatedNotificationBuilder
 
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+    const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
+      this.invitationsPath
+    }`;
 
     return {
       inviter: {
@@ -93,7 +96,7 @@ export class CommunityInvitationCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
-      invitationsURL: `${eventPayload.platform.url}${this.invitationsPath}`,
+      invitationsURL,
     };
   }
 }
