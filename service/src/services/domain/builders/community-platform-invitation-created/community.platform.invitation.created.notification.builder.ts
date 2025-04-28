@@ -81,6 +81,9 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
     const emails = [...eventPayload.invitees]
       .map(invitedUser => invitedUser.email)
       .join(', ');
+    const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
+      this.invitationsPath
+    }`;
 
     return {
       inviter: {
@@ -105,7 +108,7 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
-      invitationsURL: `${eventPayload.platform.url}${this.invitationsPath}`,
+      invitationsURL,
     };
   }
 }
