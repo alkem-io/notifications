@@ -34,10 +34,6 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
   ): Promise<NotificationTemplateType[]> {
     const roleConfig: RoleConfig[] = [
       {
-        role: 'inviter',
-        emailTemplate: EmailTemplate.COMMUNITY_PLATFORM_INVITATION_INVITER,
-      },
-      {
         role: 'invitee',
         emailTemplate: EmailTemplate.COMMUNITY_PLATFORM_INVITATION_INVITEE,
       },
