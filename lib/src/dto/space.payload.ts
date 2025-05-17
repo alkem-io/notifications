@@ -1,7 +1,8 @@
+
 export type SpacePayload = {
   id: string;
   nameID: string;
-  type: string;
+  level: string;
   profile: {
     displayName: string;
     url: string;

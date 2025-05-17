@@ -78,7 +78,7 @@ export class CommunityNewMemberNotificationBuilder
       },
       space: {
         displayName: eventPayload.space.profile.displayName,
-        type: eventPayload.space.type,
+        level: eventPayload.space.level,
         url: eventPayload.space.profile.url,
       },
       platform: {
