@@ -1,9 +1,8 @@
-import { SpaceLevel } from "@alkemio/client-lib";
 
 export type SpacePayload = {
   id: string;
   nameID: string;
-  level: SpaceLevel;
+  level: string;
   profile: {
     displayName: string;
     url: string;
