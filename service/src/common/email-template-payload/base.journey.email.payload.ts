@@ -5,5 +5,6 @@ export interface BaseJourneyEmailPayload extends BaseEmailPayload {
     displayName: string;
     url: string;
     level: string;
+    type?: string; // to distinguish space + subspace
   };
 }
