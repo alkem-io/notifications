@@ -1,4 +1,3 @@
-import { RoleSetContributorType } from "@alkemio/client-lib";
 
 export type ContributorPayload = {
   id: string;
@@ -7,5 +6,5 @@ export type ContributorPayload = {
     displayName: string;
     url: string;
   }
-  type: RoleSetContributorType
+  type: string
 };

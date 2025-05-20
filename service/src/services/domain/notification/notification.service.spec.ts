@@ -1,9 +1,9 @@
 import { Test } from '@nestjs/testing';
 import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { ALKEMIO_CLIENT_ADAPTER, NOTIFICATIONS_PROVIDER } from '@common/enums';
-import * as challengeAdminsData from '@test/data/challenge.admins.json';
-import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
-import * as spaceAdminsData from '@test/data/space.admins.json';
+import * as spaceAdminsL1Data from '@test/data/space.admins.l1.json';
+import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
+import * as spaceAdminsL0Data from '@test/data/space.admins.l0.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
 import { INotifiedUsersProvider } from '@core/contracts';
@@ -50,9 +50,9 @@ import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from 
 import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
 
 const testData = {
-  ...challengeAdminsData,
-  ...opportunityAdminsData,
-  ...spaceAdminsData,
+  ...spaceAdminsL0Data,
+  ...spaceAdminsL1Data,
+  ...spaceAdminsL2Data,
   ...eventPayload,
   ...adminUser,
 };
@@ -122,7 +122,7 @@ describe('NotificationService', () => {
       //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
       jest
         .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
-        .mockResolvedValue(testData.spaceAdmins);
+        .mockResolvedValue(testData.spaceAdminsL0);
 
       jest
         .spyOn(alkemioAdapter, 'getUser')
@@ -149,9 +149,9 @@ describe('NotificationService', () => {
 
     it('Should send 6 application notifications', async () => {
       const admins = [
-        ...testData.spaceAdmins,
-        ...testData.challengeAdmins,
-        ...testData.opportunityAdmins,
+        ...testData.spaceAdminsL0,
+        ...testData.spaceAdminsL1,
+        ...testData.spaceAdminsL2,
       ];
 
       const applicationCount = 6;
