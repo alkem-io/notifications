@@ -1,9 +1,9 @@
 import { AlkemioClient, PlatformFeatureFlagName } from '@alkemio/client-lib';
 import { Test } from '@nestjs/testing';
 import { AlkemioClientAdapterProvider } from './alkemio.client.adapter.module';
-import * as challengeAdminsData from '@test/data/challenge.admins.json';
-import * as opportunityAdminsData from '@test/data/opportunity.admins.json';
-import * as spaceAdminsData from '@test/data/space.admins.json';
+import * as spaceAdminsL1Data from '@test/data/space.admins.l1.json';
+import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
+import * as spaceAdminsL0Data from '@test/data/space.admins.l0.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import { AlkemioClientAdapter } from './alkemio.client.adapter';
 import {
@@ -17,9 +17,9 @@ import {
 } from '@src/common/enums';
 
 const testData = {
-  ...challengeAdminsData,
-  ...opportunityAdminsData,
-  ...spaceAdminsData,
+  ...spaceAdminsL0Data,
+  ...spaceAdminsL1Data,
+  ...spaceAdminsL2Data,
   ...eventPayload,
 };
 

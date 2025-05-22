@@ -61,7 +61,7 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
       },
       space: {
         displayName: eventPayload.space.profile.displayName,
-        type: eventPayload.space.type,
+        level: eventPayload.space.level,
         url: eventPayload.space.profile.url,
       },
       sender: eventPayload.sender,

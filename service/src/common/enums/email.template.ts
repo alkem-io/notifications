@@ -5,7 +5,6 @@ export enum EmailTemplate {
   COMMUNITY_USER_APPLICATION_ADMIN = 'community.user.application.admin',
   COMMUNITY_INVITATION_ADMIN = 'community.invitation.created.admin',
   COMMUNITY_INVITATION_INVITEE = 'community.invitation.created.invitee',
-  COMMUNITY_INVITATION_INVITER = 'community.invitation.created.inviter',
   COMMUNITY_PLATFORM_INVITATION_INVITEE = 'community.platform.invitation.created.invitee',
   COMMUNICATION_UPDATE_ADMIN = 'communication.update.admin',
   COMMUNICATION_UPDATE_MEMBER = 'communication.update.member',

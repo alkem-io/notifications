@@ -64,6 +64,9 @@ export class CommunityApplicationCreatedNotificationBuilder
       );
     }
 
+    const isLevel0Space = eventPayload.space.level === '0';
+    const spaceType = isLevel0Space ? 'space' : 'subspace';
+
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
@@ -81,8 +84,9 @@ export class CommunityApplicationCreatedNotificationBuilder
       },
       space: {
         displayName: eventPayload.space.profile.displayName,
-        type: eventPayload.space.type,
+        level: eventPayload.space.level,
         url: eventPayload.space.profile.url,
+        type: spaceType,
       },
       platform: {
         url: eventPayload.platform.url,
