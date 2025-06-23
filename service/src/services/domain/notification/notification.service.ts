@@ -344,9 +344,13 @@ export class NotificationService {
       return { status: 'error' };
     }
 
-    notification.channels.email.from = this.configService.get(
+    const mailFrom = this.configService.get(
       ConfigurationTypes.NOTIFICATION_PROVIDERS
     )?.email?.from;
+    const mailFromName = this.configService.get(
+      ConfigurationTypes.NOTIFICATION_PROVIDERS
+    )?.email?.from_name;
+    notification.channels.email.from = `${mailFromName} <${mailFrom}>`;
 
     return this.notifmeService.send(notification.channels).then(
       res => {
