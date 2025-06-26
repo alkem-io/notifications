@@ -11,6 +11,7 @@ import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { CommunityApplicationCreatedNotificationBuilder } from '@src/services';
 import { NotificationRecipientsYmlAdapter } from '@src/services';
+import { ConfigService } from '@nestjs/config';
 import {
   PlatformUserRegisteredNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
@@ -62,6 +63,7 @@ describe('NotificationService', () => {
   let alkemioAdapter: INotifiedUsersProvider;
   let notificationBuilder: NotificationBuilder<any, any>;
   let notifmeService: NotifmeSdk;
+  let configService: any;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -109,12 +111,26 @@ describe('NotificationService', () => {
     );
     notificationBuilder = moduleRef.get(NotificationBuilder);
     notifmeService = moduleRef.get(NOTIFICATIONS_PROVIDER);
+    configService = moduleRef.get(ConfigService);
   });
 
   beforeEach(() => {
     jest
       .spyOn(alkemioAdapter, 'areNotificationsEnabled')
       .mockResolvedValue(true);
+
+    // Mock the config service to return email configuration
+    jest.spyOn(configService, 'get').mockImplementation((key: any) => {
+      if (key === 'notification_providers') {
+        return {
+          email: {
+            from: 'test@example.com',
+            from_name: 'Test Notifications',
+          },
+        };
+      }
+      return undefined;
+    });
   });
 
   describe('Application Notifications', () => {
