@@ -359,9 +359,15 @@ export class NotificationService {
       return { status: 'error' };
     }
 
-    notification.channels.email.from = mailFromName
+    const mailFromNameConfigured = mailFromName
       ? `${mailFromName} <${mailFrom}>`
       : mailFrom;
+    this.logger.verbose?.(
+      `Notification mail from ${mailFromNameConfigured}`,
+      LogContext.NOTIFICATIONS
+    );
+
+    notification.channels.email.from = mailFromNameConfigured;
 
     return this.notifmeService.send(notification.channels).then(
       res => {

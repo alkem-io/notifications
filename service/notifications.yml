@@ -58,7 +58,7 @@ notification_providers:
     #multi-provider strategy. Values can be fallback | no-fallback | roundrobin
     multi_provider_strategy: ${EMAIL_MULTI_PROVIDER_STRATEGY}:fallback
     from: ${EMAIL_FROM}:notifications@alkem.io
-    from_name: ${EMAIL_FROM_NAME}:Alkem.io
+    from_name: ${EMAIL_FROM_NAME}:Alkemio
     smtp:
       host: ${EMAIL_SMTP_HOST}:localhost
       port: ${EMAIL_SMTP_PORT}:1025
