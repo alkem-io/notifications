@@ -352,7 +352,10 @@ export class NotificationService {
     )?.email?.from_name;
 
     if (!mailFrom) {
-      this.logger.error?.('Email from address not configured', LogContext.NOTIFICATIONS);
+      this.logger.error?.(
+        'Email from address not configured',
+        LogContext.NOTIFICATIONS
+      );
       return { status: 'error' };
     }
 
