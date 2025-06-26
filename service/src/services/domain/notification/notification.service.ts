@@ -344,9 +344,30 @@ export class NotificationService {
       return { status: 'error' };
     }
 
-    notification.channels.email.from = this.configService.get(
+    const mailFrom = this.configService.get(
       ConfigurationTypes.NOTIFICATION_PROVIDERS
     )?.email?.from;
+    const mailFromName = this.configService.get(
+      ConfigurationTypes.NOTIFICATION_PROVIDERS
+    )?.email?.from_name;
+
+    if (!mailFrom) {
+      this.logger.error?.(
+        'Email from address not configured',
+        LogContext.NOTIFICATIONS
+      );
+      return { status: 'error' };
+    }
+
+    const mailFromNameConfigured = mailFromName
+      ? `${mailFromName} <${mailFrom}>`
+      : mailFrom;
+    this.logger.verbose?.(
+      `Notification mail from ${mailFromNameConfigured}`,
+      LogContext.NOTIFICATIONS
+    );
+
+    notification.channels.email.from = mailFromNameConfigured;
 
     return this.notifmeService.send(notification.channels).then(
       res => {
