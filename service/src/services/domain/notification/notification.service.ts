@@ -350,7 +350,15 @@ export class NotificationService {
     const mailFromName = this.configService.get(
       ConfigurationTypes.NOTIFICATION_PROVIDERS
     )?.email?.from_name;
-    notification.channels.email.from = `${mailFromName} <${mailFrom}>`;
+
+    if (!mailFrom) {
+      this.logger.error?.('Email from address not configured', LogContext.NOTIFICATIONS);
+      return { status: 'error' };
+    }
+
+    notification.channels.email.from = mailFromName
+      ? `${mailFromName} <${mailFrom}>`
+      : mailFrom;
 
     return this.notifmeService.send(notification.channels).then(
       res => {
