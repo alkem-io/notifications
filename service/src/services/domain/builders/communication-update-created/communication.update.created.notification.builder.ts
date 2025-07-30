@@ -9,6 +9,7 @@ import { NotificationTemplateType } from '@src/types';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
@@ -83,6 +84,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+      message: convertMarkdownToHtml(eventPayload.message ?? ''),
     };
   }
 }

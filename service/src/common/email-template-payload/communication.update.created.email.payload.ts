@@ -5,4 +5,5 @@ export interface CommunicationUpdateCreatedEmailPayload
   sender: {
     firstName: string;
   };
+  message: string;
 }
