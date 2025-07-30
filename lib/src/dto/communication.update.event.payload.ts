@@ -6,5 +6,5 @@ export interface CommunicationUpdateEventPayload extends SpaceBaseEventPayload {
     createdBy: string;
     url: string;
   };
-
+  message?: string;
 }
