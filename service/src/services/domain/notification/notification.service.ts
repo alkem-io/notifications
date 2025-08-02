@@ -62,7 +62,7 @@ import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/c
 import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
-import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
+import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform-space-created/platform.space.created.notification.builder';
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
@@ -97,7 +97,7 @@ export class NotificationService {
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
     private communityInvitationVirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder,
-    private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder,
+    private spaceCreatedNotificationBuilder: PlatformSpaceCreatedNotificationBuilder,
     private notificationTemplateBuilder: NotificationTemplateBuilder,
     private readonly inAppDispatcher: InAppDispatcher
   ) {}

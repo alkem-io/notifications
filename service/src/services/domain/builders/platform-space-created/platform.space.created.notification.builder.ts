@@ -15,7 +15,9 @@ import {
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
-export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
+export class PlatformSpaceCreatedNotificationBuilder
+  implements INotificationBuilder
+{
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly alkemioClientAdapter: AlkemioClientAdapter
@@ -35,7 +37,7 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
       {
         emailRecipients: spaceCreatedRecipients.emailRecipients,
         inAppRecipients: spaceCreatedRecipients.inAppRecipients,
-        emailTemplate: EmailTemplate.SPACE_CREATED_ADMIN,
+        emailTemplate: EmailTemplate.PLATFORM_SPACE_CREATED_ADMIN,
       },
     ];
     return emailRecipientsSets;

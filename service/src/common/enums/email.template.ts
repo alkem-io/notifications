@@ -33,7 +33,7 @@ export enum EmailTemplate {
   PLATFORM_USER_REMOVED_ADMIN = 'platform.user.removed.admin',
   PLATFORM_FORUM_DISCUSSION_CREATED = 'platform.forum.discussion.created',
   PLATFORM_FORUM_DISCUSSION_COMMENT = 'platform.forum.discussion.comment',
+  PLATFORM_SPACE_CREATED_ADMIN = 'space.created.license.manager',
   COMMENT_REPLY = 'comment.reply',
   COMMUNITY_INVITATION_CREATED_VC_HOST = 'community.invitation.created.vc.host',
-  SPACE_CREATED_ADMIN = 'space.created.license.manager',
 }
