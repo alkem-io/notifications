@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { AlkemioClientAdapter } from '../../../application';
@@ -6,13 +5,14 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 import {
   CommunityApplicationCreatedEventPayload,
   InAppNotificationCategory,
   InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CommunityApplicationCreatedNotificationBuilder
@@ -25,7 +25,7 @@ export class CommunityApplicationCreatedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunityApplicationCreatedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const applicationSubmittedRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.SpaceApplicationSubmitted,
@@ -40,13 +40,15 @@ export class CommunityApplicationCreatedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: applicationSubmittedRecipients.emailRecipients,
+        inAppRecipients: applicationSubmittedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_APPLICANT,
       },
       {
         emailRecipients: applicationReceivedRecipients.emailRecipients,
+        inAppRecipients: applicationReceivedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_ADMIN,
       },
     ];

@@ -39,11 +39,6 @@ import {
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
-import {
-  CommunityNewContributorEventSubject,
-  ContributorMentionedEventSubject,
-  CalloutPublishedEventSubject,
-} from './services/event-subjects';
 
 @Controller()
 export class AppController {
@@ -52,10 +47,7 @@ export class AppController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly featureFlagProvider: IFeatureFlagProvider,
-    private calloutPublishedEventSubject: CalloutPublishedEventSubject,
-    private contributorMentionedEventSubject: ContributorMentionedEventSubject,
-    private newContributorEventSubject: CommunityNewContributorEventSubject
+    private readonly featureFlagProvider: IFeatureFlagProvider
   ) {}
 
   @EventPattern(NotificationEventType.COMMUNITY_APPLICATION_CREATED)
@@ -134,8 +126,6 @@ export class AppController {
       ),
       NotificationEventType.COMMUNITY_NEW_MEMBER
     );
-
-    this.newContributorEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE)
@@ -285,8 +275,6 @@ export class AppController {
       ),
       NotificationEventType.COMMUNICATION_USER_MENTION
     );
-
-    this.contributorMentionedEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION)
@@ -378,8 +366,6 @@ export class AppController {
       this.notificationService.sendCalloutPublishedNotification(eventPayload),
       NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED
     );
-
-    this.calloutPublishedEventSubject.notifyAll(eventPayload);
   }
 
   @EventPattern(NotificationEventType.COMMENT_REPLY, Transport.RMQ)

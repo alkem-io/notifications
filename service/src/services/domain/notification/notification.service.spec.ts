@@ -6,11 +6,8 @@ import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
 import * as spaceAdminsL0Data from '@test/data/space.admins.l0.json';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
 import * as adminUser from '@test/data/admin.user.json';
-import { INotifiedUsersProvider } from '@core/contracts';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
-import { CommunityApplicationCreatedNotificationBuilder } from '@src/services';
-import { NotificationRecipientsYmlAdapter } from '@src/services';
 import { ConfigService } from '@nestjs/config';
 import {
   PlatformUserRegisteredNotificationBuilder,
@@ -39,10 +36,7 @@ import {
   MockNotifmeProvider,
   MockWinstonProvider,
 } from '@test/mocks';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-} from '@src/services/application';
+import { AlkemioUrlGenerator } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
@@ -60,8 +54,6 @@ const testData = {
 
 describe('NotificationService', () => {
   let notificationService: NotificationService;
-  let alkemioAdapter: INotifiedUsersProvider;
-  let notificationBuilder: NotificationBuilder<any, any>;
   let notifmeService: NotifmeSdk;
   let configService: any;
 
@@ -72,9 +64,7 @@ describe('NotificationService', () => {
         MockNotifmeProvider,
         MockWinstonProvider,
         MockNotificationRecipientsYmlProvider,
-        NotificationRecipientsYmlAdapter,
         NotificationService,
-        CommunityApplicationCreatedNotificationBuilder,
         CommunityInvitationCreatedNotificationBuilder,
         CommunityPlatformInvitationCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
@@ -106,10 +96,7 @@ describe('NotificationService', () => {
 
     notificationService =
       moduleRef.get<NotificationService>(NotificationService);
-    alkemioAdapter = moduleRef.get<INotifiedUsersProvider>(
-      ALKEMIO_CLIENT_ADAPTER
-    );
-    notificationBuilder = moduleRef.get(NotificationBuilder);
+
     notifmeService = moduleRef.get(NOTIFICATIONS_PROVIDER);
     configService = moduleRef.get(ConfigService);
   });
@@ -136,13 +123,6 @@ describe('NotificationService', () => {
   describe('Application Notifications', () => {
     it('Should send application notification', async () => {
       //toDo investigate mocking this function result based on input arguments https://stackoverflow.com/questions/41697513/can-i-mock-functions-with-specific-arguments-using-jest
-      jest
-        .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
-        .mockResolvedValue(testData.spaceAdminsL0);
-
-      jest
-        .spyOn(alkemioAdapter, 'getUser')
-        .mockResolvedValue(testData.adminUser);
 
       jest
         .spyOn(notificationBuilder, 'build')
@@ -164,25 +144,7 @@ describe('NotificationService', () => {
     });
 
     it('Should send 6 application notifications', async () => {
-      const admins = [
-        ...testData.spaceAdminsL0,
-        ...testData.spaceAdminsL1,
-        ...testData.spaceAdminsL2,
-      ];
-
       const applicationCount = 6;
-
-      jest
-        .spyOn(alkemioAdapter, 'areNotificationsEnabled')
-        .mockResolvedValue(true);
-
-      jest
-        .spyOn(alkemioAdapter, 'getUniqueUsersMatchingCredentialCriteria')
-        .mockResolvedValue(admins);
-
-      jest
-        .spyOn(alkemioAdapter, 'getUser')
-        .mockResolvedValue(testData.adminUser);
 
       jest
         .spyOn(notificationBuilder, 'build')

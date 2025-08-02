@@ -6,11 +6,7 @@ import { AppController } from './app.controller';
 import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
-import {
-  AlkemioClientAdapterModule,
-  CommunityApplicationCreatedNotificationBuilder,
-  NotificationRecipientsAdapterModule,
-} from '@src/services';
+import { AlkemioClientAdapterModule } from '@src/services';
 import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
 import {
   PlatformForumDiscussionCreatedNotificationBuilder,
@@ -27,12 +23,10 @@ import {
   CommunicationUserMentionNotificationBuilder,
   CommunicationOrganizationMentionNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
+  CommunityApplicationCreatedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-} from './services/application';
+import { AlkemioUrlGenerator } from './services/application';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
@@ -43,18 +37,8 @@ import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/b
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
 import { SpaceCreatedNotificationBuilder } from './services/domain/builders/space-created/space.created.notification.builder';
-import {
-  CalloutPublishedInAppNotificationBuilder,
-  CommunityNewContributorInAppNotificationBuilder,
-  ContributorMentionedInAppNotificationBuilder,
-} from './services/builders/in-app';
+
 import { InAppDispatcher } from './services/dispatchers';
-import { InAppBuilderUtil } from './services/builders/utils';
-import {
-  CommunityNewContributorEventSubject,
-  ContributorMentionedEventSubject,
-  CalloutPublishedEventSubject,
-} from './services/event-subjects';
 
 @Module({
   imports: [
@@ -70,14 +54,12 @@ import {
     AlkemioClientModule,
     AlkemioClientAdapterModule,
     AlkemioUrlGeneratorModule,
-    NotificationRecipientsAdapterModule,
   ],
   providers: [
     {
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
-    NotificationBuilder,
     AlkemioUrlGenerator,
     CommunityApplicationCreatedNotificationBuilder,
     CommunityInvitationCreatedNotificationBuilder,
@@ -105,17 +87,6 @@ import {
     SpaceCreatedNotificationBuilder,
     //
     InAppDispatcher,
-    //
-    InAppBuilderUtil,
-    //
-    CalloutPublishedEventSubject,
-    CalloutPublishedInAppNotificationBuilder,
-    //
-    CommunityNewContributorEventSubject,
-    CommunityNewContributorInAppNotificationBuilder,
-    //
-    ContributorMentionedEventSubject,
-    ContributorMentionedInAppNotificationBuilder,
   ],
   controllers: [AppController, HealthController],
 })
