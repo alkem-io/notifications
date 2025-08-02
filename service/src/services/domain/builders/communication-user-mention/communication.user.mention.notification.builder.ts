@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
   InAppNotificationCategory,
+  InAppNotificationContributorMentionedPayload,
   InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
@@ -83,7 +84,7 @@ export class CommunicationUserMentionNotificationBuilder
     eventPayload: CommunicationUserMentionEventPayload,
     category: InAppNotificationCategory,
     receiverID: string
-  ): InAppNotificationPayloadBase {
+  ): InAppNotificationContributorMentionedPayload {
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
@@ -91,7 +92,13 @@ export class CommunicationUserMentionNotificationBuilder
       triggeredAt: new Date(),
       category,
       triggeredByID,
-      receiverID: '',
+      receiverID,
+      comment: eventPayload.comment,
+      contributorType: eventPayload.mentionedUser.type,
+      commentOrigin: {
+        url: eventPayload.commentOrigin.url,
+        displayName: eventPayload.commentOrigin.displayName,
+      },
     };
   }
 }

@@ -7,7 +7,7 @@ import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
 import {
   CommunityNewMemberPayload,
   InAppNotificationCategory,
-  InAppNotificationPayloadBase,
+  InAppNotificationCommunityNewMemberPayload,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -94,7 +94,7 @@ export class CommunityNewMemberNotificationBuilder
     eventPayload: CommunityNewMemberPayload,
     category: InAppNotificationCategory,
     receiverID: string
-  ): InAppNotificationPayloadBase {
+  ): InAppNotificationCommunityNewMemberPayload {
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
@@ -102,7 +102,10 @@ export class CommunityNewMemberNotificationBuilder
       triggeredAt: new Date(),
       category,
       triggeredByID,
-      receiverID: '',
+      receiverID,
+      contributorType: eventPayload.contributor.type,
+      newMemberID: eventPayload.contributor.id,
+      spaceID: eventPayload.space.id,
     };
   }
 }

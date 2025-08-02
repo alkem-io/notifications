@@ -4,6 +4,7 @@ import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import {
   CollaborationCalloutPublishedEventPayload,
+  InAppNotificationCalloutPublishedPayload,
   InAppNotificationCategory,
   InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
@@ -89,7 +90,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     eventPayload: CollaborationCalloutPublishedEventPayload,
     category: InAppNotificationCategory,
     receiverID: string
-  ): InAppNotificationPayloadBase {
+  ): InAppNotificationCalloutPublishedPayload {
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
@@ -98,6 +99,8 @@ export class CollaborationCalloutPublishedNotificationBuilder
       category,
       triggeredByID,
       receiverID: receiverID,
+      spaceID: eventPayload.space.id,
+      calloutID: eventPayload.callout.id,
     };
   }
 }
