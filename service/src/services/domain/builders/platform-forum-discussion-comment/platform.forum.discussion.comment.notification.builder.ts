@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
+import {
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  PlatformForumDiscussionCommentEventPayload,
+} from '@alkemio/notifications-lib';
 import { PlatformForumDiscussionCommentEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class PlatformForumDiscussionCommentNotificationBuilder
@@ -21,7 +25,7 @@ export class PlatformForumDiscussionCommentNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: PlatformForumDiscussionCommentEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const forumDiscussionCommentRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformForumDiscussionComment,
@@ -29,9 +33,10 @@ export class PlatformForumDiscussionCommentNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: forumDiscussionCommentRecipients.emailRecipients,
+        inAppRecipients: forumDiscussionCommentRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT,
       },
     ];
@@ -62,6 +67,21 @@ export class PlatformForumDiscussionCommentNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: PlatformForumDiscussionCommentEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.PLATFORM_FORUM_DISCUSSION_COMMENT,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

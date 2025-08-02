@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import {
-  NotificationEventType,
-  CommunicationCommunityLeadsMessageEventPayload,
-} from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationCommunityLeadsMessageEmailPayload } from '@common/email-template-payload';
+import {
+  CommunicationCommunityLeadsMessageEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunicationCommunityLeadsMessageNotificationBuilder
@@ -23,7 +25,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunicationCommunityLeadsMessageEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const communityLeadsMessageRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.SpaceCommunicationUpdates,
@@ -38,15 +40,17 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: communityLeadsMessageRecipients.emailRecipients,
+        inAppRecipients: communityLeadsMessageRecipients.inAppRecipients,
         emailTemplate:
           EmailTemplate.COMMUNICATION_COMMUNITY_LEADS_MESSAGE_SENDER,
       },
 
       {
         emailRecipients: communityLeadsMessageAdminRecipients.emailRecipients,
+        inAppRecipients: communityLeadsMessageAdminRecipients.inAppRecipients,
         emailTemplate:
           EmailTemplate.COMMUNICATION_COMMUNITY_LEADS_MESSAGE_RECIPIENT,
       },
@@ -87,6 +91,21 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunicationCommunityLeadsMessageEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

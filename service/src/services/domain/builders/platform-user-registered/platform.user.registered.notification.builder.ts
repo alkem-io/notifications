@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
-import { PlatformUserRegistrationEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import {
+  PlatformUserRegistrationEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class PlatformUserRegisteredNotificationBuilder
@@ -21,7 +25,7 @@ export class PlatformUserRegisteredNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: PlatformUserRegistrationEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const platformAdminRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformNewUserSignUp,
@@ -29,15 +33,17 @@ export class PlatformUserRegisteredNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: platformAdminRecipients.emailRecipients,
+        inAppRecipients: platformAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN,
       },
     ];
     if (platformAdminRecipients.triggeredBy) {
       emailRecipientsSets.push({
         emailRecipients: [platformAdminRecipients.triggeredBy],
+        inAppRecipients: [platformAdminRecipients.triggeredBy],
         emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_REGISTRANT,
       });
     }
@@ -72,6 +78,21 @@ export class PlatformUserRegisteredNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: PlatformUserRegistrationEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.PLATFORM_USER_REGISTERED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

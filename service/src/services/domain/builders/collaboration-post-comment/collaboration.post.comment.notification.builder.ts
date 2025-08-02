@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { CollaborationPostCommentEventPayload } from '@alkemio/notifications-lib';
+import {
+  CollaborationPostCommentEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUser, User } from '@core/models';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CollaborationPostCommentNotificationBuilder
@@ -21,16 +25,17 @@ export class CollaborationPostCommentNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CollaborationPostCommentEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const commentRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.SpacePostCommentCreated,
       payload.space.id,
       payload.triggeredBy
     );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: commentRecipients.emailRecipients,
+        inAppRecipients: commentRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_COMMENT_OWNER,
       },
     ];
@@ -76,6 +81,23 @@ export class CollaborationPostCommentNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  public createInAppTemplatePayload(
+    eventPayload: CollaborationPostCommentEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    const { triggeredBy: triggeredByID } = eventPayload;
+
+    return {
+      type: NotificationEventType.COLLABORATION_POST_COMMENT,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID,
+      receiverID: '',
     };
   }
 }

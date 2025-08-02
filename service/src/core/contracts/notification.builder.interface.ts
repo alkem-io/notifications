@@ -5,12 +5,12 @@ import {
 } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '../models/user';
 import { BaseEmailPayload } from '@src/common/email-template-payload';
-import { EventEmailRecipients } from '../models/EventEmailRecipients';
+import { EventRecipientsSet } from '../models/EvenRecipientsSet';
 
 export interface INotificationBuilder {
   getEmailRecipientSets(
     payload: BaseEventPayload
-  ): Promise<EventEmailRecipients[]>;
+  ): Promise<EventRecipientsSet[]>;
 
   createEmailTemplatePayload(
     eventPayload: BaseEventPayload,
@@ -18,8 +18,8 @@ export interface INotificationBuilder {
   ): BaseEmailPayload;
 
   createInAppTemplatePayload(
+    eventPayload: BaseEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[],
-    eventPayload: BaseEventPayload
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase;
 }

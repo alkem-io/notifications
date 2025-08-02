@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PlatformUserRemovedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -7,7 +6,13 @@ import { PlatformUserRemovedEmailPayload } from '@src/common/email-template-payl
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import {
+  PlatformUserRemovedEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class PlatformUserRemovedNotificationBuilder
@@ -20,7 +25,7 @@ export class PlatformUserRemovedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: PlatformUserRemovedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const platformAdminRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformUserProfileRemoved,
@@ -28,9 +33,10 @@ export class PlatformUserRemovedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: platformAdminRecipients.emailRecipients,
+        inAppRecipients: platformAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_USER_REMOVED_ADMIN,
       },
     ];
@@ -56,6 +62,21 @@ export class PlatformUserRemovedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: PlatformUserRemovedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.PLATFORM_USER_REMOVED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

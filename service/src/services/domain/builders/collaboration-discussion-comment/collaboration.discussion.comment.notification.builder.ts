@@ -4,6 +4,7 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUser, User } from '@core/models';
 import {
   CollaborationDiscussionCommentEventPayload,
+  InAppNotificationCategory,
   InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
@@ -11,7 +12,7 @@ import { CollaborationDiscussionCommentEmailPayload } from '@src/common/email-te
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CollaborationDiscussionCommentNotificationBuilder
@@ -24,16 +25,17 @@ export class CollaborationDiscussionCommentNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CollaborationDiscussionCommentEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const commentRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.SpacePostCommentCreated,
       payload.space.id,
       payload.triggeredBy
     );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: commentRecipients.emailRecipients,
+        inAppRecipients: commentRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_DISCUSSION_COMMENT_MEMBER,
       },
     ];
@@ -83,17 +85,18 @@ export class CollaborationDiscussionCommentNotificationBuilder
 
   public createInAppTemplatePayload(
     eventPayload: CollaborationDiscussionCommentEventPayload,
-    recipient: User
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
-    const { callout, space } = eventPayload;
+    const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
       type: NotificationEventType.COLLABORATION_DISCUSSION_COMMENT,
-      triggeredByID: eventPayload.triggeredBy,
-      category: eventPayload.,
-      calloutID: callout.id,
-      spaceID: space.id,
-      receiverIDs: [recipient.id],
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID,
+      receiverID: '',
     };
   }
 }

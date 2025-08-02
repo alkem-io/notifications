@@ -4,8 +4,6 @@ import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import {
   CollaborationCalloutPublishedEventPayload,
-  CompressedInAppNotificationPayload,
-  InAppNotificationCalloutPublishedPayload,
   InAppNotificationCategory,
   InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
@@ -14,7 +12,7 @@ import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CollaborationCalloutPublishedNotificationBuilder
@@ -27,7 +25,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CollaborationCalloutPublishedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const calloutPublishedRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.SpaceCalloutPublished,
@@ -35,9 +33,10 @@ export class CollaborationCalloutPublishedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: calloutPublishedRecipients.emailRecipients,
+        inAppRecipients: calloutPublishedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_CALLOUT_PUBLISHED_MEMBER,
       },
     ];
@@ -86,24 +85,18 @@ export class CollaborationCalloutPublishedNotificationBuilder
     return result;
   }
 
-  public createInAppNotificationPayload(
+  public createInAppTemplatePayload(
+    eventPayload: CollaborationCalloutPublishedEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[],
-    event: CollaborationCalloutPublishedEventPayload
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
-    const {
-      callout: { id: calloutID },
-      space: { id: spaceID },
-      triggeredBy: triggeredByID,
-    } = event;
+    const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
       type: NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED,
       triggeredAt: new Date(),
       receiverIDs,
       category,
-      calloutID,
-      spaceID,
       triggeredByID,
       receiverID: '',
     };

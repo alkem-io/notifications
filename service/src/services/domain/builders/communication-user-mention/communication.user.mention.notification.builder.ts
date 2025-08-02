@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
-  CompressedInAppNotificationPayload,
   InAppNotificationCategory,
-  InAppNotificationContributorMentionedPayload,
+  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
@@ -14,7 +13,7 @@ import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunicationUserMentionNotificationBuilder
@@ -27,16 +26,17 @@ export class CommunicationUserMentionNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunicationUserMentionEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const userMentionRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.SpaceCommunicationMention,
       undefined, // User mention doesn't have space ID directly
       payload.triggeredBy
     );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: userMentionRecipients.emailRecipients,
+        inAppRecipients: userMentionRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_COMMENT_MENTION_USER,
       },
     ];
@@ -79,17 +79,12 @@ export class CommunicationUserMentionNotificationBuilder
     };
   }
 
-  public createInAppNotificationPayload(
+  public createInAppTemplatePayload(
+    eventPayload: CommunicationUserMentionEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[],
-    event: CommunicationUserMentionEventPayload
-  ): CompressedInAppNotificationPayload<InAppNotificationContributorMentionedPayload> {
-    const {
-      triggeredBy: triggeredByID,
-      comment,
-      commentOrigin,
-      mentionedUser: { type: contributorType },
-    } = event;
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
       type: NotificationEventType.COMMUNICATION_USER_MENTION,
@@ -97,12 +92,6 @@ export class CommunicationUserMentionNotificationBuilder
       receiverIDs,
       category,
       triggeredByID,
-      comment,
-      commentOrigin: {
-        url: commentOrigin.url,
-        displayName: commentOrigin.displayName,
-      },
-      contributorType: contributorType,
       receiverID: '',
     };
   }

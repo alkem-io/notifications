@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { CollaborationWhiteboardCreatedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationWhiteboardCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  CollaborationWhiteboardCreatedEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CollaborationWhiteboardCreatedNotificationBuilder
@@ -21,7 +25,7 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CollaborationWhiteboardCreatedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const whiteboardCreatedRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.SpaceWhiteboardCreated,
@@ -29,9 +33,10 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: whiteboardCreatedRecipients.emailRecipients,
+        inAppRecipients: whiteboardCreatedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_WHITEBOARD_CREATED_MEMBER,
       },
     ];
@@ -78,6 +83,21 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CollaborationWhiteboardCreatedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COLLABORATION_WHITEBOARD_CREATED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.whiteboard.createdBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

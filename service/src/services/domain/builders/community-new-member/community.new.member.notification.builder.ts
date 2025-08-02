@@ -6,15 +6,14 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
 import {
   CommunityNewMemberPayload,
-  CompressedInAppNotificationPayload,
   InAppNotificationCategory,
-  InAppNotificationCommunityNewMemberPayload,
+  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
@@ -27,7 +26,7 @@ export class CommunityNewMemberNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunityNewMemberPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const newMemberRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.SpaceCommunityNewMember,
       payload.space.id,
@@ -41,13 +40,15 @@ export class CommunityNewMemberNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: newMemberRecipients.emailRecipients,
+        inAppRecipients: newMemberRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_NEW_MEMBER_MEMBER,
       },
       {
         emailRecipients: newMemberAdminRecipients.emailRecipients,
+        inAppRecipients: newMemberAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_NEW_MEMBER_ADMIN,
       },
     ];
@@ -89,26 +90,19 @@ export class CommunityNewMemberNotificationBuilder
     };
   }
 
-  public createInAppNotificationPayload(
+  public createInAppTemplatePayload(
+    eventPayload: CommunityNewMemberPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[],
-    event: CommunityNewMemberPayload
-  ): CompressedInAppNotificationPayload<InAppNotificationCommunityNewMemberPayload> {
-    const {
-      space: { id: spaceID },
-      triggeredBy: triggeredByID,
-      contributor: { id: newMemberID, type: contributorType },
-    } = event;
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
       type: NotificationEventType.COMMUNITY_NEW_MEMBER,
       triggeredAt: new Date(),
       receiverIDs,
       category,
-      spaceID,
       triggeredByID,
-      newMemberID,
-      contributorType: contributorType,
       receiverID: '',
     };
   }

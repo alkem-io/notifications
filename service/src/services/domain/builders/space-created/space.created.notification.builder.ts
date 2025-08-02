@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { SpaceCreatedEventPayload } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { AlkemioUrlGenerator } from '../../../application';
 import { PlatformUser, User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import {
+  SpaceCreatedEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
@@ -18,7 +23,7 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
 
   public async getEmailRecipientSets(
     payload: SpaceCreatedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const spaceCreatedRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformSpaceCreated,
@@ -26,9 +31,10 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: spaceCreatedRecipients.emailRecipients,
+        inAppRecipients: spaceCreatedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.SPACE_CREATED_ADMIN,
       },
     ];
@@ -60,6 +66,21 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: SpaceCreatedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.SPACE_CREATED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

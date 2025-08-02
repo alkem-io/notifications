@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -8,7 +12,7 @@ import { PlatformGlobalRoleChangeEmailPayload } from '@src/common/email-template
 import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class PlatformGlobalRoleChangeNotificationBuilder
@@ -21,16 +25,17 @@ export class PlatformGlobalRoleChangeNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: PlatformGlobalRoleChangeEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const globalAdminRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.PlatformNewUserSignUp,
       '',
       payload.triggeredBy
     );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: globalAdminRecipients.emailRecipients,
+        inAppRecipients: globalAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN,
       },
     ];
@@ -72,6 +77,21 @@ export class PlatformGlobalRoleChangeNotificationBuilder
         url: eventPayload.platform.url,
       },
       triggeredBy: eventPayload.triggeredBy,
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: PlatformGlobalRoleChangeEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

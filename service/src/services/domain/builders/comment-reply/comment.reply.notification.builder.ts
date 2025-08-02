@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommentReplyEventPayload } from '@alkemio/notifications-lib';
 import { CommentReplyEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  CommentReplyEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommentReplyNotificationBuilder implements INotificationBuilder {
@@ -19,7 +23,7 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
 
   public async getEmailRecipientSets(
     payload: CommentReplyEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const commentReplyRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.SpaceCommentReply,
@@ -27,9 +31,10 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: commentReplyRecipients.emailRecipients,
+        inAppRecipients: commentReplyRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMENT_REPLY,
       },
     ];
@@ -65,6 +70,21 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommentReplyEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMENT_REPLY,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

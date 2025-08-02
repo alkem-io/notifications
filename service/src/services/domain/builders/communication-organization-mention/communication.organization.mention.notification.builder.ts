@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
-import { CommunicationOrganizationMentionEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
+import {
+  CommunicationOrganizationMentionEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunicationOrganizationMentionNotificationBuilder
@@ -22,7 +26,7 @@ export class CommunicationOrganizationMentionNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunicationOrganizationMentionEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const organizationMentionRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.OrganizationMentioned,
@@ -30,9 +34,10 @@ export class CommunicationOrganizationMentionNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: organizationMentionRecipients.emailRecipients,
+        inAppRecipients: organizationMentionRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_COMMENT_MENTION_ORGANIZATION,
       },
     ];
@@ -75,6 +80,21 @@ export class CommunicationOrganizationMentionNotificationBuilder
         url: eventPayload.commentOrigin.url,
         displayName: eventPayload.commentOrigin.displayName,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunicationOrganizationMentionEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

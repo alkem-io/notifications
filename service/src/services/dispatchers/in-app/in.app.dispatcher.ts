@@ -1,19 +1,13 @@
-import {
-  CompressedInAppNotificationPayload,
-  InAppNotificationPayload,
-  InAppNotificationPayloadBase,
-} from '@alkemio/notifications-lib';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { RMQConnectionError } from '@src/types';
-import { Dispatcher } from '../dispatcher';
 import { inAppClientProxyFactory } from './in.app.client.proxy.factory';
 import { LogContext } from '@common/enums';
 
 @Injectable()
-export class InAppDispatcher implements Dispatcher {
+export class InAppDispatcher {
   private readonly client: ClientProxy | undefined;
 
   constructor(
@@ -57,32 +51,32 @@ export class InAppDispatcher implements Dispatcher {
       );
   }
 
-  dispatch(data: InAppNotificationPayloadBase[]): void {
-    if (data.length === 0) {
-      this.logger.verbose?.(
-        'Zero in-app compressed notification payload were given for dispatch',
-        LogContext.IN_APP_DISPATCHER
-      );
-      return;
-    }
+  // dispatch(data: InAppNotificationPayloadBase[]): void {
+  //   if (data.length === 0) {
+  //     this.logger.verbose?.(
+  //       'Zero in-app compressed notification payload were given for dispatch',
+  //       LogContext.IN_APP_DISPATCHER
+  //     );
+  //     return;
+  //   }
 
-    if (this.logger.verbose) {
-      const receiversCount = data.reduce(
-        (acc, value) => acc + value.receiverIDs.length,
-        0
-      );
-      this.logger.verbose(
-        `Dispatching ${data.length} in-app compressed notification payloads for a total of ${receiversCount} receivers`,
-        LogContext.IN_APP_DISPATCHER
-      );
-    }
+  //   if (this.logger.verbose) {
+  //     const receiversCount = data.reduce(
+  //       (acc, value) => acc + value.receiverIDs.length,
+  //       0
+  //     );
+  //     this.logger.verbose(
+  //       `Dispatching ${data.length} in-app compressed notification payloads for a total of ${receiversCount} receivers`,
+  //       LogContext.IN_APP_DISPATCHER
+  //     );
+  //   }
 
-    try {
-      this.sendWithoutResponse(data);
-    } catch (e: any) {
-      throw e;
-    }
-  }
+  //   try {
+  //     this.sendWithoutResponse(data);
+  //   } catch (e: any) {
+  //     throw e;
+  //   }
+  // }
 
   /**
    * Sends a message to the queue without waiting for a response.

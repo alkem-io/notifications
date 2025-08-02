@@ -3,12 +3,16 @@ import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib';
-import { CollaborationPostCreatedEventPayload } from '@alkemio/notifications-lib';
+import {
+  CollaborationPostCreatedEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CollaborationPostCreatedNotificationBuilder
@@ -21,7 +25,7 @@ export class CollaborationPostCreatedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CollaborationPostCreatedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const postCreatedRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.SpacePostCreated,
       payload.space.id,
@@ -35,13 +39,15 @@ export class CollaborationPostCreatedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: postCreatedRecipients.emailRecipients,
+        inAppRecipients: postCreatedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_MEMBER,
       },
       {
         emailRecipients: postCreatedAdminRecipients.emailRecipients,
+        inAppRecipients: postCreatedAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_ADMIN,
       },
     ];
@@ -88,6 +94,21 @@ export class CollaborationPostCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CollaborationPostCreatedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COLLABORATION_POST_CREATED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.post.createdBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

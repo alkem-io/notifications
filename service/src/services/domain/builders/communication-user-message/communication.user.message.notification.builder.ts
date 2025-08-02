@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
-import { CommunicationUserMessageEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
+import {
+  CommunicationUserMessageEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunicationUserMessageNotificationBuilder
@@ -21,16 +25,17 @@ export class CommunicationUserMessageNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunicationUserMessageEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const userMessageRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.OrganizationMessageReceived,
       undefined, // User message doesn't have organization/space ID directly
       payload.triggeredBy
     );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: userMessageRecipients.emailRecipients,
+        inAppRecipients: userMessageRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_RECIPIENT,
       },
     ];
@@ -39,6 +44,7 @@ export class CommunicationUserMessageNotificationBuilder
     if (userMessageRecipients.triggeredBy) {
       emailRecipientsSets.push({
         emailRecipients: [userMessageRecipients.triggeredBy],
+        inAppRecipients: [userMessageRecipients.triggeredBy],
         emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_SENDER,
       });
     }
@@ -77,6 +83,21 @@ export class CommunicationUserMessageNotificationBuilder
       messageReceiver: {
         displayName: eventPayload.messageReceiver.profile.displayName,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunicationUserMessageEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNICATION_USER_MESSAGE,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

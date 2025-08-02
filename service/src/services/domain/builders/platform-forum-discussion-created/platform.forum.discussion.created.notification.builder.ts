@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { PlatformForumDiscussionCreatedEventPayload } from '@alkemio/notifications-lib';
 import { PlatformForumDiscussionCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import {
+  PlatformForumDiscussionCreatedEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class PlatformForumDiscussionCreatedNotificationBuilder
@@ -21,7 +25,7 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: PlatformForumDiscussionCreatedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const platformUsersRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformForumDiscussionCreated,
@@ -29,9 +33,10 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: platformUsersRecipients.emailRecipients,
+        inAppRecipients: platformUsersRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_CREATED,
       },
     ];
@@ -67,6 +72,21 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: PlatformForumDiscussionCreatedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.PLATFORM_FORUM_DISCUSSION_CREATED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

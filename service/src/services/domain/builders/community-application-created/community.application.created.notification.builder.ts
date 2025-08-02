@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
-import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import {
+  CommunityApplicationCreatedEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 
 @Injectable()
 export class CommunityApplicationCreatedNotificationBuilder
@@ -87,6 +91,21 @@ export class CommunityApplicationCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunityApplicationCreatedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNITY_APPLICATION_CREATED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

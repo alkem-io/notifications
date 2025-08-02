@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import {
-  NotificationEventType,
-  CommunicationOrganizationMessageEventPayload,
-} from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationOrganizationMessageEmailPayload } from '@common/email-template-payload';
+import {
+  CommunicationOrganizationMessageEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunicationOrganizationMessageNotificationBuilder
@@ -23,7 +25,7 @@ export class CommunicationOrganizationMessageNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunicationOrganizationMessageEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const organizationMessageRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.OrganizationMessageReceived,
@@ -31,9 +33,10 @@ export class CommunicationOrganizationMessageNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: organizationMessageRecipients.emailRecipients,
+        inAppRecipients: organizationMessageRecipients.inAppRecipients,
         emailTemplate:
           EmailTemplate.COMMUNICATION_ORGANIZATION_MESSAGE_RECIPIENT,
       },
@@ -41,6 +44,7 @@ export class CommunicationOrganizationMessageNotificationBuilder
     if (organizationMessageRecipients.triggeredBy) {
       emailRecipientsSets.push({
         emailRecipients: [organizationMessageRecipients.triggeredBy],
+        inAppRecipients: organizationMessageRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_ORGANIZATION_MESSAGE_SENDER,
       });
     }
@@ -78,6 +82,21 @@ export class CommunicationOrganizationMessageNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunicationOrganizationMessageEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

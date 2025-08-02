@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
@@ -10,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common/enums';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunityPlatformInvitationCreatedNotificationBuilder
@@ -29,7 +33,7 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunityPlatformInvitationCreatedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const platformInvitationRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.SpaceCommunityInvitationUser,
@@ -37,9 +41,10 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: platformInvitationRecipients.emailRecipients,
+        inAppRecipients: platformInvitationRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_PLATFORM_INVITATION_INVITEE,
       },
     ];
@@ -90,6 +95,21 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
         url: eventPayload.platform.url,
       },
       invitationsURL,
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunityPlatformInvitationCreatedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNITY_INVITATION_CREATED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

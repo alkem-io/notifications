@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import {
   CommunityInvitationVirtualContributorCreatedEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
@@ -10,7 +12,7 @@ import { EmailTemplate } from '@src/common/enums/email.template';
 import { CommunityInvitationVirtualContributorCreatedEmailPayload } from '@src/common/email-template-payload';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
@@ -23,7 +25,7 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunityInvitationVirtualContributorCreatedEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const virtualContributorInvitationRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.SpaceCommunityInvitationUser,
@@ -31,9 +33,10 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
         payload.triggeredBy
       );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: virtualContributorInvitationRecipients.emailRecipients,
+        inAppRecipients: virtualContributorInvitationRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_INVITATION_CREATED_VC_HOST,
       },
     ];
@@ -80,6 +83,21 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
       },
       welcomeMessage: eventPayload.welcomeMessage,
       spaceAdminURL: eventPayload.space.adminURL,
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunityInvitationVirtualContributorCreatedEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNITY_INVITATION_CREATED_VC,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }

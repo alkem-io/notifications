@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunicationUpdateEventPayload } from '@alkemio/notifications-lib';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  CommunicationUpdateEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
@@ -21,7 +25,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
 
   public async getEmailRecipientSets(
     payload: CommunicationUpdateEventPayload
-  ): Promise<EventEmailRecipients[]> {
+  ): Promise<EventRecipientsSet[]> {
     const updateRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.SpaceCommunicationUpdates,
       payload.space.id,
@@ -34,13 +38,15 @@ export class CommunicationUpdateCreatedNotificationBuilder
       payload.triggeredBy
     );
 
-    const emailRecipientsSets: EventEmailRecipients[] = [
+    const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: updateRecipients.emailRecipients,
+        inAppRecipients: updateRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
       },
       {
         emailRecipients: updateAdminRecipients.emailRecipients,
+        inAppRecipients: updateAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
       },
     ];
@@ -78,6 +84,21 @@ export class CommunicationUpdateCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  createInAppTemplatePayload(
+    eventPayload: CommunicationUpdateEventPayload,
+    category: InAppNotificationCategory,
+    receiverIDs: string[]
+  ): InAppNotificationPayloadBase {
+    return {
+      type: NotificationEventType.COMMUNICATION_UPDATE_SENT,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID: eventPayload.triggeredBy,
+      receiverID: receiverIDs[0], // For individual notifications
     };
   }
 }
