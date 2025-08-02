@@ -45,11 +45,11 @@ export class CommunicationUserMentionNotificationBuilder
       roleConfig,
       templateType: 'communication_user_mention',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunicationUserMentionEventPayload,
     recipient: User | PlatformUser,
     sender?: User

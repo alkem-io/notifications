@@ -8,16 +8,14 @@ import { NotificationTemplateType } from '@src/types/notification.template.type'
 import { BaseEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
-export class NotificationTemplateBuilder<
-  TEmailPayload extends BaseEmailPayload
-> {
+export class NotificationTemplateBuilder {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService
   ) {}
   async buildTemplate(
     template: string,
-    templatePayload: TEmailPayload
+    templatePayload: BaseEmailPayload
   ): Promise<NotificationTemplateType | undefined> {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires

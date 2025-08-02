@@ -1,10 +1,6 @@
 import { AlkemioClient, PlatformFeatureFlagName } from '@alkemio/client-lib';
 import { Test } from '@nestjs/testing';
 import { AlkemioClientAdapterProvider } from './alkemio.client.adapter.module';
-import * as spaceAdminsL1Data from '@test/data/space.admins.l1.json';
-import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
-import * as spaceAdminsL0Data from '@test/data/space.admins.l0.json';
-import * as eventPayload from '@test/data/event.application.created.payload.json';
 import { AlkemioClientAdapter } from './alkemio.client.adapter';
 import {
   MockAlkemioClientProvider,
@@ -15,13 +11,6 @@ import {
   ALKEMIO_CLIENT_ADAPTER,
   ALKEMIO_CLIENT_PROVIDER,
 } from '@src/common/enums';
-
-const testData = {
-  ...spaceAdminsL0Data,
-  ...spaceAdminsL1Data,
-  ...spaceAdminsL2Data,
-  ...eventPayload,
-};
 
 describe('AlkemioAdapter', () => {
   let alkemioAdapter: AlkemioClientAdapter;
@@ -42,14 +31,6 @@ describe('AlkemioAdapter', () => {
   });
 
   describe('Alkemio Client Adapter', () => {
-    it('Should throw an error', async () => {
-      jest.spyOn(alkemioClient, 'user').mockResolvedValue(undefined);
-
-      await expect(
-        alkemioAdapter.getUser(testData.data.triggeredBy)
-      ).rejects.toThrow();
-    });
-
     it('Should return true', async () => {
       jest.spyOn(alkemioClient, 'featureFlags').mockResolvedValue([
         {

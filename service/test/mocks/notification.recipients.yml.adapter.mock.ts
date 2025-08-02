@@ -9,6 +9,6 @@ export const MockNotificationRecipientsYmlProvider: ValueProvider<
   provide: NOTIFICATION_RECIPIENTS_YML_ADAPTER,
   useValue: {
     getTemplate: jest.fn(),
-    getCredentialCriteria: jest.fn(),
+    getNotificationEventRecipients: jest.fn(),
   },
 };

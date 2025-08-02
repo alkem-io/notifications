@@ -48,11 +48,11 @@ export class CommunicationUpdateCreatedNotificationBuilder
       roleConfig,
       templateType: 'communication_update_sent',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: CommunicationUpdateEventPayload,
     recipient: User | PlatformUser,
     sender?: User

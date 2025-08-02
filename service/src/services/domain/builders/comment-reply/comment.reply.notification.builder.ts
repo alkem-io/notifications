@@ -42,11 +42,11 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
       roleConfig,
       templateVariables,
       templateType: 'comment_reply',
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: CommentReplyEventPayload,
     recipient: User | PlatformUser,
     sender?: User

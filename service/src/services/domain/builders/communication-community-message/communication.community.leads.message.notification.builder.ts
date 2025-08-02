@@ -50,11 +50,11 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
       roleConfig,
       templateType: 'communication_community_leads_message',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunicationCommunityLeadsMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User

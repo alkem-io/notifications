@@ -47,11 +47,11 @@ export class CommunicationUserMessageNotificationBuilder
       roleConfig,
       templateType: 'communication_user_message',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunicationUserMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User

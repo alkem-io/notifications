@@ -47,11 +47,11 @@ export class CollaborationPostCreatedNotificationBuilder
       roleConfig,
       templateType: 'collaboration_post_created',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: CollaborationPostCreatedEventPayload,
     recipient: User | PlatformUser,
     creator?: User

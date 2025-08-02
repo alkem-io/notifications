@@ -42,11 +42,11 @@ export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
       roleConfig,
       templateType: 'space_created',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: SpaceCreatedEventPayload,
     recipient: User | PlatformUser
   ): SpaceCreatedEmailPayload {

@@ -56,12 +56,12 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
       roleConfig,
       templateType: 'community_platform_invitation_created',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
       platformUsers: platformUsers,
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunityPlatformInvitationCreatedEventPayload,
     recipient: User | PlatformUser,
     inviter?: User

@@ -41,11 +41,11 @@ export class PlatformGlobalRoleChangeNotificationBuilder
       roleConfig,
       templateType: 'platform_global_role_change',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: PlatformGlobalRoleChangeEventPayload,
     recipient: User | PlatformUser,
     user?: User

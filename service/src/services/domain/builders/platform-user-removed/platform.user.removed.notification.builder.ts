@@ -40,11 +40,11 @@ export class PlatformUserRemovedNotificationBuilder
       roleConfig,
       templateType: 'platform_user_removed',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: PlatformUserRemovedEventPayload,
     recipient: User | PlatformUser
   ): PlatformUserRemovedEmailPayload {

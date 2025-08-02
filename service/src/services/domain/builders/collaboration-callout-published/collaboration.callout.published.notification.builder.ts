@@ -42,11 +42,11 @@ export class CollaborationCalloutPublishedNotificationBuilder
       roleConfig,
       templateType: 'collaboration_callout_published',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: CollaborationCalloutPublishedEventPayload,
     recipient: User | PlatformUser,
     creator?: User

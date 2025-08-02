@@ -48,11 +48,11 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
       roleConfig,
       templateType: 'community_invitation_created_vc',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunityInvitationVirtualContributorCreatedEventPayload,
     recipient: User | PlatformUser,
     inviter?: User

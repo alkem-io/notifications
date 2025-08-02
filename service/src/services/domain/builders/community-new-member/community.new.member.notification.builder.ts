@@ -48,11 +48,11 @@ export class CommunityNewMemberNotificationBuilder
       roleConfig,
       templateType: 'community_new_member',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunityNewMemberPayload,
     recipient: User | PlatformUser
   ): CommunityNewMemberEmailPayload {

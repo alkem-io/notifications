@@ -45,11 +45,11 @@ export class CollaborationDiscussionCommentNotificationBuilder
       roleConfig,
       templateType: 'collaboration_discussion_comment',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: CollaborationDiscussionCommentEventPayload,
     recipient: User | PlatformUser,
     commentAuthor?: User

@@ -1,0 +1,26 @@
+query notificationRecipients($eventType: UserNotificationEvent!, $entityId: UUID, $triggeredBy: UUID) {
+  notificationRecipients(eventData: { eventType: $eventType, entityID: $entityId, triggeredBy: $triggeredBy }) {
+    emailRecipients {
+      ...userRecipient
+    }
+    inAppRecipients {
+      ...userRecipient
+    }
+    triggeredBy {
+      ...userRecipient
+    }
+  }
+}
+
+fragment userRecipient on User {
+  id
+  firstName
+  lastName
+  email
+  nameID
+  profile {
+    id
+    displayName
+    url
+  }
+}

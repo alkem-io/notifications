@@ -1,0 +1,10 @@
+query featureFlags {
+  platform {
+    configuration {
+      featureFlags {
+        name
+        enabled
+      }
+    }
+  }
+}

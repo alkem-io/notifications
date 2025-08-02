@@ -26,11 +26,13 @@ import {
   CommunityInvitationVirtualContributorCreatedEventPayload,
   CommunityNewMemberPayload,
   CommunityPlatformInvitationCreatedEventPayload,
+  NotificationEventType,
   PlatformForumDiscussionCommentEventPayload,
   PlatformForumDiscussionCreatedEventPayload,
   PlatformGlobalRoleChangeEventPayload,
   PlatformUserRegistrationEventPayload,
   PlatformUserRemovedEventPayload,
+  SpaceBaseEventPayload,
   SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
@@ -63,7 +65,9 @@ import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platfor
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
 import { ConfigService } from '@nestjs/config';
-
+import { EventRecipients } from '@src/core/models/EventRecipients';
+import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -95,14 +99,23 @@ export class NotificationService {
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
     private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
-    private communityInvitationvirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder,
-    private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder
+    private communityInvitationVirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder,
+    private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder,
+    private notificationTemplateBuilder: NotificationTemplateBuilder
   ) {}
+
+  private async processNotificationEvent(
+    payload: BaseEventPayload,
+    builder: INotificationBuilder
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    const emailRecipientsSets = await builder.getEmailRecipientSets(payload);
+    return this.buildAndSend2(emailRecipientsSets, payload, builder);
+  }
 
   async sendApplicationCreatedNotifications(
     payload: CommunityApplicationCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communityApplicationCreatedNotificationBuilder
     );
@@ -111,7 +124,7 @@ export class NotificationService {
   async sendInvitationCreatedNotifications(
     payload: CommunityInvitationCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communityInvitationCreatedNotificationBuilder
     );
@@ -122,7 +135,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.buildAndSend(
       payload,
-      this.communityInvitationvirtualContributorCreatedNotificationBuilder
+      this.communityInvitationVirtualContributorCreatedNotificationBuilder
     );
   }
 
@@ -300,7 +313,62 @@ export class NotificationService {
     return this.buildAndSend(payload, this.spaceCreatedNotificationBuilder);
   }
 
+  private async buildAndSend2(
+    emailRecipientsSets: EventEmailRecipients[],
+    payload: BaseEventPayload,
+    builder: INotificationBuilder
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    const notificationTemplatesToSend: Promise<
+      NotificationTemplateType | undefined
+    >[] = [];
+    for (const recipientSet of emailRecipientsSets) {
+      for (const recipient of recipientSet.emailRecipients) {
+        const templatePayload = builder.createEmailTemplatePayload(
+          payload,
+          recipient
+        );
+        const emailNotificationTemplate =
+          this.notificationTemplateBuilder.buildTemplate(
+            recipientSet.emailTemplate,
+            templatePayload
+          );
+
+        notificationTemplatesToSend.push(emailNotificationTemplate);
+      }
+    }
+    this.logger.verbose?.(
+      `[${NotificationEventType.COMMUNITY_APPLICATION_CREATED}] ...building notifications - completed`,
+      LogContext.NOTIFICATIONS
+    );
+
+    // filter all rejected notifications and log them
+    const notificationResults = await Promise.allSettled(
+      notificationTemplatesToSend
+    );
+    const notificationTemplateTypes: NotificationTemplateType[] = [];
+    notificationResults.forEach(notification => {
+      if (this.isPromiseFulfilledResult(notification)) {
+        const value = notification.value;
+        if (value) notificationTemplateTypes.push(value);
+      } else {
+        this.logger.warn(
+          `Filtering rejected notification content: ${notification.reason}`,
+          LogContext.NOTIFICATIONS
+        );
+      }
+    });
+    try {
+      return Promise.allSettled(
+        notificationResults.map(x => this.sendNotification(x))
+      );
+    } catch (error: any) {
+      this.logger.error(error.message);
+    }
+    return [];
+  }
+
   private async buildAndSend(
+    eventRecipients: EventRecipients,
     payload: BaseEventPayload,
     notificationBuilder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
@@ -386,4 +454,8 @@ export class NotificationService {
       }
     );
   }
+
+  private isPromiseFulfilledResult = (
+    result: PromiseSettledResult<any>
+  ): result is PromiseFulfilledResult<any> => result.status === 'fulfilled';
 }

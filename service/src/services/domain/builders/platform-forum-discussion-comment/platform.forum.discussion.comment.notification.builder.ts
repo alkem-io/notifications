@@ -43,11 +43,11 @@ export class PlatformForumDiscussionCommentNotificationBuilder
       roleConfig,
       templateType: 'platform_forum_discussion_comment',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: PlatformForumDiscussionCommentEventPayload,
     recipient: User | PlatformUser,
     sender?: User

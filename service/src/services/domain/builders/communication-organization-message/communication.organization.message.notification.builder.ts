@@ -51,11 +51,11 @@ export class CommunicationOrganizationMessageNotificationBuilder
       roleConfig,
       templateType: 'communication_organization_message',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunicationOrganizationMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User

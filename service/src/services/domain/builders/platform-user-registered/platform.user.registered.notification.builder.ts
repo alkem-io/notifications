@@ -45,11 +45,11 @@ export class PlatformUserRegisteredNotificationBuilder
       roleConfig,
       templateType: 'platform_user_registered',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: PlatformUserRegistrationEventPayload,
     recipient: User | PlatformUser,
     registrant?: User

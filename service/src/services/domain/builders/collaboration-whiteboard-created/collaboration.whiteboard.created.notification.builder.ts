@@ -47,11 +47,11 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
       roleConfig,
       templateType: 'collaboration_whiteboard_created',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: CollaborationWhiteboardCreatedEventPayload,
     recipient: User | PlatformUser,
     creator?: User

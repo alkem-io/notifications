@@ -44,11 +44,11 @@ export class CommunicationOrganizationMentionNotificationBuilder
       roleConfig,
       templateType: 'communication_organization_mention',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  private createTemplatePayload(
+  private createEmailTemplatePayload(
     eventPayload: CommunicationOrganizationMentionEventPayload,
     recipient: User | PlatformUser,
     sender?: User

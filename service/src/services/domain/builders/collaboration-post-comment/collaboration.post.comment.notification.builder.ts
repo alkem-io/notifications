@@ -42,11 +42,11 @@ export class CollaborationPostCommentNotificationBuilder
       roleConfig,
       templateType: 'collaboration_post_comment',
       templateVariables,
-      templatePayloadBuilderFn: this.createTemplatePayload.bind(this),
+      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
     });
   }
 
-  createTemplatePayload(
+  createEmailTemplatePayload(
     eventPayload: CollaborationPostCommentEventPayload,
     recipient: User | PlatformUser,
     commentAuthor?: User
