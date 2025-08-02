@@ -16,7 +16,7 @@ import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
-export class CommunicationOrganizationMentionNotificationBuilder
+export class OrganizationMentionNotificationBuilder
   implements INotificationBuilder
 {
   constructor(

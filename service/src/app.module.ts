@@ -18,24 +18,24 @@ import {
   PlatformUserRegisteredNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
   CommunicationUserMessageNotificationBuilder,
-  CommunicationOrganizationMessageNotificationBuilder,
+  OrganizationMessageNotificationBuilder,
   CommunicationCommunityLeadsMessageNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
-  CommunicationOrganizationMentionNotificationBuilder,
+  OrganizationMentionNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   CommunityApplicationCreatedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
-import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
-import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
-import { CommentReplyNotificationBuilder } from './services/domain/builders/comment-reply/comment.reply.notification.builder';
-import { CommunityPlatformInvitationCreatedNotificationBuilder } from './services/domain/builders/community-platform-invitation-created/community.platform.invitation.created.notification.builder';
+import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/space/collaboration.whiteboard.created.notification.builder';
+import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/space/collaboration.discussion.comment.notification.builder';
+import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/space/community.invitation.created.notification.builder';
+import { CommentReplyNotificationBuilder } from './services/domain/builders/space/comment.reply.notification.builder';
+import { CommunityPlatformInvitationCreatedNotificationBuilder } from './services/domain/builders/space/community.platform.invitation.created.notification.builder';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator/alkemio.url.generator.module';
-import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform-global-role-change/platform.global.role.change.notification.builder';
-import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
+import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform/platform.global.role.change.notification.builder';
+import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/space/community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
-import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/builders/platform-space-created/platform.space.created.notification.builder';
+import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/builders/platform/platform.space.created.notification.builder';
 
 import { InAppDispatcher } from './services/dispatchers/in-app';
 import { AlkemioUrlGenerator } from './services/application/alkemio-url-generator/alkemio.url.generator';
@@ -71,10 +71,10 @@ import { AlkemioUrlGenerator } from './services/application/alkemio-url-generato
     CommunicationUpdateCreatedNotificationBuilder,
     PlatformForumDiscussionCreatedNotificationBuilder,
     CommunicationUserMessageNotificationBuilder,
-    CommunicationOrganizationMessageNotificationBuilder,
+    OrganizationMessageNotificationBuilder,
     CommunicationCommunityLeadsMessageNotificationBuilder,
     CommunicationUserMentionNotificationBuilder,
-    CommunicationOrganizationMentionNotificationBuilder,
+    OrganizationMentionNotificationBuilder,
     CommunityNewMemberNotificationBuilder,
     CollaborationWhiteboardCreatedNotificationBuilder,
     CollaborationPostCreatedNotificationBuilder,

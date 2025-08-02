@@ -42,8 +42,8 @@ import {
   CollaborationPostCommentNotificationBuilder,
   CollaborationPostCreatedNotificationBuilder,
   CommunicationCommunityLeadsMessageNotificationBuilder,
-  CommunicationOrganizationMentionNotificationBuilder,
-  CommunicationOrganizationMessageNotificationBuilder,
+  OrganizationMentionNotificationBuilder,
+  OrganizationMessageNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
   CommunicationUserMessageNotificationBuilder,
@@ -56,13 +56,13 @@ import {
   PlatformUserRegisteredNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
-import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
-import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
-import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
-import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
-import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
-import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
-import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform-space-created/platform.space.created.notification.builder';
+import { PlatformUserRemovedNotificationBuilder } from '../builders/platform/platform.user.removed.notification.builder';
+import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/collaboration.whiteboard.created.notification.builder';
+import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/space/collaboration.discussion.comment.notification.builder';
+import { CommentReplyNotificationBuilder } from '../builders/space/comment.reply.notification.builder';
+import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
+import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/community.invitation.virtual.contributor.created.notification.builder';
+import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
@@ -85,10 +85,10 @@ export class NotificationService {
     private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: PlatformForumDiscussionCreatedNotificationBuilder,
     private communicationUserMessageNotificationBuilder: CommunicationUserMessageNotificationBuilder,
-    private communicationOrganizationMessageNotificationBuilder: CommunicationOrganizationMessageNotificationBuilder,
+    private communicationOrganizationMessageNotificationBuilder: OrganizationMessageNotificationBuilder,
     private communicationCommunityLeadsMessageNotificationBuilder: CommunicationCommunityLeadsMessageNotificationBuilder,
     private communicationUserMentionNotificationBuilder: CommunicationUserMentionNotificationBuilder,
-    private communicationOrganizationMentionNotificationBuilder: CommunicationOrganizationMentionNotificationBuilder,
+    private communicationOrganizationMentionNotificationBuilder: OrganizationMentionNotificationBuilder,
     private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
     private collaborationWhiteboardCreatedNotificationBuilder: CollaborationWhiteboardCreatedNotificationBuilder,
     private collaborationPostCreatedNotificationBuilder: CollaborationPostCreatedNotificationBuilder,
