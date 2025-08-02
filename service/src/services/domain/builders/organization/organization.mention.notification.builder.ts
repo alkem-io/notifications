@@ -38,7 +38,7 @@ export class OrganizationMentionNotificationBuilder
       {
         emailRecipients: organizationMentionRecipients.emailRecipients,
         inAppRecipients: organizationMentionRecipients.inAppRecipients,
-        emailTemplate: EmailTemplate.COMMUNICATION_COMMENT_MENTION_ORGANIZATION,
+        emailTemplate: EmailTemplate.ORGANIZATION_MENTION,
       },
     ];
     return emailRecipientsSets;

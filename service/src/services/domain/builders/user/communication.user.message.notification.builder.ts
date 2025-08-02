@@ -36,7 +36,7 @@ export class CommunicationUserMessageNotificationBuilder
       {
         emailRecipients: userMessageRecipients.emailRecipients,
         inAppRecipients: userMessageRecipients.inAppRecipients,
-        emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_RECIPIENT,
+        emailTemplate: EmailTemplate.USER_MESSAGE_RECIPIENT,
       },
     ];
 
@@ -45,7 +45,7 @@ export class CommunicationUserMessageNotificationBuilder
       emailRecipientsSets.push({
         emailRecipients: [userMessageRecipients.triggeredBy],
         inAppRecipients: [userMessageRecipients.triggeredBy],
-        emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_SENDER,
+        emailTemplate: EmailTemplate.USER_MESSAGE_SENDER,
       });
     }
 

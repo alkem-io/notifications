@@ -6,8 +6,8 @@ import { AppController } from './app.controller';
 import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
-import { AlkemioClientAdapterModule } from '@src/services';
-import { AlkemioClientModule, NotifmeModule } from '@src/services/external';
+import { AlkemioClientAdapter, AlkemioClientAdapterModule } from '@src/services';
+import { AlkemioClientModule, NotificationTemplateBuilder, NotifmeModule } from '@src/services/external';
 import {
   PlatformForumDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
@@ -39,6 +39,7 @@ import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/build
 
 import { InAppDispatcher } from './services/dispatchers/in-app';
 import { AlkemioUrlGenerator } from './services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClient } from '@alkemio/client-lib';
 
 @Module({
   imports: [
@@ -60,6 +61,8 @@ import { AlkemioUrlGenerator } from './services/application/alkemio-url-generato
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
+    AlkemioClientAdapter,
+    NotificationTemplateBuilder,
     AlkemioUrlGenerator,
     CommunityApplicationCreatedNotificationBuilder,
     CommunityInvitationCreatedNotificationBuilder,

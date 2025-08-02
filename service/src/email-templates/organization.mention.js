@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'communication.comment.mention.organization',
+  name: 'organization.mention',
   title:
     '{{commentSender.displayName}} mentioned {{mentionedOrganization.displayName}} in a comment on Alkemio',
   version: 1,

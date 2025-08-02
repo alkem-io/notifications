@@ -38,14 +38,14 @@ export class OrganizationMessageNotificationBuilder
         emailRecipients: organizationMessageRecipients.emailRecipients,
         inAppRecipients: organizationMessageRecipients.inAppRecipients,
         emailTemplate:
-          EmailTemplate.COMMUNICATION_ORGANIZATION_MESSAGE_RECIPIENT,
+          EmailTemplate.ORGANIZATION_MESSAGE_RECIPIENT,
       },
     ];
     if (organizationMessageRecipients.triggeredBy) {
       emailRecipientsSets.push({
         emailRecipients: [organizationMessageRecipients.triggeredBy],
         inAppRecipients: organizationMessageRecipients.inAppRecipients,
-        emailTemplate: EmailTemplate.COMMUNICATION_ORGANIZATION_MESSAGE_SENDER,
+        emailTemplate: EmailTemplate.ORGANIZATION_MESSAGE_SENDER,
       });
     }
     return emailRecipientsSets;
