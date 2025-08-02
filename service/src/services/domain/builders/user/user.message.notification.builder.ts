@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@core/contracts/notification.builder.inter
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
 import {
-  CommunicationUserMessageEventPayload,
+  UserMessageEventPayload,
   InAppNotificationCategory,
   InAppNotificationPayloadBase,
   NotificationEventType,
@@ -15,7 +15,7 @@ import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
-export class CommunicationUserMessageNotificationBuilder
+export class UserMessageNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
@@ -24,7 +24,7 @@ export class CommunicationUserMessageNotificationBuilder
   ) {}
 
   public async getEventRecipientSets(
-    payload: CommunicationUserMessageEventPayload
+    payload: UserMessageEventPayload
   ): Promise<EventRecipientsSet[]> {
     const userMessageRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.OrganizationMessageReceived,
@@ -53,13 +53,13 @@ export class CommunicationUserMessageNotificationBuilder
   }
 
   public createEmailTemplatePayload(
-    eventPayload: CommunicationUserMessageEventPayload,
+    eventPayload: UserMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User
   ): CommunicationUserMessageEmailPayload {
     if (!sender) {
       throw Error(
-        `Sender not provided for '${NotificationEventType.COMMUNICATION_USER_MESSAGE}' event`
+        `Sender not provided for '${NotificationEventType.USER_MESSAGE}' event`
       );
     }
     const notificationPreferenceURL =
@@ -87,16 +87,16 @@ export class CommunicationUserMessageNotificationBuilder
   }
 
   createInAppTemplatePayload(
-    eventPayload: CommunicationUserMessageEventPayload,
+    eventPayload: UserMessageEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMUNICATION_USER_MESSAGE,
+      type: NotificationEventType.USER_MESSAGE,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }

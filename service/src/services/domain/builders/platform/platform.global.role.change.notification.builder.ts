@@ -83,14 +83,14 @@ export class PlatformGlobalRoleChangeNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: PlatformGlobalRoleChangeEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }

@@ -99,14 +99,14 @@ export class CommunityApplicationCreatedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: CommunityApplicationCreatedEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COMMUNITY_APPLICATION_CREATED,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }

@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@core/contracts/notification.builder.inter
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
 import {
-  CommunicationOrganizationMentionEventPayload,
+  OrganizationMentionEventPayload,
   InAppNotificationCategory,
   InAppNotificationPayloadBase,
   NotificationEventType,
@@ -25,7 +25,7 @@ export class OrganizationMentionNotificationBuilder
   ) {}
 
   public async getEventRecipientSets(
-    payload: CommunicationOrganizationMentionEventPayload
+    payload: OrganizationMentionEventPayload
   ): Promise<EventRecipientsSet[]> {
     const organizationMentionRecipients =
       await this.alkemioClientAdapter.getRecipients(
@@ -45,13 +45,13 @@ export class OrganizationMentionNotificationBuilder
   }
 
   public createEmailTemplatePayload(
-    eventPayload: CommunicationOrganizationMentionEventPayload,
+    eventPayload: OrganizationMentionEventPayload,
     recipient: User | PlatformUser,
     sender?: User
   ): CommunicationOrganizationMentionEmailPayload {
     if (!sender) {
       throw Error(
-        `Sender not provided for '${NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION}' event`
+        `Sender not provided for '${NotificationEventType.ORGANIZATION_MENTION}' event`
       );
     }
     const notificationPreferenceURL =
@@ -84,16 +84,16 @@ export class OrganizationMentionNotificationBuilder
   }
 
   createInAppTemplatePayload(
-    eventPayload: CommunicationOrganizationMentionEventPayload,
+    eventPayload: OrganizationMentionEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION,
+      type: NotificationEventType.ORGANIZATION_MENTION,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID
+      receiverIDs
     };
   }
 }

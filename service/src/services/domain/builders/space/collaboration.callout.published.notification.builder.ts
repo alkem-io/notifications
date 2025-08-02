@@ -89,7 +89,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
   public createInAppTemplatePayload(
     eventPayload: CollaborationCalloutPublishedEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationCalloutPublishedPayload {
     const { triggeredBy: triggeredByID } = eventPayload;
 
@@ -98,7 +98,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
       triggeredAt: new Date(),
       category,
       triggeredByID,
-      receiverID: receiverID,
+      receiverIDs,
       spaceID: eventPayload.space.id,
       calloutID: eventPayload.callout.id,
     };

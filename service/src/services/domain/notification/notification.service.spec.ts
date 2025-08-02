@@ -13,7 +13,7 @@ import {
   PlatformUserRegisteredNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
   PlatformForumDiscussionCreatedNotificationBuilder,
-  CommunicationUserMessageNotificationBuilder,
+  UserMessageNotificationBuilder,
   OrganizationMessageNotificationBuilder,
   CommunicationCommunityLeadsMessageNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
@@ -72,10 +72,9 @@ describe('NotificationService', () => {
         PlatformUserRemovedNotificationBuilder,
         CommunicationUpdateCreatedNotificationBuilder,
         PlatformForumDiscussionCreatedNotificationBuilder,
-        CommunicationUserMessageNotificationBuilder,
-        OrganizationMessageNotificationBuilder,
         CommunicationCommunityLeadsMessageNotificationBuilder,
         CommunicationUserMentionNotificationBuilder,
+        OrganizationMessageNotificationBuilder,
         OrganizationMentionNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
         CollaborationWhiteboardCreatedNotificationBuilder,
@@ -91,6 +90,8 @@ describe('NotificationService', () => {
         MockAlkemioClientAdapterProvider,
         AlkemioUrlGenerator,
         PlatformSpaceCreatedNotificationBuilder,
+        UserMessageNotificationBuilder,
+
       ],
     }).compile();
 

@@ -6,7 +6,7 @@ import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import {
-  SpaceCreatedEventPayload,
+  PlatformSpaceCreatedEventPayload,
   InAppNotificationCategory,
   InAppNotificationPayloadBase,
   NotificationEventType,
@@ -24,7 +24,7 @@ export class PlatformSpaceCreatedNotificationBuilder
   ) {}
 
   public async getEventRecipientSets(
-    payload: SpaceCreatedEventPayload
+    payload: PlatformSpaceCreatedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const spaceCreatedRecipients =
       await this.alkemioClientAdapter.getRecipients(
@@ -44,7 +44,7 @@ export class PlatformSpaceCreatedNotificationBuilder
   }
 
   createEmailTemplatePayload(
-    eventPayload: SpaceCreatedEventPayload,
+    eventPayload: PlatformSpaceCreatedEventPayload,
     recipient: User | PlatformUser
   ): SpaceCreatedEmailPayload {
     const notificationPreferenceURL =
@@ -72,16 +72,16 @@ export class PlatformSpaceCreatedNotificationBuilder
   }
 
   createInAppTemplatePayload(
-    eventPayload: SpaceCreatedEventPayload,
+    eventPayload: PlatformSpaceCreatedEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.SPACE_CREATED,
+      type: NotificationEventType.PLATFORM_SPACE_CREATED,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }

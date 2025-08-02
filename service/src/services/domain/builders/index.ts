@@ -2,7 +2,7 @@ export * from './space/community.application.created.notification.builder';
 export * from './space/community.invitation.created.notification.builder';
 export * from './space/community.platform.invitation.created.notification.builder';
 export * from './space/communication.update.created.notification.builder';
-export * from './user/communication.user.message.notification.builder';
+export * from './user/user.message.notification.builder';
 export * from './organization/organization.message.notification.builder';
 export * from './space/communication.community.leads.message.notification.builder';
 export * from './space/communication.user.mention.notification.builder';

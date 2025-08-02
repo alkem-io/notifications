@@ -17,25 +17,25 @@ import {
   CollaborationPostCommentEventPayload,
   CollaborationPostCreatedEventPayload,
   PlatformForumDiscussionCreatedEventPayload,
-  CommunicationUserMessageEventPayload,
-  CommunicationOrganizationMessageEventPayload,
   CommunicationCommunityLeadsMessageEventPayload,
   CommunicationUserMentionEventPayload,
-  CommunicationOrganizationMentionEventPayload,
   CommunicationUpdateEventPayload,
   CommunityNewMemberPayload,
   PlatformGlobalRoleChangeEventPayload,
   PlatformUserRegistrationEventPayload,
+  PlatformSpaceCreatedEventPayload,
+  PlatformForumDiscussionCommentEventPayload,
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
   CollaborationWhiteboardCreatedEventPayload,
   CollaborationDiscussionCommentEventPayload,
-  PlatformForumDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
   CommentReplyEventPayload,
   CommunityInvitationVirtualContributorCreatedEventPayload,
   CommunityPlatformInvitationCreatedEventPayload,
-  SpaceCreatedEventPayload,
+  OrganizationMessageEventPayload,
+  OrganizationMentionEventPayload,
+  UserMessageEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -217,33 +217,31 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_USER_MESSAGE)
-  async sendCommunicationUserMessageNotifications(
-    @Payload() eventPayload: CommunicationUserMessageEventPayload,
+  @EventPattern(NotificationEventType.USER_MESSAGE)
+  async sendUserMessageNotifications(
+    @Payload() eventPayload: UserMessageEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationUserMessageNotification(
-        eventPayload
-      ),
-      NotificationEventType.COMMUNICATION_USER_MESSAGE
+      this.notificationService.sendUserMessageNotification(eventPayload),
+      NotificationEventType.USER_MESSAGE
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE)
+  @EventPattern(NotificationEventType.ORGANIZATION_MESSAGE)
   async sendCommunicationOrganizationMessageNotifications(
-    @Payload() eventPayload: CommunicationOrganizationMessageEventPayload,
+    @Payload() eventPayload: OrganizationMessageEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationOrganizationMessageNotification(
+      this.notificationService.sendOrganizationMessageNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE
+      NotificationEventType.ORGANIZATION_MESSAGE
     );
   }
 
@@ -277,18 +275,18 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION)
-  async sendCommunicationOrganizationMentionNotifications(
-    @Payload() eventPayload: CommunicationOrganizationMentionEventPayload,
+  @EventPattern(NotificationEventType.ORGANIZATION_MENTION)
+  async sendOrganizationMentionNotifications(
+    @Payload() eventPayload: OrganizationMentionEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationOrganizationMentionNotification(
+      this.notificationService.sendOrganizationMentionNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION
+      NotificationEventType.ORGANIZATION_MENTION
     );
   }
 
@@ -381,19 +379,19 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEventType.SPACE_CREATED)
-  async sendSpaceCreatedNotifications(
+  @EventPattern(NotificationEventType.PLATFORM_SPACE_CREATED)
+  async sendPlatformSpaceCreatedNotifications(
     @Payload()
-    eventPayload: SpaceCreatedEventPayload,
+    eventPayload: PlatformSpaceCreatedEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.buildAndSendSpaceCreatedNotification(
+      this.notificationService.sendPlatformSpaceCreatedNotification(
         eventPayload
       ),
-      NotificationEventType.SPACE_CREATED
+      NotificationEventType.PLATFORM_SPACE_CREATED
     );
   }
 

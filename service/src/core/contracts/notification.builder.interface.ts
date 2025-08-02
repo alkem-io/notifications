@@ -20,6 +20,6 @@ export interface INotificationBuilder {
   createInAppTemplatePayload(
     eventPayload: BaseEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase;
 }

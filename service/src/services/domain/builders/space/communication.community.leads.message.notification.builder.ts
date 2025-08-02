@@ -97,14 +97,14 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: CommunicationCommunityLeadsMessageEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }

@@ -78,14 +78,14 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: PlatformForumDiscussionCreatedEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.PLATFORM_FORUM_DISCUSSION_CREATED,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }

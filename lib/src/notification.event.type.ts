@@ -6,7 +6,6 @@ export enum NotificationEventType {
   COMMUNITY_INVITATION_CREATED_VC = 'communityInvitationCreatedVC',
   COMMUNICATION_COMMENT_SENT = 'communicationCommentSent',
   COMMUNICATION_UPDATE_SENT = 'communicationUpdateSent',
-  COMMUNICATION_USER_MESSAGE = 'communicationUserMessage',
   COMMUNICATION_COMMUNITY_MESSAGE = 'communicationCommunityMessage',
   COMMUNICATION_USER_MENTION = 'communicationUserMention',
   COLLABORATION_WHITEBOARD_CREATED = 'collaborationWhiteboardCreated',
@@ -24,4 +23,6 @@ export enum NotificationEventType {
   PLATFORM_FORUM_DISCUSSION_CREATED = 'platformForumDiscussionCreated',
   ORGANIZATION_MESSAGE = 'organizationMessage',
   ORGANIZATION_MENTION = 'organizationMention',
+  USER_MESSAGE = 'userMessage',
+
 }

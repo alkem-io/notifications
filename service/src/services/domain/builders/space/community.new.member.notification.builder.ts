@@ -93,7 +93,7 @@ export class CommunityNewMemberNotificationBuilder
   public createInAppTemplatePayload(
     eventPayload: CommunityNewMemberPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationCommunityNewMemberPayload {
     const { triggeredBy: triggeredByID } = eventPayload;
 
@@ -102,7 +102,7 @@ export class CommunityNewMemberNotificationBuilder
       triggeredAt: new Date(),
       category,
       triggeredByID,
-      receiverID,
+      receiverIDs,
       contributorType: eventPayload.contributor.type,
       newMemberID: eventPayload.contributor.id,
       spaceID: eventPayload.space.id,

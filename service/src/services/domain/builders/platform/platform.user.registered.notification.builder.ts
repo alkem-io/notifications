@@ -84,14 +84,14 @@ export class PlatformUserRegisteredNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: PlatformUserRegistrationEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.PLATFORM_USER_REGISTERED,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }

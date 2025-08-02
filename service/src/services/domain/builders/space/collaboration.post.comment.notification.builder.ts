@@ -87,7 +87,7 @@ export class CollaborationPostCommentNotificationBuilder
   public createInAppTemplatePayload(
     eventPayload: CollaborationPostCommentEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     const { triggeredBy: triggeredByID } = eventPayload;
 
@@ -96,7 +96,7 @@ export class CollaborationPostCommentNotificationBuilder
       triggeredAt: new Date(),
       category,
       triggeredByID,
-      receiverID,
+      receiverIDs,
     };
   }
 }

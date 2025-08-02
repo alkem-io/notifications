@@ -100,14 +100,14 @@ export class CollaborationPostCreatedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: CollaborationPostCreatedEventPayload,
     category: InAppNotificationCategory,
-    receiverID: string
+    receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COLLABORATION_POST_CREATED,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.post.createdBy,
-      receiverID,
+      receiverIDs,
     };
   }
 }
