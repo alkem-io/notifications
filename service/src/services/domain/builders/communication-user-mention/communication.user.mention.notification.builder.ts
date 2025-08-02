@@ -82,14 +82,13 @@ export class CommunicationUserMentionNotificationBuilder
   public createInAppTemplatePayload(
     eventPayload: CommunicationUserMentionEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
       type: NotificationEventType.COMMUNICATION_USER_MENTION,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID,
       receiverID: '',

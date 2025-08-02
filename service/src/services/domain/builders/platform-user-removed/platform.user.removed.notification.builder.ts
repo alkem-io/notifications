@@ -68,15 +68,14 @@ export class PlatformUserRemovedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: PlatformUserRemovedEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.PLATFORM_USER_REMOVED,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID: receiverIDs[0], // For individual notifications
+      receiverID,
     };
   }
 }

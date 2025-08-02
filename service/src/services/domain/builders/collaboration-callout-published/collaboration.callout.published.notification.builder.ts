@@ -88,17 +88,16 @@ export class CollaborationCalloutPublishedNotificationBuilder
   public createInAppTemplatePayload(
     eventPayload: CollaborationCalloutPublishedEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
       type: NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID,
-      receiverID: '',
+      receiverID: receiverID,
     };
   }
 }

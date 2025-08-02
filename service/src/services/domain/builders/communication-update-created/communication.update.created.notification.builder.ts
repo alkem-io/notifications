@@ -90,15 +90,14 @@ export class CommunicationUpdateCreatedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: CommunicationUpdateEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COMMUNICATION_UPDATE_SENT,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID: receiverIDs[0], // For individual notifications
+      receiverID,
     };
   }
 }

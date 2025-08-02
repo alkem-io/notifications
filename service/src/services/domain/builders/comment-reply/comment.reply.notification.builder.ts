@@ -76,15 +76,14 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
   createInAppTemplatePayload(
     eventPayload: CommentReplyEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COMMENT_REPLY,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID: receiverIDs[0], // For individual notifications
+      receiverID
     };
   }
 }

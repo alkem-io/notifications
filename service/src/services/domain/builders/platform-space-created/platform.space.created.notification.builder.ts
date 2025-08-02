@@ -74,15 +74,14 @@ export class PlatformSpaceCreatedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: SpaceCreatedEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.SPACE_CREATED,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID: receiverIDs[0], // For individual notifications
+      receiverID,
     };
   }
 }

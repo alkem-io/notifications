@@ -339,10 +339,7 @@ export class NotificationService {
         const templatePayload = builder.createInAppTemplatePayload(
           payload,
           InAppNotificationCategory.ADMIN, // TODO: purpose of this category should be clarified
-          // this is a temporary fix to ensure that the in-app notification is sent to the recipient
-          // we should use the correct category based on the event type
-          // for now, we are using ADMIN category to send it to the recipient
-          [recipient.id]
+          recipient.id
         );
         notifications.push(templatePayload);
       }

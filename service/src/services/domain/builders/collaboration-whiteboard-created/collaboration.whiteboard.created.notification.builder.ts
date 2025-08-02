@@ -89,15 +89,14 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: CollaborationWhiteboardCreatedEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COLLABORATION_WHITEBOARD_CREATED,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID: eventPayload.whiteboard.createdBy,
-      receiverID: receiverIDs[0], // For individual notifications
+      receiverID,
     };
   }
 }

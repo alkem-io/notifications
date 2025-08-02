@@ -89,15 +89,14 @@ export class CommunicationUserMessageNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: CommunicationUserMessageEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COMMUNICATION_USER_MESSAGE,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID: receiverIDs[0], // For individual notifications
+      receiverID,
     };
   }
 }

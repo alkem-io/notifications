@@ -89,15 +89,14 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
   createInAppTemplatePayload(
     eventPayload: CommunityInvitationVirtualContributorCreatedEventPayload,
     category: InAppNotificationCategory,
-    receiverIDs: string[]
+    receiverID: string
   ): InAppNotificationPayloadBase {
     return {
       type: NotificationEventType.COMMUNITY_INVITATION_CREATED_VC,
       triggeredAt: new Date(),
-      receiverIDs,
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverID: receiverIDs[0], // For individual notifications
+      receiverID,
     };
   }
 }
