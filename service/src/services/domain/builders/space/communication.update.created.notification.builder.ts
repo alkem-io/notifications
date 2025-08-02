@@ -13,6 +13,7 @@ import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-gener
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
@@ -84,6 +85,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+      message: convertMarkdownToHtml(eventPayload.message ?? ''),
     };
   }
 

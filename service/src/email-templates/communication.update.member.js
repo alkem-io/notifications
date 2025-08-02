@@ -13,8 +13,11 @@ module.exports = () => ({
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           <b>{{sender.firstName}}</b> shared a new update in <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a>.
-          <br><br>
-          <a class="action-button" href="{{space.url}}">HAVE A LOOK!</a><br><br>
+          <div>{{message | safe}}</div>
+          <div>
+            <a class="action-button" href="{{space.url}}">HAVE A LOOK!</a>
+          </div>
+          <em style="font-size: 13px;">Some content may not display fully in this email. Click above to see everything.</em>
         {% endblock %}
 
         ${templates.footerBlock}`,
