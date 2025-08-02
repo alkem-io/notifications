@@ -3,11 +3,12 @@ import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { CommunicationUserMessageEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunicationUserMessageNotificationBuilder
@@ -15,43 +16,37 @@ export class CommunicationUserMessageNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunicationUserMessageEventPayload,
-      CommunicationUserMessageEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunicationUserMessageEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const userMessageRecipients = await this.alkemioClientAdapter.getRecipients(
+      UserNotificationEvent.OrganizationMessageReceived,
+      undefined, // User message doesn't have organization/space ID directly
+      payload.triggeredBy
+    );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'receiver',
+        emailRecipients: userMessageRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_RECIPIENT,
-        checkIsUserMessagingAllowed: true,
-      },
-      {
-        role: 'sender',
-        emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_SENDER,
       },
     ];
 
-    const templateVariables = {
-      senderID: payload.triggeredBy,
-      receiverID: payload.messageReceiver.id,
-    };
+    // Add sender notification if available
+    if (userMessageRecipients.triggeredBy) {
+      emailRecipientsSets.push({
+        emailRecipients: [userMessageRecipients.triggeredBy],
+        emailTemplate: EmailTemplate.COMMUNICATION_USER_MESSAGE_SENDER,
+      });
+    }
 
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.triggeredBy,
-      roleConfig,
-      templateType: 'communication_user_message',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
-  private createEmailTemplatePayload(
+  public createEmailTemplatePayload(
     eventPayload: CommunicationUserMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User

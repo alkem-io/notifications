@@ -6,11 +6,11 @@ import {
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
-import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { PreferenceType } from '@alkemio/client-lib';
 import { CommunityInvitationVirtualContributorCreatedEmailPayload } from '@src/common/email-template-payload';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
@@ -18,41 +18,29 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunityInvitationVirtualContributorCreatedEventPayload,
-      CommunityInvitationVirtualContributorCreatedEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunityInvitationVirtualContributorCreatedEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const virtualContributorInvitationRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.SpaceCommunityInvitationUser,
+        payload.space.id,
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'host',
+        emailRecipients: virtualContributorInvitationRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_INVITATION_CREATED_VC_HOST,
-        preferenceType: PreferenceType.NotificationCommunityInvitationUser,
       },
     ];
-
-    const templateVariables = {
-      inviterID: payload.triggeredBy,
-      spaceID: payload.space.id,
-      hostUserID: payload.host.id,
-      hostOrganizationID: payload.host.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.triggeredBy,
-      roleConfig,
-      templateType: 'community_invitation_created_vc',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
-  private createEmailTemplatePayload(
+  public createEmailTemplatePayload(
     eventPayload: CommunityInvitationVirtualContributorCreatedEventPayload,
     recipient: User | PlatformUser,
     inviter?: User

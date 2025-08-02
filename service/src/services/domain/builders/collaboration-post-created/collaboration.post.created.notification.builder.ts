@@ -1,54 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { PreferenceType } from '@alkemio/client-lib';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
-import { NotificationTemplateType } from '@src/types';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { CollaborationPostCreatedEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CollaborationPostCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<
-      CollaborationPostCreatedEventPayload,
-      CollaborationPostCreatedEmailPayload
-    >,
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
-  build(
+
+  public async getEmailRecipientSets(
     payload: CollaborationPostCreatedEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const postCreatedRecipients = await this.alkemioClientAdapter.getRecipients(
+      UserNotificationEvent.SpacePostCreated,
+      payload.space.id,
+      payload.triggeredBy
+    );
+
+    const postCreatedAdminRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.SpacePostCreatedAdmin,
+        payload.space.id,
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'admin',
-        preferenceType: PreferenceType.NotificationPostCreatedAdmin,
-        emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_ADMIN,
-      },
-      {
-        role: 'user',
-        preferenceType: PreferenceType.NotificationPostCreated,
+        emailRecipients: postCreatedRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_MEMBER,
       },
+      {
+        emailRecipients: postCreatedAdminRecipients.emailRecipients,
+        emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_ADMIN,
+      },
     ];
-
-    const templateVariables = {
-      spaceID: payload.space.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.post.createdBy,
-      roleConfig,
-      templateType: 'collaboration_post_created',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
   createEmailTemplatePayload(

@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
+import {
+  CompressedInAppNotificationPayload,
+  InAppNotificationCategory,
+  InAppNotificationContributorMentionedPayload,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { CommunicationUserMentionEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationUserMentionEmailPayload } from '@common/email-template-payload';
-import { PreferenceType } from '@alkemio/client-lib';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunicationUserMentionNotificationBuilder
@@ -17,39 +22,28 @@ export class CommunicationUserMentionNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunicationUserMentionEventPayload,
-      CommunicationUserMentionEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunicationUserMentionEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const userMentionRecipients = await this.alkemioClientAdapter.getRecipients(
+      UserNotificationEvent.SpaceCommunicationMention,
+      undefined, // User mention doesn't have space ID directly
+      payload.triggeredBy
+    );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'receiver',
+        emailRecipients: userMentionRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_COMMENT_MENTION_USER,
-        preferenceType: PreferenceType.NotificationCommunicationMention,
       },
     ];
-
-    const templateVariables = {
-      senderID: payload.triggeredBy,
-      receiverID: payload.mentionedUser.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.triggeredBy,
-      roleConfig,
-      templateType: 'communication_user_mention',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
-  private createEmailTemplatePayload(
+  public createEmailTemplatePayload(
     eventPayload: CommunicationUserMentionEventPayload,
     recipient: User | PlatformUser,
     sender?: User
@@ -82,6 +76,34 @@ export class CommunicationUserMentionNotificationBuilder
         url: eventPayload.commentOrigin.url,
         displayName: eventPayload.commentOrigin.displayName,
       },
+    };
+  }
+
+  public createInAppNotificationPayload(
+    category: InAppNotificationCategory,
+    receiverIDs: string[],
+    event: CommunicationUserMentionEventPayload
+  ): CompressedInAppNotificationPayload<InAppNotificationContributorMentionedPayload> {
+    const {
+      triggeredBy: triggeredByID,
+      comment,
+      commentOrigin,
+      mentionedUser: { type: contributorType },
+    } = event;
+
+    return {
+      type: NotificationEventType.COMMUNICATION_USER_MENTION,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      triggeredByID,
+      comment,
+      commentOrigin: {
+        url: commentOrigin.url,
+        displayName: commentOrigin.displayName,
+      },
+      contributorType: contributorType,
+      receiverID: '',
     };
   }
 }

@@ -1,49 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { PreferenceType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { CollaborationPostCommentEventPayload } from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
-import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUser, User } from '@core/models';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CollaborationPostCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<
-      CollaborationPostCommentEventPayload,
-      CollaborationPostCommentEmailPayload
-    >,
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
-  build(
+
+  public async getEmailRecipientSets(
     payload: CollaborationPostCommentEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const commentRecipients = await this.alkemioClientAdapter.getRecipients(
+      UserNotificationEvent.SpacePostCommentCreated,
+      payload.space.id,
+      payload.triggeredBy
+    );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'owner',
-        preferenceType: PreferenceType.NotificationPostCommentCreated,
+        emailRecipients: commentRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_COMMENT_OWNER,
       },
     ];
-
-    const templateVariables = {
-      ownerID: payload.post.createdBy,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.comment.createdBy,
-      roleConfig,
-      templateType: 'collaboration_post_comment',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
   createEmailTemplatePayload(

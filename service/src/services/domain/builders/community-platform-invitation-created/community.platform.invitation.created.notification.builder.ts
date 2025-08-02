@@ -3,13 +3,14 @@ import { NotificationEventType } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
-import { NotificationBuilder, RoleConfig } from '../../../application';
-import { NotificationTemplateType } from '@src/types';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityPlatformInvitationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common/enums';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunityPlatformInvitationCreatedNotificationBuilder
@@ -18,50 +19,34 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
   invitationsPath: string;
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunityPlatformInvitationCreatedEventPayload,
-      CommunityPlatformInvitationCreatedEmailPayload
-    >,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {
     this.invitationsPath = this.configService.get(
       ConfigurationTypes.ALKEMIO
     )?.webclient_invitations_path;
   }
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunityPlatformInvitationCreatedEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const platformInvitationRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.SpaceCommunityInvitationUser,
+        payload.space.id,
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'invitee',
+        emailRecipients: platformInvitationRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_PLATFORM_INVITATION_INVITEE,
       },
     ];
-
-    const templateVariables = {
-      inviterID: payload.triggeredBy,
-      spaceID: payload.space.id,
-    };
-
-    const platformUsers = payload.invitees.map(invitee => ({
-      email: invitee.email,
-      firstName: '',
-      lastName: '',
-    }));
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.triggeredBy,
-      roleConfig,
-      templateType: 'community_platform_invitation_created',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-      platformUsers: platformUsers,
-    });
+    return emailRecipientsSets;
   }
 
-  private createEmailTemplatePayload(
+  public createEmailTemplatePayload(
     eventPayload: CommunityPlatformInvitationCreatedEventPayload,
     recipient: User | PlatformUser,
     inviter?: User

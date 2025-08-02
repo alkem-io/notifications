@@ -3,12 +3,12 @@ import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
-import { PreferenceType } from '@alkemio/client-lib';
-import { NotificationBuilder, RoleConfig } from '../../../application';
-import { NotificationTemplateType } from '@src/types';
 import { PlatformForumDiscussionCommentEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class PlatformForumDiscussionCommentNotificationBuilder
@@ -16,35 +16,26 @@ export class PlatformForumDiscussionCommentNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      PlatformForumDiscussionCommentEventPayload,
-      PlatformForumDiscussionCommentEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: PlatformForumDiscussionCommentEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const forumDiscussionCommentRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.PlatformForumDiscussionComment,
+        '',
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'discussionCreator',
+        emailRecipients: forumDiscussionCommentRecipients.emailRecipients,
         emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT,
-        preferenceType: PreferenceType.NotificationForumDiscussionComment,
       },
     ];
-
-    const templateVariables = {
-      discussionCreatorID: payload.discussion.createdBy,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.discussion.createdBy,
-      roleConfig,
-      templateType: 'platform_forum_discussion_comment',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
   createEmailTemplatePayload(

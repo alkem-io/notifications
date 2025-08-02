@@ -3,12 +3,12 @@ import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUpdateEventPayload } from '@alkemio/notifications-lib';
-import { PreferenceType } from '@alkemio/client-lib';
-import { NotificationBuilder, RoleConfig } from '../../../application';
-import { NotificationTemplateType } from '@src/types';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
@@ -16,40 +16,35 @@ export class CommunicationUpdateCreatedNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunicationUpdateEventPayload,
-      CommunicationUpdateCreatedEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunicationUpdateEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const updateRecipients = await this.alkemioClientAdapter.getRecipients(
+      UserNotificationEvent.SpaceCommunicationUpdates,
+      payload.space.id,
+      payload.triggeredBy
+    );
+
+    const updateAdminRecipients = await this.alkemioClientAdapter.getRecipients(
+      UserNotificationEvent.SpaceCommunicationUpdatesAdmin,
+      payload.space.id,
+      payload.triggeredBy
+    );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'admin',
-        emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
-        preferenceType: PreferenceType.NotificationCommunicationUpdateSentAdmin,
+        emailRecipients: updateRecipients.emailRecipients,
+        emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
       },
       {
-        role: 'member',
-        emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
-        preferenceType: PreferenceType.NotificationCommunicationUpdates,
+        emailRecipients: updateAdminRecipients.emailRecipients,
+        emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
       },
     ];
-
-    const templateVariables = {
-      spaceID: payload.space.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.update.createdBy,
-      roleConfig,
-      templateType: 'communication_update_sent',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
   createEmailTemplatePayload(

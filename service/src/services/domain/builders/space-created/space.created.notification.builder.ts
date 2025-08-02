@@ -1,49 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
-import { NotificationTemplateType } from '@src/types';
 import { SpaceCreatedEventPayload } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import {
-  AlkemioUrlGenerator,
-  NotificationBuilder,
-  RoleConfig,
-} from '../../../application';
+import { AlkemioUrlGenerator } from '../../../application';
 import { PlatformUser, User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class SpaceCreatedNotificationBuilder implements INotificationBuilder {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      SpaceCreatedEventPayload,
-      SpaceCreatedEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: SpaceCreatedEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const spaceCreatedRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.PlatformSpaceCreated,
+        '',
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'licenseManager',
+        emailRecipients: spaceCreatedRecipients.emailRecipients,
         emailTemplate: EmailTemplate.SPACE_CREATED_ADMIN,
       },
     ];
-
-    const templateVariables = {
-      spaceID: payload.space.id,
-      senderID: payload.triggeredBy,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: undefined,
-      roleConfig,
-      templateType: 'space_created',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
   createEmailTemplatePayload(

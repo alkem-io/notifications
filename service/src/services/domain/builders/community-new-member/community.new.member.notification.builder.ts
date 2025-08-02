@@ -1,13 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { PreferenceType, RoleSetContributorType } from '@alkemio/client-lib';
+import { RoleSetContributorType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
-import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { NotificationTemplateType } from '@src/types';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import { CommunityNewMemberPayload } from '@alkemio/notifications-lib';
+import {
+  CommunityNewMemberPayload,
+  CompressedInAppNotificationPayload,
+  InAppNotificationCategory,
+  InAppNotificationCommunityNewMemberPayload,
+  NotificationEventType,
+} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
@@ -15,44 +22,39 @@ export class CommunityNewMemberNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunityNewMemberPayload,
-      CommunityNewMemberEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunityNewMemberPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const newMemberRecipients = await this.alkemioClientAdapter.getRecipients(
+      UserNotificationEvent.SpaceCommunityNewMember,
+      payload.space.id,
+      payload.triggeredBy
+    );
+
+    const newMemberAdminRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.SpaceCommunityNewMemberAdmin,
+        payload.space.id,
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'admin',
-        preferenceType: PreferenceType.NotificationCommunityNewMemberAdmin,
-        emailTemplate: EmailTemplate.COMMUNITY_NEW_MEMBER_ADMIN,
-      },
-      {
-        role: 'member',
-        preferenceType: PreferenceType.NotificationCommunityNewMember,
+        emailRecipients: newMemberRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_NEW_MEMBER_MEMBER,
       },
+      {
+        emailRecipients: newMemberAdminRecipients.emailRecipients,
+        emailTemplate: EmailTemplate.COMMUNITY_NEW_MEMBER_ADMIN,
+      },
     ];
-
-    const templateVariables = {
-      memberID: payload.contributor.id,
-      spaceID: payload.space.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: undefined,
-      roleConfig,
-      templateType: 'community_new_member',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
-  private createEmailTemplatePayload(
+  public createEmailTemplatePayload(
     eventPayload: CommunityNewMemberPayload,
     recipient: User | PlatformUser
   ): CommunityNewMemberEmailPayload {
@@ -84,6 +86,30 @@ export class CommunityNewMemberNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
+    };
+  }
+
+  public createInAppNotificationPayload(
+    category: InAppNotificationCategory,
+    receiverIDs: string[],
+    event: CommunityNewMemberPayload
+  ): CompressedInAppNotificationPayload<InAppNotificationCommunityNewMemberPayload> {
+    const {
+      space: { id: spaceID },
+      triggeredBy: triggeredByID,
+      contributor: { id: newMemberID, type: contributorType },
+    } = event;
+
+    return {
+      type: NotificationEventType.COMMUNITY_NEW_MEMBER,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      spaceID,
+      triggeredByID,
+      newMemberID,
+      contributorType: contributorType,
+      receiverID: '',
     };
   }
 }

@@ -2,7 +2,6 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import {
-  ALKEMIO_CLIENT_ADAPTER,
   ConfigurationTypes,
   LogContext,
   NOTIFICATIONS_PROVIDER,
@@ -32,10 +31,8 @@ import {
   PlatformGlobalRoleChangeEventPayload,
   PlatformUserRegistrationEventPayload,
   PlatformUserRemovedEventPayload,
-  SpaceBaseEventPayload,
   SpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
-import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { INotificationBuilder } from '@core/contracts';
 import {
@@ -65,7 +62,6 @@ import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platfor
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
 import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
 import { ConfigService } from '@nestjs/config';
-import { EventRecipients } from '@src/core/models/EventRecipients';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 @Injectable()
@@ -73,8 +69,6 @@ export class NotificationService {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly alkemioClientAdapter: AlkemioClientAdapter,
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
     private readonly configService: ConfigService,
@@ -109,7 +103,7 @@ export class NotificationService {
     builder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const emailRecipientsSets = await builder.getEmailRecipientSets(payload);
-    return this.buildAndSend2(emailRecipientsSets, payload, builder);
+    return this.buildAndSend(emailRecipientsSets, payload, builder);
   }
 
   async sendApplicationCreatedNotifications(
@@ -133,7 +127,7 @@ export class NotificationService {
   async sendVirtualContributorInvitationCreatedNotifications(
     payload: CommunityInvitationVirtualContributorCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communityInvitationVirtualContributorCreatedNotificationBuilder
     );
@@ -142,7 +136,7 @@ export class NotificationService {
   async sendCommunityPlatformInvitationCreatedNotifications(
     payload: CommunityPlatformInvitationCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communityPlatformInvitationCreatedNotificationBuilder
     );
@@ -151,7 +145,7 @@ export class NotificationService {
   async sendCommunityNewMemberNotifications(
     payload: CommunityNewMemberPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communityNewMemberNotificationBuilder
     );
@@ -160,7 +154,7 @@ export class NotificationService {
   async sendGlobalRoleChangeNotification(
     payload: PlatformGlobalRoleChangeEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.platformGlobalRoleChangeNotificationBuilder
     );
@@ -169,7 +163,7 @@ export class NotificationService {
   async sendUserRegisteredNotification(
     payload: PlatformUserRegistrationEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.platformUserRegisteredNotificationBuilder
     );
@@ -178,7 +172,7 @@ export class NotificationService {
   async sendUserRemovedNotification(
     payload: PlatformUserRemovedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.platformUserRemovedNotificationBuilder
     );
@@ -187,7 +181,7 @@ export class NotificationService {
   async sendCommunicationUpdatedNotification(
     payload: CommunicationUpdateEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communicationUpdatedNotificationBuilder
     );
@@ -196,7 +190,7 @@ export class NotificationService {
   async sendPlatformForumDiscussionCreatedNotification(
     payload: PlatformForumDiscussionCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communicationDiscussionCreatedNotificationBuilder
     );
@@ -205,7 +199,7 @@ export class NotificationService {
   async sendPlatformForumDiscussionCommentNotification(
     payload: PlatformForumDiscussionCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.platformForumDiscussionCommentNotificationBuilder
     );
@@ -214,7 +208,7 @@ export class NotificationService {
   async sendCommunicationUserMessageNotification(
     payload: CommunicationUserMessageEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communicationUserMessageNotificationBuilder
     );
@@ -223,7 +217,7 @@ export class NotificationService {
   async sendCommunicationOrganizationMessageNotification(
     payload: CommunicationOrganizationMessageEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communicationOrganizationMessageNotificationBuilder
     );
@@ -232,7 +226,7 @@ export class NotificationService {
   async sendCommunicationCommunityLeadsMessageNotification(
     payload: CommunicationCommunityLeadsMessageEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communicationCommunityLeadsMessageNotificationBuilder
     );
@@ -241,7 +235,7 @@ export class NotificationService {
   async sendCommunicationUserMentionNotification(
     payload: CommunicationUserMentionEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communicationUserMentionNotificationBuilder
     );
@@ -250,7 +244,7 @@ export class NotificationService {
   async sendCommunicationOrganizationMentionNotification(
     payload: CommunicationOrganizationMentionEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.communicationOrganizationMentionNotificationBuilder
     );
@@ -259,7 +253,7 @@ export class NotificationService {
   async sendPostCreatedNotification(
     payload: CollaborationPostCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.collaborationPostCreatedNotificationBuilder
     );
@@ -268,7 +262,7 @@ export class NotificationService {
   async sendWhiteboardCreatedNotification(
     payload: CollaborationWhiteboardCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.collaborationWhiteboardCreatedNotificationBuilder
     );
@@ -277,7 +271,7 @@ export class NotificationService {
   async sendPostCommentCreatedNotification(
     payload: CollaborationPostCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.collaborationPostCommentNotificationBuilder
     );
@@ -286,7 +280,7 @@ export class NotificationService {
   async sendDiscussionCommentCreatedNotification(
     payload: CollaborationDiscussionCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.collaborationDiscussionCommentNotificationBuilder
     );
@@ -295,7 +289,7 @@ export class NotificationService {
   async sendCalloutPublishedNotification(
     payload: CollaborationCalloutPublishedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.collaborationCalloutPublishedNotificationBuilder
     );
@@ -304,16 +298,22 @@ export class NotificationService {
   async sendCommentReplyNotification(
     payload: CommentReplyEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(payload, this.commentReplyNotificationBuilder);
+    return this.processNotificationEvent(
+      payload,
+      this.commentReplyNotificationBuilder
+    );
   }
 
   async buildAndSendSpaceCreatedNotification(
     payload: SpaceCreatedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(payload, this.spaceCreatedNotificationBuilder);
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCreatedNotificationBuilder
+    );
   }
 
-  private async buildAndSend2(
+  private async buildAndSend(
     emailRecipientsSets: EventEmailRecipients[],
     payload: BaseEventPayload,
     builder: INotificationBuilder
@@ -359,35 +359,7 @@ export class NotificationService {
     });
     try {
       return Promise.allSettled(
-        notificationResults.map(x => this.sendNotification(x))
-      );
-    } catch (error: any) {
-      this.logger.error(error.message);
-    }
-    return [];
-  }
-
-  private async buildAndSend(
-    eventRecipients: EventRecipients,
-    payload: BaseEventPayload,
-    notificationBuilder: INotificationBuilder
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    const notificationsEnabled =
-      await this.alkemioClientAdapter.areNotificationsEnabled();
-    if (!notificationsEnabled) {
-      this.logger.verbose?.(
-        'Notification disabled. No notifications are going to be built.',
-        LogContext.NOTIFICATIONS
-      );
-
-      return [];
-    }
-
-    const notifications = await notificationBuilder.build(payload);
-
-    try {
-      return Promise.allSettled(
-        notifications.map(x => this.sendNotification(x))
+        notificationTemplateTypes.map(x => this.sendNotification(x))
       );
     } catch (error: any) {
       this.logger.error(error.message);

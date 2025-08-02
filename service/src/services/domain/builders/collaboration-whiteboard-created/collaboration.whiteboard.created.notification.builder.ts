@@ -1,54 +1,41 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { CollaborationWhiteboardCreatedEventPayload } from '@alkemio/notifications-lib';
-import { PreferenceType } from '@alkemio/client-lib';
-import { NotificationBuilder, RoleConfig } from '@src/services/application';
-import { NotificationTemplateType } from '@src/types';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationWhiteboardCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CollaborationWhiteboardCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor(
-    private readonly notificationBuilder: NotificationBuilder<
-      CollaborationWhiteboardCreatedEventPayload,
-      CollaborationWhiteboardCreatedEmailPayload
-    >,
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator
+    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
-  build(
+
+  public async getEmailRecipientSets(
     payload: CollaborationWhiteboardCreatedEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const whiteboardCreatedRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.SpaceWhiteboardCreated,
+        payload.space.id,
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'admin',
-        preferenceType: PreferenceType.NotificationWhiteboardCreated,
-        emailTemplate: EmailTemplate.COLLABORATION_WHITEBOARD_CREATED_ADMIN,
-      },
-      {
-        role: 'user',
-        preferenceType: PreferenceType.NotificationWhiteboardCreated,
+        emailRecipients: whiteboardCreatedRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_WHITEBOARD_CREATED_MEMBER,
       },
     ];
-
-    const templateVariables = {
-      spaceID: payload.space.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.whiteboard.createdBy,
-      roleConfig,
-      templateType: 'collaboration_whiteboard_created',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
   createEmailTemplatePayload(

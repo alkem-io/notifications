@@ -5,11 +5,12 @@ import {
 } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationCommunityLeadsMessageEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunicationCommunityLeadsMessageNotificationBuilder
@@ -17,44 +18,43 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunicationCommunityLeadsMessageEventPayload,
-      CommunicationCommunityLeadsMessageEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunicationCommunityLeadsMessageEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const communityLeadsMessageRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.SpaceCommunicationUpdates,
+        payload.space.id,
+        payload.triggeredBy
+      );
+
+    const communityLeadsMessageAdminRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.SpaceCommunicationUpdatesAdmin,
+        payload.space.id,
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'receiver',
-        emailTemplate:
-          EmailTemplate.COMMUNICATION_COMMUNITY_LEADS_MESSAGE_RECIPIENT,
-      },
-      {
-        role: 'sender',
+        emailRecipients: communityLeadsMessageRecipients.emailRecipients,
         emailTemplate:
           EmailTemplate.COMMUNICATION_COMMUNITY_LEADS_MESSAGE_SENDER,
       },
+
+      {
+        emailRecipients: communityLeadsMessageAdminRecipients.emailRecipients,
+        emailTemplate:
+          EmailTemplate.COMMUNICATION_COMMUNITY_LEADS_MESSAGE_RECIPIENT,
+      },
     ];
-
-    const templateVariables = {
-      senderID: payload.triggeredBy,
-      spaceID: payload.space.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.triggeredBy,
-      roleConfig,
-      templateType: 'communication_community_leads_message',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
-  private createEmailTemplatePayload(
+  public createEmailTemplatePayload(
     eventPayload: CommunicationCommunityLeadsMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User

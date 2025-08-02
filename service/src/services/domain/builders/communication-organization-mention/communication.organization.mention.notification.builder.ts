@@ -3,13 +3,13 @@ import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { CommunicationOrganizationMentionEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
-import { NotificationBuilder, RoleConfig } from '../../../application';
 import { EmailTemplate } from '@common/enums/email.template';
-import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
-import { PreferenceType } from '@alkemio/client-lib';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { AlkemioClientAdapter } from '../../../application';
+import { UserNotificationEvent } from '@src/generated/alkemio-schema';
+import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
 
 @Injectable()
 export class CommunicationOrganizationMentionNotificationBuilder
@@ -17,38 +17,29 @@ export class CommunicationOrganizationMentionNotificationBuilder
 {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly notificationBuilder: NotificationBuilder<
-      CommunicationOrganizationMentionEventPayload,
-      CommunicationOrganizationMentionEmailPayload
-    >
+    private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  build(
+  public async getEmailRecipientSets(
     payload: CommunicationOrganizationMentionEventPayload
-  ): Promise<NotificationTemplateType[]> {
-    const roleConfig: RoleConfig[] = [
+  ): Promise<EventEmailRecipients[]> {
+    const organizationMentionRecipients =
+      await this.alkemioClientAdapter.getRecipients(
+        UserNotificationEvent.OrganizationMentioned,
+        payload.mentionedOrganization.id,
+        payload.triggeredBy
+      );
+
+    const emailRecipientsSets: EventEmailRecipients[] = [
       {
-        role: 'receiver',
+        emailRecipients: organizationMentionRecipients.emailRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_COMMENT_MENTION_ORGANIZATION,
-        preferenceType: PreferenceType.NotificationOrganizationMention,
       },
     ];
-
-    const templateVariables = {
-      organizationID: payload.mentionedOrganization.id,
-    };
-
-    return this.notificationBuilder.build({
-      payload,
-      eventUserId: payload.triggeredBy,
-      roleConfig,
-      templateType: 'communication_organization_mention',
-      templateVariables,
-      templatePayloadBuilderFn: this.createEmailTemplatePayload.bind(this),
-    });
+    return emailRecipientsSets;
   }
 
-  private createEmailTemplatePayload(
+  public createEmailTemplatePayload(
     eventPayload: CommunicationOrganizationMentionEventPayload,
     recipient: User | PlatformUser,
     sender?: User
