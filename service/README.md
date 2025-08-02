@@ -34,7 +34,7 @@ npm run start:services
 
 To add a template:
 
-1. Create a file under src/templates.
+1. Create a file under src/email-templates.
 2. Copy welcome.js
 3. Change the template name
 4. Define your channels. You can use [this](https://github.com/notifme/notifme-template/tree/master/example) as an example.

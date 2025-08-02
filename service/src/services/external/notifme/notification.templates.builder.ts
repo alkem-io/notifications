@@ -20,7 +20,7 @@ export class NotificationTemplateBuilder {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const getRenderer = require('notifme-template');
-      const render = getRenderer(renderString, './src/templates');
+      const render = getRenderer(renderString, './src/email-templates');
       const result = await render(template, templatePayload, 'en-US');
       return result;
     } catch (error: any) {

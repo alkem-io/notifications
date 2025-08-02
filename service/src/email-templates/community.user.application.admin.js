@@ -10,7 +10,7 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject:
         '{{space.displayName}}: Application from {{applicant.firstName}}',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
           We have received an application from <b>{{applicant.name}}</b> for the {{space.type}} <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a>, of which you are an admin.
           <br>

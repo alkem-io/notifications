@@ -9,7 +9,7 @@ module.exports = () => ({
     email: {
       to: '{{recipient.email}}',
       subject: '{{member.type}} "{{member.name}}" joined {{space.displayName}}',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
           The {{member.type}} <b>{{member.name}}</b> has joined <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a>, of which you are an admin.
           <br><br>

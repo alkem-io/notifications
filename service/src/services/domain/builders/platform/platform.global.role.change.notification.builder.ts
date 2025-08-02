@@ -28,7 +28,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
   ): Promise<EventRecipientsSet[]> {
     const globalAdminRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.PlatformNewUserSignUp,
-      '',
+      undefined,
       payload.triggeredBy
     );
 

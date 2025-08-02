@@ -28,7 +28,7 @@ export class UserMessageNotificationBuilder
   ): Promise<EventRecipientsSet[]> {
     const userMessageRecipients = await this.alkemioClientAdapter.getRecipients(
       UserNotificationEvent.OrganizationMessageReceived,
-      undefined, // User message doesn't have organization/space ID directly
+      undefined,
       payload.triggeredBy
     );
 

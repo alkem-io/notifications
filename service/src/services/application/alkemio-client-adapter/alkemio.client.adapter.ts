@@ -5,6 +5,8 @@ import { IFeatureFlagProvider } from '@core/contracts';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Sdk, UserNotificationEvent } from '@src/generated/graphql';
 import { EventRecipients } from '@src/core/models/EventRecipients';
+import e from 'express';
+import { NotSupportedException } from '@src/common/exceptions/not.supported.exception';
 
 @Injectable()
 export class AlkemioClientAdapter implements IFeatureFlagProvider {
@@ -42,17 +44,28 @@ export class AlkemioClientAdapter implements IFeatureFlagProvider {
     entityId: string | undefined,
     triggeredBy?: string
   ): Promise<EventRecipients> {
+    if (entityId && entityId.length === 0) {
+      throw new NotSupportedException(
+        `Entity ID cannot be empty for event type: ${eventType}`,
+        LogContext.NOTIFICATIONS
+      );
+    }
+
     const recipients = await this.alkemioSdkClient.notificationRecipients({
       eventType,
       entityId,
       triggeredBy,
     });
+    const notificationRecipientsResponse =
+      recipients?.data?.notificationRecipients;
+    this.logger.verbose?.(
+      `Fetched recipients for event type: ${eventType}, entityId: ${entityId}, triggeredBy: ${triggeredBy}: emails recipients: ${notificationRecipientsResponse.emailRecipients.length}, in-app recipients: ${notificationRecipientsResponse.inAppRecipients.length}`,
+      LogContext.NOTIFICATIONS
+    );
     return {
-      emailRecipients:
-        recipients?.data?.notificationRecipients.emailRecipients || [],
-      inAppRecipients:
-        recipients?.data?.notificationRecipients.inAppRecipients || [],
-      triggeredBy: recipients?.data?.notificationRecipients.triggeredBy,
+      emailRecipients: notificationRecipientsResponse.emailRecipients || [],
+      inAppRecipients: notificationRecipientsResponse.inAppRecipients || [],
+      triggeredBy: notificationRecipientsResponse.triggeredBy,
     };
   }
 }

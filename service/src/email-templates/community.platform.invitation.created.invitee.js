@@ -9,7 +9,7 @@ module.exports = () => ({
     email: {
       to: '{{recipient.email}}',
       subject: 'Invitation to join {{space.displayName}}',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}    <p><a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited you to join {{space.displayName}} on Alkemio.</p><br>
           {% if welcomeMessage %}
           <p>

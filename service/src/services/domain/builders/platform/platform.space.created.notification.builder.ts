@@ -29,7 +29,7 @@ export class PlatformSpaceCreatedNotificationBuilder
     const spaceCreatedRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformSpaceCreated,
-        '',
+        undefined,
         payload.triggeredBy
       );
 

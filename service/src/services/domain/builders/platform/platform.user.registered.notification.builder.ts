@@ -29,7 +29,7 @@ export class PlatformUserRegisteredNotificationBuilder
     const platformAdminRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformNewUserSignUp,
-        '',
+        undefined,
         payload.triggeredBy
       );
 

@@ -9,7 +9,7 @@ module.exports = () => ({
     email: {
       to: '{{recipient.email}}',
       subject: 'Global role change on Alkemio: {{user.displayName}} - {{type}} - {{role}}',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
         {{user.displayName}} with the following email address: {{user.email}} - {{type}} - {{role}}.
         <br><br>

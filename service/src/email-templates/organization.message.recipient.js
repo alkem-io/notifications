@@ -11,7 +11,7 @@ module.exports = () => ({
       replyTo: '{{messageSender.email}}',
       subject:
         '{{messageSender.displayName}} sent a message to your organization',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           <b>{{messageSender.displayName}}</b> sent a message to {{organization.displayName}}:

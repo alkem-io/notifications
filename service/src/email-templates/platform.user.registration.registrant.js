@@ -9,7 +9,7 @@ module.exports = () => ({
     email: {
       to: '{{recipient.email}}',
       subject: 'Alkemio - Registration successful!',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}
     <p>Dear {{registrant.firstName}},</p>
     <p>Welcome aboard the Alkemio platform! Your account creation was a success — congratulations! 🎉 Perhaps you have already explored the platform, but let’s ensure you are fully equipped to dive in with the links below.</p><br>

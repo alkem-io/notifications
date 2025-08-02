@@ -14,7 +14,8 @@ export interface INotificationBuilder {
 
   createEmailTemplatePayload(
     eventPayload: BaseEventPayload,
-    recipient: User | PlatformUser
+    recipient: User | PlatformUser,
+    contributor?: User
   ): BaseEmailPayload;
 
   createInAppTemplatePayload(

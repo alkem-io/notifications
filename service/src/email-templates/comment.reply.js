@@ -9,7 +9,7 @@ module.exports = () => ({
     email: {
       to: '{{recipient.email}}',
       subject: 'You have a new reply on your comment, have a look!',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
         <b>{{reply.createdBy}}</b> replied to your comment on "<a style="color:#1d384a; text-decoration: none;" href={{comment.commentUrl}}>{{comment.commentOrigin}}</a>":

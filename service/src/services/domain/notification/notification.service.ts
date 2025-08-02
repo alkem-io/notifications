@@ -67,6 +67,8 @@ import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { InAppDispatcher } from '@src/services/dispatchers/in-app/in.app.dispatcher';
+import { User } from '@src/core/models';
+import e from 'express';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -104,13 +106,13 @@ export class NotificationService {
 
   private async processNotificationEvent(
     payload: BaseEventPayload,
-    builder: INotificationBuilder
+    builder: INotificationBuilder,
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const emailRecipientsSets = await builder.getEventRecipientSets(payload);
     const emailResults = await this.buildAndSendEmailNotifications(
       emailRecipientsSets,
       payload,
-      builder
+      builder,
     );
     const inAppNotificationResults = await this.buildAndSendInAppNotifications(
       emailRecipientsSets,
@@ -166,7 +168,7 @@ export class NotificationService {
     );
   }
 
-  async sendGlobalRoleChangeNotification(
+  async sendPlatformGlobalRoleChangeNotification(
     payload: PlatformGlobalRoleChangeEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
@@ -175,7 +177,7 @@ export class NotificationService {
     );
   }
 
-  async sendUserRegisteredNotification(
+  async sendPlatformUserRegisteredNotification(
     payload: PlatformUserRegistrationEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
@@ -184,7 +186,7 @@ export class NotificationService {
     );
   }
 
-  async sendUserRemovedNotification(
+  async sendPlatformUserRemovedNotification(
     payload: PlatformUserRemovedEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
@@ -193,12 +195,12 @@ export class NotificationService {
     );
   }
 
-  async sendCommunicationUpdatedNotification(
-    payload: CommunicationUpdateEventPayload
+  async sendPlatformForumDiscussionCommentNotification(
+    payload: PlatformForumDiscussionCommentEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.communicationUpdatedNotificationBuilder
+      this.platformForumDiscussionCommentNotificationBuilder
     );
   }
 
@@ -211,12 +213,12 @@ export class NotificationService {
     );
   }
 
-  async sendPlatformForumDiscussionCommentNotification(
-    payload: PlatformForumDiscussionCommentEventPayload
+  async sendCommunicationUpdatedNotification(
+    payload: CommunicationUpdateEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformForumDiscussionCommentNotificationBuilder
+      this.communicationUpdatedNotificationBuilder
     );
   }
 
@@ -238,6 +240,15 @@ export class NotificationService {
     );
   }
 
+  async sendOrganizationMentionNotification(
+    payload: OrganizationMentionEventPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.organizationMentionNotificationBuilder
+    );
+  }
+
   async sendCommunicationCommunityLeadsMessageNotification(
     payload: CommunicationCommunityLeadsMessageEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
@@ -253,15 +264,6 @@ export class NotificationService {
     return this.processNotificationEvent(
       payload,
       this.communicationUserMentionNotificationBuilder
-    );
-  }
-
-  async sendOrganizationMentionNotification(
-    payload: OrganizationMentionEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.processNotificationEvent(
-      payload,
-      this.organizationMentionNotificationBuilder
     );
   }
 
@@ -371,7 +373,8 @@ export class NotificationService {
       for (const recipient of recipientSet.emailRecipients) {
         const templatePayload = builder.createEmailTemplatePayload(
           payload,
-          recipient
+          recipient,
+          recipientSet.triggeredBy
         );
         const emailNotificationTemplate =
           this.notificationTemplateBuilder.buildTemplate(

@@ -11,7 +11,7 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       subject:
         '{{space.displayName}} - New comment received on your Post "{{post.displayName}}", have a look!',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           <b>{{createdBy.firstName}}</b> commented on your post titled: <a style="color:#1d384a; text-decoration: none;" href={{post.url}}>{{post.displayName}}</a>.

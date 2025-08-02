@@ -137,7 +137,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendGlobalRoleChangeNotification(eventPayload),
+      this.notificationService.sendPlatformGlobalRoleChangeNotification(eventPayload),
       NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE
     );
   }
@@ -151,7 +151,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendUserRegisteredNotification(eventPayload),
+      this.notificationService.sendPlatformUserRegisteredNotification(eventPayload),
       NotificationEventType.PLATFORM_USER_REGISTERED
     );
   }
@@ -165,7 +165,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendUserRemovedNotification(eventPayload),
+      this.notificationService.sendPlatformUserRemovedNotification(eventPayload),
       NotificationEventType.PLATFORM_USER_REMOVED
     );
   }

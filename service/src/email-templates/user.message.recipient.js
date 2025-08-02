@@ -10,7 +10,7 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       replyTo: '{{messageSender.email}}',
       subject: '{{messageSender.displayName}} sent you a message!',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
           {{messageSender.displayName}} has sent you a message:
           <br>

@@ -10,7 +10,7 @@ module.exports = () => ({
       to: '{{recipient.email}}',
       replyTo: '{{messageSender.email}}',
       subject: '{{messageSender.displayName}} sent a message to your community',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
 
           <b>{{messageSender.displayName}}</b> sent a message to you in your role as a lead of <a style="color:#1d384a; text-decoration: none;" href={{space.url}}>'{{space.displayName}}'</a>:

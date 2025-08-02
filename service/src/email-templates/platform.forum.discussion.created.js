@@ -9,7 +9,7 @@ module.exports = () => ({
     email: {
       to: '{{recipient.email}}',
       subject: 'New discussion created: {{discussion.displayName}}',
-      html: `{% extends "src/templates/_layouts/email-transactional.html" %}
+      html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
           <b>{{createdBy.firstName}}</b> created a new post in the Alkemio Forum: "<a style="color:#1d384a; text-decoration: none;" href="{{discussion.url}}">{{discussion.displayName}}</a>"
           <br><br>

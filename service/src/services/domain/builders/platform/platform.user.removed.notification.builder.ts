@@ -29,7 +29,7 @@ export class PlatformUserRemovedNotificationBuilder
     const platformAdminRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformUserProfileRemoved,
-        '',
+        undefined,
         payload.triggeredBy
       );
 

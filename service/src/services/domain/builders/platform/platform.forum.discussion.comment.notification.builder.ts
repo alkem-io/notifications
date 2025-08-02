@@ -29,7 +29,7 @@ export class PlatformForumDiscussionCommentNotificationBuilder
     const forumDiscussionCommentRecipients =
       await this.alkemioClientAdapter.getRecipients(
         UserNotificationEvent.PlatformForumDiscussionComment,
-        '',
+        undefined,
         payload.triggeredBy
       );
 
