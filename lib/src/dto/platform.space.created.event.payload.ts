@@ -1,6 +1,6 @@
 import { SpaceBaseEventPayload } from "./space.base.event.payload";
 
-export interface SpaceCreatedEventPayload extends SpaceBaseEventPayload {
+export interface PlatformSpaceCreatedEventPayload extends SpaceBaseEventPayload {
   created: number;
   sender: {
     name: string;

@@ -1,6 +1,6 @@
 import { BaseEventPayload } from './base.event.payload';
-import { ContributorPayload } from './contributor.payload';
-export interface CommunicationOrganizationMentionEventPayload
+import { ContributorPayload } from './type/contributor.payload';
+export interface OrganizationMentionEventPayload
   extends BaseEventPayload {
   comment: string;
   mentionedOrganization: ContributorPayload;
