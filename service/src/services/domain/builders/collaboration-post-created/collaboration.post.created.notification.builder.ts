@@ -10,7 +10,7 @@ import {
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
@@ -23,7 +23,7 @@ export class CollaborationPostCreatedNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CollaborationPostCreatedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const postCreatedRecipients = await this.alkemioClientAdapter.getRecipients(

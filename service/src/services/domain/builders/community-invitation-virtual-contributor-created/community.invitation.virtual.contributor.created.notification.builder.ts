@@ -10,7 +10,7 @@ import { PlatformUser, User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { CommunityInvitationVirtualContributorCreatedEmailPayload } from '@src/common/email-template-payload';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
@@ -23,7 +23,7 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CommunityInvitationVirtualContributorCreatedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const virtualContributorInvitationRecipients =

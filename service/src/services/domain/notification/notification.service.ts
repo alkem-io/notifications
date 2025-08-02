@@ -106,7 +106,7 @@ export class NotificationService {
     payload: BaseEventPayload,
     builder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    const emailRecipientsSets = await builder.getEmailRecipientSets(payload);
+    const emailRecipientsSets = await builder.getEventRecipientSets(payload);
     const emailResults = await this.buildAndSendEmailNotifications(
       emailRecipientsSets,
       payload,

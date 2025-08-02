@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@core/contracts/notification.builder.inter
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUserRemovedEmailPayload } from '@src/common/email-template-payload/platform.user.removed.email.payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import {
   PlatformUserRemovedEventPayload,
@@ -23,7 +23,7 @@ export class PlatformUserRemovedNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: PlatformUserRemovedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const platformAdminRecipients =

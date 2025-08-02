@@ -8,7 +8,7 @@ import { BaseEmailPayload } from '@src/common/email-template-payload';
 import { EventRecipientsSet } from '../models/EvenRecipientsSet';
 
 export interface INotificationBuilder {
-  getEmailRecipientSets(
+  getEventRecipientSets(
     payload: BaseEventPayload
   ): Promise<EventRecipientsSet[]>;
 

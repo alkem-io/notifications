@@ -1,6 +1,6 @@
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -23,7 +23,7 @@ export class CommunityApplicationCreatedNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CommunityApplicationCreatedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const applicationSubmittedRecipients =

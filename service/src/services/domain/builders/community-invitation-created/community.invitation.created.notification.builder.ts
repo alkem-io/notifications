@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityInvitationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -31,7 +31,7 @@ export class CommunityInvitationCreatedNotificationBuilder
     )?.webclient_invitations_path;
   }
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CommunityInvitationCreatedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const applicationSubmittedRecipients =

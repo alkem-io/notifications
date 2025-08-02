@@ -10,7 +10,7 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { PlatformGlobalRoleChangeEmailPayload } from '@src/common/email-template-payload/platform.global.role.change.email.payload';
 import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
@@ -23,7 +23,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: PlatformGlobalRoleChangeEventPayload
   ): Promise<EventRecipientsSet[]> {
     const globalAdminRecipients = await this.alkemioClientAdapter.getRecipients(

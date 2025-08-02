@@ -26,7 +26,6 @@ import {
   CommunityApplicationCreatedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { AlkemioUrlGenerator } from './services/application';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/community-invitation-created/community.invitation.created.notification.builder';
@@ -38,7 +37,8 @@ import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from 
 import { HealthController } from './health.controller';
 import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/builders/platform-space-created/platform.space.created.notification.builder';
 
-import { InAppDispatcher } from './services/dispatchers';
+import { InAppDispatcher } from './services/dispatchers/in-app';
+import { AlkemioUrlGenerator } from './services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Module({
   imports: [

@@ -12,7 +12,7 @@ import { CommunityPlatformInvitationCreatedEmailPayload } from '@common/email-te
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common/enums';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
@@ -31,7 +31,7 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
     )?.webclient_invitations_path;
   }
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CommunityPlatformInvitationCreatedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const platformInvitationRecipients =

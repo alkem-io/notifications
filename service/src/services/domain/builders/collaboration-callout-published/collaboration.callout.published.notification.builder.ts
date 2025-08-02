@@ -10,9 +10,9 @@ import {
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '../../../application';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 
 @Injectable()
 export class CollaborationCalloutPublishedNotificationBuilder
@@ -23,7 +23,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CollaborationCalloutPublishedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const calloutPublishedRecipients =

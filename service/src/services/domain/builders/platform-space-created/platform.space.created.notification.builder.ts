@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { AlkemioUrlGenerator } from '../../../application';
 import { PlatformUser, User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import {
   SpaceCreatedEventPayload,
@@ -13,6 +12,7 @@ import {
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class PlatformSpaceCreatedNotificationBuilder
@@ -23,7 +23,7 @@ export class PlatformSpaceCreatedNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: SpaceCreatedEventPayload
   ): Promise<EventRecipientsSet[]> {
     const spaceCreatedRecipients =

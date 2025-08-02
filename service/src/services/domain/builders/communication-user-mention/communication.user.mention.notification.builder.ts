@@ -11,7 +11,7 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUserMentionEmailPayload } from '@common/email-template-payload';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
@@ -24,7 +24,7 @@ export class CommunicationUserMentionNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CommunicationUserMentionEventPayload
   ): Promise<EventRecipientsSet[]> {
     const userMentionRecipients = await this.alkemioClientAdapter.getRecipients(

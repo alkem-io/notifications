@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@core/contracts/notification.builder.inter
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import {
   PlatformUserRegistrationEventPayload,
@@ -23,7 +23,7 @@ export class PlatformUserRegisteredNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: PlatformUserRegistrationEventPayload
   ): Promise<EventRecipientsSet[]> {
     const platformAdminRecipients =

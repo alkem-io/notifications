@@ -10,7 +10,7 @@ import { CollaborationPostCommentEmailPayload } from '@common/email-template-pay
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUser, User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '../../../application';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
@@ -23,7 +23,7 @@ export class CollaborationPostCommentNotificationBuilder
     private readonly alkemioClientAdapter: AlkemioClientAdapter
   ) {}
 
-  public async getEmailRecipientSets(
+  public async getEventRecipientSets(
     payload: CollaborationPostCommentEventPayload
   ): Promise<EventRecipientsSet[]> {
     const commentRecipients = await this.alkemioClientAdapter.getRecipients(
