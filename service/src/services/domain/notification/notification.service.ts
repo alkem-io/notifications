@@ -25,6 +25,8 @@ import {
   CommunityInvitationVirtualContributorCreatedEventPayload,
   CommunityNewMemberPayload,
   CommunityPlatformInvitationCreatedEventPayload,
+  CompressedInAppNotificationPayload,
+  InAppNotificationPayloadBase,
   NotificationEventType,
   PlatformForumDiscussionCommentEventPayload,
   PlatformForumDiscussionCreatedEventPayload,
@@ -64,6 +66,8 @@ import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { EventEmailRecipients } from '@src/core/models/EventEmailRecipients';
+import { InAppDispatcher } from '@src/services/dispatchers/in-app/in.app.dispatcher';
+import { InAppBuilderUtil } from '@src/services/builders/utils/in.app.builder.util';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -95,7 +99,9 @@ export class NotificationService {
     private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
     private communityInvitationVirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder,
     private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder,
-    private notificationTemplateBuilder: NotificationTemplateBuilder
+    private notificationTemplateBuilder: NotificationTemplateBuilder,
+    private readonly inAppDispatcher: InAppDispatcher,
+    private readonly inAppBuilderUtil: InAppBuilderUtil
   ) {}
 
   private async processNotificationEvent(
@@ -103,7 +109,18 @@ export class NotificationService {
     builder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const emailRecipientsSets = await builder.getEmailRecipientSets(payload);
-    return this.buildAndSend(emailRecipientsSets, payload, builder);
+    const emailResults = await this.buildAndSendEmailNotifications(
+      emailRecipientsSets,
+      payload,
+      builder
+    );
+    const inAppNotificationResults = await this.buildAndSendInAppNotifications(
+      emailRecipientsSets,
+      payload,
+      builder
+    );
+
+    return [...emailResults, ...inAppNotificationResults];
   }
 
   async sendApplicationCreatedNotifications(
@@ -313,7 +330,35 @@ export class NotificationService {
     );
   }
 
-  private async buildAndSend(
+  private async buildAndSendInAppNotifications(
+    emailRecipientsSets: EventEmailRecipients[],
+    payload: BaseEventPayload,
+    builder: INotificationBuilder
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    const notifications: InAppNotificationPayloadBase[] = [];
+    for (const recipientSet of emailRecipientsSets) {
+      for (const recipient of recipientSet.emailRecipients) {
+        const templatePayload = builder.createInAppTemplatePayload(
+          payload,
+          recipient
+        );
+        notifications.push(templatePayload);
+      }
+    }
+
+    try {
+      this.inAppDispatcher.sendWithoutResponse(notifications);
+    } catch (e: any) {
+      this.logger.error(
+        `${builder.constructor.name} failed to dispatch in-app notification`,
+        e?.stack
+      );
+    }
+    // TODO: get the right results from the dispatcher
+    return [];
+  }
+
+  private async buildAndSendEmailNotifications(
     emailRecipientsSets: EventEmailRecipients[],
     payload: BaseEventPayload,
     builder: INotificationBuilder

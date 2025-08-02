@@ -4,6 +4,7 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUser, User } from '@core/models';
 import {
   CollaborationDiscussionCommentEventPayload,
+  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { CollaborationDiscussionCommentEmailPayload } from '@src/common/email-template-payload';
@@ -78,5 +79,21 @@ export class CollaborationDiscussionCommentNotificationBuilder
       message: eventPayload.comment.message,
     };
     return result;
+  }
+
+  public createInAppTemplatePayload(
+    eventPayload: CollaborationDiscussionCommentEventPayload,
+    recipient: User
+  ): InAppNotificationPayloadBase {
+    const { callout, space } = eventPayload;
+
+    return {
+      type: NotificationEventType.COLLABORATION_DISCUSSION_COMMENT,
+      triggeredByID: eventPayload.triggeredBy,
+      category: eventPayload.,
+      calloutID: callout.id,
+      spaceID: space.id,
+      receiverIDs: [recipient.id],
+    };
   }
 }

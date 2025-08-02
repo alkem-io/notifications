@@ -2,7 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
+import {
+  CollaborationCalloutPublishedEventPayload,
+  CompressedInAppNotificationPayload,
+  InAppNotificationCalloutPublishedPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+} from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -78,5 +84,28 @@ export class CollaborationCalloutPublishedNotificationBuilder
       },
     };
     return result;
+  }
+
+  public createInAppNotificationPayload(
+    category: InAppNotificationCategory,
+    receiverIDs: string[],
+    event: CollaborationCalloutPublishedEventPayload
+  ): InAppNotificationPayloadBase {
+    const {
+      callout: { id: calloutID },
+      space: { id: spaceID },
+      triggeredBy: triggeredByID,
+    } = event;
+
+    return {
+      type: NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED,
+      triggeredAt: new Date(),
+      receiverIDs,
+      category,
+      calloutID,
+      spaceID,
+      triggeredByID,
+      receiverID: '',
+    };
   }
 }

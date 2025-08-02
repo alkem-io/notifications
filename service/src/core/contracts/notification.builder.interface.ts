@@ -1,4 +1,8 @@
-import { BaseEventPayload } from '@alkemio/notifications-lib';
+import {
+  BaseEventPayload,
+  InAppNotificationCategory,
+  InAppNotificationPayloadBase,
+} from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '../models/user';
 import { BaseEmailPayload } from '@src/common/email-template-payload';
 import { EventEmailRecipients } from '../models/EventEmailRecipients';
@@ -12,4 +16,10 @@ export interface INotificationBuilder {
     eventPayload: BaseEventPayload,
     recipient: User | PlatformUser
   ): BaseEmailPayload;
+
+  createInAppTemplatePayload(
+    category: InAppNotificationCategory,
+    receiverIDs: string[],
+    eventPayload: BaseEventPayload
+  ): InAppNotificationPayloadBase;
 }

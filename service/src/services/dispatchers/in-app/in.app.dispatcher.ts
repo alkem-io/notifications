@@ -1,6 +1,7 @@
 import {
   CompressedInAppNotificationPayload,
   InAppNotificationPayload,
+  InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -56,9 +57,7 @@ export class InAppDispatcher implements Dispatcher {
       );
   }
 
-  dispatch(
-    data: CompressedInAppNotificationPayload<InAppNotificationPayload>[]
-  ): void {
+  dispatch(data: InAppNotificationPayloadBase[]): void {
     if (data.length === 0) {
       this.logger.verbose?.(
         'Zero in-app compressed notification payload were given for dispatch',
@@ -90,7 +89,7 @@ export class InAppDispatcher implements Dispatcher {
    * Each consumer needs to manually handle failures, returning the proper type.
    * @param data
    */
-  private sendWithoutResponse = <TInput>(data: TInput): void | never => {
+  public sendWithoutResponse = <TInput>(data: TInput): void | never => {
     const pattern = 'in-app-notification-incoming';
     if (!this.client) {
       throw new Error('Connection was not established. Sending failed.');
