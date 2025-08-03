@@ -6,7 +6,6 @@ import {
   CollaborationCalloutPublishedEventPayload,
   InAppNotificationCalloutPublishedPayload,
   InAppNotificationCategory,
-  InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
@@ -39,7 +38,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
         emailRecipients: calloutPublishedRecipients.emailRecipients,
         inAppRecipients: calloutPublishedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_CALLOUT_PUBLISHED_MEMBER,
-        triggeredBy: calloutPublishedRecipients.triggeredBy
+        triggeredBy: calloutPublishedRecipients.triggeredBy,
       },
     ];
     return emailRecipientsSets;

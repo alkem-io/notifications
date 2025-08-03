@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
   InAppNotificationCategory,
   InAppNotificationContributorMentionedPayload,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';

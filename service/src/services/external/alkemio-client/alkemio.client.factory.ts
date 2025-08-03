@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { GraphQLClient } from 'graphql-request';
 import { AlkemioClient } from '@alkemio/client-lib';
 import { LoggerService } from '@nestjs/common';

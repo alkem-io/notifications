@@ -9,8 +9,6 @@ export const MockAlkemioClientAdapterProvider: ValueProvider<
   provide: ALKEMIO_CLIENT_ADAPTER,
   useValue: {
     areNotificationsEnabled: jest.fn(),
-    getUser: jest.fn(),
-    getUsersMatchingCredentialCriteria: jest.fn(),
-    getUniqueUsersMatchingCredentialCriteria: jest.fn(),
+    getRecipients: jest.fn(),
   },
 };
