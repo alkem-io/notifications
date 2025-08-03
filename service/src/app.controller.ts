@@ -9,7 +9,6 @@ import {
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
 import { NotificationStatus } from 'notifme-sdk';
-import { IFeatureFlagProvider } from '@core/contracts';
 import {
   NotificationEventType,
   PlatformUserRemovedEventPayload,
@@ -39,6 +38,7 @@ import {
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
+import { AlkemioClientAdapter } from './services';
 
 @Controller()
 export class AppController {
@@ -47,7 +47,7 @@ export class AppController {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly featureFlagProvider: IFeatureFlagProvider
+    private readonly featureFlagProvider: AlkemioClientAdapter
   ) {}
 
   @EventPattern(NotificationEventType.COMMUNITY_APPLICATION_CREATED)

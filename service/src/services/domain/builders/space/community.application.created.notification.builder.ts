@@ -1,4 +1,3 @@
-import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -13,6 +12,7 @@ import {
 } from '@alkemio/notifications-lib';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { Injectable } from '@nestjs/common';
+import { INotificationBuilder } from '../notification.builder.interface';
 
 @Injectable()
 export class CommunityApplicationCreatedNotificationBuilder

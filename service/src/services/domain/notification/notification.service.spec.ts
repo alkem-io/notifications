@@ -36,13 +36,15 @@ import {
   MockNotifmeProvider,
   MockWinstonProvider,
 } from '@test/mocks';
-import { AlkemioUrlGenerator } from '@src/services/application';
 import { NotificationTemplateType } from '@src/types';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/collaboration.whiteboard.created.notification.builder';
 import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/space/collaboration.discussion.comment.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/community.invitation.virtual.contributor.created.notification.builder';
 import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
+import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { NotificationBuilder } from '@src/core/contracts/notification.builder';
+import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 
 const testData = {
   ...spaceAdminsL0Data,
@@ -56,6 +58,8 @@ describe('NotificationService', () => {
   let notificationService: NotificationService;
   let notifmeService: NotifmeSdk;
   let configService: any;
+  let alkemioClientAdapter: AlkemioClientAdapter;
+  let notificationBuilder: NotificationBuilder;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -91,12 +95,14 @@ describe('NotificationService', () => {
         AlkemioUrlGenerator,
         PlatformSpaceCreatedNotificationBuilder,
         UserMessageNotificationBuilder,
-
       ],
     }).compile();
 
     notificationService =
       moduleRef.get<NotificationService>(NotificationService);
+    alkemioClientAdapter = moduleRef.get<AlkemioClientAdapter>(
+      ALKEMIO_CLIENT_ADAPTER
+    );
 
     notifmeService = moduleRef.get(NOTIFICATIONS_PROVIDER);
     configService = moduleRef.get(ConfigService);
@@ -104,7 +110,7 @@ describe('NotificationService', () => {
 
   beforeEach(() => {
     jest
-      .spyOn(alkemioAdapter, 'areNotificationsEnabled')
+      .spyOn(alkemioClientAdapter, 'areNotificationsEnabled')
       .mockResolvedValue(true);
 
     // Mock the config service to return email configuration
@@ -171,7 +177,7 @@ describe('NotificationService', () => {
 
     it('Should not send notifications when notifications are disabled', async () => {
       jest
-        .spyOn(alkemioAdapter, 'areNotificationsEnabled')
+        .spyOn(alkemioClientAdapter, 'areNotificationsEnabled')
         .mockResolvedValue(false);
 
       const res = await notificationService.sendApplicationCreatedNotifications(

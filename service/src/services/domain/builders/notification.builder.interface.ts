@@ -3,9 +3,9 @@ import {
   InAppNotificationCategory,
   InAppNotificationPayloadBase,
 } from '@alkemio/notifications-lib';
-import { PlatformUser, User } from '../models/user';
+import { PlatformUser, User } from '../../../core/models/user';
 import { BaseEmailPayload } from '@src/common/email-template-payload';
-import { EventRecipientsSet } from '../models/EvenRecipientsSet';
+import { EventRecipientsSet } from '../../../core/models/EvenRecipientsSet';
 
 export interface INotificationBuilder {
   getEventRecipientSets(

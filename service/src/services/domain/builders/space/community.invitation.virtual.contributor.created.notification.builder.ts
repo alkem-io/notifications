@@ -5,7 +5,7 @@ import {
   InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
-import { INotificationBuilder } from '@core/contracts';
+import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { EmailTemplate } from '@src/common/enums/email.template';

@@ -5,7 +5,7 @@ import {
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
-import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
+import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { PlatformGlobalRoleChangeEmailPayload } from '@src/common/email-template-payload/platform.global.role.change.email.payload';

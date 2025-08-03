@@ -4,7 +4,6 @@ import {
   InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
-import { INotificationBuilder } from '@core/contracts';
 import { PlatformUser, User } from '@core/models';
 import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -15,6 +14,7 @@ import { ConfigurationTypes } from '@src/common/enums';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import { INotificationBuilder } from '../notification.builder.interface';
 
 @Injectable()
 export class CommunityPlatformInvitationCreatedNotificationBuilder

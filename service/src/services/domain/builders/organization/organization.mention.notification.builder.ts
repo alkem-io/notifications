@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
-import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
+import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
 import {

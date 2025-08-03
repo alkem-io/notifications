@@ -1,15 +1,13 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { PlatformFeatureFlagName } from '@alkemio/client-lib';
 import { ALKEMIO_CLIENT_PROVIDER, LogContext } from '@common/enums';
-import { IFeatureFlagProvider } from '@core/contracts';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Sdk, UserNotificationEvent } from '@src/generated/graphql';
 import { EventRecipients } from '@src/core/models/EventRecipients';
-import e from 'express';
 import { NotSupportedException } from '@src/common/exceptions/not.supported.exception';
 
 @Injectable()
-export class AlkemioClientAdapter implements IFeatureFlagProvider {
+export class AlkemioClientAdapter {
   constructor(
     @Inject(ALKEMIO_CLIENT_PROVIDER)
     private alkemioSdkClient: Sdk,

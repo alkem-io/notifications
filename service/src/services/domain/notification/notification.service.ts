@@ -36,7 +36,6 @@ import {
   PlatformSpaceCreatedEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
-import { INotificationBuilder } from '@core/contracts';
 import {
   CollaborationCalloutPublishedNotificationBuilder,
   CollaborationPostCommentNotificationBuilder,
@@ -67,8 +66,7 @@ import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { InAppDispatcher } from '@src/services/dispatchers/in-app/in.app.dispatcher';
-import { User } from '@src/core/models';
-import e from 'express';
+import { INotificationBuilder } from '../builders/notification.builder.interface';
 @Injectable()
 export class NotificationService {
   constructor(

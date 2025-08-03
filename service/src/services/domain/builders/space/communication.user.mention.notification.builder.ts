@@ -7,7 +7,7 @@ import {
 } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { CommunicationUserMentionEventPayload } from '@alkemio/notifications-lib';
-import { INotificationBuilder } from '@core/contracts/notification.builder.interface';
+import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUserMentionEmailPayload } from '@common/email-template-payload';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
