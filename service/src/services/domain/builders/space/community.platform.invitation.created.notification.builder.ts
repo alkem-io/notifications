@@ -46,6 +46,7 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
         emailRecipients: platformInvitationRecipients.emailRecipients,
         inAppRecipients: platformInvitationRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_PLATFORM_INVITATION_INVITEE,
+        subjectUser: platformInvitationRecipients.triggeredBy,
       },
     ];
     return emailRecipientsSets;

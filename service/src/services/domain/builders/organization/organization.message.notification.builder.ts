@@ -37,8 +37,8 @@ export class OrganizationMessageNotificationBuilder
       {
         emailRecipients: organizationMessageRecipients.emailRecipients,
         inAppRecipients: organizationMessageRecipients.inAppRecipients,
-        emailTemplate:
-          EmailTemplate.ORGANIZATION_MESSAGE_RECIPIENT,
+        emailTemplate: EmailTemplate.ORGANIZATION_MESSAGE_RECIPIENT,
+        subjectUser: organizationMessageRecipients.triggeredBy,
       },
     ];
     if (organizationMessageRecipients.triggeredBy) {
@@ -46,6 +46,7 @@ export class OrganizationMessageNotificationBuilder
         emailRecipients: [organizationMessageRecipients.triggeredBy],
         inAppRecipients: organizationMessageRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.ORGANIZATION_MESSAGE_SENDER,
+        subjectUser: organizationMessageRecipients.triggeredBy,
       });
     }
     return emailRecipientsSets;

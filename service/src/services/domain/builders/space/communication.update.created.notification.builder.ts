@@ -44,11 +44,13 @@ export class CommunicationUpdateCreatedNotificationBuilder
         emailRecipients: updateRecipients.emailRecipients,
         inAppRecipients: updateRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_MEMBER,
+        subjectUser: updateRecipients.triggeredBy,
       },
       {
         emailRecipients: updateAdminRecipients.emailRecipients,
         inAppRecipients: updateAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_UPDATE_ADMIN,
+        subjectUser: updateAdminRecipients.triggeredBy,
       },
     ];
     return emailRecipientsSets;

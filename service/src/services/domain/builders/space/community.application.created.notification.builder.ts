@@ -32,6 +32,7 @@ export class CommunityApplicationCreatedNotificationBuilder
         payload.space.id,
         payload.triggeredBy
       );
+    const applicant = applicationSubmittedRecipients.triggeredBy;
 
     const applicationReceivedRecipients =
       await this.alkemioClientAdapter.getRecipients(
@@ -45,11 +46,13 @@ export class CommunityApplicationCreatedNotificationBuilder
         emailRecipients: applicationSubmittedRecipients.emailRecipients,
         inAppRecipients: applicationSubmittedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_APPLICANT,
+        subjectUser: applicant,
       },
       {
         emailRecipients: applicationReceivedRecipients.emailRecipients,
         inAppRecipients: applicationReceivedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_USER_APPLICATION_ADMIN,
+        subjectUser: applicant,
       },
     ];
     return emailRecipientsSets;

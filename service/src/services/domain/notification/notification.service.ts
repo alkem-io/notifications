@@ -104,13 +104,13 @@ export class NotificationService {
 
   private async processNotificationEvent(
     payload: BaseEventPayload,
-    builder: INotificationBuilder,
+    builder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const emailRecipientsSets = await builder.getEventRecipientSets(payload);
     const emailResults = await this.buildAndSendEmailNotifications(
       emailRecipientsSets,
       payload,
-      builder,
+      builder
     );
     const inAppNotificationResults = await this.buildAndSendInAppNotifications(
       emailRecipientsSets,
@@ -372,7 +372,7 @@ export class NotificationService {
         const templatePayload = builder.createEmailTemplatePayload(
           payload,
           recipient,
-          recipientSet.triggeredBy
+          recipientSet.subjectUser
         );
         const emailNotificationTemplate =
           this.notificationTemplateBuilder.buildTemplate(

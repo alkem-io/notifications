@@ -8,7 +8,6 @@ export type Contributor = {
   id: string;
   nameID: string;
   profile: {
-    id: string;
     displayName: string;
     url: string;
   };

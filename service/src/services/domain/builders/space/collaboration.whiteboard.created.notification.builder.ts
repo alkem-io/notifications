@@ -32,12 +32,16 @@ export class CollaborationWhiteboardCreatedNotificationBuilder
         payload.space.id,
         payload.triggeredBy
       );
+    const creator = await this.alkemioClientAdapter.getUser(
+      payload.whiteboard.createdBy
+    );
 
     const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: whiteboardCreatedRecipients.emailRecipients,
         inAppRecipients: whiteboardCreatedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_WHITEBOARD_CREATED_MEMBER,
+        subjectUser: creator,
       },
     ];
     return emailRecipientsSets;

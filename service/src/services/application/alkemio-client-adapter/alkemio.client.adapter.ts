@@ -5,6 +5,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Sdk, UserNotificationEvent } from '@src/generated/graphql';
 import { EventRecipients } from '@src/core/models/EventRecipients';
 import { NotSupportedException } from '@src/common/exceptions/not.supported.exception';
+import { User } from '@src/core/models';
 
 @Injectable()
 export class AlkemioClientAdapter {
@@ -65,5 +66,38 @@ export class AlkemioClientAdapter {
       inAppRecipients: notificationRecipientsResponse.inAppRecipients || [],
       triggeredBy: notificationRecipientsResponse.triggeredBy,
     };
+  }
+
+  public async getUser(userID: string): Promise<User> {
+    if (userID && userID.length === 0) {
+      throw new NotSupportedException(
+        'User ID cannot be empty for looking up a user',
+        LogContext.NOTIFICATIONS
+      );
+    }
+
+    const userResponse = await this.alkemioSdkClient.userLookup({
+      userID,
+    });
+
+    if (!userResponse.data.user) {
+      throw new NotSupportedException(
+        `User with ID ${userID} not found`,
+        LogContext.NOTIFICATIONS
+      );
+    }
+
+    const userResult: User = {
+      id: userResponse.data.user.id,
+      nameID: userResponse.data.user.nameID,
+      profile: {
+        displayName: userResponse.data.user.profile.displayName,
+        url: userResponse.data.user.profile.url,
+      },
+      firstName: userResponse.data.user.firstName,
+      lastName: userResponse.data.user.lastName,
+      email: userResponse.data.user.email,
+    };
+    return userResult;
   }
 }

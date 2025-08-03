@@ -38,6 +38,7 @@ export class CommunicationUserMentionNotificationBuilder
         emailRecipients: userMentionRecipients.emailRecipients,
         inAppRecipients: userMentionRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNICATION_COMMENT_MENTION_USER,
+        subjectUser: userMentionRecipients.triggeredBy,
       },
     ];
     return emailRecipientsSets;

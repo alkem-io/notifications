@@ -31,12 +31,16 @@ export class CollaborationPostCommentNotificationBuilder
       payload.space.id,
       payload.triggeredBy
     );
+    const commentAuthor = await this.alkemioClientAdapter.getUser(
+      payload.comment.createdBy
+    );
 
     const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: commentRecipients.emailRecipients,
         inAppRecipients: commentRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_COMMENT_OWNER,
+        subjectUser: commentAuthor,
       },
     ];
     return emailRecipientsSets;

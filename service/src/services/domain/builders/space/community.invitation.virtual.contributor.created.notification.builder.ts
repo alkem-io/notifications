@@ -38,6 +38,7 @@ export class CommunityInvitationVirtualContributorCreatedNotificationBuilder
         emailRecipients: virtualContributorInvitationRecipients.emailRecipients,
         inAppRecipients: virtualContributorInvitationRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMUNITY_INVITATION_CREATED_VC_HOST,
+        subjectUser: virtualContributorInvitationRecipients.triggeredBy,
       },
     ];
     return emailRecipientsSets;

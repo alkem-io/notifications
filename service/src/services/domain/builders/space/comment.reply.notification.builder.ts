@@ -30,12 +30,14 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
         undefined, // Comment reply doesn't have space ID directly
         payload.triggeredBy
       );
+    const sender = commentReplyRecipients.triggeredBy;
 
     const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: commentReplyRecipients.emailRecipients,
         inAppRecipients: commentReplyRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COMMENT_REPLY,
+        subjectUser: sender,
       },
     ];
     return emailRecipientsSets;
@@ -83,7 +85,7 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverIDs
+      receiverIDs,
     };
   }
 }

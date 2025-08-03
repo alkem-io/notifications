@@ -38,7 +38,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
         emailRecipients: calloutPublishedRecipients.emailRecipients,
         inAppRecipients: calloutPublishedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_CALLOUT_PUBLISHED_MEMBER,
-        triggeredBy: calloutPublishedRecipients.triggeredBy,
+        subjectUser: calloutPublishedRecipients.triggeredBy,
       },
     ];
     return emailRecipientsSets;

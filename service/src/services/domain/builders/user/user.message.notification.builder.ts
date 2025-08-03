@@ -15,9 +15,7 @@ import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 
 @Injectable()
-export class UserMessageNotificationBuilder
-  implements INotificationBuilder
-{
+export class UserMessageNotificationBuilder implements INotificationBuilder {
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
     private readonly alkemioClientAdapter: AlkemioClientAdapter
@@ -37,6 +35,7 @@ export class UserMessageNotificationBuilder
         emailRecipients: userMessageRecipients.emailRecipients,
         inAppRecipients: userMessageRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.USER_MESSAGE_RECIPIENT,
+        subjectUser: userMessageRecipients.triggeredBy,
       },
     ];
 
@@ -46,6 +45,7 @@ export class UserMessageNotificationBuilder
         emailRecipients: [userMessageRecipients.triggeredBy],
         inAppRecipients: [userMessageRecipients.triggeredBy],
         emailTemplate: EmailTemplate.USER_MESSAGE_SENDER,
+        subjectUser: userMessageRecipients.triggeredBy,
       });
     }
 

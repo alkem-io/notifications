@@ -5,5 +5,5 @@ export type EventRecipientsSet = {
   emailRecipients: User[];
   emailTemplate: EmailTemplate;
   inAppRecipients: User[];
-  triggeredBy?: User;
+  subjectUser?: User;
 };

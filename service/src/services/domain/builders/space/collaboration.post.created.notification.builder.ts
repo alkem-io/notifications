@@ -39,16 +39,22 @@ export class CollaborationPostCreatedNotificationBuilder
         payload.triggeredBy
       );
 
+    const creator = await this.alkemioClientAdapter.getUser(
+      payload.post.createdBy
+    );
+
     const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: postCreatedRecipients.emailRecipients,
         inAppRecipients: postCreatedRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_MEMBER,
+        subjectUser: creator,
       },
       {
         emailRecipients: postCreatedAdminRecipients.emailRecipients,
         inAppRecipients: postCreatedAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.COLLABORATION_POST_CREATED_ADMIN,
+        subjectUser: creator,
       },
     ];
     return emailRecipientsSets;

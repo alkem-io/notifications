@@ -32,12 +32,16 @@ export class PlatformForumDiscussionCommentNotificationBuilder
         undefined,
         payload.triggeredBy
       );
+    const sender = await this.alkemioClientAdapter.getUser(
+      payload.comment.createdBy
+    );
 
     const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: forumDiscussionCommentRecipients.emailRecipients,
         inAppRecipients: forumDiscussionCommentRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT,
+        subjectUser: sender,
       },
     ];
     return emailRecipientsSets;

@@ -39,6 +39,7 @@ export class OrganizationMentionNotificationBuilder
         emailRecipients: organizationMentionRecipients.emailRecipients,
         inAppRecipients: organizationMentionRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.ORGANIZATION_MENTION,
+        subjectUser: organizationMentionRecipients.triggeredBy,
       },
     ];
     return emailRecipientsSets;
@@ -93,7 +94,7 @@ export class OrganizationMentionNotificationBuilder
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
-      receiverIDs
+      receiverIDs,
     };
   }
 }

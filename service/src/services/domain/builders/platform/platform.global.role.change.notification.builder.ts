@@ -32,11 +32,14 @@ export class PlatformGlobalRoleChangeNotificationBuilder
       payload.triggeredBy
     );
 
+    const user = await this.alkemioClientAdapter.getUser(payload.user.id);
+
     const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: globalAdminRecipients.emailRecipients,
         inAppRecipients: globalAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN,
+        subjectUser: user,
       },
     ];
     return emailRecipientsSets;

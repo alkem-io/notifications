@@ -32,12 +32,14 @@ export class PlatformUserRegisteredNotificationBuilder
         undefined,
         payload.triggeredBy
       );
+    const registrant = await this.alkemioClientAdapter.getUser(payload.user.id);
 
     const emailRecipientsSets: EventRecipientsSet[] = [
       {
         emailRecipients: platformAdminRecipients.emailRecipients,
         inAppRecipients: platformAdminRecipients.inAppRecipients,
         emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN,
+        subjectUser: registrant,
       },
     ];
     if (platformAdminRecipients.triggeredBy) {
@@ -45,6 +47,7 @@ export class PlatformUserRegisteredNotificationBuilder
         emailRecipients: [platformAdminRecipients.triggeredBy],
         inAppRecipients: [platformAdminRecipients.triggeredBy],
         emailTemplate: EmailTemplate.PLATFORM_USER_REGISTRATION_REGISTRANT,
+        subjectUser: registrant,
       });
     }
     return emailRecipientsSets;

@@ -32,6 +32,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
         payload.space.id,
         payload.triggeredBy
       );
+    const sender = communityLeadsMessageRecipients.triggeredBy;
 
     const communityLeadsMessageAdminRecipients =
       await this.alkemioClientAdapter.getRecipients(
@@ -46,6 +47,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
         inAppRecipients: communityLeadsMessageRecipients.inAppRecipients,
         emailTemplate:
           EmailTemplate.COMMUNICATION_COMMUNITY_LEADS_MESSAGE_SENDER,
+        subjectUser: sender,
       },
 
       {
@@ -53,6 +55,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
         inAppRecipients: communityLeadsMessageAdminRecipients.inAppRecipients,
         emailTemplate:
           EmailTemplate.COMMUNICATION_COMMUNITY_LEADS_MESSAGE_RECIPIENT,
+        subjectUser: sender,
       },
     ];
     return emailRecipientsSets;

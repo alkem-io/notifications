@@ -1,0 +1,14 @@
+query userLookup($userID: UUID!) {
+  user(ID: $userID) {
+    id
+    firstName
+    lastName
+    email
+    nameID
+    profile {
+      id
+      displayName
+      url
+    }
+  }
+}
