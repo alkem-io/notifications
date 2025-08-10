@@ -127,7 +127,7 @@ export function convertMarkdownToHtml(markdown: string): string {
   );
 
   // Wrap everything in a container with max-width
-  html = `<blockquote><div style="text-align: left; max-width: 500px; margin: 0 auto; padding-left: 10px; font-family: Arial, sans-serif; line-height: 1.6; color: #333; border-left: 2px solid #ccc;">${html}</div></blockquote>`;
+  html = `<div style="text-align: left; max-width: 500px; margin: 0 auto; padding-left: 10px; font-family: Arial, sans-serif; line-height: 1.6; color: #333; border-left: 2px solid #ccc;">${html}</div>`;
 
   return html;
 }
