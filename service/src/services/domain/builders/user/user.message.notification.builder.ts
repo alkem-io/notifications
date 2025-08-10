@@ -11,7 +11,10 @@ import {
   NotificationEventType,
   UserMessageEventPayload,
 } from '@alkemio/notifications-lib';
-import { InAppNotificationCategory } from '@src/generated/graphql';
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
 import { InAppNotificationPayloadBase } from '@src/types/in-app/in.app.notification.payload.base';
 
 @Injectable()
@@ -92,7 +95,7 @@ export class UserMessageNotificationBuilder implements INotificationBuilder {
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.USER_MESSAGE,
+      type: InAppNotificationEventType.UserMessage,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

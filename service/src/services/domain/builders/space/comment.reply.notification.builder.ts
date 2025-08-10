@@ -5,15 +5,17 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommentReplyEmailPayload } from '@common/email-template-payload';
 import {
   CommentReplyEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class CommentReplyNotificationBuilder implements INotificationBuilder {
   constructor(
@@ -81,7 +83,7 @@ export class CommentReplyNotificationBuilder implements INotificationBuilder {
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMENT_REPLY,
+      type: InAppNotificationEventType.CommentReply,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

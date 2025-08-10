@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import {
   CollaborationPostCommentEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
@@ -13,7 +11,11 @@ import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-gener
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class CollaborationPostCommentNotificationBuilder
   implements INotificationBuilder
@@ -96,7 +98,7 @@ export class CollaborationPostCommentNotificationBuilder
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
-      type: NotificationEventType.COLLABORATION_POST_COMMENT,
+      type: InAppNotificationEventType.CollaborationPostComment,
       triggeredAt: new Date(),
       category,
       triggeredByID,

@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
+import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -13,7 +9,11 @@ import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class PlatformGlobalRoleChangeNotificationBuilder
   implements INotificationBuilder
@@ -89,7 +89,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE,
+      type: InAppNotificationEventType.PlatformGlobalRoleChange,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

@@ -6,14 +6,16 @@ import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-gener
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import {
   CommunityApplicationCreatedEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class CommunityApplicationCreatedNotificationBuilder
   implements INotificationBuilder
@@ -105,7 +107,7 @@ export class CommunityApplicationCreatedNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMUNITY_APPLICATION_CREATED,
+      type: InAppNotificationEventType.CommunityApplicationCreated,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

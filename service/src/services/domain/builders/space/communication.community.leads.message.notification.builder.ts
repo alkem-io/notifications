@@ -5,15 +5,17 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationCommunityLeadsMessageEmailPayload } from '@common/email-template-payload';
 import {
   CommunicationCommunityLeadsMessageEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class CommunicationCommunityLeadsMessageNotificationBuilder
   implements INotificationBuilder
@@ -103,7 +105,7 @@ export class CommunicationCommunityLeadsMessageNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE,
+      type: InAppNotificationEventType.CommunicationCommunityMessage,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

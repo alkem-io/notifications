@@ -4,8 +4,6 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUser, User } from '@core/models';
 import {
   CollaborationDiscussionCommentEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { CollaborationDiscussionCommentEmailPayload } from '@src/common/email-template-payload';
@@ -13,6 +11,11 @@ import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-gener
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 
 @Injectable()
 export class CollaborationDiscussionCommentNotificationBuilder
@@ -95,7 +98,7 @@ export class CollaborationDiscussionCommentNotificationBuilder
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
-      type: NotificationEventType.COLLABORATION_DISCUSSION_COMMENT,
+      type: InAppNotificationEventType.CollaborationDiscussionComment,
       triggeredAt: new Date(),
       category,
       triggeredByID,

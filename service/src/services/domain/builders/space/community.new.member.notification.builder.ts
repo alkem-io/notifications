@@ -9,12 +9,11 @@ import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-gener
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import { InAppNotificationCommunityNewMemberPayload } from '@src/types/in-app/in.app.notification.community.new.member.payload';
 import {
   InAppNotificationCategory,
   InAppNotificationEventType,
 } from '@src/generated/graphql';
-import { InAppNotificationCommunityNewMemberPayload } from '@src/types/in-app/in.app.notification.community.new.member.payload';
-
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
   implements INotificationBuilder

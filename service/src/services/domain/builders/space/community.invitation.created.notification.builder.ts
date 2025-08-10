@@ -10,12 +10,14 @@ import { ConfigurationTypes } from '@src/common/enums';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import {
   CommunityInvitationCreatedEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class CommunityInvitationCreatedNotificationBuilder
   implements INotificationBuilder
@@ -101,7 +103,7 @@ export class CommunityInvitationCreatedNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMUNITY_INVITATION_CREATED,
+      type: InAppNotificationEventType.CommunityInvitationCreated,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

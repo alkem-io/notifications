@@ -5,15 +5,14 @@ import { PlatformUser, User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import {
-  PlatformSpaceCreatedEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
+import { PlatformSpaceCreatedEventPayload } from '@alkemio/notifications-lib';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class PlatformSpaceCreatedNotificationBuilder
   implements INotificationBuilder
@@ -77,7 +76,7 @@ export class PlatformSpaceCreatedNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.PLATFORM_SPACE_CREATED,
+      type: InAppNotificationEventType.PlatformSpaceCreated,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

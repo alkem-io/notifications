@@ -2,18 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import {
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
-  PlatformForumDiscussionCommentEventPayload,
-} from '@alkemio/notifications-lib';
+import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
 import { PlatformForumDiscussionCommentEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class PlatformForumDiscussionCommentNotificationBuilder
   implements INotificationBuilder
@@ -80,7 +80,7 @@ export class PlatformForumDiscussionCommentNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.PLATFORM_FORUM_DISCUSSION_COMMENT,
+      type: InAppNotificationEventType.PlatformForumDiscussionComment,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

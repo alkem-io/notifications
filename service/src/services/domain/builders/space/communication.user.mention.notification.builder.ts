@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  InAppNotificationCategory,
-  InAppNotificationContributorMentionedPayload,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
+import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { CommunicationUserMentionEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
@@ -14,7 +10,11 @@ import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-gener
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationContributorMentionedPayload } from '@src/types/in-app';
 @Injectable()
 export class CommunicationUserMentionNotificationBuilder
   implements INotificationBuilder
@@ -88,7 +88,7 @@ export class CommunicationUserMentionNotificationBuilder
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
-      type: NotificationEventType.COMMUNICATION_USER_MENTION,
+      type: InAppNotificationEventType.CommunicationUserMention,
       triggeredAt: new Date(),
       category,
       triggeredByID,

@@ -8,12 +8,14 @@ import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-a
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import {
   PlatformUserRegistrationEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class PlatformUserRegisteredNotificationBuilder
   implements INotificationBuilder
@@ -90,7 +92,7 @@ export class PlatformUserRegisteredNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.PLATFORM_USER_REGISTERED,
+      type: InAppNotificationEventType.PlatformUserRegistered,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

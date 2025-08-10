@@ -5,15 +5,17 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
 import {
   CollaborationPostCreatedEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class CollaborationPostCreatedNotificationBuilder
   implements INotificationBuilder
@@ -109,7 +111,7 @@ export class CollaborationPostCreatedNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COLLABORATION_POST_CREATED,
+      type: InAppNotificationEventType.CollaborationPostCreated,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.post.createdBy,

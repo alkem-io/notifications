@@ -2,17 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import {
-  CollaborationCalloutPublishedEventPayload,
-  InAppNotificationCalloutPublishedPayload,
-  InAppNotificationCategory,
-} from '@alkemio/notifications-lib';
+import { CollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationCalloutPublishedPayload } from '@src/types/in-app/in.app.notification.callout.published.payload';
 
 @Injectable()
 export class CollaborationCalloutPublishedNotificationBuilder
@@ -94,7 +95,7 @@ export class CollaborationCalloutPublishedNotificationBuilder
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
-      type: NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED,
+      type: InAppNotificationEventType.CollaborationCalloutPublished,
       triggeredAt: new Date(),
       category,
       triggeredByID,

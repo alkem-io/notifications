@@ -5,8 +5,6 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
 import {
   CommunicationUpdateEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
 } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -14,7 +12,11 @@ import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-a
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
-
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class CommunicationUpdateCreatedNotificationBuilder
   implements INotificationBuilder
@@ -97,7 +99,7 @@ export class CommunicationUpdateCreatedNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMUNICATION_UPDATE_SENT,
+      type: InAppNotificationEventType.CommunicationUpdateSent,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,
