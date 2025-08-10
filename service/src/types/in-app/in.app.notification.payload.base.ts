@@ -1,11 +1,13 @@
-import { InAppNotificationCategory } from "../../common/enums";
-import { NotificationEventType } from "../../notification.event.type";
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
 
 export interface InAppNotificationPayloadBase {
   receiverIDs: string[];
   /** UTC */
   triggeredAt: Date;
-  type: NotificationEventType;
+  type: InAppNotificationEventType;
   triggeredByID: string;
   category: InAppNotificationCategory;
 }

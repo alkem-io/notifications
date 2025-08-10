@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
+import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { CommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@common/enums/email.template';
@@ -15,6 +11,11 @@ import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-a
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { INotificationBuilder } from '../notification.builder.interface';
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app/in.app.notification.payload.base';
 
 @Injectable()
 export class CommunityPlatformInvitationCreatedNotificationBuilder
@@ -105,7 +106,7 @@ export class CommunityPlatformInvitationCreatedNotificationBuilder
     receiverIDs: string[]
   ): InAppNotificationPayloadBase {
     return {
-      type: NotificationEventType.COMMUNITY_INVITATION_CREATED,
+      type: InAppNotificationEventType.CommunityInvitationCreated,
       triggeredAt: new Date(),
       category,
       triggeredByID: eventPayload.triggeredBy,

@@ -4,16 +4,16 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import {
-  CommunityNewMemberPayload,
-  InAppNotificationCategory,
-  InAppNotificationCommunityNewMemberPayload,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
+import { CommunityNewMemberPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import {
+  InAppNotificationCategory,
+  InAppNotificationEventType,
+} from '@src/generated/graphql';
+import { InAppNotificationCommunityNewMemberPayload } from '@src/types/in-app/in.app.notification.community.new.member.payload';
 
 @Injectable()
 export class CommunityNewMemberNotificationBuilder
@@ -98,7 +98,7 @@ export class CommunityNewMemberNotificationBuilder
     const { triggeredBy: triggeredByID } = eventPayload;
 
     return {
-      type: NotificationEventType.COMMUNITY_NEW_MEMBER,
+      type: InAppNotificationEventType.CommunityNewMember,
       triggeredAt: new Date(),
       category,
       triggeredByID,

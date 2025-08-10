@@ -25,8 +25,6 @@ import {
   CommunityInvitationVirtualContributorCreatedEventPayload,
   CommunityNewMemberPayload,
   CommunityPlatformInvitationCreatedEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
   NotificationEventType,
   PlatformForumDiscussionCommentEventPayload,
   PlatformForumDiscussionCreatedEventPayload,
@@ -67,6 +65,8 @@ import { NotificationTemplateBuilder } from '@src/services/external/notifme/noti
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
 import { InAppDispatcher } from '@src/services/dispatchers/in-app/in.app.dispatcher';
 import { INotificationBuilder } from '../builders/notification.builder.interface';
+import { InAppNotificationPayloadBase } from '@src/types/in-app/in.app.notification.payload.base';
+import { InAppNotificationCategory } from '@src/generated/graphql';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -341,7 +341,7 @@ export class NotificationService {
 
       const templatePayload = builder.createInAppTemplatePayload(
         payload,
-        InAppNotificationCategory.ADMIN, // TODO: purpose of this category should be clarified
+        InAppNotificationCategory.Admin, // TODO: purpose of this category should be clarified
         userIDs
       );
       notifications.push(templatePayload);

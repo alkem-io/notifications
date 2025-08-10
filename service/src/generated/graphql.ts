@@ -50,6 +50,7 @@ export type Scalars = {
   JSON: { input: string; output: string };
   LifecycleDefinition: { input: any; output: any };
   Markdown: { input: any; output: any };
+  MemoContent: { input: any; output: any };
   MessageID: { input: any; output: any };
   NameID: { input: string; output: string };
   SearchCursor: { input: any; output: any };
@@ -861,6 +862,7 @@ export enum AuthorizationPolicyType {
   LicensePolicy = 'LICENSE_POLICY',
   Licensing = 'LICENSING',
   Link = 'LINK',
+  Memo = 'MEMO',
   Organization = 'ORGANIZATION',
   OrganizationVerification = 'ORGANIZATION_VERIFICATION',
   Platform = 'PLATFORM',
@@ -1107,6 +1109,10 @@ export type CalloutFraming = {
   createdDate: Scalars['DateTime']['output'];
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** The Link for framing the associated Callout. */
+  link?: Maybe<Link>;
+  /** The Memo for framing the associated Callout. */
+  memo?: Maybe<Memo>;
   /** The Profile for framing the associated Callout. */
   profile: Profile;
   /** The type of the Callout Framing, the additional content attached to this callout */
@@ -1118,6 +1124,8 @@ export type CalloutFraming = {
 };
 
 export enum CalloutFramingType {
+  Link = 'LINK',
+  Memo = 'MEMO',
   None = 'NONE',
   Whiteboard = 'WHITEBOARD',
 }
@@ -1664,6 +1672,8 @@ export type CreateCalloutData = {
 };
 
 export type CreateCalloutFramingData = {
+  link?: Maybe<CreateLinkData>;
+  memo?: Maybe<CreateMemoData>;
   profile: CreateProfileData;
   tags?: Maybe<Array<Scalars['String']['output']>>;
   /** The type of additional content attached to the framing of the callout. Defaults to None. */
@@ -1672,6 +1682,8 @@ export type CreateCalloutFramingData = {
 };
 
 export type CreateCalloutFramingInput = {
+  link?: InputMaybe<CreateLinkInput>;
+  memo?: InputMaybe<CreateMemoInput>;
   profile: CreateProfileInput;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   /** The type of additional content attached to the framing of the callout. Defaults to None. */
@@ -1942,6 +1954,14 @@ export type CreateLocationInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
   stateOrProvince?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateMemoData = {
+  profile?: Maybe<CreateProfileData>;
+};
+
+export type CreateMemoInput = {
+  profile?: InputMaybe<CreateProfileInput>;
 };
 
 export type CreateNvpInput = {
@@ -2274,6 +2294,7 @@ export enum CredentialType {
   OrganizationAssociate = 'ORGANIZATION_ASSOCIATE',
   OrganizationOwner = 'ORGANIZATION_OWNER',
   SpaceAdmin = 'SPACE_ADMIN',
+  SpaceFeatureMemoMultiUser = 'SPACE_FEATURE_MEMO_MULTI_USER',
   SpaceFeatureSaveAsTemplate = 'SPACE_FEATURE_SAVE_AS_TEMPLATE',
   SpaceFeatureVirtualContributors = 'SPACE_FEATURE_VIRTUAL_CONTRIBUTORS',
   SpaceFeatureWhiteboardMultiUser = 'SPACE_FEATURE_WHITEBOARD_MULTI_USER',
@@ -2331,6 +2352,10 @@ export type DeleteLicensePlanInput = {
 };
 
 export type DeleteLinkInput = {
+  ID: Scalars['UUID']['input'];
+};
+
+export type DeleteMemoInput = {
   ID: Scalars['UUID']['input'];
 };
 
@@ -2630,7 +2655,7 @@ export type InAppNotification = {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: NotificationEventType;
+  type: InAppNotificationEventType;
 };
 
 export type InAppNotificationCalloutPublished = InAppNotification & {
@@ -2650,7 +2675,7 @@ export type InAppNotificationCalloutPublished = InAppNotification & {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: NotificationEventType;
+  type: InAppNotificationEventType;
 };
 
 /** Which category (role) is this notification targeted to. */
@@ -2679,8 +2704,37 @@ export type InAppNotificationCommunityNewMember = InAppNotification & {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: NotificationEventType;
+  type: InAppNotificationEventType;
 };
+
+/** The type of the notification */
+export enum InAppNotificationEventType {
+  CollaborationCalloutPublished = 'COLLABORATION_CALLOUT_PUBLISHED',
+  CollaborationDiscussionComment = 'COLLABORATION_DISCUSSION_COMMENT',
+  CollaborationPostComment = 'COLLABORATION_POST_COMMENT',
+  CollaborationPostCreated = 'COLLABORATION_POST_CREATED',
+  CollaborationWhiteboardCreated = 'COLLABORATION_WHITEBOARD_CREATED',
+  CommentReply = 'COMMENT_REPLY',
+  CommunicationCommentSent = 'COMMUNICATION_COMMENT_SENT',
+  CommunicationCommunityMessage = 'COMMUNICATION_COMMUNITY_MESSAGE',
+  CommunicationUpdateSent = 'COMMUNICATION_UPDATE_SENT',
+  CommunicationUserMention = 'COMMUNICATION_USER_MENTION',
+  CommunityApplicationCreated = 'COMMUNITY_APPLICATION_CREATED',
+  CommunityInvitationCreated = 'COMMUNITY_INVITATION_CREATED',
+  CommunityInvitationCreatedVc = 'COMMUNITY_INVITATION_CREATED_VC',
+  CommunityNewMember = 'COMMUNITY_NEW_MEMBER',
+  CommunityPlatformInvitationCreated = 'COMMUNITY_PLATFORM_INVITATION_CREATED',
+  OrganizationMention = 'ORGANIZATION_MENTION',
+  OrganizationMessage = 'ORGANIZATION_MESSAGE',
+  PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
+  PlatformForumDiscussionCreated = 'PLATFORM_FORUM_DISCUSSION_CREATED',
+  PlatformGlobalRoleChange = 'PLATFORM_GLOBAL_ROLE_CHANGE',
+  PlatformSpaceCreated = 'PLATFORM_SPACE_CREATED',
+  PlatformUserInvitedToRole = 'PLATFORM_USER_INVITED_TO_ROLE',
+  PlatformUserRegistered = 'PLATFORM_USER_REGISTERED',
+  PlatformUserRemoved = 'PLATFORM_USER_REMOVED',
+  UserMessage = 'USER_MESSAGE',
+}
 
 export enum InAppNotificationState {
   Archived = 'ARCHIVED',
@@ -2709,7 +2763,7 @@ export type InAppNotificationUserMentioned = InAppNotification & {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: NotificationEventType;
+  type: InAppNotificationEventType;
 };
 
 export type InnovationFlow = {
@@ -3019,6 +3073,7 @@ export enum LicenseEntitlementType {
   AccountSpacePlus = 'ACCOUNT_SPACE_PLUS',
   AccountSpacePremium = 'ACCOUNT_SPACE_PREMIUM',
   AccountVirtualContributor = 'ACCOUNT_VIRTUAL_CONTRIBUTOR',
+  SpaceFlagMemoMultiUser = 'SPACE_FLAG_MEMO_MULTI_USER',
   SpaceFlagSaveAsTemplate = 'SPACE_FLAG_SAVE_AS_TEMPLATE',
   SpaceFlagVirtualContributorAccess = 'SPACE_FLAG_VIRTUAL_CONTRIBUTOR_ACCESS',
   SpaceFlagWhiteboardMultiUser = 'SPACE_FLAG_WHITEBOARD_MULTI_USER',
@@ -3099,6 +3154,7 @@ export type Licensing = {
 
 export enum LicensingCredentialBasedCredentialType {
   AccountLicensePlus = 'ACCOUNT_LICENSE_PLUS',
+  SpaceFeatureMemoMultiUser = 'SPACE_FEATURE_MEMO_MULTI_USER',
   SpaceFeatureSaveAsTemplate = 'SPACE_FEATURE_SAVE_AS_TEMPLATE',
   SpaceFeatureVirtualContributors = 'SPACE_FEATURE_VIRTUAL_CONTRIBUTORS',
   SpaceFeatureWhiteboardMultiUser = 'SPACE_FEATURE_WHITEBOARD_MULTI_USER',
@@ -3425,6 +3481,8 @@ export type LookupQueryResults = {
   knowledgeBase: KnowledgeBase;
   /** Lookup the specified License */
   license?: Maybe<License>;
+  /** Lookup the specified Memo */
+  memo?: Maybe<Memo>;
   /** Lookup myPrivileges on the specified entity. */
   myPrivileges?: Maybe<LookupMyPrivilegesQueryResults>;
   /** Lookup the specified Organization using a ID */
@@ -3538,6 +3596,10 @@ export type LookupQueryResultsLicenseArgs = {
   ID: Scalars['UUID']['input'];
 };
 
+export type LookupQueryResultsMemoArgs = {
+  ID: Scalars['UUID']['input'];
+};
+
 export type LookupQueryResultsOrganizationArgs = {
   ID: Scalars['UUID']['input'];
 };
@@ -3639,6 +3701,29 @@ export type MeQueryResultsMySpacesArgs = {
 
 export type MeQueryResultsSpaceMembershipsHierarchicalArgs = {
   limit?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type Memo = {
+  /** The authorization rules for the entity */
+  authorization?: Maybe<Authorization>;
+  /** The binary state V2 of the Yjs document, used to collaborate on the Memo, represented in base64. */
+  content?: Maybe<Scalars['String']['output']>;
+  /** The policy governing who can update the Memo content. */
+  contentUpdatePolicy: ContentUpdatePolicy;
+  /** The user that created this Memo */
+  createdBy?: Maybe<User>;
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The ID of the entity */
+  id: Scalars['UUID']['output'];
+  /** Whether the Memo is multi-user enabled on Space level. */
+  isMultiUser: Scalars['Boolean']['output'];
+  /** A name identifier of the entity, unique within a given scope. */
+  nameID: Scalars['NameID']['output'];
+  /** The Profile for this Memo. */
+  profile: Profile;
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
 };
 
 /** A message that was sent either as an Update or as part of a Discussion. */
@@ -3885,6 +3970,8 @@ export type Mutation = {
   deleteLicensePlan: LicensePlan;
   /** Deletes the specified Link. */
   deleteLink: Link;
+  /** Deletes the specified Memo. */
+  deleteMemo: Memo;
   /** Deletes the specified Organization. */
   deleteOrganization: Organization;
   /** Removes the specified User platformInvitation. */
@@ -4033,6 +4120,8 @@ export type Mutation = {
   updateLicensePlan: LicensePlan;
   /** Updates the specified Link. */
   updateLink: Link;
+  /** Updates the specified Memo. */
+  updateMemo: Memo;
   /** Update notification state and return the notification. */
   updateNotificationState: InAppNotificationState;
   /** Updates the specified Organization. */
@@ -4336,6 +4425,10 @@ export type MutationDeleteLinkArgs = {
   deleteData: DeleteLinkInput;
 };
 
+export type MutationDeleteMemoArgs = {
+  memoData: DeleteMemoInput;
+};
+
 export type MutationDeleteOrganizationArgs = {
   deleteData: DeleteOrganizationInput;
 };
@@ -4620,6 +4713,10 @@ export type MutationUpdateLinkArgs = {
   linkData: UpdateLinkInput;
 };
 
+export type MutationUpdateMemoArgs = {
+  memoData: UpdateMemoEntityInput;
+};
+
 export type MutationUpdateNotificationStateArgs = {
   notificationData: UpdateNotificationStateInput;
 };
@@ -4757,35 +4854,6 @@ export type Nvp = {
   updatedDate: Scalars['DateTime']['output'];
   value: Scalars['String']['output'];
 };
-
-/** The type of the notification */
-export enum NotificationEventType {
-  CollaborationCalloutPublished = 'COLLABORATION_CALLOUT_PUBLISHED',
-  CollaborationDiscussionComment = 'COLLABORATION_DISCUSSION_COMMENT',
-  CollaborationPostComment = 'COLLABORATION_POST_COMMENT',
-  CollaborationPostCreated = 'COLLABORATION_POST_CREATED',
-  CollaborationWhiteboardCreated = 'COLLABORATION_WHITEBOARD_CREATED',
-  CommentReply = 'COMMENT_REPLY',
-  CommunicationCommentSent = 'COMMUNICATION_COMMENT_SENT',
-  CommunicationCommunityMessage = 'COMMUNICATION_COMMUNITY_MESSAGE',
-  CommunicationUpdateSent = 'COMMUNICATION_UPDATE_SENT',
-  CommunicationUserMention = 'COMMUNICATION_USER_MENTION',
-  CommunityApplicationCreated = 'COMMUNITY_APPLICATION_CREATED',
-  CommunityInvitationCreated = 'COMMUNITY_INVITATION_CREATED',
-  CommunityInvitationCreatedVc = 'COMMUNITY_INVITATION_CREATED_VC',
-  CommunityNewMember = 'COMMUNITY_NEW_MEMBER',
-  CommunityPlatformInvitationCreated = 'COMMUNITY_PLATFORM_INVITATION_CREATED',
-  OrganizationMention = 'ORGANIZATION_MENTION',
-  OrganizationMessage = 'ORGANIZATION_MESSAGE',
-  PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
-  PlatformForumDiscussionCreated = 'PLATFORM_FORUM_DISCUSSION_CREATED',
-  PlatformGlobalRoleChange = 'PLATFORM_GLOBAL_ROLE_CHANGE',
-  PlatformSpaceCreated = 'PLATFORM_SPACE_CREATED',
-  PlatformUserInvitedToRole = 'PLATFORM_USER_INVITED_TO_ROLE',
-  PlatformUserRegistered = 'PLATFORM_USER_REGISTERED',
-  PlatformUserRemoved = 'PLATFORM_USER_REMOVED',
-  UserMessage = 'USER_MESSAGE',
-}
 
 export type NotificationRecipientResult = {
   /** The email recipients for the notification. */
@@ -5211,6 +5279,7 @@ export enum ProfileType {
   InnovationHub = 'INNOVATION_HUB',
   InnovationPack = 'INNOVATION_PACK',
   KnowledgeBase = 'KNOWLEDGE_BASE',
+  Memo = 'MEMO',
   Organization = 'ORGANIZATION',
   Post = 'POST',
   SpaceAbout = 'SPACE_ABOUT',
@@ -6770,6 +6839,9 @@ export type UpdateCalloutEntityInput = {
 };
 
 export type UpdateCalloutFramingInput = {
+  link?: InputMaybe<UpdateLinkInput>;
+  /** The new content to be used. */
+  memoContent?: InputMaybe<Scalars['Markdown']['input']>;
   /** The Profile of the Template. */
   profile?: InputMaybe<UpdateProfileInput>;
   /** The type of additional content attached to the framing of the callout. */
@@ -6996,6 +7068,13 @@ export type UpdateLocationInput = {
   country?: InputMaybe<Scalars['String']['input']>;
   postalCode?: InputMaybe<Scalars['String']['input']>;
   stateOrProvince?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMemoEntityInput = {
+  ID: Scalars['UUID']['input'];
+  contentUpdatePolicy?: InputMaybe<ContentUpdatePolicy>;
+  /** The Profile of this entity. */
+  profile?: InputMaybe<UpdateProfileInput>;
 };
 
 export type UpdateNotificationStateInput = {
@@ -7266,6 +7345,8 @@ export type UpdateUserSettingsNotificationPlatformInput = {
   forumDiscussionCreated?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Admin] Receive notification when a new user signs up */
   newUserSignUp?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Admin] Receive a notification when a new L0 Space is created */
+  spaceCreated?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Admin] Receive a notification when a user profile is removed */
   userProfileRemoved?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -7283,7 +7364,7 @@ export type UpdateUserSettingsNotificationSpaceInput = {
   communicationMention?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification for community updates */
   communicationUpdates?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification for community updates */
+  /** Receive a notification for community updates as admin */
   communicationUpdatesAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification for community invitation */
   communityInvitationUser?: InputMaybe<Scalars['Boolean']['input']>;
@@ -7601,6 +7682,8 @@ export type UserSettingsNotificationPlatform = {
   forumDiscussionCreated: Scalars['Boolean']['output'];
   /** Receive notification when a new user signs up */
   newUserSignUp: Scalars['Boolean']['output'];
+  /** Receive a notification when a new L0 Space is created */
+  spaceCreated: Scalars['Boolean']['output'];
   /** Receive a notification when a user profile is removed */
   userProfileRemoved: Scalars['Boolean']['output'];
 };
@@ -8400,7 +8483,12 @@ export type ResolversTypes = {
   CalloutContributionDefaults: ResolverTypeWrapper<SchemaTypes.CalloutContributionDefaults>;
   CalloutContributionType: SchemaTypes.CalloutContributionType;
   CalloutFraming: ResolverTypeWrapper<
-    Omit<SchemaTypes.CalloutFraming, 'profile' | 'whiteboard'> & {
+    Omit<
+      SchemaTypes.CalloutFraming,
+      'link' | 'memo' | 'profile' | 'whiteboard'
+    > & {
+      link?: SchemaTypes.Maybe<ResolversTypes['Link']>;
+      memo?: SchemaTypes.Maybe<ResolversTypes['Memo']>;
       profile: ResolversTypes['Profile'];
       whiteboard?: SchemaTypes.Maybe<ResolversTypes['Whiteboard']>;
     }
@@ -8561,6 +8649,8 @@ export type ResolversTypes = {
   CreateLinkInput: SchemaTypes.CreateLinkInput;
   CreateLocationData: ResolverTypeWrapper<SchemaTypes.CreateLocationData>;
   CreateLocationInput: SchemaTypes.CreateLocationInput;
+  CreateMemoData: ResolverTypeWrapper<SchemaTypes.CreateMemoData>;
+  CreateMemoInput: SchemaTypes.CreateMemoInput;
   CreateNVPInput: SchemaTypes.CreateNvpInput;
   CreateOrganizationInput: SchemaTypes.CreateOrganizationInput;
   CreatePostData: ResolverTypeWrapper<SchemaTypes.CreatePostData>;
@@ -8609,6 +8699,7 @@ export type ResolversTypes = {
   DeleteInvitationInput: SchemaTypes.DeleteInvitationInput;
   DeleteLicensePlanInput: SchemaTypes.DeleteLicensePlanInput;
   DeleteLinkInput: SchemaTypes.DeleteLinkInput;
+  DeleteMemoInput: SchemaTypes.DeleteMemoInput;
   DeleteOrganizationInput: SchemaTypes.DeleteOrganizationInput;
   DeletePlatformInvitationInput: SchemaTypes.DeletePlatformInvitationInput;
   DeletePostInput: SchemaTypes.DeletePostInput;
@@ -8708,6 +8799,7 @@ export type ResolversTypes = {
       triggeredBy?: SchemaTypes.Maybe<ResolversTypes['Contributor']>;
     }
   >;
+  InAppNotificationEventType: SchemaTypes.InAppNotificationEventType;
   InAppNotificationState: SchemaTypes.InAppNotificationState;
   InAppNotificationUserMentioned: ResolverTypeWrapper<
     Omit<
@@ -8826,6 +8918,7 @@ export type ResolversTypes = {
       | 'innovationPack'
       | 'invitation'
       | 'knowledgeBase'
+      | 'memo'
       | 'organization'
       | 'platformInvitation'
       | 'post'
@@ -8860,6 +8953,7 @@ export type ResolversTypes = {
       innovationPack?: SchemaTypes.Maybe<ResolversTypes['InnovationPack']>;
       invitation?: SchemaTypes.Maybe<ResolversTypes['Invitation']>;
       knowledgeBase: ResolversTypes['KnowledgeBase'];
+      memo?: SchemaTypes.Maybe<ResolversTypes['Memo']>;
       organization?: SchemaTypes.Maybe<ResolversTypes['Organization']>;
       platformInvitation?: SchemaTypes.Maybe<
         ResolversTypes['PlatformInvitation']
@@ -8906,6 +9000,15 @@ export type ResolversTypes = {
       user?: SchemaTypes.Maybe<ResolversTypes['User']>;
     }
   >;
+  Memo: ResolverTypeWrapper<
+    Omit<SchemaTypes.Memo, 'createdBy' | 'profile'> & {
+      createdBy?: SchemaTypes.Maybe<ResolversTypes['User']>;
+      profile: ResolversTypes['Profile'];
+    }
+  >;
+  MemoContent: ResolverTypeWrapper<
+    SchemaTypes.Scalars['MemoContent']['output']
+  >;
   Message: ResolverTypeWrapper<
     Omit<SchemaTypes.Message, 'reactions' | 'sender'> & {
       reactions: Array<ResolversTypes['Reaction']>;
@@ -8931,7 +9034,6 @@ export type ResolversTypes = {
   >;
   NVP: ResolverTypeWrapper<SchemaTypes.Nvp>;
   NameID: ResolverTypeWrapper<SchemaTypes.Scalars['NameID']['output']>;
-  NotificationEventType: SchemaTypes.NotificationEventType;
   NotificationRecipientResult: ResolverTypeWrapper<
     Omit<
       SchemaTypes.NotificationRecipientResult,
@@ -9430,6 +9532,7 @@ export type ResolversTypes = {
   UpdateLicensePlanInput: SchemaTypes.UpdateLicensePlanInput;
   UpdateLinkInput: SchemaTypes.UpdateLinkInput;
   UpdateLocationInput: SchemaTypes.UpdateLocationInput;
+  UpdateMemoEntityInput: SchemaTypes.UpdateMemoEntityInput;
   UpdateNotificationStateInput: SchemaTypes.UpdateNotificationStateInput;
   UpdateOrganizationInput: SchemaTypes.UpdateOrganizationInput;
   UpdateOrganizationPlatformSettingsInput: SchemaTypes.UpdateOrganizationPlatformSettingsInput;
@@ -9771,7 +9874,12 @@ export type ResolversParentTypes = {
     whiteboard?: SchemaTypes.Maybe<ResolversParentTypes['Whiteboard']>;
   };
   CalloutContributionDefaults: SchemaTypes.CalloutContributionDefaults;
-  CalloutFraming: Omit<SchemaTypes.CalloutFraming, 'profile' | 'whiteboard'> & {
+  CalloutFraming: Omit<
+    SchemaTypes.CalloutFraming,
+    'link' | 'memo' | 'profile' | 'whiteboard'
+  > & {
+    link?: SchemaTypes.Maybe<ResolversParentTypes['Link']>;
+    memo?: SchemaTypes.Maybe<ResolversParentTypes['Memo']>;
     profile: ResolversParentTypes['Profile'];
     whiteboard?: SchemaTypes.Maybe<ResolversParentTypes['Whiteboard']>;
   };
@@ -9900,6 +10008,8 @@ export type ResolversParentTypes = {
   CreateLinkInput: SchemaTypes.CreateLinkInput;
   CreateLocationData: SchemaTypes.CreateLocationData;
   CreateLocationInput: SchemaTypes.CreateLocationInput;
+  CreateMemoData: SchemaTypes.CreateMemoData;
+  CreateMemoInput: SchemaTypes.CreateMemoInput;
   CreateNVPInput: SchemaTypes.CreateNvpInput;
   CreateOrganizationInput: SchemaTypes.CreateOrganizationInput;
   CreatePostData: SchemaTypes.CreatePostData;
@@ -9947,6 +10057,7 @@ export type ResolversParentTypes = {
   DeleteInvitationInput: SchemaTypes.DeleteInvitationInput;
   DeleteLicensePlanInput: SchemaTypes.DeleteLicensePlanInput;
   DeleteLinkInput: SchemaTypes.DeleteLinkInput;
+  DeleteMemoInput: SchemaTypes.DeleteMemoInput;
   DeleteOrganizationInput: SchemaTypes.DeleteOrganizationInput;
   DeletePlatformInvitationInput: SchemaTypes.DeletePlatformInvitationInput;
   DeletePostInput: SchemaTypes.DeletePostInput;
@@ -10114,6 +10225,7 @@ export type ResolversParentTypes = {
     | 'innovationPack'
     | 'invitation'
     | 'knowledgeBase'
+    | 'memo'
     | 'organization'
     | 'platformInvitation'
     | 'post'
@@ -10148,6 +10260,7 @@ export type ResolversParentTypes = {
     innovationPack?: SchemaTypes.Maybe<ResolversParentTypes['InnovationPack']>;
     invitation?: SchemaTypes.Maybe<ResolversParentTypes['Invitation']>;
     knowledgeBase: ResolversParentTypes['KnowledgeBase'];
+    memo?: SchemaTypes.Maybe<ResolversParentTypes['Memo']>;
     organization?: SchemaTypes.Maybe<ResolversParentTypes['Organization']>;
     platformInvitation?: SchemaTypes.Maybe<
       ResolversParentTypes['PlatformInvitation']
@@ -10197,6 +10310,11 @@ export type ResolversParentTypes = {
     >;
     user?: SchemaTypes.Maybe<ResolversParentTypes['User']>;
   };
+  Memo: Omit<SchemaTypes.Memo, 'createdBy' | 'profile'> & {
+    createdBy?: SchemaTypes.Maybe<ResolversParentTypes['User']>;
+    profile: ResolversParentTypes['Profile'];
+  };
+  MemoContent: SchemaTypes.Scalars['MemoContent']['output'];
   Message: Omit<SchemaTypes.Message, 'reactions' | 'sender'> & {
     reactions: Array<ResolversParentTypes['Reaction']>;
     sender?: SchemaTypes.Maybe<ResolversParentTypes['Contributor']>;
@@ -10648,6 +10766,7 @@ export type ResolversParentTypes = {
   UpdateLicensePlanInput: SchemaTypes.UpdateLicensePlanInput;
   UpdateLinkInput: SchemaTypes.UpdateLinkInput;
   UpdateLocationInput: SchemaTypes.UpdateLocationInput;
+  UpdateMemoEntityInput: SchemaTypes.UpdateMemoEntityInput;
   UpdateNotificationStateInput: SchemaTypes.UpdateNotificationStateInput;
   UpdateOrganizationInput: SchemaTypes.UpdateOrganizationInput;
   UpdateOrganizationPlatformSettingsInput: SchemaTypes.UpdateOrganizationPlatformSettingsInput;
@@ -11854,6 +11973,16 @@ export type CalloutFramingResolvers<
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  link?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['Link']>,
+    ParentType,
+    ContextType
+  >;
+  memo?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['Memo']>,
+    ParentType,
+    ContextType
+  >;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['CalloutFramingType'],
@@ -12463,6 +12592,16 @@ export type CreateCalloutFramingDataResolvers<
   ParentType extends
     ResolversParentTypes['CreateCalloutFramingData'] = ResolversParentTypes['CreateCalloutFramingData'],
 > = {
+  link?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['CreateLinkData']>,
+    ParentType,
+    ContextType
+  >;
+  memo?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['CreateMemoData']>,
+    ParentType,
+    ContextType
+  >;
   profile?: Resolver<
     ResolversTypes['CreateProfileData'],
     ParentType,
@@ -12712,6 +12851,19 @@ export type CreateLocationDataResolvers<
   >;
   stateOrProvince?: Resolver<
     SchemaTypes.Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateMemoDataResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['CreateMemoData'] = ResolversParentTypes['CreateMemoData'],
+> = {
+  profile?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['CreateProfileData']>,
     ParentType,
     ContextType
   >;
@@ -13215,7 +13367,7 @@ export type InAppNotificationResolvers<
     ContextType
   >;
   type?: Resolver<
-    ResolversTypes['NotificationEventType'],
+    ResolversTypes['InAppNotificationEventType'],
     ParentType,
     ContextType
   >;
@@ -13255,7 +13407,7 @@ export type InAppNotificationCalloutPublishedResolvers<
     ContextType
   >;
   type?: Resolver<
-    ResolversTypes['NotificationEventType'],
+    ResolversTypes['InAppNotificationEventType'],
     ParentType,
     ContextType
   >;
@@ -13301,7 +13453,7 @@ export type InAppNotificationCommunityNewMemberResolvers<
     ContextType
   >;
   type?: Resolver<
-    ResolversTypes['NotificationEventType'],
+    ResolversTypes['InAppNotificationEventType'],
     ParentType,
     ContextType
   >;
@@ -13344,7 +13496,7 @@ export type InAppNotificationUserMentionedResolvers<
     ContextType
   >;
   type?: Resolver<
-    ResolversTypes['NotificationEventType'],
+    ResolversTypes['InAppNotificationEventType'],
     ParentType,
     ContextType
   >;
@@ -14355,6 +14507,12 @@ export type LookupQueryResultsResolvers<
     ContextType,
     RequireFields<SchemaTypes.LookupQueryResultsLicenseArgs, 'ID'>
   >;
+  memo?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['Memo']>,
+    ParentType,
+    ContextType,
+    RequireFields<SchemaTypes.LookupQueryResultsMemoArgs, 'ID'>
+  >;
   myPrivileges?: Resolver<
     SchemaTypes.Maybe<ResolversTypes['LookupMyPrivilegesQueryResults']>,
     ParentType,
@@ -14512,6 +14670,45 @@ export type MeQueryResultsResolvers<
   >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
+
+export type MemoResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['Memo'] = ResolversParentTypes['Memo'],
+> = {
+  authorization?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['Authorization']>,
+    ParentType,
+    ContextType
+  >;
+  content?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  contentUpdatePolicy?: Resolver<
+    ResolversTypes['ContentUpdatePolicy'],
+    ParentType,
+    ContextType
+  >;
+  createdBy?: Resolver<
+    SchemaTypes.Maybe<ResolversTypes['User']>,
+    ParentType,
+    ContextType
+  >;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  isMultiUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface MemoContentScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes['MemoContent'], any> {
+  name: 'MemoContent';
+}
 
 export type MessageResolvers<
   ContextType = any,
@@ -15169,6 +15366,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<SchemaTypes.MutationDeleteLinkArgs, 'deleteData'>
   >;
+  deleteMemo?: Resolver<
+    ResolversTypes['Memo'],
+    ParentType,
+    ContextType,
+    RequireFields<SchemaTypes.MutationDeleteMemoArgs, 'memoData'>
+  >;
   deleteOrganization?: Resolver<
     ResolversTypes['Organization'],
     ParentType,
@@ -15729,6 +15932,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<SchemaTypes.MutationUpdateLinkArgs, 'linkData'>
+  >;
+  updateMemo?: Resolver<
+    ResolversTypes['Memo'],
+    ParentType,
+    ContextType,
+    RequireFields<SchemaTypes.MutationUpdateMemoArgs, 'memoData'>
   >;
   updateNotificationState?: Resolver<
     ResolversTypes['InAppNotificationState'],
@@ -18567,6 +18776,7 @@ export type UserSettingsNotificationPlatformResolvers<
     ContextType
   >;
   newUserSignUp?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  spaceCreated?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   userProfileRemoved?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -18989,6 +19199,7 @@ export type Resolvers<ContextType = any> = {
   CreateInnovationFlowStateSettingsData?: CreateInnovationFlowStateSettingsDataResolvers<ContextType>;
   CreateLinkData?: CreateLinkDataResolvers<ContextType>;
   CreateLocationData?: CreateLocationDataResolvers<ContextType>;
+  CreateMemoData?: CreateMemoDataResolvers<ContextType>;
   CreatePostData?: CreatePostDataResolvers<ContextType>;
   CreateProfileData?: CreateProfileDataResolvers<ContextType>;
   CreateReferenceData?: CreateReferenceDataResolvers<ContextType>;
@@ -19046,6 +19257,8 @@ export type Resolvers<ContextType = any> = {
   LookupQueryResults?: LookupQueryResultsResolvers<ContextType>;
   Markdown?: GraphQLScalarType;
   MeQueryResults?: MeQueryResultsResolvers<ContextType>;
+  Memo?: MemoResolvers<ContextType>;
+  MemoContent?: GraphQLScalarType;
   Message?: MessageResolvers<ContextType>;
   MessageAnswerQuestion?: MessageAnswerQuestionResolvers<ContextType>;
   MessageID?: GraphQLScalarType;

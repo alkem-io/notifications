@@ -1,4 +1,4 @@
-import { RoleChangeType } from "../common/enums";
+import { RoleChangeType } from "@src/common/enums/role.change.type";
 import { BaseEventPayload } from "./base.event.payload";
 import { ContributorPayload } from "./type/contributor.payload";
 

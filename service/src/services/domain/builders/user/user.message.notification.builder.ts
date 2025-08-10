@@ -3,16 +3,16 @@ import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
-import {
-  UserMessageEventPayload,
-  InAppNotificationCategory,
-  InAppNotificationPayloadBase,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { UserNotificationEvent } from '@src/generated/alkemio-schema';
 import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
+import {
+  NotificationEventType,
+  UserMessageEventPayload,
+} from '@alkemio/notifications-lib';
+import { InAppNotificationCategory } from '@src/generated/graphql';
+import { InAppNotificationPayloadBase } from '@src/types/in-app/in.app.notification.payload.base';
 
 @Injectable()
 export class UserMessageNotificationBuilder implements INotificationBuilder {
