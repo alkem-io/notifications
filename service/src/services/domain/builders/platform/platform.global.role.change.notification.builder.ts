@@ -1,49 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEventType } from '@alkemio/notifications-lib';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { PlatformGlobalRoleChangeEmailPayload } from '@src/common/email-template-payload/platform.global.role.change.email.payload';
 import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib';
-import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
-import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-import {
-  InAppNotificationCategory,
-  InAppNotificationEventType,
-} from '@src/generated/graphql';
-import { InAppNotificationPayloadBase } from '@src/types/in-app';
 @Injectable()
 export class PlatformGlobalRoleChangeNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly alkemioClientAdapter: AlkemioClientAdapter
-  ) {}
+  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  public async getEventRecipientSets(
-    payload: PlatformGlobalRoleChangeEventPayload
-  ): Promise<EventRecipientsSet[]> {
-    const globalAdminRecipients = await this.alkemioClientAdapter.getRecipients(
-      UserNotificationEvent.PlatformNewUserSignUp,
-      undefined,
-      payload.triggeredBy
-    );
-
-    const user = await this.alkemioClientAdapter.getUser(payload.user.id);
-
-    const emailRecipientsSets: EventRecipientsSet[] = [
-      {
-        emailRecipients: globalAdminRecipients.emailRecipients,
-        inAppRecipients: globalAdminRecipients.inAppRecipients,
-        emailTemplate: EmailTemplate.PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN,
-        subjectUser: user,
-      },
-    ];
-    return emailRecipientsSets;
-  }
+  emailTemplate = EmailTemplate.PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN;
 
   public createEmailTemplatePayload(
     eventPayload: PlatformGlobalRoleChangeEventPayload,
@@ -51,9 +19,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
     user?: User
   ): PlatformGlobalRoleChangeEmailPayload {
     if (!user) {
-      throw Error(
-        `User not provided for '${NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE}' event`
-      );
+      throw Error(`User not provided for '${eventPayload.eventType}' event`);
     }
 
     const notificationPreferenceURL =
@@ -79,21 +45,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
-      triggeredBy: eventPayload.triggeredBy,
-    };
-  }
-
-  createInAppTemplatePayload(
-    eventPayload: PlatformGlobalRoleChangeEventPayload,
-    category: InAppNotificationCategory,
-    receiverIDs: string[]
-  ): InAppNotificationPayloadBase {
-    return {
-      type: InAppNotificationEventType.PlatformGlobalRoleChange,
-      triggeredAt: new Date(),
-      category,
-      triggeredByID: eventPayload.triggeredBy,
-      receiverIDs,
+      triggeredBy: eventPayload.triggeredBy.id,
     };
   }
 }

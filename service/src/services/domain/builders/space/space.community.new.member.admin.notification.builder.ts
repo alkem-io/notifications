@@ -1,27 +1,39 @@
 import { Injectable } from '@nestjs/common';
+import { RoleSetContributorType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { EmailTemplate } from '@src/common/enums/email.template';
-import { PlatformUser, User } from '@src/core/models';
-import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
-import { PlatformSpaceCreatedEventPayload } from '@alkemio/notifications-lib';
+import { PlatformUser, User } from '@core/models';
+import { EmailTemplate } from '@common/enums/email.template';
+import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
+import { SpaceCommunityNewMemberPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
-export class PlatformSpaceCreatedNotificationBuilder
+export class CommunityNewMemberNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.PLATFORM_SPACE_CREATED_ADMIN;
+  emailTemplate = EmailTemplate.SPACE_COMMUNITY_NEW_MEMBER_ADMIN;
 
-  createEmailTemplatePayload(
-    eventPayload: PlatformSpaceCreatedEventPayload,
+  public createEmailTemplatePayload(
+    eventPayload: SpaceCommunityNewMemberPayload,
     recipient: User | PlatformUser
-  ): SpaceCreatedEmailPayload {
+  ): CommunityNewMemberEmailPayload {
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
+    const newMember = eventPayload.contributor;
+    const typeName =
+      newMember.type === RoleSetContributorType.Virtual
+        ? 'virtual contributor'
+        : newMember.type;
+
     return {
+      member: {
+        name: newMember.profile.displayName,
+        profile: newMember.profile.url,
+        type: typeName,
+      },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
@@ -32,10 +44,6 @@ export class PlatformSpaceCreatedNotificationBuilder
         level: eventPayload.space.level,
         url: eventPayload.space.profile.url,
       },
-      sender: eventPayload.sender,
-      dateCreated: new Date(eventPayload.created).toLocaleString('en-GB', {
-        timeZone: 'UTC',
-      }),
       platform: {
         url: eventPayload.platform.url,
       },

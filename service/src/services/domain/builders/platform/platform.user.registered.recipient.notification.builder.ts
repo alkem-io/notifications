@@ -2,27 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
-import { PlatformUserRemovedEmailPayload } from '@src/common/email-template-payload/platform.user.removed.email.payload';
+import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { PlatformUserRemovedEventPayload } from '@alkemio/notifications-lib';
+import { PlatformUserRegistrationEventPayload } from '@alkemio/notifications-lib';
+
 @Injectable()
-export class PlatformUserRemovedNotificationBuilder
+export class PlatformUserRegisteredNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.PLATFORM_USER_REMOVED_ADMIN;
+  emailTemplate = EmailTemplate.PLATFORM_USER_REGISTRATION_REGISTRANT;
 
   public createEmailTemplatePayload(
-    eventPayload: PlatformUserRemovedEventPayload,
-    recipient: User | PlatformUser
-  ): PlatformUserRemovedEmailPayload {
+    eventPayload: PlatformUserRegistrationEventPayload,
+    recipient: User | PlatformUser,
+    registrant?: User
+  ): PlatformUserRegisteredEmailPayload {
+    if (!registrant) {
+      throw Error(
+        `Registrant not provided for '${eventPayload.eventType}' event`
+      );
+    }
+
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
       registrant: {
-        displayName: eventPayload.user.displayName,
-        email: eventPayload.user.email,
+        displayName: registrant.profile.displayName,
+        firstName: registrant.firstName,
+        email: registrant.email,
+        profile: registrant.profile.url,
       },
       recipient: {
         firstName: recipient.firstName,

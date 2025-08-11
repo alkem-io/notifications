@@ -4,51 +4,14 @@ import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
-import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import {
-  PlatformForumDiscussionCreatedEventPayload,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
-import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-import {
-  InAppNotificationCategory,
-  InAppNotificationEventType,
-} from '@src/generated/graphql';
-import { InAppNotificationPayloadBase } from '@src/types/in-app';
+import { PlatformForumDiscussionCreatedEventPayload } from '@alkemio/notifications-lib';
 @Injectable()
 export class PlatformForumDiscussionCreatedNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly alkemioClientAdapter: AlkemioClientAdapter
-  ) {}
+  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  public async getEventRecipientSets(
-    payload: PlatformForumDiscussionCreatedEventPayload
-  ): Promise<EventRecipientsSet[]> {
-    const platformUsersRecipients =
-      await this.alkemioClientAdapter.getRecipients(
-        UserNotificationEvent.PlatformForumDiscussionCreated,
-        undefined,
-        payload.triggeredBy
-      );
-
-    const sender = await this.alkemioClientAdapter.getUser(
-      payload.discussion.createdBy
-    );
-
-    const emailRecipientsSets: EventRecipientsSet[] = [
-      {
-        emailRecipients: platformUsersRecipients.emailRecipients,
-        inAppRecipients: platformUsersRecipients.inAppRecipients,
-        emailTemplate: EmailTemplate.PLATFORM_FORUM_DISCUSSION_CREATED,
-        subjectUser: sender,
-      },
-    ];
-    return emailRecipientsSets;
-  }
+  emailTemplate = EmailTemplate.PLATFORM_FORUM_DISCUSSION_CREATED;
 
   createEmailTemplatePayload(
     eventPayload: PlatformForumDiscussionCreatedEventPayload,
@@ -56,9 +19,7 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
     sender?: User
   ): PlatformForumDiscussionCreatedEmailPayload {
     if (!sender) {
-      throw Error(
-        `Sender not provided for '${NotificationEventType.PLATFORM_FORUM_DISCUSSION_CREATED}' event`
-      );
+      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
     }
 
     const notificationPreferenceURL =
@@ -79,20 +40,6 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
-    };
-  }
-
-  createInAppTemplatePayload(
-    eventPayload: PlatformForumDiscussionCreatedEventPayload,
-    category: InAppNotificationCategory,
-    receiverIDs: string[]
-  ): InAppNotificationPayloadBase {
-    return {
-      type: InAppNotificationEventType.PlatformForumDiscussionCreated,
-      triggeredAt: new Date(),
-      category,
-      triggeredByID: eventPayload.triggeredBy,
-      receiverIDs,
     };
   }
 }

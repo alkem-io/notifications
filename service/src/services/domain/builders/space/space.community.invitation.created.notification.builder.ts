@@ -1,31 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
-import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityInvitationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common/enums';
-import { UserNotificationEvent } from '@src/generated/alkemio-schema';
-import {
-  CommunityInvitationCreatedEventPayload,
-  NotificationEventType,
-} from '@alkemio/notifications-lib';
-import { EventRecipientsSet } from '@src/core/models/EvenRecipientsSet';
-import {
-  InAppNotificationCategory,
-  InAppNotificationEventType,
-} from '@src/generated/graphql';
-import { InAppNotificationPayloadBase } from '@src/types/in-app';
+import { SpaceCommunityInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
+
 @Injectable()
-export class CommunityInvitationCreatedNotificationBuilder
+export class SpaceCommunityInvitationCreatedInviteeNotificationBuilder
   implements INotificationBuilder
 {
   invitationsPath: string;
   constructor(
     private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly alkemioClientAdapter: AlkemioClientAdapter,
     private readonly configService: ConfigService
   ) {
     this.invitationsPath = this.configService.get(
@@ -33,36 +22,15 @@ export class CommunityInvitationCreatedNotificationBuilder
     )?.webclient_invitations_path;
   }
 
-  public async getEventRecipientSets(
-    payload: CommunityInvitationCreatedEventPayload
-  ): Promise<EventRecipientsSet[]> {
-    const applicationSubmittedRecipients =
-      await this.alkemioClientAdapter.getRecipients(
-        UserNotificationEvent.SpaceCommunityInvitationUser,
-        payload.space.id,
-        payload.triggeredBy
-      );
-
-    const emailRecipientsSets: EventRecipientsSet[] = [
-      {
-        emailRecipients: applicationSubmittedRecipients.emailRecipients,
-        inAppRecipients: applicationSubmittedRecipients.inAppRecipients,
-        emailTemplate: EmailTemplate.COMMUNITY_INVITATION_INVITEE,
-        subjectUser: applicationSubmittedRecipients.triggeredBy,
-      },
-    ];
-    return emailRecipientsSets;
-  }
+  emailTemplate = EmailTemplate.SPACE_COMMUNITY_INVITATION_INVITEE;
 
   public createEmailTemplatePayload(
-    eventPayload: CommunityInvitationCreatedEventPayload,
+    eventPayload: SpaceCommunityInvitationCreatedEventPayload,
     recipient: User | PlatformUser,
     inviter?: User
   ): CommunityInvitationCreatedEmailPayload {
     if (!inviter) {
-      throw Error(
-        `Invitee not provided for '${NotificationEventType.COMMUNITY_INVITATION_CREATED} event'`
-      );
+      throw Error(`Invitee not provided for '${eventPayload.eventType}' event`);
     }
 
     const notificationPreferenceURL =
@@ -94,20 +62,6 @@ export class CommunityInvitationCreatedNotificationBuilder
         url: eventPayload.platform.url,
       },
       invitationsURL,
-    };
-  }
-
-  createInAppTemplatePayload(
-    eventPayload: CommunityInvitationCreatedEventPayload,
-    category: InAppNotificationCategory,
-    receiverIDs: string[]
-  ): InAppNotificationPayloadBase {
-    return {
-      type: InAppNotificationEventType.CommunityInvitationCreated,
-      triggeredAt: new Date(),
-      category,
-      triggeredByID: eventPayload.triggeredBy,
-      receiverIDs,
     };
   }
 }

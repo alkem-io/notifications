@@ -2,51 +2,49 @@ import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
-import { OrganizationMentionEventPayload } from '@alkemio/notifications-lib';
-import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
+import { CommunicationCommunityLeadsMessageEmailPayload } from '@common/email-template-payload';
+import { SpaceCommunicationLeadsMessageEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+
 @Injectable()
-export class OrganizationMentionNotificationBuilder
+export class SpaceCommunicationLeadsMessageSenderNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.ORGANIZATION_MENTION;
+  emailTemplate =
+    EmailTemplate.SPACE_COMMUNICATION_COMMUNITY_LEADS_MESSAGE_SENDER;
 
   public createEmailTemplatePayload(
-    eventPayload: OrganizationMentionEventPayload,
+    eventPayload: SpaceCommunicationLeadsMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User
-  ): CommunicationOrganizationMentionEmailPayload {
+  ): CommunicationCommunityLeadsMessageEmailPayload {
     if (!sender) {
       throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
     }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const htmlComment: string = convertMarkdownToText(eventPayload.comment);
-
     return {
-      commentSender: {
+      messageSender: {
         displayName: sender.profile.displayName,
         firstName: sender.firstName,
+        email: sender.email,
       },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      comment: htmlComment,
+      message: eventPayload.message,
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        level: eventPayload.space.level,
+        url: eventPayload.space.profile.url,
+      },
       platform: {
         url: eventPayload.platform.url,
-      },
-      mentionedOrganization: {
-        displayName: eventPayload.organization.profile.displayName,
-      },
-      commentOrigin: {
-        url: eventPayload.commentOrigin.url,
-        displayName: eventPayload.commentOrigin.displayName,
       },
     };
   }

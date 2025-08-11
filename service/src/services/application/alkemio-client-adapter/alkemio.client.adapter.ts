@@ -2,8 +2,7 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { PlatformFeatureFlagName } from '@alkemio/client-lib';
 import { ALKEMIO_CLIENT_PROVIDER, LogContext } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { Sdk, UserNotificationEvent } from '@src/generated/graphql';
-import { EventRecipients } from '@src/core/models/EventRecipients';
+import { Sdk } from '@src/generated/graphql';
 import { NotSupportedException } from '@src/common/exceptions/not.supported.exception';
 import { User } from '@src/core/models';
 
@@ -36,36 +35,6 @@ export class AlkemioClientAdapter {
     }
     this.logger.warn('Notifications are not enabled', LogContext.NOTIFICATIONS);
     return false;
-  }
-
-  public async getRecipients(
-    eventType: UserNotificationEvent,
-    entityId: string | undefined,
-    triggeredBy?: string
-  ): Promise<EventRecipients> {
-    if (entityId && entityId.length === 0) {
-      throw new NotSupportedException(
-        `Entity ID cannot be empty for event type: ${eventType}`,
-        LogContext.NOTIFICATIONS
-      );
-    }
-
-    const recipients = await this.alkemioSdkClient.notificationRecipients({
-      eventType,
-      entityId,
-      triggeredBy,
-    });
-    const notificationRecipientsResponse =
-      recipients?.data?.notificationRecipients;
-    this.logger.verbose?.(
-      `Fetched recipients for event type: ${eventType}, entityId: ${entityId}, triggeredBy: ${triggeredBy}: emails recipients: ${notificationRecipientsResponse.emailRecipients.length}, in-app recipients: ${notificationRecipientsResponse.inAppRecipients.length}`,
-      LogContext.NOTIFICATIONS
-    );
-    return {
-      emailRecipients: notificationRecipientsResponse.emailRecipients || [],
-      inAppRecipients: notificationRecipientsResponse.inAppRecipients || [],
-      triggeredBy: notificationRecipientsResponse.triggeredBy,
-    };
   }
 
   public async getUser(userID: string): Promise<User> {

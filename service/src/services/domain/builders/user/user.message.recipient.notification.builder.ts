@@ -2,51 +2,46 @@ import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
-import { OrganizationMentionEventPayload } from '@alkemio/notifications-lib';
-import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
+import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { UserMessageEventPayload } from '@alkemio/notifications-lib';
+
 @Injectable()
-export class OrganizationMentionNotificationBuilder
+export class UserMessageRecipientNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.ORGANIZATION_MENTION;
+  emailTemplate = EmailTemplate.USER_MESSAGE_RECIPIENT;
 
   public createEmailTemplatePayload(
-    eventPayload: OrganizationMentionEventPayload,
+    eventPayload: UserMessageEventPayload,
     recipient: User | PlatformUser,
     sender?: User
-  ): CommunicationOrganizationMentionEmailPayload {
+  ): CommunicationUserMessageEmailPayload {
     if (!sender) {
       throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
     }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const htmlComment: string = convertMarkdownToText(eventPayload.comment);
-
     return {
-      commentSender: {
+      messageSender: {
         displayName: sender.profile.displayName,
         firstName: sender.firstName,
+        email: sender.email,
       },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      comment: htmlComment,
+      message: eventPayload.message,
       platform: {
         url: eventPayload.platform.url,
       },
-      mentionedOrganization: {
-        displayName: eventPayload.organization.profile.displayName,
-      },
-      commentOrigin: {
-        url: eventPayload.commentOrigin.url,
-        displayName: eventPayload.commentOrigin.displayName,
+      messageReceiver: {
+        displayName: eventPayload.user.profile.displayName,
       },
     };
   }

@@ -1,4 +1,4 @@
-import { CommunityInvitationCreatedEmailPayload } from './community.invitation.created.email.payload';
+import { CommunityInvitationCreatedEmailPayload } from './space.community.invitation.created.email.payload';
 
 export interface CommunityInvitationVirtualContributorCreatedEmailPayload
   extends CommunityInvitationCreatedEmailPayload {

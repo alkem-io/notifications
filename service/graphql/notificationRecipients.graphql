@@ -1,4 +1,4 @@
-query notificationRecipients($eventType: UserNotificationEvent!, $entityId: UUID, $triggeredBy: UUID) {
+query notificationRecipients($eventType: NotificationEvent!, $entityId: UUID, $triggeredBy: UUID) {
   notificationRecipients(eventData: { eventType: $eventType, entityID: $entityId, triggeredBy: $triggeredBy }) {
     emailRecipients {
       ...userRecipient

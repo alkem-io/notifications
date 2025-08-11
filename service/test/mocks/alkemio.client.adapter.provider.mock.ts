@@ -9,6 +9,5 @@ export const MockAlkemioClientAdapterProvider: ValueProvider<
   provide: ALKEMIO_CLIENT_ADAPTER,
   useValue: {
     areNotificationsEnabled: jest.fn(),
-    getRecipients: jest.fn(),
   },
 };

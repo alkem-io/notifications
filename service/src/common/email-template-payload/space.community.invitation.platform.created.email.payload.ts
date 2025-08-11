@@ -1,6 +1,6 @@
 import { BaseJourneyEmailPayload } from './base.journey.email.payload';
 
-export interface CommunityPlatformInvitationCreatedEmailPayload
+export interface SpaceCommunityInvitationPlatformCreatedEmailPayload
   extends BaseJourneyEmailPayload {
   inviter: {
     name: string;

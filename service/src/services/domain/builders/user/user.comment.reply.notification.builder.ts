@@ -2,38 +2,37 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
+import { CommentReplyEmailPayload } from '@common/email-template-payload';
+import { UserCommentReplyEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { PlatformForumDiscussionCommentEmailPayload } from '@src/common/email-template-payload/platform.forum.discussion.comment.email.payload';
+
 @Injectable()
-export class PlatformForumDiscussionCommentNotificationBuilder
+export class UserCommentReplyNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT;
+  emailTemplate = EmailTemplate.USER_COMMENT_REPLY;
 
   createEmailTemplatePayload(
-    eventPayload: PlatformForumDiscussionCommentEventPayload,
+    eventPayload: UserCommentReplyEventPayload,
     recipient: User | PlatformUser,
     sender?: User
-  ): PlatformForumDiscussionCommentEmailPayload {
+  ): CommentReplyEmailPayload {
     if (!sender) {
       throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
     }
 
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const result: PlatformForumDiscussionCommentEmailPayload = {
-      comment: {
-        createdBy: eventPayload.comment.createdBy.id,
-        message: eventPayload.comment.message,
+
+    return {
+      reply: {
+        message: eventPayload.reply,
+        createdBy: sender.profile.displayName,
+        createdByUrl: sender.profile.url,
       },
-      discussion: {
-        displayName: eventPayload.discussion.displayName,
-        createdBy: eventPayload.discussion.createdBy.id,
-        url: eventPayload.discussion.url,
-      },
+      comment: eventPayload.comment,
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
@@ -43,6 +42,5 @@ export class PlatformForumDiscussionCommentNotificationBuilder
         url: eventPayload.platform.url,
       },
     };
-    return result;
   }
 }

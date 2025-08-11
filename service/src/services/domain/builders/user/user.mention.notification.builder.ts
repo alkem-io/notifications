@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
+import { UserMentionEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
-import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
-import { OrganizationMentionEventPayload } from '@alkemio/notifications-lib';
+import { CommunicationUserMentionEmailPayload } from '@common/email-template-payload';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+
 @Injectable()
-export class OrganizationMentionNotificationBuilder
-  implements INotificationBuilder
-{
+export class UserMentionNotificationBuilder implements INotificationBuilder {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.ORGANIZATION_MENTION;
+  emailTemplate = EmailTemplate.USER_MENTION;
 
   public createEmailTemplatePayload(
-    eventPayload: OrganizationMentionEventPayload,
+    eventPayload: UserMentionEventPayload,
     recipient: User | PlatformUser,
     sender?: User
-  ): CommunicationOrganizationMentionEmailPayload {
+  ): CommunicationUserMentionEmailPayload {
     if (!sender) {
       throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
     }
@@ -40,9 +39,6 @@ export class OrganizationMentionNotificationBuilder
       comment: htmlComment,
       platform: {
         url: eventPayload.platform.url,
-      },
-      mentionedOrganization: {
-        displayName: eventPayload.organization.profile.displayName,
       },
       commentOrigin: {
         url: eventPayload.commentOrigin.url,

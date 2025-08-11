@@ -1036,8 +1036,6 @@ export type Callout = {
   settings: CalloutSettings;
   /** The sorting order for this Callout. */
   sortOrder: Scalars['Float']['output'];
-  /** The type of this Callout. WARNING. This field is deprecated and will be removed in the future. Use `framing.type` + `settings.contribution.allowedTypes` instead. */
-  type: CalloutType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
 };
@@ -1159,14 +1157,6 @@ export type CalloutSettingsFraming = {
   /** Can comment to callout framing. */
   commentsEnabled: Scalars['Boolean']['output'];
 };
-
-export enum CalloutType {
-  LinkCollection = 'LINK_COLLECTION',
-  Post = 'POST',
-  PostCollection = 'POST_COLLECTION',
-  Whiteboard = 'WHITEBOARD',
-  WhiteboardCollection = 'WHITEBOARD_COLLECTION',
-}
 
 export enum CalloutVisibility {
   Draft = 'DRAFT',
@@ -2649,7 +2639,7 @@ export type InAppNotification = {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: InAppNotificationEventType;
+  type: NotificationEvent;
 };
 
 export type InAppNotificationCalloutPublished = InAppNotification & {
@@ -2669,7 +2659,7 @@ export type InAppNotificationCalloutPublished = InAppNotification & {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: InAppNotificationEventType;
+  type: NotificationEvent;
 };
 
 /** Which category (role) is this notification targeted to. */
@@ -2698,37 +2688,8 @@ export type InAppNotificationCommunityNewMember = InAppNotification & {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: InAppNotificationEventType;
+  type: NotificationEvent;
 };
-
-/** The type of the notification */
-export enum InAppNotificationEventType {
-  CollaborationCalloutPublished = 'COLLABORATION_CALLOUT_PUBLISHED',
-  CollaborationDiscussionComment = 'COLLABORATION_DISCUSSION_COMMENT',
-  CollaborationPostComment = 'COLLABORATION_POST_COMMENT',
-  CollaborationPostCreated = 'COLLABORATION_POST_CREATED',
-  CollaborationWhiteboardCreated = 'COLLABORATION_WHITEBOARD_CREATED',
-  CommentReply = 'COMMENT_REPLY',
-  CommunicationCommentSent = 'COMMUNICATION_COMMENT_SENT',
-  CommunicationCommunityMessage = 'COMMUNICATION_COMMUNITY_MESSAGE',
-  CommunicationUpdateSent = 'COMMUNICATION_UPDATE_SENT',
-  CommunicationUserMention = 'COMMUNICATION_USER_MENTION',
-  CommunityApplicationCreated = 'COMMUNITY_APPLICATION_CREATED',
-  CommunityInvitationCreated = 'COMMUNITY_INVITATION_CREATED',
-  CommunityInvitationCreatedVc = 'COMMUNITY_INVITATION_CREATED_VC',
-  CommunityNewMember = 'COMMUNITY_NEW_MEMBER',
-  CommunityPlatformInvitationCreated = 'COMMUNITY_PLATFORM_INVITATION_CREATED',
-  OrganizationMention = 'ORGANIZATION_MENTION',
-  OrganizationMessage = 'ORGANIZATION_MESSAGE',
-  PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
-  PlatformForumDiscussionCreated = 'PLATFORM_FORUM_DISCUSSION_CREATED',
-  PlatformGlobalRoleChange = 'PLATFORM_GLOBAL_ROLE_CHANGE',
-  PlatformSpaceCreated = 'PLATFORM_SPACE_CREATED',
-  PlatformUserInvitedToRole = 'PLATFORM_USER_INVITED_TO_ROLE',
-  PlatformUserRegistered = 'PLATFORM_USER_REGISTERED',
-  PlatformUserRemoved = 'PLATFORM_USER_REMOVED',
-  UserMessage = 'USER_MESSAGE',
-}
 
 export enum InAppNotificationState {
   Archived = 'ARCHIVED',
@@ -2757,7 +2718,7 @@ export type InAppNotificationUserMentioned = InAppNotification & {
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
   /** The type of the notification */
-  type: InAppNotificationEventType;
+  type: NotificationEvent;
 };
 
 export type InnovationFlow = {
@@ -4849,6 +4810,39 @@ export type Nvp = {
   value: Scalars['String']['output'];
 };
 
+export enum NotificationEvent {
+  OrganizationMentioned = 'ORGANIZATION_MENTIONED',
+  OrganizationMessageRecipient = 'ORGANIZATION_MESSAGE_RECIPIENT',
+  OrganizationMessageSender = 'ORGANIZATION_MESSAGE_SENDER',
+  PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
+  PlatformForumDiscussionCreated = 'PLATFORM_FORUM_DISCUSSION_CREATED',
+  PlatformGlobalRoleChange = 'PLATFORM_GLOBAL_ROLE_CHANGE',
+  PlatformSpaceCreated = 'PLATFORM_SPACE_CREATED',
+  PlatformUserProfileCreated = 'PLATFORM_USER_PROFILE_CREATED',
+  PlatformUserProfileCreatedAdmin = 'PLATFORM_USER_PROFILE_CREATED_ADMIN',
+  PlatformUserProfileRemoved = 'PLATFORM_USER_PROFILE_REMOVED',
+  SpaceCalloutPublished = 'SPACE_CALLOUT_PUBLISHED',
+  SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
+  SpaceCommunicationUpdateAdmin = 'SPACE_COMMUNICATION_UPDATE_ADMIN',
+  SpaceCommunityApplicationApplicant = 'SPACE_COMMUNITY_APPLICATION_APPLICANT',
+  SpaceCommunityApplicationRecipient = 'SPACE_COMMUNITY_APPLICATION_RECIPIENT',
+  SpaceCommunityInvitationUser = 'SPACE_COMMUNITY_INVITATION_USER',
+  SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
+  SpaceCommunityInvitationVc = 'SPACE_COMMUNITY_INVITATION_VC',
+  SpaceCommunityNewMember = 'SPACE_COMMUNITY_NEW_MEMBER',
+  SpaceCommunityNewMemberAdmin = 'SPACE_COMMUNITY_NEW_MEMBER_ADMIN',
+  SpaceContactMessageRecipient = 'SPACE_CONTACT_MESSAGE_RECIPIENT',
+  SpaceContactMessageSender = 'SPACE_CONTACT_MESSAGE_SENDER',
+  SpacePostCommentCreated = 'SPACE_POST_COMMENT_CREATED',
+  SpacePostCreated = 'SPACE_POST_CREATED',
+  SpacePostCreatedAdmin = 'SPACE_POST_CREATED_ADMIN',
+  SpaceWhiteboardCreated = 'SPACE_WHITEBOARD_CREATED',
+  UserCommentReply = 'USER_COMMENT_REPLY',
+  UserMention = 'USER_MENTION',
+  UserMessageRecipient = 'USER_MESSAGE_RECIPIENT',
+  UserMessageSender = 'USER_MESSAGE_SENDER',
+}
+
 export type NotificationRecipientResult = {
   /** The email recipients for the notification. */
   emailRecipients: Array<User>;
@@ -4862,7 +4856,7 @@ export type NotificationRecipientsInput = {
   /** The ID of the entity to retrieve the recipients for. This could be a Space, Organization etc, and is specific to the event type. */
   entityID?: InputMaybe<Scalars['UUID']['input']>;
   /** The type of notification setting to look up recipients for. */
-  eventType: UserNotificationEvent;
+  eventType: NotificationEvent;
   /** The ID of the User that triggered the event. */
   triggeredBy?: InputMaybe<Scalars['UUID']['input']>;
 };
@@ -7323,6 +7317,8 @@ export type UpdateUserSettingsNotificationInput = {
   platform?: InputMaybe<UpdateUserSettingsNotificationPlatformInput>;
   /** Settings related to Space Notifications. */
   space?: InputMaybe<UpdateUserSettingsNotificationSpaceInput>;
+  /** Settings related to User Notifications. */
+  user?: InputMaybe<UpdateUserSettingsNotificationUserInput>;
 };
 
 export type UpdateUserSettingsNotificationOrganizationInput = {
@@ -7374,6 +7370,17 @@ export type UpdateUserSettingsNotificationSpaceInput = {
   postCreatedAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification when a whiteboard is created */
   whiteboardCreated?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateUserSettingsNotificationUserInput = {
+  /** Receive a notification when someone replies to a comment I made. */
+  commentReply?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification you are mentioned */
+  mentioned?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive notification when I receive a message. */
+  messageReceived?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive notification I send a message. */
+  messageSent?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateUserSettingsPrivacyInput = {
@@ -7600,32 +7607,6 @@ export type UserGroup = {
   updatedDate: Scalars['DateTime']['output'];
 };
 
-export enum UserNotificationEvent {
-  OrganizationMentioned = 'ORGANIZATION_MENTIONED',
-  OrganizationMessageReceived = 'ORGANIZATION_MESSAGE_RECEIVED',
-  OrganizationMessageSent = 'ORGANIZATION_MESSAGE_SENT',
-  PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
-  PlatformForumDiscussionCreated = 'PLATFORM_FORUM_DISCUSSION_CREATED',
-  PlatformNewUserSignUp = 'PLATFORM_NEW_USER_SIGN_UP',
-  PlatformNewUserSignUpAdmin = 'PLATFORM_NEW_USER_SIGN_UP_ADMIN',
-  PlatformSpaceCreated = 'PLATFORM_SPACE_CREATED',
-  PlatformUserProfileRemoved = 'PLATFORM_USER_PROFILE_REMOVED',
-  SpaceCalloutPublished = 'SPACE_CALLOUT_PUBLISHED',
-  SpaceCommentReply = 'SPACE_COMMENT_REPLY',
-  SpaceCommunicationMention = 'SPACE_COMMUNICATION_MENTION',
-  SpaceCommunicationUpdates = 'SPACE_COMMUNICATION_UPDATES',
-  SpaceCommunicationUpdatesAdmin = 'SPACE_COMMUNICATION_UPDATES_ADMIN',
-  SpaceCommunityApplicationReceived = 'SPACE_COMMUNITY_APPLICATION_RECEIVED',
-  SpaceCommunityApplicationSubmitted = 'SPACE_COMMUNITY_APPLICATION_SUBMITTED',
-  SpaceCommunityInvitationUser = 'SPACE_COMMUNITY_INVITATION_USER',
-  SpaceCommunityNewMember = 'SPACE_COMMUNITY_NEW_MEMBER',
-  SpaceCommunityNewMemberAdmin = 'SPACE_COMMUNITY_NEW_MEMBER_ADMIN',
-  SpacePostCommentCreated = 'SPACE_POST_COMMENT_CREATED',
-  SpacePostCreated = 'SPACE_POST_CREATED',
-  SpacePostCreatedAdmin = 'SPACE_POST_CREATED_ADMIN',
-  SpaceWhiteboardCreated = 'SPACE_WHITEBOARD_CREATED',
-}
-
 export type UserSendMessageInput = {
   /** The message being sent */
   message: Scalars['String']['input'];
@@ -7662,6 +7643,8 @@ export type UserSettingsNotification = {
   platform: UserSettingsNotificationPlatform;
   /** The notifications settings for Space events for this User */
   space: UserSettingsNotificationSpace;
+  /** The notifications settings for User events for this User */
+  user: UserSettingsNotificationUser;
 };
 
 export type UserSettingsNotificationOrganization = {
@@ -7713,6 +7696,17 @@ export type UserSettingsNotificationSpace = {
   postCreatedAdmin: Scalars['Boolean']['output'];
   /** Receive a notification when a whiteboard is created */
   whiteboardCreated: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsNotificationUser = {
+  /** Receive a notification when someone replies to a comment I made. */
+  commentReply: Scalars['Boolean']['output'];
+  /** Receive a notification you are mentioned */
+  mentioned: Scalars['Boolean']['output'];
+  /** Receive notification when I receive a message. */
+  messageReceived: Scalars['Boolean']['output'];
+  /** Receive notification I send a message. */
+  messageSent: Scalars['Boolean']['output'];
 };
 
 export type UserSettingsPrivacy = {
@@ -8474,7 +8468,6 @@ export type ResolversTypes = {
   CalloutSettings: ResolverTypeWrapper<CalloutSettings>;
   CalloutSettingsContribution: ResolverTypeWrapper<CalloutSettingsContribution>;
   CalloutSettingsFraming: ResolverTypeWrapper<CalloutSettingsFraming>;
-  CalloutType: CalloutType;
   CalloutVisibility: CalloutVisibility;
   CalloutsSet: ResolverTypeWrapper<
     Omit<CalloutsSet, 'callouts'> & {
@@ -8758,7 +8751,6 @@ export type ResolversTypes = {
       triggeredBy?: Maybe<ResolversTypes['Contributor']>;
     }
   >;
-  InAppNotificationEventType: InAppNotificationEventType;
   InAppNotificationState: InAppNotificationState;
   InAppNotificationUserMentioned: ResolverTypeWrapper<
     Omit<InAppNotificationUserMentioned, 'receiver' | 'triggeredBy'> & {
@@ -8975,6 +8967,7 @@ export type ResolversTypes = {
   >;
   NVP: ResolverTypeWrapper<Nvp>;
   NameID: ResolverTypeWrapper<Scalars['NameID']['output']>;
+  NotificationEvent: NotificationEvent;
   NotificationRecipientResult: ResolverTypeWrapper<
     Omit<
       NotificationRecipientResult,
@@ -9470,6 +9463,7 @@ export type ResolversTypes = {
   UpdateUserSettingsNotificationOrganizationInput: UpdateUserSettingsNotificationOrganizationInput;
   UpdateUserSettingsNotificationPlatformInput: UpdateUserSettingsNotificationPlatformInput;
   UpdateUserSettingsNotificationSpaceInput: UpdateUserSettingsNotificationSpaceInput;
+  UpdateUserSettingsNotificationUserInput: UpdateUserSettingsNotificationUserInput;
   UpdateUserSettingsPrivacyInput: UpdateUserSettingsPrivacyInput;
   UpdateVirtualContributorInput: UpdateVirtualContributorInput;
   UpdateVirtualContributorSettingsEntityInput: UpdateVirtualContributorSettingsEntityInput;
@@ -9510,7 +9504,6 @@ export type ResolversTypes = {
       profile?: Maybe<ResolversTypes['Profile']>;
     }
   >;
-  UserNotificationEvent: UserNotificationEvent;
   UserSendMessageInput: UserSendMessageInput;
   UserSettings: ResolverTypeWrapper<UserSettings>;
   UserSettingsCommunication: ResolverTypeWrapper<UserSettingsCommunication>;
@@ -9518,6 +9511,7 @@ export type ResolversTypes = {
   UserSettingsNotificationOrganization: ResolverTypeWrapper<UserSettingsNotificationOrganization>;
   UserSettingsNotificationPlatform: ResolverTypeWrapper<UserSettingsNotificationPlatform>;
   UserSettingsNotificationSpace: ResolverTypeWrapper<UserSettingsNotificationSpace>;
+  UserSettingsNotificationUser: ResolverTypeWrapper<UserSettingsNotificationUser>;
   UserSettingsPrivacy: ResolverTypeWrapper<UserSettingsPrivacy>;
   UsersInRolesResponse: ResolverTypeWrapper<
     Omit<UsersInRolesResponse, 'users'> & {
@@ -10654,6 +10648,7 @@ export type ResolversParentTypes = {
   UpdateUserSettingsNotificationOrganizationInput: UpdateUserSettingsNotificationOrganizationInput;
   UpdateUserSettingsNotificationPlatformInput: UpdateUserSettingsNotificationPlatformInput;
   UpdateUserSettingsNotificationSpaceInput: UpdateUserSettingsNotificationSpaceInput;
+  UpdateUserSettingsNotificationUserInput: UpdateUserSettingsNotificationUserInput;
   UpdateUserSettingsPrivacyInput: UpdateUserSettingsPrivacyInput;
   UpdateVirtualContributorInput: UpdateVirtualContributorInput;
   UpdateVirtualContributorSettingsEntityInput: UpdateVirtualContributorSettingsEntityInput;
@@ -10696,6 +10691,7 @@ export type ResolversParentTypes = {
   UserSettingsNotificationOrganization: UserSettingsNotificationOrganization;
   UserSettingsNotificationPlatform: UserSettingsNotificationPlatform;
   UserSettingsNotificationSpace: UserSettingsNotificationSpace;
+  UserSettingsNotificationUser: UserSettingsNotificationUser;
   UserSettingsPrivacy: UserSettingsPrivacy;
   UsersInRolesResponse: Omit<UsersInRolesResponse, 'users'> & {
     users: Array<ResolversParentTypes['User']>;
@@ -11660,7 +11656,6 @@ export type CalloutResolvers<
     ContextType
   >;
   sortOrder?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['CalloutType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -13033,11 +13028,7 @@ export type InAppNotificationResolvers<
     ParentType,
     ContextType
   >;
-  type?: Resolver<
-    ResolversTypes['InAppNotificationEventType'],
-    ParentType,
-    ContextType
-  >;
+  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
 };
 
 export type InAppNotificationCalloutPublishedResolvers<
@@ -13065,11 +13056,7 @@ export type InAppNotificationCalloutPublishedResolvers<
     ParentType,
     ContextType
   >;
-  type?: Resolver<
-    ResolversTypes['InAppNotificationEventType'],
-    ParentType,
-    ContextType
-  >;
+  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -13107,11 +13094,7 @@ export type InAppNotificationCommunityNewMemberResolvers<
     ParentType,
     ContextType
   >;
-  type?: Resolver<
-    ResolversTypes['InAppNotificationEventType'],
-    ParentType,
-    ContextType
-  >;
+  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -13150,11 +13133,7 @@ export type InAppNotificationUserMentionedResolvers<
     ParentType,
     ContextType
   >;
-  type?: Resolver<
-    ResolversTypes['InAppNotificationEventType'],
-    ParentType,
-    ContextType
-  >;
+  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -18016,6 +17995,11 @@ export type UserSettingsNotificationResolvers<
     ParentType,
     ContextType
   >;
+  user?: Resolver<
+    ResolversTypes['UserSettingsNotificationUser'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -18125,6 +18109,22 @@ export type UserSettingsNotificationSpaceResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsNotificationUserResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['UserSettingsNotificationUser'] = ResolversParentTypes['UserSettingsNotificationUser'],
+> = {
+  commentReply?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  mentioned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  messageReceived?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  messageSent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -18630,6 +18630,7 @@ export type Resolvers<ContextType = any> = {
   UserSettingsNotificationOrganization?: UserSettingsNotificationOrganizationResolvers<ContextType>;
   UserSettingsNotificationPlatform?: UserSettingsNotificationPlatformResolvers<ContextType>;
   UserSettingsNotificationSpace?: UserSettingsNotificationSpaceResolvers<ContextType>;
+  UserSettingsNotificationUser?: UserSettingsNotificationUserResolvers<ContextType>;
   UserSettingsPrivacy?: UserSettingsPrivacyResolvers<ContextType>;
   UsersInRolesResponse?: UsersInRolesResponseResolvers<ContextType>;
   VcInteraction?: VcInteractionResolvers<ContextType>;
@@ -18661,7 +18662,7 @@ export type FeatureFlagsQuery = {
 };
 
 export type NotificationRecipientsQueryVariables = Exact<{
-  eventType: UserNotificationEvent;
+  eventType: NotificationEvent;
   entityId?: InputMaybe<Scalars['UUID']['input']>;
   triggeredBy?: InputMaybe<Scalars['UUID']['input']>;
 }>;

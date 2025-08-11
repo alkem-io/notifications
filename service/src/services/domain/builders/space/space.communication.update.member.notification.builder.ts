@@ -2,47 +2,49 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
+import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
+import { SpaceCommunicationUpdateEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { PlatformForumDiscussionCommentEmailPayload } from '@src/common/email-template-payload/platform.forum.discussion.comment.email.payload';
+import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
+
 @Injectable()
-export class PlatformForumDiscussionCommentNotificationBuilder
+export class SpaceCommunicationUpdateMemberNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT;
+  emailTemplate = EmailTemplate.SPACE_COMMUNICATION_UPDATE_MEMBER;
 
   createEmailTemplatePayload(
-    eventPayload: PlatformForumDiscussionCommentEventPayload,
+    eventPayload: SpaceCommunicationUpdateEventPayload,
     recipient: User | PlatformUser,
     sender?: User
-  ): PlatformForumDiscussionCommentEmailPayload {
+  ): CommunicationUpdateCreatedEmailPayload {
     if (!sender) {
       throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
     }
 
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const result: PlatformForumDiscussionCommentEmailPayload = {
-      comment: {
-        createdBy: eventPayload.comment.createdBy.id,
-        message: eventPayload.comment.message,
-      },
-      discussion: {
-        displayName: eventPayload.discussion.displayName,
-        createdBy: eventPayload.discussion.createdBy.id,
-        url: eventPayload.discussion.url,
+
+    return {
+      sender: {
+        firstName: sender.firstName,
       },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
+      space: {
+        displayName: eventPayload.space.profile.displayName,
+        level: eventPayload.space.level,
+        url: eventPayload.space.profile.url,
+      },
       platform: {
         url: eventPayload.platform.url,
       },
+      message: convertMarkdownToHtml(eventPayload.message ?? ''),
     };
-    return result;
   }
 }

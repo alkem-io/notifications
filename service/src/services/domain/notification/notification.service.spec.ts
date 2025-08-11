@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { CommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
+import { SpaceCommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { ALKEMIO_CLIENT_ADAPTER, NOTIFICATIONS_PROVIDER } from '@common/enums';
 import * as spaceAdminsL1Data from '@test/data/space.admins.l1.json';
 import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
@@ -11,21 +11,21 @@ import { NotificationService } from './notification.service';
 import { ConfigService } from '@nestjs/config';
 import {
   PlatformUserRegisteredNotificationBuilder,
-  CommunicationUpdateCreatedNotificationBuilder,
+  SpaceCommunicationUpdateCreatedMemberNotificationBuilder,
   PlatformForumDiscussionCreatedNotificationBuilder,
   UserMessageNotificationBuilder,
   OrganizationMessageNotificationBuilder,
-  CommunicationCommunityLeadsMessageNotificationBuilder,
-  CommunicationUserMentionNotificationBuilder,
+  SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
+  UserMentionNotificationBuilder,
   OrganizationMentionNotificationBuilder,
   CommunityNewMemberNotificationBuilder,
-  CollaborationPostCreatedNotificationBuilder,
+  SpaceCollaborationPostCreatedMemberNotificationBuilder,
   CollaborationPostCommentNotificationBuilder,
-  CollaborationCalloutPublishedNotificationBuilder,
+  SpaceCollaborationCalloutPublishedNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
-  CommunityInvitationCreatedNotificationBuilder,
-  CommentReplyNotificationBuilder,
+  SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+  UserCommentReplyNotificationBuilder,
   CommunityPlatformInvitationCreatedNotificationBuilder,
 } from '../builders';
 import {
@@ -34,9 +34,9 @@ import {
   MockNotifmeProvider,
   MockWinstonProvider,
 } from '@test/mocks';
-import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/collaboration.whiteboard.created.notification.builder';
+import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/space.collaboration.whiteboard.created.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
-import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/community.invitation.virtual.contributor.created.notification.builder';
+import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/space.community.invitation.virtual.contributor.created.notification.builder';
 import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
@@ -62,25 +62,25 @@ describe('NotificationService', () => {
         MockNotifmeProvider,
         MockWinstonProvider,
         NotificationService,
-        CommunityInvitationCreatedNotificationBuilder,
+        SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
         CommunityPlatformInvitationCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
         PlatformForumDiscussionCommentNotificationBuilder,
         PlatformUserRemovedNotificationBuilder,
-        CommunicationUpdateCreatedNotificationBuilder,
+        SpaceCommunicationUpdateCreatedMemberNotificationBuilder,
         PlatformForumDiscussionCreatedNotificationBuilder,
-        CommunicationCommunityLeadsMessageNotificationBuilder,
-        CommunicationUserMentionNotificationBuilder,
+        SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
+        UserMentionNotificationBuilder,
         OrganizationMessageNotificationBuilder,
         OrganizationMentionNotificationBuilder,
         CommunityNewMemberNotificationBuilder,
-        CollaborationWhiteboardCreatedNotificationBuilder,
-        CollaborationPostCreatedNotificationBuilder,
+        SpaceCollaborationWhiteboardCreatedNotificationBuilder,
+        SpaceCollaborationPostCreatedMemberNotificationBuilder,
         CollaborationPostCommentNotificationBuilder,
-        CollaborationCalloutPublishedNotificationBuilder,
-        CommentReplyNotificationBuilder,
+        SpaceCollaborationCalloutPublishedNotificationBuilder,
+        UserCommentReplyNotificationBuilder,
         PlatformGlobalRoleChangeNotificationBuilder,
-        CommunityInvitationVirtualContributorCreatedNotificationBuilder,
+        SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
         MockConfigServiceProvider,
         MockAlkemioClientAdapterProvider,
         AlkemioUrlGenerator,
@@ -127,7 +127,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as CommunityApplicationCreatedEventPayload
+        testData.data as SpaceCommunityApplicationCreatedEventPayload
       );
       for (const notificationStatus of res) {
         expect(
@@ -145,7 +145,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as CommunityApplicationCreatedEventPayload
+        testData.data as SpaceCommunityApplicationCreatedEventPayload
       );
 
       for (const notificationStatus of res) {
@@ -164,7 +164,7 @@ describe('NotificationService', () => {
         .mockResolvedValue(false);
 
       const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as CommunityApplicationCreatedEventPayload
+        testData.data as SpaceCommunityApplicationCreatedEventPayload
       );
 
       expect(res.length).toBe(0); //shouldn't have any notifications sent
