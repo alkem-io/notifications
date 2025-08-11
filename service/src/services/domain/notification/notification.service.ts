@@ -338,8 +338,7 @@ export class NotificationService {
     for (const recipient of payload.recipients) {
       const templatePayload = builder.createEmailTemplatePayload(
         payload,
-        recipient,
-        recipientSet.subjectUser
+        recipient
       );
       const emailNotificationTemplate =
         this.notificationTemplateBuilder.buildTemplate(

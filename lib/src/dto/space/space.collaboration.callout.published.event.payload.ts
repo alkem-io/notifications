@@ -6,7 +6,6 @@ export interface SpaceCollaborationCalloutPublishedEventPayload extends SpaceBas
     displayName: string;
     description: string;
     nameID: string;
-    type: string;
     url: string;
   };
 }

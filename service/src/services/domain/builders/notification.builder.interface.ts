@@ -7,7 +7,6 @@ export interface INotificationBuilder {
 
   createEmailTemplatePayload(
     eventPayload: BaseEventPayload,
-    recipient: User | PlatformUser,
-    contributor?: User
+    recipient: User | PlatformUser
   ): BaseEmailPayload;
 }

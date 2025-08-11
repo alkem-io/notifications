@@ -5,7 +5,7 @@ export * from './space.communication.update.event.payload';
 export * from './space.community.application.created.event.payload';
 export * from './space.community.new.member.payload';
 export * from './space.community.invitation.created.event.payload';
-export * from './space.community.platform.invitation.created.event.payload';
+export * from './space.community.invitation.platform.created.event.payload';
 export * from './space.collaboration.whiteboard.created.event.payload';
 export * from './space.collaboration.post.created.event.payload';
 export * from './space.collaboration.post.comment.event.payload';

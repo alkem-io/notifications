@@ -1,7 +1,7 @@
 import { BaseEventPayload } from "../base.event.payload";
-import { ContributorPayload } from "../contributor.payload";
+import { UserPayload } from "../user.payload";
 
 export interface UserBaseEventPayload
   extends BaseEventPayload {
-  user: ContributorPayload;
+  user: UserPayload;
 }

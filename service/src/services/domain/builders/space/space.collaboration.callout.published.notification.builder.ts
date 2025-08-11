@@ -40,7 +40,7 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
       callout: {
         displayName: eventPayload.callout.displayName,
         url: calloutURL,
-        type: eventPayload.callout.type,
+        type: 'not specified',
       },
       space: {
         displayName: eventPayload.space.profile.displayName,
