@@ -9,7 +9,7 @@ import { ConfigurationTypes } from '@src/common/enums';
 import { INotificationBuilder } from '../notification.builder.interface';
 
 @Injectable()
-export class CommunityPlatformInvitationCreatedNotificationBuilder
+export class SpaceCommunityInvitationPlatformCreatedNotificationBuilder
   implements INotificationBuilder
 {
   invitationsPath: string;

@@ -17,9 +17,9 @@ import {
 } from '@src/services/external';
 import {
   PlatformForumDiscussionCreatedNotificationBuilder,
-  CommunityNewMemberNotificationBuilder,
+  SpaceCommunityNewMemberNotificationBuilder,
   SpaceCollaborationPostCreatedMemberNotificationBuilder,
-  CollaborationPostCommentNotificationBuilder,
+  SpaceCollaborationPostCommentNotificationBuilder,
   SpaceCollaborationCalloutPublishedNotificationBuilder,
   PlatformUserRegisteredNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
@@ -31,19 +31,18 @@ import {
   UserMessageRecipientNotificationBuilder,
   OrganizationMessageRecipientNotificationBuilder,
   UserMessageSenderNotificationBuilder,
+  OrganizationMessageSenderNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/space/space.collaboration.whiteboard.created.notification.builder';
 import { SpaceCommunityInvitationCreatedInviteeNotificationBuilder } from './services/domain/builders/space/space.community.invitation.created.notification.builder';
 import { UserCommentReplyNotificationBuilder } from './services/domain/builders/user/user.comment.reply.notification.builder';
-import { CommunityPlatformInvitationCreatedNotificationBuilder } from './services/domain/builders/space/space.community.platform.invitation.created.notification.builder';
+import { SpaceCommunityInvitationPlatformCreatedNotificationBuilder } from './services/domain/builders/space/space.community.platform.invitation.created.notification.builder';
 import { AlkemioUrlGeneratorModule } from './services/application/alkemio-url-generator/alkemio.url.generator.module';
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform/platform.global.role.change.notification.builder';
 import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/space/space.community.invitation.virtual.contributor.created.notification.builder';
 import { HealthController } from './health.controller';
 import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/builders/platform/platform.space.created.notification.builder';
-
-import { InAppDispatcher } from './services/dispatchers/in-app';
 import { AlkemioUrlGenerator } from './services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Module({
@@ -68,32 +67,31 @@ import { AlkemioUrlGenerator } from './services/application/alkemio-url-generato
     },
     AlkemioClientAdapter,
     NotificationTemplateBuilder,
+    NotificationService,
     AlkemioUrlGenerator,
     SpaceCommunityApplicationCreatedAdminNotificationBuilder,
     SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
-    CommunityPlatformInvitationCreatedNotificationBuilder,
+    SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
+    SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
+    SpaceCommunicationUpdateMemberNotificationBuilder,
+    SpaceCommunityNewMemberNotificationBuilder,
+    SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
+    SpaceCollaborationWhiteboardCreatedNotificationBuilder,
+    SpaceCollaborationPostCreatedMemberNotificationBuilder,
+    SpaceCollaborationPostCommentNotificationBuilder,
+    SpaceCollaborationCalloutPublishedNotificationBuilder,
     PlatformGlobalRoleChangeNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
-    SpaceCommunicationUpdateMemberNotificationBuilder,
     PlatformForumDiscussionCreatedNotificationBuilder,
+    PlatformSpaceCreatedNotificationBuilder,
+    OrganizationMentionNotificationBuilder,
+    OrganizationMessageRecipientNotificationBuilder,
+    OrganizationMessageSenderNotificationBuilder,
     UserMessageRecipientNotificationBuilder,
     UserMessageSenderNotificationBuilder,
-    OrganizationMessageRecipientNotificationBuilder,
-    SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
     UserMentionNotificationBuilder,
-    OrganizationMentionNotificationBuilder,
-    CommunityNewMemberNotificationBuilder,
-    SpaceCollaborationWhiteboardCreatedNotificationBuilder,
-    SpaceCollaborationPostCreatedMemberNotificationBuilder,
-    CollaborationPostCommentNotificationBuilder,
-    SpaceCollaborationCalloutPublishedNotificationBuilder,
     UserCommentReplyNotificationBuilder,
-    NotificationService,
-    SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
-    PlatformSpaceCreatedNotificationBuilder,
-    //
-    InAppDispatcher,
   ],
   controllers: [AppController, HealthController],
 })

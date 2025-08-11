@@ -34,7 +34,7 @@ import {
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import {
   SpaceCollaborationCalloutPublishedNotificationBuilder,
-  CollaborationPostCommentNotificationBuilder,
+  SpaceCollaborationPostCommentNotificationBuilder,
   SpaceCollaborationPostCreatedMemberNotificationBuilder,
   SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
   OrganizationMentionNotificationBuilder,
@@ -47,8 +47,8 @@ import {
   UserMessageSenderNotificationBuilder,
   SpaceCommunityApplicationCreatedAdminNotificationBuilder,
   SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
-  CommunityNewMemberNotificationBuilder,
-  CommunityPlatformInvitationCreatedNotificationBuilder,
+  SpaceCommunityNewMemberNotificationBuilder,
+  SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   PlatformForumDiscussionCreatedNotificationBuilder,
   PlatformUserRegisteredNotificationBuilder,
@@ -62,7 +62,6 @@ import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } 
 import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
-import { InAppDispatcher } from '@src/services/dispatchers/in-app/in.app.dispatcher';
 import { INotificationBuilder } from '../builders/notification.builder.interface';
 @Injectable()
 export class NotificationService {
@@ -74,16 +73,16 @@ export class NotificationService {
     private readonly configService: ConfigService,
     private communityApplicationCreatedNotificationBuilder: SpaceCommunityApplicationCreatedAdminNotificationBuilder,
     private communityInvitationCreatedNotificationBuilder: SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
-    private communityPlatformInvitationCreatedNotificationBuilder: CommunityPlatformInvitationCreatedNotificationBuilder,
+    private communityPlatformInvitationCreatedNotificationBuilder: SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateMemberNotificationBuilder,
     private spaceCommunicationUpdateAdminNotificationBuilder: SpaceCommunicationUpdateAdminNotificationBuilder,
     private communicationDiscussionCreatedNotificationBuilder: PlatformForumDiscussionCreatedNotificationBuilder,
     private communicationCommunityLeadsMessageNotificationBuilder: SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
     private communicationUserMentionNotificationBuilder: UserMentionNotificationBuilder,
-    private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
+    private communityNewMemberNotificationBuilder: SpaceCommunityNewMemberNotificationBuilder,
     private collaborationWhiteboardCreatedNotificationBuilder: SpaceCollaborationWhiteboardCreatedNotificationBuilder,
     private collaborationPostCreatedNotificationBuilder: SpaceCollaborationPostCreatedMemberNotificationBuilder,
-    private collaborationPostCommentNotificationBuilder: CollaborationPostCommentNotificationBuilder,
+    private collaborationPostCommentNotificationBuilder: SpaceCollaborationPostCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: SpaceCollaborationCalloutPublishedNotificationBuilder,
     private commentReplyNotificationBuilder: UserCommentReplyNotificationBuilder,
     private communityInvitationVirtualContributorCreatedNotificationBuilder: SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
@@ -97,8 +96,7 @@ export class NotificationService {
     private organizationMentionNotificationBuilder: OrganizationMentionNotificationBuilder,
     private userMessageRecipientNotificationBuilder: UserMessageRecipientNotificationBuilder,
     private userMessageSenderNotificationBuilder: UserMessageSenderNotificationBuilder,
-    private notificationTemplateBuilder: NotificationTemplateBuilder,
-    private readonly inAppDispatcher: InAppDispatcher
+    private notificationTemplateBuilder: NotificationTemplateBuilder
   ) {}
 
   private async processNotificationEvent(

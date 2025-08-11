@@ -7,8 +7,6 @@ export const MockApplicationCreatedBuilderProvider: ValueProvider<
 > = {
   provide: SpaceCommunityApplicationCreatedAdminNotificationBuilder,
   useValue: {
-    getEventRecipientSets: jest.fn(),
     createEmailTemplatePayload: jest.fn(),
-    createInAppTemplatePayload: jest.fn(),
   },
 };

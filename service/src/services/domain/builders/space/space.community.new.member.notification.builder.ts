@@ -8,7 +8,7 @@ import { SpaceCommunityNewMemberPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
-export class CommunityNewMemberNotificationBuilder
+export class SpaceCommunityNewMemberNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
