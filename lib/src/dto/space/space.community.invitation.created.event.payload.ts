@@ -1,7 +1,7 @@
-import { ContributorPayload } from './type/contributor.payload';
+import { ContributorPayload } from '../contributor.payload';
 import { SpaceBaseEventPayload } from './space.base.event.payload';
 
-export interface CommunityInvitationCreatedEventPayload
+export interface SpaceCommunityInvitationCreatedEventPayload
   extends SpaceBaseEventPayload {
   invitee: ContributorPayload;
   welcomeMessage?: string;

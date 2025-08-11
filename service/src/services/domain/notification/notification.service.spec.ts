@@ -35,7 +35,6 @@ import {
   MockWinstonProvider,
 } from '@test/mocks';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/collaboration.whiteboard.created.notification.builder';
-import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/space/collaboration.discussion.comment.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/community.invitation.virtual.contributor.created.notification.builder';
 import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
@@ -78,7 +77,6 @@ describe('NotificationService', () => {
         CollaborationWhiteboardCreatedNotificationBuilder,
         CollaborationPostCreatedNotificationBuilder,
         CollaborationPostCommentNotificationBuilder,
-        CollaborationDiscussionCommentNotificationBuilder,
         CollaborationCalloutPublishedNotificationBuilder,
         CommentReplyNotificationBuilder,
         PlatformGlobalRoleChangeNotificationBuilder,

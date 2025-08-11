@@ -1,8 +1,8 @@
-import { BaseEventPayload } from "./base.event.payload";
-import { ContributorPayload } from "./type/contributor.payload";
+import { ContributorPayload } from "../contributor.payload";
+import { PlatformBaseEventPayload } from "./platform.base.event.payload";
 
 export interface PlatformUserInvitedToRoleEventPayload
-  extends BaseEventPayload {
+  extends PlatformBaseEventPayload {
     user: ContributorPayload;
     role: string;
     invitees: {

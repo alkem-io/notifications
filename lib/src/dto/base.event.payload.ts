@@ -1,6 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+import { ContributorPayload } from "./contributor.payload";
+
 export interface BaseEventPayload {
-    triggeredBy: string;
+    eventType: string;
+    triggeredBy: ContributorPayload;
+    recipients: ContributorPayload[];
     platform: {
         url: string;
     }

@@ -3,7 +3,6 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCommentEventPayload } from '@alkemio/notifications-lib';
-import { PlatformForumDiscussionCommentEmailPayload } from '@common/email-template-payload';
 import { NotificationEventType } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
@@ -14,6 +13,7 @@ import {
   InAppNotificationEventType,
 } from '@src/generated/graphql';
 import { InAppNotificationPayloadBase } from '@src/types/in-app';
+import { PlatformForumDiscussionCommentEmailPayload } from '@src/common/email-template-payload/platform.forum.discussion.comment.email.payload';
 @Injectable()
 export class PlatformForumDiscussionCommentNotificationBuilder
   implements INotificationBuilder

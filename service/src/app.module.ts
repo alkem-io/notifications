@@ -6,8 +6,15 @@ import { AppController } from './app.controller';
 import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
-import { AlkemioClientAdapter, AlkemioClientAdapterModule } from '@src/services';
-import { AlkemioClientModule, NotificationTemplateBuilder, NotifmeModule } from '@src/services/external';
+import {
+  AlkemioClientAdapter,
+  AlkemioClientAdapterModule,
+} from '@src/services';
+import {
+  AlkemioClientModule,
+  NotificationTemplateBuilder,
+  NotifmeModule,
+} from '@src/services/external';
 import {
   PlatformForumDiscussionCreatedNotificationBuilder,
   CommunicationUpdateCreatedNotificationBuilder,
@@ -22,12 +29,10 @@ import {
   CommunicationCommunityLeadsMessageNotificationBuilder,
   CommunicationUserMentionNotificationBuilder,
   OrganizationMentionNotificationBuilder,
-  PlatformForumDiscussionCommentNotificationBuilder,
   CommunityApplicationCreatedNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/space/collaboration.whiteboard.created.notification.builder';
-import { CollaborationDiscussionCommentNotificationBuilder } from './services/domain/builders/space/collaboration.discussion.comment.notification.builder';
 import { CommunityInvitationCreatedNotificationBuilder } from './services/domain/builders/space/community.invitation.created.notification.builder';
 import { CommentReplyNotificationBuilder } from './services/domain/builders/space/comment.reply.notification.builder';
 import { CommunityPlatformInvitationCreatedNotificationBuilder } from './services/domain/builders/space/community.platform.invitation.created.notification.builder';
@@ -39,7 +44,6 @@ import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/build
 
 import { InAppDispatcher } from './services/dispatchers/in-app';
 import { AlkemioUrlGenerator } from './services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClient } from '@alkemio/client-lib';
 
 @Module({
   imports: [
@@ -70,7 +74,6 @@ import { AlkemioClient } from '@alkemio/client-lib';
     PlatformGlobalRoleChangeNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
-    PlatformForumDiscussionCommentNotificationBuilder,
     CommunicationUpdateCreatedNotificationBuilder,
     PlatformForumDiscussionCreatedNotificationBuilder,
     UserMessageNotificationBuilder,
@@ -82,7 +85,6 @@ import { AlkemioClient } from '@alkemio/client-lib';
     CollaborationWhiteboardCreatedNotificationBuilder,
     CollaborationPostCreatedNotificationBuilder,
     CollaborationPostCommentNotificationBuilder,
-    CollaborationDiscussionCommentNotificationBuilder,
     CollaborationCalloutPublishedNotificationBuilder,
     CommentReplyNotificationBuilder,
     NotificationService,

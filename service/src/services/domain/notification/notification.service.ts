@@ -9,7 +9,6 @@ import {
 import {
   BaseEventPayload,
   CollaborationCalloutPublishedEventPayload,
-  CollaborationDiscussionCommentEventPayload,
   CollaborationPostCommentEventPayload,
   CollaborationPostCreatedEventPayload,
   CollaborationWhiteboardCreatedEventPayload,
@@ -55,7 +54,6 @@ import {
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform/platform.user.removed.notification.builder';
 import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/collaboration.whiteboard.created.notification.builder';
-import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/space/collaboration.discussion.comment.notification.builder';
 import { CommentReplyNotificationBuilder } from '../builders/space/comment.reply.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
 import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/community.invitation.virtual.contributor.created.notification.builder';
@@ -87,7 +85,6 @@ export class NotificationService {
     private collaborationPostCreatedNotificationBuilder: CollaborationPostCreatedNotificationBuilder,
     private collaborationPostCommentNotificationBuilder: CollaborationPostCommentNotificationBuilder,
     private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
-    private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
     private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
     private communityInvitationVirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder,
     private platformGlobalRoleChangeNotificationBuilder: PlatformGlobalRoleChangeNotificationBuilder,
@@ -289,15 +286,6 @@ export class NotificationService {
     return this.processNotificationEvent(
       payload,
       this.collaborationPostCommentNotificationBuilder
-    );
-  }
-
-  async sendDiscussionCommentCreatedNotification(
-    payload: CollaborationDiscussionCommentEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.processNotificationEvent(
-      payload,
-      this.collaborationDiscussionCommentNotificationBuilder
     );
   }
 

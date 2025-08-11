@@ -30,7 +30,7 @@ export class CommunityApplicationCreatedNotificationBuilder
   ): Promise<EventRecipientsSet[]> {
     const applicationSubmittedRecipients =
       await this.alkemioClientAdapter.getRecipients(
-        UserNotificationEvent.SpaceApplicationSubmitted,
+        UserNotificationEvent.SpaceCommunityApplicationSubmitted,
         payload.space.id,
         payload.triggeredBy
       );
@@ -38,7 +38,7 @@ export class CommunityApplicationCreatedNotificationBuilder
 
     const applicationReceivedRecipients =
       await this.alkemioClientAdapter.getRecipients(
-        UserNotificationEvent.SpaceApplicationReceived,
+        UserNotificationEvent.SpaceCommunityApplicationReceived,
         payload.space.id,
         payload.triggeredBy
       );

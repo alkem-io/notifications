@@ -27,7 +27,6 @@ import {
   CollaborationCalloutPublishedEventPayload,
   BaseEventPayload,
   CollaborationWhiteboardCreatedEventPayload,
-  CollaborationDiscussionCommentEventPayload,
   CommunityInvitationCreatedEventPayload,
   CommentReplyEventPayload,
   CommunityInvitationVirtualContributorCreatedEventPayload,
@@ -137,7 +136,9 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPlatformGlobalRoleChangeNotification(eventPayload),
+      this.notificationService.sendPlatformGlobalRoleChangeNotification(
+        eventPayload
+      ),
       NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE
     );
   }
@@ -151,7 +152,9 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPlatformUserRegisteredNotification(eventPayload),
+      this.notificationService.sendPlatformUserRegisteredNotification(
+        eventPayload
+      ),
       NotificationEventType.PLATFORM_USER_REGISTERED
     );
   }
@@ -165,7 +168,9 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPlatformUserRemovedNotification(eventPayload),
+      this.notificationService.sendPlatformUserRemovedNotification(
+        eventPayload
+      ),
       NotificationEventType.PLATFORM_USER_REMOVED
     );
   }
@@ -329,24 +334,6 @@ export class AppController {
       context,
       this.notificationService.sendPostCommentCreatedNotification(eventPayload),
       NotificationEventType.COLLABORATION_POST_COMMENT
-    );
-  }
-
-  @EventPattern(
-    NotificationEventType.COLLABORATION_DISCUSSION_COMMENT,
-    Transport.RMQ
-  )
-  async sendDiscussionCommentCreatedNotifications(
-    @Payload() eventPayload: CollaborationDiscussionCommentEventPayload,
-    @Ctx() context: RmqContext
-  ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendDiscussionCommentCreatedNotification(
-        eventPayload
-      ),
-      NotificationEventType.COLLABORATION_DISCUSSION_COMMENT
     );
   }
 
