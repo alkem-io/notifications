@@ -32,6 +32,9 @@ import {
   OrganizationMessageRecipientNotificationBuilder,
   UserMessageSenderNotificationBuilder,
   OrganizationMessageSenderNotificationBuilder,
+  SpaceCommunityApplicationApplicantNotificationBuilder,
+  SpaceCommunicationUpdateAdminNotificationBuilder,
+  PlatformForumDiscussionCommentNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/space/space.collaboration.whiteboard.created.notification.builder';
@@ -70,11 +73,13 @@ import { AlkemioUrlGenerator } from './services/application/alkemio-url-generato
     NotificationService,
     AlkemioUrlGenerator,
     SpaceCommunityApplicationCreatedAdminNotificationBuilder,
+    SpaceCommunityApplicationApplicantNotificationBuilder,
     SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
     SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
     SpaceCommunicationUpdateMemberNotificationBuilder,
     SpaceCommunityNewMemberNotificationBuilder,
+    SpaceCommunicationUpdateAdminNotificationBuilder,
     SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
     SpaceCollaborationWhiteboardCreatedNotificationBuilder,
     SpaceCollaborationPostCreatedMemberNotificationBuilder,
@@ -84,6 +89,7 @@ import { AlkemioUrlGenerator } from './services/application/alkemio-url-generato
     PlatformUserRegisteredNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
     PlatformForumDiscussionCreatedNotificationBuilder,
+    PlatformForumDiscussionCommentNotificationBuilder,
     PlatformSpaceCreatedNotificationBuilder,
     OrganizationMentionNotificationBuilder,
     OrganizationMessageRecipientNotificationBuilder,
