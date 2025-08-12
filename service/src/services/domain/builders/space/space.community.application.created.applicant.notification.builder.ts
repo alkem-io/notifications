@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 
 @Injectable()
-export class SpaceCommunityApplicationCreatedApplicantNotificationBuilder
+export class SpaceCommunityApplicationApplicantNotificationBuilder
   implements INotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}

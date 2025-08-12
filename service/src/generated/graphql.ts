@@ -4827,22 +4827,22 @@ export enum NotificationEvent {
   PlatformUserProfileCreated = 'PLATFORM_USER_PROFILE_CREATED',
   PlatformUserProfileCreatedAdmin = 'PLATFORM_USER_PROFILE_CREATED_ADMIN',
   PlatformUserProfileRemoved = 'PLATFORM_USER_PROFILE_REMOVED',
-  SpaceCalloutPublished = 'SPACE_CALLOUT_PUBLISHED',
+  SpaceCollaborationCalloutPublished = 'SPACE_COLLABORATION_CALLOUT_PUBLISHED',
+  SpaceCollaborationPostCommentCreated = 'SPACE_COLLABORATION_POST_COMMENT_CREATED',
+  SpaceCollaborationPostCreated = 'SPACE_COLLABORATION_POST_CREATED',
+  SpaceCollaborationPostCreatedAdmin = 'SPACE_COLLABORATION_POST_CREATED_ADMIN',
+  SpaceCollaborationWhiteboardCreated = 'SPACE_COLLABORATION_WHITEBOARD_CREATED',
+  SpaceCommunicationMessageRecipient = 'SPACE_COMMUNICATION_MESSAGE_RECIPIENT',
+  SpaceCommunicationMessageSender = 'SPACE_COMMUNICATION_MESSAGE_SENDER',
   SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
   SpaceCommunicationUpdateAdmin = 'SPACE_COMMUNICATION_UPDATE_ADMIN',
+  SpaceCommunityApplicationAdmin = 'SPACE_COMMUNITY_APPLICATION_ADMIN',
   SpaceCommunityApplicationApplicant = 'SPACE_COMMUNITY_APPLICATION_APPLICANT',
-  SpaceCommunityApplicationRecipient = 'SPACE_COMMUNITY_APPLICATION_RECIPIENT',
   SpaceCommunityInvitationUser = 'SPACE_COMMUNITY_INVITATION_USER',
   SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
   SpaceCommunityInvitationVc = 'SPACE_COMMUNITY_INVITATION_VC',
   SpaceCommunityNewMember = 'SPACE_COMMUNITY_NEW_MEMBER',
   SpaceCommunityNewMemberAdmin = 'SPACE_COMMUNITY_NEW_MEMBER_ADMIN',
-  SpaceContactMessageRecipient = 'SPACE_CONTACT_MESSAGE_RECIPIENT',
-  SpaceContactMessageSender = 'SPACE_CONTACT_MESSAGE_SENDER',
-  SpacePostCommentCreated = 'SPACE_POST_COMMENT_CREATED',
-  SpacePostCreated = 'SPACE_POST_CREATED',
-  SpacePostCreatedAdmin = 'SPACE_POST_CREATED_ADMIN',
-  SpaceWhiteboardCreated = 'SPACE_WHITEBOARD_CREATED',
   UserCommentReply = 'USER_COMMENT_REPLY',
   UserMention = 'USER_MENTION',
   UserMessageRecipient = 'USER_MESSAGE_RECIPIENT',
@@ -7348,34 +7348,34 @@ export type UpdateUserSettingsNotificationPlatformInput = {
 };
 
 export type UpdateUserSettingsNotificationSpaceInput = {
-  /** Receive a notification when an application is received */
-  applicationReceived?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when an application is submitted */
-  applicationSubmitted?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification when a callout is published */
-  calloutPublished?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when someone replies to your comment */
-  commentReply?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when mentioned in communication */
-  communicationMention?: InputMaybe<Scalars['Boolean']['input']>;
+  collaborationCalloutPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when a comment is created on a post */
+  collaborationPostCommentCreated?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when a post is created */
+  collaborationPostCreated?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when a post is created (admin) */
+  collaborationPostCreatedAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when a whiteboard is created */
+  collaborationWhiteboardCreated?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a copy of messages that I send to a Space */
+  communicationMessage?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when a message is sent to a Space I lead */
+  communicationMessageAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification for community updates */
   communicationUpdates?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification for community updates as admin */
   communicationUpdatesAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when an application is received */
+  communityApplicationReceived?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when an application is submitted */
+  communityApplicationSubmitted?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification for community invitation */
   communityInvitationUser?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification when a new member joins the community */
   communityNewMember?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification when a new member joins the community (admin) */
   communityNewMemberAdmin?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a comment is created on a post */
-  postCommentCreated?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a post is created */
-  postCreated?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a post is created (admin) */
-  postCreatedAdmin?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a whiteboard is created */
-  whiteboardCreated?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateUserSettingsNotificationUserInput = {
@@ -7674,34 +7674,34 @@ export type UserSettingsNotificationPlatform = {
 };
 
 export type UserSettingsNotificationSpace = {
-  /** Receive a notification when an application is received */
-  applicationReceived: Scalars['Boolean']['output'];
-  /** Receive a notification when an application is submitted */
-  applicationSubmitted: Scalars['Boolean']['output'];
   /** Receive a notification when a callout is published */
-  calloutPublished: Scalars['Boolean']['output'];
-  /** Receive a notification when someone replies to your comment */
-  commentReply: Scalars['Boolean']['output'];
-  /** Receive a notification when mentioned in communication */
-  communicationMention: Scalars['Boolean']['output'];
+  collaborationCalloutPublished: Scalars['Boolean']['output'];
+  /** Receive a notification when a comment is created on a post */
+  collaborationPostCommentCreated: Scalars['Boolean']['output'];
+  /** Receive a notification when a post is created */
+  collaborationPostCreated: Scalars['Boolean']['output'];
+  /** Receive a notification when a post is created (admin) */
+  collaborationPostCreatedAdmin: Scalars['Boolean']['output'];
+  /** Receive a notification when a whiteboard is created */
+  collaborationWhiteboardCreated: Scalars['Boolean']['output'];
+  /** Receive a copy of messages that I send to a Space */
+  communicationMessage: Scalars['Boolean']['output'];
+  /** Receive a notification when a message is sent to a Space I lead */
+  communicationMessageAdmin: Scalars['Boolean']['output'];
   /** Receive a notification for community updates */
   communicationUpdates: Scalars['Boolean']['output'];
   /** Receive a notification for community updates as Admin */
   communicationUpdatesAdmin: Scalars['Boolean']['output'];
+  /** Receive a notification when an application is received */
+  communityApplicationReceived: Scalars['Boolean']['output'];
+  /** Receive a notification when an application is submitted */
+  communityApplicationSubmitted: Scalars['Boolean']['output'];
   /** Receive a notification for community invitation */
   communityInvitationUser: Scalars['Boolean']['output'];
   /** Receive a notification when a new member joins the community */
   communityNewMember: Scalars['Boolean']['output'];
   /** Receive a notification when a new member joins the community (admin) */
   communityNewMemberAdmin: Scalars['Boolean']['output'];
-  /** Receive a notification when a comment is created on a post */
-  postCommentCreated: Scalars['Boolean']['output'];
-  /** Receive a notification when a post is created */
-  postCreated: Scalars['Boolean']['output'];
-  /** Receive a notification when a post is created (admin) */
-  postCreatedAdmin: Scalars['Boolean']['output'];
-  /** Receive a notification when a whiteboard is created */
-  whiteboardCreated: Scalars['Boolean']['output'];
 };
 
 export type UserSettingsNotificationUser = {
@@ -18776,23 +18776,37 @@ export type UserSettingsNotificationSpaceResolvers<
   ParentType extends
     ResolversParentTypes['UserSettingsNotificationSpace'] = ResolversParentTypes['UserSettingsNotificationSpace'],
 > = {
-  applicationReceived?: Resolver<
+  collaborationCalloutPublished?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
-  applicationSubmitted?: Resolver<
+  collaborationPostCommentCreated?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
-  calloutPublished?: Resolver<
+  collaborationPostCreated?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
-  commentReply?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  communicationMention?: Resolver<
+  collaborationPostCreatedAdmin?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  collaborationWhiteboardCreated?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  communicationMessage?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  communicationMessageAdmin?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
@@ -18803,6 +18817,16 @@ export type UserSettingsNotificationSpaceResolvers<
     ContextType
   >;
   communicationUpdatesAdmin?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  communityApplicationReceived?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  communityApplicationSubmitted?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
@@ -18818,22 +18842,6 @@ export type UserSettingsNotificationSpaceResolvers<
     ContextType
   >;
   communityNewMemberAdmin?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  postCommentCreated?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  postCreated?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  postCreatedAdmin?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  whiteboardCreated?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
@@ -19403,52 +19411,6 @@ export type FeatureFlagsQuery = {
   };
 };
 
-export type NotificationRecipientsQueryVariables = SchemaTypes.Exact<{
-  eventType: SchemaTypes.NotificationEvent;
-  entityId?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['UUID']['input']>;
-  triggeredBy?: SchemaTypes.InputMaybe<SchemaTypes.Scalars['UUID']['input']>;
-}>;
-
-export type NotificationRecipientsQuery = {
-  notificationRecipients: {
-    emailRecipients: Array<{
-      id: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-      nameID: string;
-      profile: { id: string; displayName: string; url: string };
-    }>;
-    inAppRecipients: Array<{
-      id: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-      nameID: string;
-      profile: { id: string; displayName: string; url: string };
-    }>;
-    triggeredBy?:
-      | {
-          id: string;
-          firstName: string;
-          lastName: string;
-          email: string;
-          nameID: string;
-          profile: { id: string; displayName: string; url: string };
-        }
-      | undefined;
-  };
-};
-
-export type UserRecipientFragment = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  nameID: string;
-  profile: { id: string; displayName: string; url: string };
-};
-
 export type UserLookupQueryVariables = SchemaTypes.Exact<{
   userID: SchemaTypes.Scalars['UUID']['input'];
 }>;
@@ -19464,20 +19426,6 @@ export type UserLookupQuery = {
   };
 };
 
-export const UserRecipientFragmentDoc = gql`
-  fragment userRecipient on User {
-    id
-    firstName
-    lastName
-    email
-    nameID
-    profile {
-      id
-      displayName
-      url
-    }
-  }
-`;
 export const FeatureFlagsDocument = gql`
   query featureFlags {
     platform {
@@ -19489,32 +19437,6 @@ export const FeatureFlagsDocument = gql`
       }
     }
   }
-`;
-export const NotificationRecipientsDocument = gql`
-  query notificationRecipients(
-    $eventType: NotificationEvent!
-    $entityId: UUID
-    $triggeredBy: UUID
-  ) {
-    notificationRecipients(
-      eventData: {
-        eventType: $eventType
-        entityID: $entityId
-        triggeredBy: $triggeredBy
-      }
-    ) {
-      emailRecipients {
-        ...userRecipient
-      }
-      inAppRecipients {
-        ...userRecipient
-      }
-      triggeredBy {
-        ...userRecipient
-      }
-    }
-  }
-  ${UserRecipientFragmentDoc}
 `;
 export const UserLookupDocument = gql`
   query userLookup($userID: UUID!) {
@@ -19547,9 +19469,6 @@ const defaultWrapper: SdkFunctionWrapper = (
   _variables
 ) => action();
 const FeatureFlagsDocumentString = print(FeatureFlagsDocument);
-const NotificationRecipientsDocumentString = print(
-  NotificationRecipientsDocument
-);
 const UserLookupDocumentString = print(UserLookupDocument);
 export function getSdk(
   client: GraphQLClient,
@@ -19574,28 +19493,6 @@ export function getSdk(
             { ...requestHeaders, ...wrappedRequestHeaders }
           ),
         'featureFlags',
-        'query',
-        variables
-      );
-    },
-    notificationRecipients(
-      variables: SchemaTypes.NotificationRecipientsQueryVariables,
-      requestHeaders?: GraphQLClientRequestHeaders
-    ): Promise<{
-      data: SchemaTypes.NotificationRecipientsQuery;
-      errors?: GraphQLError[];
-      extensions?: any;
-      headers: Headers;
-      status: number;
-    }> {
-      return withWrapper(
-        wrappedRequestHeaders =>
-          client.rawRequest<SchemaTypes.NotificationRecipientsQuery>(
-            NotificationRecipientsDocumentString,
-            variables,
-            { ...requestHeaders, ...wrappedRequestHeaders }
-          ),
-        'notificationRecipients',
         'query',
         variables
       );

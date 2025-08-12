@@ -1,4 +1,5 @@
 export * from './space/space.community.application.created.admin.notification.builder';
+export * from './space/space.community.application.created.applicant.notification.builder';
 export * from './space/space.community.invitation.created.notification.builder';
 export * from './space/space.community.platform.invitation.created.notification.builder';
 export * from './space/space.communication.update.member.notification.builder';

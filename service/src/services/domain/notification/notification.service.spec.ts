@@ -126,9 +126,10 @@ describe('NotificationService', () => {
         .spyOn(notifmeService, 'send')
         .mockResolvedValue({ status: 'success' });
 
-      const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as SpaceCommunityApplicationCreatedEventPayload
-      );
+      const res =
+        await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
+          testData.data as SpaceCommunityApplicationCreatedEventPayload
+        );
       for (const notificationStatus of res) {
         expect(
           (notificationStatus as PromiseFulfilledResult<NotificationStatus>)
@@ -144,9 +145,10 @@ describe('NotificationService', () => {
         .spyOn(notifmeService, 'send')
         .mockResolvedValue({ status: 'success' });
 
-      const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as SpaceCommunityApplicationCreatedEventPayload
-      );
+      const res =
+        await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
+          testData.data as SpaceCommunityApplicationCreatedEventPayload
+        );
 
       for (const notificationStatus of res) {
         expect(
@@ -163,9 +165,10 @@ describe('NotificationService', () => {
         .spyOn(alkemioClientAdapter, 'areNotificationsEnabled')
         .mockResolvedValue(false);
 
-      const res = await notificationService.sendApplicationCreatedNotifications(
-        testData.data as SpaceCommunityApplicationCreatedEventPayload
-      );
+      const res =
+        await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
+          testData.data as SpaceCommunityApplicationCreatedEventPayload
+        );
 
       expect(res.length).toBe(0); //shouldn't have any notifications sent
     });

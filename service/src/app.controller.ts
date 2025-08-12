@@ -49,7 +49,7 @@ export class AppController {
     private readonly featureFlagProvider: AlkemioClientAdapter
   ) {}
 
-  @EventPattern(NotificationEvent.SpaceCommunityApplicationRecipient)
+  @EventPattern(NotificationEvent.SpaceCommunityApplicationApplicant)
   async sendSpaceCommunityApplicationRecipientNotification(
     @Payload() eventPayload: SpaceCommunityApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
@@ -57,14 +57,14 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendApplicationCreatedNotifications(
+      this.notificationService.sendSpaceCommunityApplicationApplicantNotifications(
         eventPayload
       ),
-      NotificationEvent.SpaceCommunityApplicationRecipient
+      NotificationEvent.SpaceCommunityApplicationApplicant
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceCommunityApplicationApplicant)
+  @EventPattern(NotificationEvent.SpaceCommunityApplicationAdmin)
   async sendSpaceCommunityApplicationAdminNotification(
     @Payload() eventPayload: SpaceCommunityApplicationCreatedEventPayload,
     @Ctx() context: RmqContext
@@ -72,10 +72,10 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendApplicationCreatedNotifications(
+      this.notificationService.sendSpaceCommunityApplicationAdminNotifications(
         eventPayload
       ),
-      NotificationEvent.SpaceCommunityApplicationApplicant
+      NotificationEvent.SpaceCommunityApplicationAdmin
     );
   }
 
@@ -88,7 +88,9 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendInvitationCreatedNotifications(eventPayload),
+      this.notificationService.sendSpaceCommunityInvitationUserNotifications(
+        eventPayload
+      ),
       NotificationEvent.SpaceCommunityInvitationUser
     );
   }
@@ -119,7 +121,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunityPlatformInvitationCreatedNotifications(
+      this.notificationService.sendCommunityInvitationPlatformNotifications(
         eventPayload
       ),
       NotificationEvent.SpaceCommunityInvitationUserPlatform
@@ -314,7 +316,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceContactMessageRecipient)
+  @EventPattern(NotificationEvent.SpaceCommunicationMessageRecipient)
   async sendCommunicationCommunityLeadsMessageNotifications(
     @Payload() eventPayload: SpaceCommunicationLeadsMessageEventPayload,
     @Ctx() context: RmqContext
@@ -322,24 +324,22 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationCommunityLeadsMessageNotification(
+      this.notificationService.sendSpaceCommunicationMessageNotification(
         eventPayload
       ),
-      NotificationEvent.SpaceContactMessageRecipient
+      NotificationEvent.SpaceCommunicationMessageRecipient
     );
   }
 
   @EventPattern(NotificationEvent.UserMention)
-  async sendCommunicationUserMentionNotifications(
+  async sendUserMentionNotifications(
     @Payload() eventPayload: UserMentionEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationUserMentionNotification(
-        eventPayload
-      ),
+      this.notificationService.sendUserMentionNotification(eventPayload),
       NotificationEvent.UserMention
     );
   }
@@ -359,7 +359,10 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceWhiteboardCreated, Transport.RMQ)
+  @EventPattern(
+    NotificationEvent.SpaceCollaborationWhiteboardCreated,
+    Transport.RMQ
+  )
   async sendWhiteboardCreatedNotifications(
     @Payload() eventPayload: SpaceCollaborationWhiteboardCreatedEventPayload,
     @Ctx() context: RmqContext
@@ -367,12 +370,14 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendWhiteboardCreatedNotification(eventPayload),
-      NotificationEvent.SpaceWhiteboardCreated
+      this.notificationService.sendSpaceCollaborationWhiteboardCreatedNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCollaborationWhiteboardCreated
     );
   }
 
-  @EventPattern(NotificationEvent.SpacePostCreated, Transport.RMQ)
+  @EventPattern(NotificationEvent.SpaceCollaborationPostCreated, Transport.RMQ)
   async sendPostCreatedNotifications(
     @Payload() eventPayload: SpaceCollaborationPostCreatedEventPayload,
     @Ctx() context: RmqContext
@@ -380,12 +385,17 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPostCreatedNotification(eventPayload),
-      NotificationEvent.SpacePostCreated
+      this.notificationService.sendSpaceCollaborationPostCreatedNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCollaborationPostCreated
     );
   }
 
-  @EventPattern(NotificationEvent.SpacePostCommentCreated, Transport.RMQ)
+  @EventPattern(
+    NotificationEvent.SpaceCollaborationPostCommentCreated,
+    Transport.RMQ
+  )
   async sendPostCommentCreatedNotifications(
     @Payload() eventPayload: SpaceCollaborationPostCommentEventPayload,
     @Ctx() context: RmqContext
@@ -393,12 +403,17 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPostCommentCreatedNotification(eventPayload),
-      NotificationEvent.SpacePostCommentCreated
+      this.notificationService.sendSpaceCollaborationPostCommentCreatedNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCollaborationPostCommentCreated
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceCalloutPublished, Transport.RMQ)
+  @EventPattern(
+    NotificationEvent.SpaceCollaborationCalloutPublished,
+    Transport.RMQ
+  )
   async sendCalloutPublishedNotifications(
     @Payload() eventPayload: SpaceCollaborationCalloutPublishedEventPayload,
     @Ctx() context: RmqContext
@@ -406,20 +421,22 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCalloutPublishedNotification(eventPayload),
-      NotificationEvent.SpaceCalloutPublished
+      this.notificationService.sendSpaceCollaborationCalloutPublishedNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCollaborationCalloutPublished
     );
   }
 
   @EventPattern(NotificationEvent.UserCommentReply, Transport.RMQ)
-  async sendCommentReplyNotifications(
+  async sendUserCommentReplyNotifications(
     @Payload() eventPayload: UserCommentReplyEventPayload,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommentReplyNotification(eventPayload),
+      this.notificationService.sendUserCommentReplyNotification(eventPayload),
       NotificationEvent.UserCommentReply
     );
   }
