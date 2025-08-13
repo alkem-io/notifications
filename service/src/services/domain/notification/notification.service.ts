@@ -346,6 +346,14 @@ export class NotificationService {
       NotificationTemplateType | undefined
     >[] = [];
 
+    if (payload.recipients.length === 0) {
+      this.logger.verbose?.(
+        `[${payload.eventType}] - No recipients found, aborting notification sending.`,
+        LogContext.NOTIFICATIONS
+      );
+      return [];
+    }
+
     for (const recipient of payload.recipients) {
       const templatePayload = builder.createEmailTemplatePayload(
         payload,

@@ -71,6 +71,8 @@ export type Account = {
   agent: Agent;
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
+  /** The base license plan assigned to this Account. Additional entitlements may be added via other means. */
+  baselineLicensePlan: AccountLicensePlan;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
   /** The external subscription ID for this Account. */
@@ -102,6 +104,21 @@ export type Account = {
 export type AccountAuthorizationResetInput = {
   /** The identifier of the Account whose Authorization Policy should be reset. */
   accountID: Scalars['UUID']['input'];
+};
+
+export type AccountLicensePlan = {
+  /** The number of Innovation Packs allowed. */
+  innovationPacks: Scalars['Int']['output'];
+  /** The number of Free Spaces allowed. */
+  spaceFree: Scalars['Int']['output'];
+  /** The number of Plus Spaces allowed. */
+  spacePlus: Scalars['Int']['output'];
+  /** The number of Premium Spaces allowed. */
+  spacePremium: Scalars['Int']['output'];
+  /** The number of Starting Pages allowed. */
+  startingPages: Scalars['Int']['output'];
+  /** The number of Virtual Contributors allowed. */
+  virtualContributor: Scalars['Int']['output'];
 };
 
 export type AccountLicenseResetInput = {
@@ -4043,6 +4060,8 @@ export type Mutation = {
   updateAnswerRelevance: Scalars['Boolean']['output'];
   /** Update the Application Form used by this RoleSet. */
   updateApplicationFormOnRoleSet: RoleSet;
+  /** Update the baseline License Plan on the specified Account. */
+  updateBaselineLicensePlanOnAccount: Account;
   /** Updates the specified CalendarEvent. */
   updateCalendarEvent: CalendarEvent;
   /** Update a Callout. */
@@ -4598,6 +4617,10 @@ export type MutationUpdateApplicationFormOnRoleSetArgs = {
   applicationFormData: UpdateApplicationFormOnRoleSetInput;
 };
 
+export type MutationUpdateBaselineLicensePlanOnAccountArgs = {
+  updateData: UpdateBaselineLicensePlanOnAccount;
+};
+
 export type MutationUpdateCalendarEventArgs = {
   eventData: UpdateCalendarEventInput;
 };
@@ -5087,6 +5110,68 @@ export type PlatformInnovationHubArgs = {
   subdomain?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PlatformAdminCommunicationQueryResults = {
+  /** All Users that are members of a given room */
+  adminCommunicationMembership: CommunicationAdminMembershipResult;
+  /** Usage of the messaging platform that are not tied to the domain model. */
+  adminCommunicationOrphanedUsage: CommunicationAdminOrphanedUsageResult;
+};
+
+export type PlatformAdminCommunicationQueryResultsAdminCommunicationMembershipArgs =
+  {
+    communicationData: CommunicationAdminMembershipInput;
+  };
+
+export type PlatformAdminQueryResults = {
+  /** Lookup Communication related information. */
+  communication: PlatformAdminCommunicationQueryResults;
+  /** Retrieve all Innovation Hubs on the Platform. This is only available to Platform Admins. */
+  innovationHubs: Array<InnovationHub>;
+  /** Retrieve all Innovation Packs on the Platform. This is only available to Platform Admins. */
+  innovationPacks: Array<InnovationPack>;
+  /** Retrieve all Organizations on the Platform. This is only available to Platform Admins. */
+  organizations: PaginatedOrganization;
+  /** Retrieve all Spaces on the Platform. This is only available to Platform Admins. */
+  spaces: Array<Space>;
+  /** Retrieve all Users on the Platform. This is only available to Platform Admins. */
+  users: PaginatedUsers;
+  /** Retrieve all Virtual Contributors on the Platform. This is only available to Platform Admins. */
+  virtualContributors: Array<VirtualContributor>;
+};
+
+export type PlatformAdminQueryResultsInnovationPacksArgs = {
+  queryData?: InputMaybe<InnovationPacksInput>;
+};
+
+export type PlatformAdminQueryResultsOrganizationsArgs = {
+  after?: InputMaybe<Scalars['UUID']['input']>;
+  before?: InputMaybe<Scalars['UUID']['input']>;
+  filter?: InputMaybe<OrganizationFilterInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  status?: InputMaybe<OrganizationVerificationEnum>;
+};
+
+export type PlatformAdminQueryResultsSpacesArgs = {
+  IDs?: InputMaybe<Array<Scalars['UUID']['input']>>;
+  filter?: InputMaybe<SpaceFilterInput>;
+};
+
+export type PlatformAdminQueryResultsUsersArgs = {
+  after?: InputMaybe<Scalars['UUID']['input']>;
+  before?: InputMaybe<Scalars['UUID']['input']>;
+  filter?: InputMaybe<UserFilterInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  withTags?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type PlatformAdminQueryResultsVirtualContributorsArgs = {
+  filter?: InputMaybe<ContributorFilterInput>;
+  limit?: InputMaybe<Scalars['Float']['input']>;
+  shuffle?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type PlatformFeatureFlag = {
   /** Is this feature flag enabled? */
   enabled: Scalars['Boolean']['output'];
@@ -5294,10 +5379,6 @@ export type Query = {
   activityFeedGrouped: Array<ActivityLogEntry>;
   /** Retrieve the ActivityLog for the specified Collaboration */
   activityLogOnCollaboration: Array<ActivityLogEntry>;
-  /** All Users that are members of a given room */
-  adminCommunicationMembership: CommunicationAdminMembershipResult;
-  /** Usage of the messaging platform that are not tied to the domain model. */
-  adminCommunicationOrphanedUsage: CommunicationAdminOrphanedUsageResult;
   /** Alkemio AiServer */
   aiServer: AiServer;
   /** Active Spaces only, order by most active in the past X days. */
@@ -5324,6 +5405,8 @@ export type Query = {
   organizationsPaginated: PaginatedOrganization;
   /** Alkemio Platform */
   platform: Platform;
+  /** Allow looking up of information for Platform administration. */
+  platformAdmin: PlatformAdminQueryResults;
   /** Get the list of restricted space names. */
   restrictedSpaceNames: Array<Scalars['String']['output']>;
   /** The roles that the specified Organization has. */
@@ -5346,8 +5429,6 @@ export type Query = {
   urlResolver: UrlResolverQueryResults;
   /** A particular user, identified by the ID or by email */
   user: User;
-  /** Privileges assigned to a User (based on held credentials) given an Authorization defnition. */
-  userAuthorizationPrivileges: Array<AuthorizationPrivilege>;
   /** The users who have profiles on this platform */
   users: Array<User>;
   /** The users who have profiles on this platform */
@@ -5374,10 +5455,6 @@ export type QueryActivityFeedGroupedArgs = {
 
 export type QueryActivityLogOnCollaborationArgs = {
   queryData: ActivityLogInput;
-};
-
-export type QueryAdminCommunicationMembershipArgs = {
-  communicationData: CommunicationAdminMembershipInput;
 };
 
 export type QueryExploreSpacesArgs = {
@@ -5450,10 +5527,6 @@ export type QueryUrlResolverArgs = {
 
 export type QueryUserArgs = {
   ID: Scalars['UUID']['input'];
-};
-
-export type QueryUserAuthorizationPrivilegesArgs = {
-  userAuthorizationPrivilegesData: UserAuthorizationPrivilegesInput;
 };
 
 export type QueryUsersArgs = {
@@ -6788,6 +6861,23 @@ export type UpdateApplicationFormOnRoleSetInput = {
   roleSetID: Scalars['UUID']['input'];
 };
 
+export type UpdateBaselineLicensePlanOnAccount = {
+  /** The Account to update the Baseline License Plan. */
+  accountID: Scalars['UUID']['input'];
+  /** The number of Innovation Packs allowed. */
+  innovationPacks?: InputMaybe<Scalars['Int']['input']>;
+  /** The number of Free Spaces allowed. */
+  spaceFree?: InputMaybe<Scalars['Int']['input']>;
+  /** The number of Plus Spaces allowed. */
+  spacePlus?: InputMaybe<Scalars['Int']['input']>;
+  /** The number of Premium Spaces allowed. */
+  spacePremium?: InputMaybe<Scalars['Int']['input']>;
+  /** The number of Starting Pages allowed. */
+  startingPages?: InputMaybe<Scalars['Int']['input']>;
+  /** The number of Virtual Contributors allowed. */
+  virtualContributor?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type UpdateCalendarEventInput = {
   ID: Scalars['UUID']['input'];
   /** The length of the event in days. */
@@ -7577,13 +7667,6 @@ export type UserAuthenticationResult = {
   method: AuthenticationType;
 };
 
-export type UserAuthorizationPrivilegesInput = {
-  /** The authorization definition to evaluate the user credentials against. */
-  authorizationID: Scalars['UUID']['input'];
-  /** The user to evaluate privileges granted based on held credentials. */
-  userID: Scalars['UUID']['input'];
-};
-
 export type UserAuthorizationResetInput = {
   /** The identifier of the User whose Authorization Policy should be reset. */
   userID: Scalars['UUID']['input'];
@@ -8235,6 +8318,7 @@ export type ResolversTypes = {
     }
   >;
   AccountAuthorizationResetInput: SchemaTypes.AccountAuthorizationResetInput;
+  AccountLicensePlan: ResolverTypeWrapper<SchemaTypes.AccountLicensePlan>;
   AccountLicenseResetInput: SchemaTypes.AccountLicenseResetInput;
   AccountSubscription: ResolverTypeWrapper<SchemaTypes.AccountSubscription>;
   AccountType: SchemaTypes.AccountType;
@@ -9115,6 +9199,25 @@ export type ResolversTypes = {
       templatesManager?: SchemaTypes.Maybe<ResolversTypes['TemplatesManager']>;
     }
   >;
+  PlatformAdminCommunicationQueryResults: ResolverTypeWrapper<SchemaTypes.PlatformAdminCommunicationQueryResults>;
+  PlatformAdminQueryResults: ResolverTypeWrapper<
+    Omit<
+      SchemaTypes.PlatformAdminQueryResults,
+      | 'innovationHubs'
+      | 'innovationPacks'
+      | 'organizations'
+      | 'spaces'
+      | 'users'
+      | 'virtualContributors'
+    > & {
+      innovationHubs: Array<ResolversTypes['InnovationHub']>;
+      innovationPacks: Array<ResolversTypes['InnovationPack']>;
+      organizations: ResolversTypes['PaginatedOrganization'];
+      spaces: Array<ResolversTypes['Space']>;
+      users: ResolversTypes['PaginatedUsers'];
+      virtualContributors: Array<ResolversTypes['VirtualContributor']>;
+    }
+  >;
   PlatformFeatureFlag: ResolverTypeWrapper<SchemaTypes.PlatformFeatureFlag>;
   PlatformFeatureFlagName: SchemaTypes.PlatformFeatureFlagName;
   PlatformIntegrationSettings: ResolverTypeWrapper<SchemaTypes.PlatformIntegrationSettings>;
@@ -9497,6 +9600,7 @@ export type ResolversTypes = {
   UpdateAiPersonaInput: SchemaTypes.UpdateAiPersonaInput;
   UpdateAiPersonaServiceInput: SchemaTypes.UpdateAiPersonaServiceInput;
   UpdateApplicationFormOnRoleSetInput: SchemaTypes.UpdateApplicationFormOnRoleSetInput;
+  UpdateBaselineLicensePlanOnAccount: SchemaTypes.UpdateBaselineLicensePlanOnAccount;
   UpdateCalendarEventInput: SchemaTypes.UpdateCalendarEventInput;
   UpdateCalloutContributionDefaultsInput: SchemaTypes.UpdateCalloutContributionDefaultsInput;
   UpdateCalloutEntityInput: SchemaTypes.UpdateCalloutEntityInput;
@@ -9597,7 +9701,6 @@ export type ResolversTypes = {
     }
   >;
   UserAuthenticationResult: ResolverTypeWrapper<SchemaTypes.UserAuthenticationResult>;
-  UserAuthorizationPrivilegesInput: SchemaTypes.UserAuthorizationPrivilegesInput;
   UserAuthorizationResetInput: SchemaTypes.UserAuthorizationResetInput;
   UserFilterInput: SchemaTypes.UserFilterInput;
   UserGroup: ResolverTypeWrapper<
@@ -9686,6 +9789,7 @@ export type ResolversParentTypes = {
     virtualContributors: Array<ResolversParentTypes['VirtualContributor']>;
   };
   AccountAuthorizationResetInput: SchemaTypes.AccountAuthorizationResetInput;
+  AccountLicensePlan: SchemaTypes.AccountLicensePlan;
   AccountLicenseResetInput: SchemaTypes.AccountLicenseResetInput;
   AccountSubscription: SchemaTypes.AccountSubscription;
   ActivityCreatedSubscriptionInput: SchemaTypes.ActivityCreatedSubscriptionInput;
@@ -10409,6 +10513,23 @@ export type ResolversParentTypes = {
       ResolversParentTypes['TemplatesManager']
     >;
   };
+  PlatformAdminCommunicationQueryResults: SchemaTypes.PlatformAdminCommunicationQueryResults;
+  PlatformAdminQueryResults: Omit<
+    SchemaTypes.PlatformAdminQueryResults,
+    | 'innovationHubs'
+    | 'innovationPacks'
+    | 'organizations'
+    | 'spaces'
+    | 'users'
+    | 'virtualContributors'
+  > & {
+    innovationHubs: Array<ResolversParentTypes['InnovationHub']>;
+    innovationPacks: Array<ResolversParentTypes['InnovationPack']>;
+    organizations: ResolversParentTypes['PaginatedOrganization'];
+    spaces: Array<ResolversParentTypes['Space']>;
+    users: ResolversParentTypes['PaginatedUsers'];
+    virtualContributors: Array<ResolversParentTypes['VirtualContributor']>;
+  };
   PlatformFeatureFlag: SchemaTypes.PlatformFeatureFlag;
   PlatformIntegrationSettings: SchemaTypes.PlatformIntegrationSettings;
   PlatformInvitation: Omit<SchemaTypes.PlatformInvitation, 'createdBy'> & {
@@ -10732,6 +10853,7 @@ export type ResolversParentTypes = {
   UpdateAiPersonaInput: SchemaTypes.UpdateAiPersonaInput;
   UpdateAiPersonaServiceInput: SchemaTypes.UpdateAiPersonaServiceInput;
   UpdateApplicationFormOnRoleSetInput: SchemaTypes.UpdateApplicationFormOnRoleSetInput;
+  UpdateBaselineLicensePlanOnAccount: SchemaTypes.UpdateBaselineLicensePlanOnAccount;
   UpdateCalendarEventInput: SchemaTypes.UpdateCalendarEventInput;
   UpdateCalloutContributionDefaultsInput: SchemaTypes.UpdateCalloutContributionDefaultsInput;
   UpdateCalloutEntityInput: SchemaTypes.UpdateCalloutEntityInput;
@@ -10829,7 +10951,6 @@ export type ResolversParentTypes = {
     profile: ResolversParentTypes['Profile'];
   };
   UserAuthenticationResult: SchemaTypes.UserAuthenticationResult;
-  UserAuthorizationPrivilegesInput: SchemaTypes.UserAuthorizationPrivilegesInput;
   UserAuthorizationResetInput: SchemaTypes.UserAuthorizationResetInput;
   UserFilterInput: SchemaTypes.UserFilterInput;
   UserGroup: Omit<SchemaTypes.UserGroup, 'members' | 'parent' | 'profile'> & {
@@ -10915,6 +11036,11 @@ export type AccountResolvers<
     ParentType,
     ContextType
   >;
+  baselineLicensePlan?: Resolver<
+    ResolversTypes['AccountLicensePlan'],
+    ParentType,
+    ContextType
+  >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   externalSubscriptionID?: Resolver<
     SchemaTypes.Maybe<ResolversTypes['String']>,
@@ -10960,6 +11086,20 @@ export type AccountResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AccountLicensePlanResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['AccountLicensePlan'] = ResolversParentTypes['AccountLicensePlan'],
+> = {
+  innovationPacks?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  spaceFree?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  spacePlus?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  spacePremium?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  startingPages?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  virtualContributor?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -15764,6 +15904,15 @@ export type MutationResolvers<
       'applicationFormData'
     >
   >;
+  updateBaselineLicensePlanOnAccount?: Resolver<
+    ResolversTypes['Account'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      SchemaTypes.MutationUpdateBaselineLicensePlanOnAccountArgs,
+      'updateData'
+    >
+  >;
   updateCalendarEvent?: Resolver<
     ResolversTypes['CalendarEvent'],
     ParentType,
@@ -16499,6 +16648,76 @@ export type PlatformResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PlatformAdminCommunicationQueryResultsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['PlatformAdminCommunicationQueryResults'] = ResolversParentTypes['PlatformAdminCommunicationQueryResults'],
+> = {
+  adminCommunicationMembership?: Resolver<
+    ResolversTypes['CommunicationAdminMembershipResult'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      SchemaTypes.PlatformAdminCommunicationQueryResultsAdminCommunicationMembershipArgs,
+      'communicationData'
+    >
+  >;
+  adminCommunicationOrphanedUsage?: Resolver<
+    ResolversTypes['CommunicationAdminOrphanedUsageResult'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PlatformAdminQueryResultsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['PlatformAdminQueryResults'] = ResolversParentTypes['PlatformAdminQueryResults'],
+> = {
+  communication?: Resolver<
+    ResolversTypes['PlatformAdminCommunicationQueryResults'],
+    ParentType,
+    ContextType
+  >;
+  innovationHubs?: Resolver<
+    Array<ResolversTypes['InnovationHub']>,
+    ParentType,
+    ContextType
+  >;
+  innovationPacks?: Resolver<
+    Array<ResolversTypes['InnovationPack']>,
+    ParentType,
+    ContextType,
+    Partial<SchemaTypes.PlatformAdminQueryResultsInnovationPacksArgs>
+  >;
+  organizations?: Resolver<
+    ResolversTypes['PaginatedOrganization'],
+    ParentType,
+    ContextType,
+    Partial<SchemaTypes.PlatformAdminQueryResultsOrganizationsArgs>
+  >;
+  spaces?: Resolver<
+    Array<ResolversTypes['Space']>,
+    ParentType,
+    ContextType,
+    Partial<SchemaTypes.PlatformAdminQueryResultsSpacesArgs>
+  >;
+  users?: Resolver<
+    ResolversTypes['PaginatedUsers'],
+    ParentType,
+    ContextType,
+    Partial<SchemaTypes.PlatformAdminQueryResultsUsersArgs>
+  >;
+  virtualContributors?: Resolver<
+    Array<ResolversTypes['VirtualContributor']>,
+    ParentType,
+    ContextType,
+    Partial<SchemaTypes.PlatformAdminQueryResultsVirtualContributorsArgs>
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PlatformFeatureFlagResolvers<
   ContextType = any,
   ParentType extends
@@ -16753,20 +16972,6 @@ export type QueryResolvers<
     ContextType,
     RequireFields<SchemaTypes.QueryActivityLogOnCollaborationArgs, 'queryData'>
   >;
-  adminCommunicationMembership?: Resolver<
-    ResolversTypes['CommunicationAdminMembershipResult'],
-    ParentType,
-    ContextType,
-    RequireFields<
-      SchemaTypes.QueryAdminCommunicationMembershipArgs,
-      'communicationData'
-    >
-  >;
-  adminCommunicationOrphanedUsage?: Resolver<
-    ResolversTypes['CommunicationAdminOrphanedUsageResult'],
-    ParentType,
-    ContextType
-  >;
   aiServer?: Resolver<ResolversTypes['AiServer'], ParentType, ContextType>;
   exploreSpaces?: Resolver<
     Array<ResolversTypes['Space']>,
@@ -16825,6 +17030,11 @@ export type QueryResolvers<
     Partial<SchemaTypes.QueryOrganizationsPaginatedArgs>
   >;
   platform?: Resolver<ResolversTypes['Platform'], ParentType, ContextType>;
+  platformAdmin?: Resolver<
+    ResolversTypes['PlatformAdminQueryResults'],
+    ParentType,
+    ContextType
+  >;
   restrictedSpaceNames?: Resolver<
     Array<ResolversTypes['String']>,
     ParentType,
@@ -16889,15 +17099,6 @@ export type QueryResolvers<
     ParentType,
     ContextType,
     RequireFields<SchemaTypes.QueryUserArgs, 'ID'>
-  >;
-  userAuthorizationPrivileges?: Resolver<
-    Array<ResolversTypes['AuthorizationPrivilege']>,
-    ParentType,
-    ContextType,
-    RequireFields<
-      SchemaTypes.QueryUserAuthorizationPrivilegesArgs,
-      'userAuthorizationPrivilegesData'
-    >
   >;
   users?: Resolver<
     Array<ResolversTypes['User']>,
@@ -19132,6 +19333,7 @@ export interface WhiteboardContentScalarConfig
 export type Resolvers<ContextType = any> = {
   APM?: ApmResolvers<ContextType>;
   Account?: AccountResolvers<ContextType>;
+  AccountLicensePlan?: AccountLicensePlanResolvers<ContextType>;
   AccountSubscription?: AccountSubscriptionResolvers<ContextType>;
   ActivityCreatedSubscriptionResult?: ActivityCreatedSubscriptionResultResolvers<ContextType>;
   ActivityFeed?: ActivityFeedResolvers<ContextType>;
@@ -19295,6 +19497,8 @@ export type Resolvers<ContextType = any> = {
   PaginatedUsers?: PaginatedUsersResolvers<ContextType>;
   PaginatedVirtualContributor?: PaginatedVirtualContributorResolvers<ContextType>;
   Platform?: PlatformResolvers<ContextType>;
+  PlatformAdminCommunicationQueryResults?: PlatformAdminCommunicationQueryResultsResolvers<ContextType>;
+  PlatformAdminQueryResults?: PlatformAdminQueryResultsResolvers<ContextType>;
   PlatformFeatureFlag?: PlatformFeatureFlagResolvers<ContextType>;
   PlatformIntegrationSettings?: PlatformIntegrationSettingsResolvers<ContextType>;
   PlatformInvitation?: PlatformInvitationResolvers<ContextType>;

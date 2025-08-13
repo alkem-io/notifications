@@ -79,7 +79,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceCommunityInvitationUser)
+  @EventPattern(NotificationEvent.SpaceCommunityInvitationUser.valueOf())
   async sendSpaceCommunityInvitationNotification(
     // todo is auto validation possible
     @Payload() eventPayload: SpaceCommunityInvitationCreatedEventPayload,
