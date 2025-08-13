@@ -15,18 +15,13 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
 
   createEmailTemplatePayload(
     eventPayload: PlatformForumDiscussionCreatedEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): PlatformForumDiscussionCreatedEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
       createdBy: {
-        firstName: sender.firstName,
+        firstName: eventPayload.triggeredBy.firstName,
       },
       discussion: {
         displayName: eventPayload.discussion.displayName,

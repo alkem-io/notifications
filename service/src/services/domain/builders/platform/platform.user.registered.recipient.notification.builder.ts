@@ -16,23 +16,16 @@ export class PlatformUserRegisteredNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: PlatformUserRegistrationEventPayload,
-    recipient: User | PlatformUser,
-    registrant?: User
+    recipient: User | PlatformUser
   ): PlatformUserRegisteredEmailPayload {
-    if (!registrant) {
-      throw Error(
-        `Registrant not provided for '${eventPayload.eventType}' event`
-      );
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
       registrant: {
-        displayName: registrant.profile.displayName,
-        firstName: registrant.firstName,
-        email: registrant.email,
-        profile: registrant.profile.url,
+        displayName: eventPayload.user.profile.displayName,
+        firstName: eventPayload.user.firstName,
+        email: eventPayload.user.email,
+        profile: eventPayload.user.profile.url,
       },
       recipient: {
         firstName: recipient.firstName,

@@ -6,7 +6,7 @@ export enum EmailTemplate {
   SPACE_COMMUNITY_INVITATION_ADMIN = 'space.community.invitation.created.admin',
   SPACE_COMMUNITY_INVITATION_INVITEE = 'space.community.invitation.created.invitee',
   SPACE_COMMUNITY_INVITATION_CREATED_VC_HOST = 'space.community.invitation.created.vc.host',
-  SPACE_COMMUNITY_PLATFORM_INVITATION_INVITEE = 'space.community.platform.invitation.created.invitee',
+  SPACE_COMMUNITY_INVITATION_PLATFORM_INVITEE = 'space.community.invitation.platform.created.invitee',
   SPACE_COMMUNICATION_UPDATE_ADMIN = 'space.communication.update.admin',
   SPACE_COMMUNICATION_UPDATE_MEMBER = 'space.communication.update.member',
   SPACE_COMMUNICATION_COMMUNITY_LEADS_MESSAGE_SENDER = 'space.communication.community.leads.message.sender',

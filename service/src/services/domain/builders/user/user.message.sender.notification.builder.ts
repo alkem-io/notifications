@@ -16,20 +16,20 @@ export class UserMessageSenderNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: UserMessageEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): CommunicationUserMessageEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
+      messageReceiver: {
+        displayName: eventPayload.user.profile.displayName,
+        firstName: eventPayload.user.firstName,
+      },
       messageSender: {
-        displayName: sender.profile.displayName,
-        firstName: sender.firstName,
-        email: sender.email,
+        displayName: eventPayload.triggeredBy.profile.displayName,
+        firstName: eventPayload.triggeredBy.firstName,
+        email: eventPayload.triggeredBy.email,
       },
       recipient: {
         firstName: recipient.firstName,
@@ -39,9 +39,6 @@ export class UserMessageSenderNotificationBuilder
       message: eventPayload.message,
       platform: {
         url: eventPayload.platform.url,
-      },
-      messageReceiver: {
-        displayName: eventPayload.user.profile.displayName,
       },
     };
   }

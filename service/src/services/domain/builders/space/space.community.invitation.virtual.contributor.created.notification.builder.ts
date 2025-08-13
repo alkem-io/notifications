@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SpaceCommunityInvitationVirtualContributorCreatedEventPayload } from '@alkemio/notifications-lib';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { CommunityInvitationVirtualContributorCreatedEmailPayload } from '@src/common/email-template-payload';
@@ -16,22 +16,17 @@ export class SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilde
 
   public createEmailTemplatePayload(
     eventPayload: SpaceCommunityInvitationVirtualContributorCreatedEventPayload,
-    recipient: User | PlatformUser,
-    inviter?: User
+    recipient: User
   ): CommunityInvitationVirtualContributorCreatedEmailPayload {
-    if (!inviter) {
-      throw Error(`Invitee not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
       inviter: {
-        firstName: inviter.firstName,
-        name: inviter.profile.displayName,
-        profile: inviter.profile.url,
-        email: inviter.email,
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+        email: eventPayload.triggeredBy.email,
       },
       recipient: {
         firstName: recipient.firstName,

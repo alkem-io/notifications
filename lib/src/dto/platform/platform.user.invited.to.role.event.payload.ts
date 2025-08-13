@@ -1,9 +1,9 @@
-import { ContributorPayload } from "../contributor.payload";
+import { UserPayload } from "../user.payload";
 import { PlatformBaseEventPayload } from "./platform.base.event.payload";
 
 export interface PlatformUserInvitedToRoleEventPayload
   extends PlatformBaseEventPayload {
-    user: ContributorPayload;
+    user: UserPayload;
     role: string;
     invitees: {
       email: string;

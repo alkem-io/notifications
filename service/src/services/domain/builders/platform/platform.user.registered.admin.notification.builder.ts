@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
@@ -15,23 +15,16 @@ export class PlatformUserRegisteredAdminNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: PlatformUserRegistrationEventPayload,
-    recipient: User | PlatformUser,
-    registrant?: User
+    recipient: User
   ): PlatformUserRegisteredEmailPayload {
-    if (!registrant) {
-      throw Error(
-        `Registrant not provided for '${eventPayload.eventType}' event`
-      );
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
       registrant: {
-        displayName: registrant.profile.displayName,
-        firstName: registrant.firstName,
-        email: registrant.email,
-        profile: registrant.profile.url,
+        displayName: eventPayload.user.profile.displayName,
+        firstName: eventPayload.user.firstName,
+        email: eventPayload.user.email,
+        profile: eventPayload.user.profile.url,
       },
       recipient: {
         firstName: recipient.firstName,

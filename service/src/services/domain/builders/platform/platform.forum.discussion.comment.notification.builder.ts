@@ -15,13 +15,8 @@ export class PlatformForumDiscussionCommentNotificationBuilder
 
   createEmailTemplatePayload(
     eventPayload: PlatformForumDiscussionCommentEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): PlatformForumDiscussionCommentEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const result: PlatformForumDiscussionCommentEmailPayload = {

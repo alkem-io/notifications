@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
 import { SpaceCommunicationUpdateEventPayload } from '@alkemio/notifications-lib';
@@ -17,19 +17,14 @@ export class SpaceCommunicationUpdateMemberNotificationBuilder
 
   createEmailTemplatePayload(
     eventPayload: SpaceCommunicationUpdateEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User
   ): CommunicationUpdateCreatedEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
       sender: {
-        firstName: sender.firstName,
+        firstName: eventPayload.triggeredBy.firstName,
       },
       recipient: {
         firstName: recipient.firstName,

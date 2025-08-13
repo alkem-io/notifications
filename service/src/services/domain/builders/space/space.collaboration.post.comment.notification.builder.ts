@@ -3,7 +3,7 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { SpaceCollaborationPostCommentEventPayload } from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
 import { EmailTemplate } from '@common/enums/email.template';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 @Injectable()
 export class SpaceCollaborationPostCommentNotificationBuilder
@@ -15,14 +15,8 @@ export class SpaceCollaborationPostCommentNotificationBuilder
 
   createEmailTemplatePayload(
     eventPayload: SpaceCollaborationPostCommentEventPayload,
-    recipient: User | PlatformUser,
-    commentAuthor?: User
+    recipient: User
   ): CollaborationPostCommentEmailPayload {
-    if (!commentAuthor) {
-      throw Error(
-        `Comment author not provided for '${eventPayload.eventType}' event`
-      );
-    }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
@@ -41,8 +35,8 @@ export class SpaceCollaborationPostCommentNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       createdBy: {
-        firstName: commentAuthor.firstName,
-        email: commentAuthor.email,
+        firstName: eventPayload.triggeredBy.firstName,
+        email: eventPayload.triggeredBy.email,
       },
       space: {
         displayName: eventPayload.space.profile.displayName,

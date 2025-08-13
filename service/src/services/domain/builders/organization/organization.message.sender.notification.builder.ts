@@ -16,20 +16,16 @@ export class OrganizationMessageSenderNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: OrganizationMessageEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): CommunicationOrganizationMessageEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
       messageSender: {
-        displayName: sender.profile.displayName,
-        firstName: sender.firstName,
-        email: sender.email,
+        displayName: eventPayload.triggeredBy.profile.displayName,
+        firstName: eventPayload.triggeredBy.firstName,
+        email: eventPayload.triggeredBy.email,
       },
       recipient: {
         firstName: recipient.firstName,

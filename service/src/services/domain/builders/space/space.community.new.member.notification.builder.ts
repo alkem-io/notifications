@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RoleSetContributorType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
 import { SpaceCommunityNewMemberPayload } from '@alkemio/notifications-lib';
@@ -17,7 +17,7 @@ export class SpaceCommunityNewMemberNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: SpaceCommunityNewMemberPayload,
-    recipient: User | PlatformUser
+    recipient: User
   ): CommunityNewMemberEmailPayload {
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);

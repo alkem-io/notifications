@@ -27,9 +27,9 @@ export class OrganizationMessageRecipientNotificationBuilder
 
     return {
       messageSender: {
-        displayName: sender.profile.displayName,
-        firstName: sender.firstName,
-        email: sender.email,
+        displayName: eventPayload.triggeredBy.profile.displayName,
+        firstName: eventPayload.triggeredBy.firstName,
+        email: eventPayload.triggeredBy.email,
       },
       recipient: {
         firstName: recipient.firstName,

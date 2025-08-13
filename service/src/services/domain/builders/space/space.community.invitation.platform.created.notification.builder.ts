@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { SpaceCommunityPlatformInvitationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { EmailTemplate } from '@common/enums/email.template';
 import { SpaceCommunityInvitationPlatformCreatedEmailPayload } from '@common/email-template-payload';
@@ -22,32 +22,25 @@ export class SpaceCommunityInvitationPlatformCreatedNotificationBuilder
     )?.webclient_invitations_path;
   }
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNITY_PLATFORM_INVITATION_INVITEE;
+  emailTemplate = EmailTemplate.SPACE_COMMUNITY_INVITATION_PLATFORM_INVITEE;
 
   public createEmailTemplatePayload(
     eventPayload: SpaceCommunityPlatformInvitationCreatedEventPayload,
-    recipient: User | PlatformUser,
-    inviter?: User
+    recipient: User
   ): SpaceCommunityInvitationPlatformCreatedEmailPayload {
-    if (!inviter) {
-      throw Error(`Invitee not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
-    const emails = [...eventPayload.invitees]
-      .map(invitedUser => invitedUser.email)
-      .join(', ');
+
     const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
       this.invitationsPath
     }`;
 
     return {
       inviter: {
-        firstName: inviter.firstName,
-        name: inviter.profile.displayName,
-        email: inviter.email,
-        profile: inviter.profile.url,
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
       recipient: {
@@ -55,7 +48,7 @@ export class SpaceCommunityInvitationPlatformCreatedNotificationBuilder
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
-      emails: emails,
+      emails: recipient.email,
       welcomeMessage: eventPayload.welcomeMessage,
       space: {
         displayName: eventPayload.space.profile.displayName,

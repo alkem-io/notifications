@@ -16,12 +16,8 @@ export class OrganizationMentionNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: OrganizationMentionEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): CommunicationOrganizationMentionEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
@@ -29,8 +25,8 @@ export class OrganizationMentionNotificationBuilder
 
     return {
       commentSender: {
-        displayName: sender.profile.displayName,
-        firstName: sender.firstName,
+        displayName: eventPayload.triggeredBy.profile.displayName,
+        firstName: eventPayload.triggeredBy.firstName,
       },
       recipient: {
         firstName: recipient.firstName,

@@ -26,13 +26,8 @@ export class SpaceCommunityInvitationCreatedInviteeNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: SpaceCommunityInvitationCreatedEventPayload,
-    recipient: User | PlatformUser,
-    inviter?: User
+    recipient: User | PlatformUser
   ): CommunityInvitationCreatedEmailPayload {
-    if (!inviter) {
-      throw Error(`Invitee not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
@@ -41,10 +36,10 @@ export class SpaceCommunityInvitationCreatedInviteeNotificationBuilder
 
     return {
       inviter: {
-        firstName: inviter.firstName,
-        name: inviter.profile.displayName,
-        email: inviter.email,
-        profile: inviter.profile.url,
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
       recipient: {

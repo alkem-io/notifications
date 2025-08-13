@@ -1,11 +1,10 @@
 import { RoleChangeType } from "@src/common/enums/role.change.type";
-import { ContributorPayload } from "../contributor.payload";
 import { PlatformBaseEventPayload } from "./platform.base.event.payload";
+import { UserPayload } from "../user.payload";
 
 export interface PlatformGlobalRoleChangeEventPayload
   extends PlatformBaseEventPayload {
   type: RoleChangeType;
-  user: ContributorPayload
+  user: UserPayload
   role: string;
-  actor: ContributorPayload;
 }

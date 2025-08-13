@@ -1,4 +1,4 @@
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -16,15 +16,8 @@ export class SpaceCommunityApplicationCreatedAdminNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: SpaceCommunityApplicationCreatedEventPayload,
-    recipient: User | PlatformUser,
-    applicant?: User
+    recipient: User
   ): CommunityApplicationCreatedEmailPayload {
-    if (!applicant) {
-      throw Error(
-        `Applicant not provided for '${eventPayload.eventType}' event`
-      );
-    }
-
     const isLevel0Space = eventPayload.space.level === '0';
     const spaceType = isLevel0Space ? 'space' : 'subspace';
 
@@ -32,10 +25,10 @@ export class SpaceCommunityApplicationCreatedAdminNotificationBuilder
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
       applicant: {
-        firstName: applicant.firstName,
-        name: applicant.profile.displayName,
-        email: applicant.email,
-        profile: applicant.profile.url,
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
       recipient: {

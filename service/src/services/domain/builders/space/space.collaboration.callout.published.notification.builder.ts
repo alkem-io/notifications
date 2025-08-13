@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { SpaceCollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
@@ -16,13 +16,8 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
 
   createEmailTemplatePayload(
     eventPayload: SpaceCollaborationCalloutPublishedEventPayload,
-    recipient: User | PlatformUser,
-    creator?: User
+    recipient: User
   ): CollaborationCalloutPublishedEmailPayload {
-    if (!creator) {
-      throw Error(`Creator not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
@@ -35,7 +30,7 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
         notificationPreferences: notificationPreferenceURL,
       },
       publishedBy: {
-        firstName: creator.firstName,
+        firstName: eventPayload.triggeredBy.profile.displayName,
       },
       callout: {
         displayName: eventPayload.callout.displayName,

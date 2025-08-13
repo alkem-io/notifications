@@ -16,21 +16,16 @@ export class UserCommentReplyNotificationBuilder
 
   createEmailTemplatePayload(
     eventPayload: UserCommentReplyEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): CommentReplyEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     return {
       reply: {
         message: eventPayload.reply,
-        createdBy: sender.profile.displayName,
-        createdByUrl: sender.profile.url,
+        createdBy: eventPayload.triggeredBy.profile.displayName,
+        createdByUrl: eventPayload.triggeredBy.profile.url,
       },
       comment: eventPayload.comment,
       recipient: {

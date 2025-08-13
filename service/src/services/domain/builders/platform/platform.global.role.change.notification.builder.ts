@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlatformUser, User } from '@core/models';
+import { User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -15,25 +15,20 @@ export class PlatformGlobalRoleChangeNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: PlatformGlobalRoleChangeEventPayload,
-    recipient: User | PlatformUser,
-    user?: User
+    recipient: User
   ): PlatformGlobalRoleChangeEmailPayload {
-    if (!user) {
-      throw Error(`User not provided for '${eventPayload.eventType}' event`);
-    }
-
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
     return {
       user: {
-        displayName: user.profile.displayName,
-        firstName: user.firstName,
-        email: user.email,
-        profile: user.profile.url,
+        displayName: eventPayload.user.profile.displayName,
+        firstName: eventPayload.user.firstName,
+        email: eventPayload.user.email,
+        profile: eventPayload.user.profile.url,
       },
       actor: {
-        displayName: eventPayload.actor.profile.displayName,
-        url: eventPayload.actor.profile.url,
+        displayName: eventPayload.triggeredBy.profile.displayName,
+        url: eventPayload.triggeredBy.profile.url,
       },
       recipient: {
         firstName: recipient.firstName,

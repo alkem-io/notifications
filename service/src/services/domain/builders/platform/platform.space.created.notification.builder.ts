@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { EmailTemplate } from '@src/common/enums/email.template';
-import { PlatformUser, User } from '@src/core/models';
+import { User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
 import { PlatformSpaceCreatedEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
@@ -16,7 +16,7 @@ export class PlatformSpaceCreatedNotificationBuilder
 
   createEmailTemplatePayload(
     eventPayload: PlatformSpaceCreatedEventPayload,
-    recipient: User | PlatformUser
+    recipient: User
   ): SpaceCreatedEmailPayload {
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);

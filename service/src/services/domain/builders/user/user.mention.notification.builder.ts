@@ -15,26 +15,22 @@ export class UserMentionNotificationBuilder implements INotificationBuilder {
 
   public createEmailTemplatePayload(
     eventPayload: UserMentionEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): CommunicationUserMentionEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
     const htmlComment: string = convertMarkdownToText(eventPayload.comment);
 
     return {
-      commentSender: {
-        displayName: sender.profile.displayName,
-        firstName: sender.firstName,
-      },
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
+      },
+      commentSender: {
+        displayName: eventPayload.triggeredBy.profile.displayName,
+        firstName: eventPayload.triggeredBy.firstName,
       },
       comment: htmlComment,
       platform: {
