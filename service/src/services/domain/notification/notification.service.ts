@@ -53,6 +53,7 @@ import {
   PlatformForumDiscussionCreatedNotificationBuilder,
   PlatformUserRegisteredNotificationBuilder,
   SpaceCommunityApplicationApplicantNotificationBuilder,
+  SpaceCommunityNewMemberAdminNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform/platform.user.removed.notification.builder';
@@ -81,6 +82,7 @@ export class NotificationService {
     private spaceCommunicationLeadsMessageNotificationBuilder: SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
     private userMentionNotificationBuilder: UserMentionNotificationBuilder,
     private spaceCommunityNewMemberNotificationBuilder: SpaceCommunityNewMemberNotificationBuilder,
+    private spaceCommunityNewMemberAdminNotificationBuilder: SpaceCommunityNewMemberAdminNotificationBuilder,
     private spaceCollaborationWhiteboardCreatedNotificationBuilder: SpaceCollaborationWhiteboardCreatedNotificationBuilder,
     private spaceCollaborationPostCreatedNotificationBuilder: SpaceCollaborationPostCreatedMemberNotificationBuilder,
     private spaceCollaborationPostCommentNotificationBuilder: SpaceCollaborationPostCommentNotificationBuilder,
@@ -164,6 +166,15 @@ export class NotificationService {
     return this.processNotificationEvent(
       payload,
       this.spaceCommunityNewMemberNotificationBuilder
+    );
+  }
+
+  async sendCommunityNewMemberAdminNotifications(
+    payload: SpaceCommunityNewMemberPayload
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCommunityNewMemberAdminNotificationBuilder
     );
   }
 

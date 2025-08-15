@@ -144,6 +144,22 @@ export class AppController {
     );
   }
 
+  @EventPattern(NotificationEvent.SpaceCommunityNewMemberAdmin)
+  async sendCommunityNewMemberAdminNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: SpaceCommunityNewMemberPayload,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendCommunityNewMemberAdminNotifications(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCommunityNewMemberAdmin
+    );
+  }
+
   @EventPattern(NotificationEvent.PlatformGlobalRoleChange)
   async sendPlatformGlobalRoleChangeNotification(
     // todo is auto validation possible

@@ -6,6 +6,7 @@ export * from './space/space.communication.update.member.notification.builder';
 export * from './space/space.communication.update.admin.notification.builder';
 export * from './space/space.communication.leads.message.recipient.notification.builder';
 export * from './space/space.community.new.member.notification.builder';
+export * from './space/space.community.new.member.admin.notification.builder';
 export * from './space/space.collaboration.post.created.member.notification.builder';
 export * from './space/space.collaboration.post.comment.notification.builder';
 export * from './space/space.collaboration.callout.published.notification.builder';
