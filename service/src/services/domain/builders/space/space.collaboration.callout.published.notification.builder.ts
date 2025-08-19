@@ -35,7 +35,7 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
       callout: {
         displayName: eventPayload.callout.displayName,
         url: calloutURL,
-        type: 'not specified',
+        type: 'Post', // all callouts are called "Post"
       },
       space: {
         displayName: eventPayload.space.profile.displayName,
