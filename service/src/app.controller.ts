@@ -497,7 +497,9 @@ export class AppController {
         ) as PromiseRejectedResult[];
 
         if (nacked.length === 0) {
-          this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
+          this.logger.verbose?.(
+            `[${eventPayload.eventType}] ${x.length} messages successfully sent!`
+          );
           // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
           // so only the message supplied is acknowledged.
           channel.ack(originalMsg);
