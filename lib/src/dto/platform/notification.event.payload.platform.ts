@@ -1,5 +1,5 @@
 import { BaseEventPayload } from "../base.event.payload";
 
-export interface PlatformBaseEventPayload
+export interface NotificationEventPayloadPlatform
   extends BaseEventPayload {
 }

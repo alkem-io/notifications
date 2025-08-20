@@ -1,14 +1,14 @@
 import { ContributorPayload } from '../contributor.payload';
-import { PlatformBaseEventPayload } from './platform.base.event.payload';
+import { NotificationEventPayloadPlatform } from './notification.event.payload.platform';
 
-export interface PlatformForumDiscussionCommentEventPayload
-  extends PlatformBaseEventPayload {
+export interface NotificationEventPayloadPlatformForumDiscussion
+  extends NotificationEventPayloadPlatform {
   discussion: {
     displayName: string;
     createdBy: ContributorPayload;
     url: string;
   };
-  comment: {
+  comment?: {
     message: string;
     createdBy: ContributorPayload;
     url: string;
