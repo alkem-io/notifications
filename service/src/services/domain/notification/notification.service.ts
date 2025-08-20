@@ -452,29 +452,23 @@ export class NotificationService {
     const mailFromNameConfigured = mailFromName
       ? `${mailFromName} <${mailFrom}>`
       : mailFrom;
-    this.logger.verbose?.(
-      `Notification mail from ${mailFromNameConfigured}`,
-      LogContext.NOTIFICATIONS
-    );
 
     notification.channels.email.from = mailFromNameConfigured;
 
-    return this.notifmeService.send(notification.channels).then(
-      res => {
-        this.logger.verbose?.(
-          `[${notification.name}] Notification status: ${res.status}`,
-          LogContext.NOTIFICATIONS
-        );
-        return res;
-      },
-      reason => {
-        this.logger.warn?.(
-          `Notification rejected with reason: ${reason}`,
-          LogContext.NOTIFICATIONS
-        );
-        return { status: 'error' };
-      }
-    );
+    try {
+      const res = await this.notifmeService.send(notification.channels);
+      this.logger.verbose?.(
+        `[${notification.name}] Notification sent from ${mailFromNameConfigured} - status: ${res.status}`,
+        LogContext.NOTIFICATIONS
+      );
+      return res;
+    } catch (reason) {
+      this.logger.warn?.(
+        `Notification rejected with reason: ${reason}`,
+        LogContext.NOTIFICATIONS
+      );
+      return { status: 'error' };
+    }
   }
 
   private isPromiseFulfilledResult = (
