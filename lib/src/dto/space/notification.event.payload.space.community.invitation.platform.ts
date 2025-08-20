@@ -1,6 +1,6 @@
 import { NotificationEventPayloadSpace } from "./notification.event.payload.space";
 
-export interface SpaceCommunityPlatformInvitationCreatedEventPayload
+export interface NotificationEventPayloadSpaceCommunityInvitationPlatform
   extends NotificationEventPayloadSpace {
   welcomeMessage?: string;
 }

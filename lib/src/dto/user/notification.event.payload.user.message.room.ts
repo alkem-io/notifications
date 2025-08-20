@@ -1,6 +1,6 @@
 import { NotificationEventPayloadUser } from './notification.event.payload.user';
 
-export interface UserMentionEventPayload extends NotificationEventPayloadUser {
+export interface NotificationEventPayloadUserMessageRoom extends NotificationEventPayloadUser {
   comment: string;
   commentOrigin: {
     url: string;

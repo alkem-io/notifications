@@ -1,6 +1,6 @@
 import { ContributorPayload } from '../contributor.payload';
 import { NotificationEventPayloadSpace } from './notification.event.payload.space';
 
-export interface SpaceCommunityApplicationCreatedEventPayload extends NotificationEventPayloadSpace {
+export interface NotificationEventPayloadSpaceCommunityApplication extends NotificationEventPayloadSpace {
   applicant: ContributorPayload;
 }
