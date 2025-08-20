@@ -19,16 +19,16 @@ import {
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadUserMessageDirect,
-  SpaceCommunityApplicationCreatedEventPayload,
   NotificationEventPayloadSpaceCommunityInvitation,
-  SpaceCommunityInvitationVirtualContributorCreatedEventPayload,
-  SpaceCommunityNewMemberPayload,
   NotificationEventPayloadSpaceCommunicationMessageDirect,
   NotificationEventPayloadSpaceCommunicationUpdate,
-  UserMentionEventPayload,
   NotificationEventPayloadSpaceCollaborationCallout,
-  UserCommentReplyEventPayload,
-  SpaceCommunityPlatformInvitationCreatedEventPayload,
+  NotificationEventPayloadSpaceCommunityApplication,
+  NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+  NotificationEventPayloadSpaceCommunityInvitationPlatform,
+  NotificationEventPayloadSpaceCommunityContributor,
+  NotificationEventPayloadUserMessageRoomReply,
+  NotificationEventPayloadUserMessageRoom,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
@@ -47,7 +47,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.SpaceCommunityApplicationApplicant)
   async sendSpaceCommunityApplicationRecipientNotification(
-    @Payload() eventPayload: SpaceCommunityApplicationCreatedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -62,7 +62,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.SpaceCommunityApplicationAdmin)
   async sendSpaceCommunityApplicationAdminNotification(
-    @Payload() eventPayload: SpaceCommunityApplicationCreatedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -94,7 +94,7 @@ export class AppController {
   @EventPattern(NotificationEvent.SpaceCommunityInvitationVc)
   async sendSpaceCommunityVirtualContributorInvitationCreatedNotifications(
     @Payload()
-    eventPayload: SpaceCommunityInvitationVirtualContributorCreatedEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -111,7 +111,7 @@ export class AppController {
   async sendCommunityPlatformInvitationNotification(
     // todo is auto validation possible
     @Payload()
-    eventPayload: SpaceCommunityPlatformInvitationCreatedEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -127,7 +127,7 @@ export class AppController {
   @EventPattern(NotificationEvent.SpaceCommunityNewMember)
   async sendCommunityNewMemberNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: SpaceCommunityNewMemberPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -143,7 +143,7 @@ export class AppController {
   @EventPattern(NotificationEvent.SpaceCommunityNewMemberAdmin)
   async sendCommunityNewMemberAdminNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: SpaceCommunityNewMemberPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -346,7 +346,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.UserMention)
   async sendUserMentionNotifications(
-    @Payload() eventPayload: UserMentionEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadUserMessageRoom,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -443,7 +443,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.UserCommentReply, Transport.RMQ)
   async sendUserCommentReplyNotifications(
-    @Payload() eventPayload: UserCommentReplyEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadUserMessageRoomReply,
     @Ctx() context: RmqContext
   ) {
     this.processSent(

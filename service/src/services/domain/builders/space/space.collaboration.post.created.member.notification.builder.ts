@@ -5,6 +5,8 @@ import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
+import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
+import { LogContext } from '@src/common/enums';
 
 @Injectable()
 export class SpaceCollaborationPostCreatedMemberNotificationBuilder
@@ -21,6 +23,13 @@ export class SpaceCollaborationPostCreatedMemberNotificationBuilder
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
+    const contribution = eventPayload.callout.contribution;
+    if (!contribution) {
+      throw new EventPayloadNotProvidedException(
+        'Contribution not found',
+        LogContext.IN_APP_BUILDER
+      );
+    }
     return {
       createdBy: {
         firstName: eventPayload.triggeredBy.firstName,
@@ -31,8 +40,8 @@ export class SpaceCollaborationPostCreatedMemberNotificationBuilder
         url: eventPayload.callout.framing.url,
       },
       post: {
-        displayName: eventPayload.callout.contribution.displayName,
-        url: eventPayload.callout.contribution.url,
+        displayName: contribution.displayName,
+        url: contribution.url,
       },
       recipient: {
         firstName: recipient.firstName,

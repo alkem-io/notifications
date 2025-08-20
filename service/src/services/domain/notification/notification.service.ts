@@ -9,23 +9,23 @@ import {
 import {
   BaseEventPayload,
   NotificationEventPayloadSpaceCollaborationCallout,
-  UserCommentReplyEventPayload,
   NotificationEventPayloadSpaceCommunicationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadSpaceCommunicationUpdate,
-  UserMentionEventPayload,
   NotificationEventPayloadUserMessageDirect,
-  SpaceCommunityApplicationCreatedEventPayload,
   NotificationEventPayloadSpaceCommunityInvitation,
-  SpaceCommunityInvitationVirtualContributorCreatedEventPayload,
-  SpaceCommunityNewMemberPayload,
-  SpaceCommunityPlatformInvitationCreatedEventPayload,
   NotificationEventPayloadPlatformForumDiscussion,
   NotificationEventPayloadPlatformGlobalRole,
   NotificationEventPayloadPlatformUserRegistration,
   NotificationEventPayloadPlatformUserRemoved,
   NotificationEventPayloadPlatformSpaceCreated,
+  NotificationEventPayloadSpaceCommunityApplication,
+  NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+  NotificationEventPayloadSpaceCommunityInvitationPlatform,
+  NotificationEventPayloadSpaceCommunityContributor,
+  NotificationEventPayloadUserMessageRoomReply,
+  NotificationEventPayloadUserMessageRoom,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import {
@@ -112,7 +112,7 @@ export class NotificationService {
   }
 
   async sendSpaceCommunityApplicationApplicantNotifications(
-    payload: SpaceCommunityApplicationCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCommunityApplication
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -121,7 +121,7 @@ export class NotificationService {
   }
 
   async sendSpaceCommunityApplicationAdminNotifications(
-    payload: SpaceCommunityApplicationCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCommunityApplication
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -139,7 +139,7 @@ export class NotificationService {
   }
 
   async sendVirtualContributorInvitationCreatedNotifications(
-    payload: SpaceCommunityInvitationVirtualContributorCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -148,7 +148,7 @@ export class NotificationService {
   }
 
   async sendCommunityInvitationPlatformNotifications(
-    payload: SpaceCommunityPlatformInvitationCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCommunityInvitationPlatform
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -157,7 +157,7 @@ export class NotificationService {
   }
 
   async sendCommunityNewMemberNotifications(
-    payload: SpaceCommunityNewMemberPayload
+    payload: NotificationEventPayloadSpaceCommunityContributor
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -166,7 +166,7 @@ export class NotificationService {
   }
 
   async sendCommunityNewMemberAdminNotifications(
-    payload: SpaceCommunityNewMemberPayload
+    payload: NotificationEventPayloadSpaceCommunityContributor
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -319,7 +319,7 @@ export class NotificationService {
   }
 
   async sendUserCommentReplyNotification(
-    payload: UserCommentReplyEventPayload
+    payload: NotificationEventPayloadUserMessageRoomReply
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -328,7 +328,7 @@ export class NotificationService {
   }
 
   async sendUserMentionNotification(
-    payload: UserMentionEventPayload
+    payload: NotificationEventPayloadUserMessageRoom
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,

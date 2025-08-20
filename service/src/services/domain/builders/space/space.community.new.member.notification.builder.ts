@@ -4,8 +4,8 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import { SpaceCommunityNewMemberPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { NotificationEventPayloadSpaceCommunityContributor } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class SpaceCommunityNewMemberNotificationBuilder
@@ -16,7 +16,7 @@ export class SpaceCommunityNewMemberNotificationBuilder
   emailTemplate = EmailTemplate.SPACE_COMMUNITY_NEW_MEMBER_MEMBER;
 
   public createEmailTemplatePayload(
-    eventPayload: SpaceCommunityNewMemberPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     recipient: User
   ): CommunityNewMemberEmailPayload {
     const notificationPreferenceURL =

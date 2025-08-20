@@ -3,8 +3,8 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommentReplyEmailPayload } from '@common/email-template-payload';
-import { UserCommentReplyEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { NotificationEventPayloadUserMessageRoomReply } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class UserCommentReplyNotificationBuilder
@@ -15,7 +15,7 @@ export class UserCommentReplyNotificationBuilder
   emailTemplate = EmailTemplate.USER_COMMENT_REPLY;
 
   createEmailTemplatePayload(
-    eventPayload: UserCommentReplyEventPayload,
+    eventPayload: NotificationEventPayloadUserMessageRoomReply,
     recipient: User | PlatformUser
   ): CommentReplyEmailPayload {
     const notificationPreferenceURL =

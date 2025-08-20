@@ -2,9 +2,9 @@ import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { SpaceCommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
+import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class SpaceCommunityApplicationApplicantNotificationBuilder
@@ -15,7 +15,7 @@ export class SpaceCommunityApplicationApplicantNotificationBuilder
   emailTemplate = EmailTemplate.SPACE_COMMUNITY_USER_APPLICATION_APPLICANT;
 
   public createEmailTemplatePayload(
-    eventPayload: SpaceCommunityApplicationCreatedEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     recipient: User
   ): CommunityApplicationCreatedEmailPayload {
     const isLevel0Space = eventPayload.space.level === '0';
