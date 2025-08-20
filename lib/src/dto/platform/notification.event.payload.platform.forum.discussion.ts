@@ -4,6 +4,7 @@ import { NotificationEventPayloadPlatform } from './notification.event.payload.p
 export interface NotificationEventPayloadPlatformForumDiscussion
   extends NotificationEventPayloadPlatform {
   discussion: {
+    id: string;
     displayName: string;
     createdBy: ContributorPayload;
     url: string;

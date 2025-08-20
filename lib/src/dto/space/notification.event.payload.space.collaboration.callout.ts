@@ -18,6 +18,7 @@ export interface NotificationEventPayloadSpaceCollaborationCallout
       displayName: string;
       description: string;
       url: string;
+      createdBy: ContributorPayload;
     };
   };
   comment?: {
