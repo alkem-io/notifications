@@ -12,7 +12,7 @@ export class OrganizationMessageRecipientNotificationBuilder
 {
   constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
 
-  emailTemplate = EmailTemplate.ORGANIZATION_MESSAGE_SENDER;
+  emailTemplate = EmailTemplate.ORGANIZATION_MESSAGE_RECIPIENT;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadOrganizationMessageDirect,
