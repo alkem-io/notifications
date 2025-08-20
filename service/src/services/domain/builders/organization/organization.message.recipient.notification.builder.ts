@@ -16,12 +16,8 @@ export class OrganizationMessageRecipientNotificationBuilder
 
   public createEmailTemplatePayload(
     eventPayload: OrganizationMessageEventPayload,
-    recipient: User | PlatformUser,
-    sender?: User
+    recipient: User | PlatformUser
   ): CommunicationOrganizationMessageEmailPayload {
-    if (!sender) {
-      throw Error(`Sender not provided for '${eventPayload.eventType}' event`);
-    }
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 

@@ -357,7 +357,7 @@ export class NotificationService {
       NotificationTemplateType | undefined
     >[] = [];
 
-    if (payload.recipients.length === 0) {
+    if (!payload?.recipients || payload.recipients.length === 0) {
       this.logger.verbose?.(
         `[${payload.eventType}] - No recipients found, aborting notification sending.`,
         LogContext.NOTIFICATIONS
