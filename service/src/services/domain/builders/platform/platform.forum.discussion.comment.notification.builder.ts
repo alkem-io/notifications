@@ -25,7 +25,7 @@ export class PlatformForumDiscussionCommentNotificationBuilder
     if (!comment) {
       throw new EventPayloadNotProvidedException(
         `comment missing in payload: ${eventPayload}`,
-        LogContext.IN_APP_BUILDER
+        LogContext.NOTIFICATION_BUILDER
       );
     }
     const result: PlatformForumDiscussionCommentEmailPayload = {

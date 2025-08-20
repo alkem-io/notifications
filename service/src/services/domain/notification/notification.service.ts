@@ -61,6 +61,7 @@ import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/pl
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { INotificationBuilder } from '../builders/notification.builder.interface';
+import { PlatformUserRegisteredAdminNotificationBuilder } from '../builders/platform/platform.user.registered.admin.notification.builder';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -88,6 +89,7 @@ export class NotificationService {
     private platformForumDiscussionCreatedNotificationBuilder: PlatformForumDiscussionCreatedNotificationBuilder,
     private platformGlobalRoleChangeNotificationBuilder: PlatformGlobalRoleChangeNotificationBuilder,
     private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
+    private platformUserRegisteredAdminNotificationBuilder: PlatformUserRegisteredAdminNotificationBuilder,
     private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
     private platformForumDiscussionCommentNotificationBuilder: PlatformForumDiscussionCommentNotificationBuilder,
     private platformSpaceCreatedNotificationBuilder: PlatformSpaceCreatedNotificationBuilder,
@@ -183,12 +185,21 @@ export class NotificationService {
     );
   }
 
-  async sendPlatformUserRegisteredNotification(
+  async sendPlatformUserRegisteredRegistrantNotification(
     payload: NotificationEventPayloadPlatformUserRegistration
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
       this.platformUserRegisteredNotificationBuilder
+    );
+  }
+
+  async sendPlatformUserRegisteredAdminNotification(
+    payload: NotificationEventPayloadPlatformUserRegistration
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.platformUserRegisteredAdminNotificationBuilder
     );
   }
 
@@ -451,7 +462,7 @@ export class NotificationService {
     return this.notifmeService.send(notification.channels).then(
       res => {
         this.logger.verbose?.(
-          `Notification status: ${res.status}`,
+          `[${notification.name}] Notification status: ${res.status}`,
           LogContext.NOTIFICATIONS
         );
         return res;

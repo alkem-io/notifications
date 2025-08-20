@@ -27,7 +27,7 @@ export class SpaceCollaborationWhiteboardCreatedNotificationBuilder
     if (!contribution) {
       throw new EventPayloadNotProvidedException(
         'Contribution not found',
-        LogContext.IN_APP_BUILDER
+        LogContext.NOTIFICATION_BUILDER
       );
     }
     return {

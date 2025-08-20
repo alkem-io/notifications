@@ -48,6 +48,7 @@ import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } 
 import { HealthController } from './health.controller';
 import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/builders/platform/platform.space.created.notification.builder';
 import { AlkemioUrlGenerator } from './services/application/alkemio-url-generator/alkemio.url.generator';
+import { PlatformUserRegisteredAdminNotificationBuilder } from './services/domain/builders/platform/platform.user.registered.admin.notification.builder';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { AlkemioUrlGenerator } from './services/application/alkemio-url-generato
     SpaceCollaborationCalloutPublishedNotificationBuilder,
     PlatformGlobalRoleChangeNotificationBuilder,
     PlatformUserRegisteredNotificationBuilder,
+    PlatformUserRegisteredAdminNotificationBuilder,
     PlatformUserRemovedNotificationBuilder,
     PlatformForumDiscussionCreatedNotificationBuilder,
     PlatformForumDiscussionCommentNotificationBuilder,

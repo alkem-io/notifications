@@ -181,7 +181,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPlatformUserRegisteredNotification(
+      this.notificationService.sendPlatformUserRegisteredRegistrantNotification(
         eventPayload
       ),
       NotificationEvent.PlatformUserProfileCreated
@@ -197,7 +197,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPlatformUserRegisteredNotification(
+      this.notificationService.sendPlatformUserRegisteredAdminNotification(
         eventPayload
       ),
       NotificationEvent.PlatformUserProfileCreatedAdmin
@@ -490,43 +490,52 @@ export class AppController {
     }
 
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
-    sentNotifications
-      .then(x => {
-        const nacked = x.filter(
-          (y: { status: string }) => y.status === 'rejected'
-        ) as PromiseRejectedResult[];
+    try {
+      const x = await sentNotifications;
+      if (x.length === 0) {
+        this.logger.verbose?.(
+          `[${eventPayload.eventType}] No messages to send!`,
+          LogContext.NOTIFICATIONS
+        );
+        channel.ack(originalMsg);
+        return;
+      }
+      const nacked = x.filter(
+        (y: { status: string }) => y.status === 'rejected'
+      ) as PromiseRejectedResult[];
 
-        if (nacked.length === 0) {
-          this.logger.verbose?.(
-            `[${eventPayload.eventType}] ${x.length} messages successfully sent!`
-          );
-          // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
-          // so only the message supplied is acknowledged.
-          channel.ack(originalMsg);
+      if (nacked.length === 0) {
+        this.logger.verbose?.(
+          `[${eventPayload.eventType}] ${x.length} messages successfully sent!`,
+          LogContext.NOTIFICATIONS
+        );
+        // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
+        // so only the message supplied is acknowledged.
+        channel.ack(originalMsg);
+      } else {
+        if (nacked.length === x.length) {
+          this.logger.verbose?.('All messages failed to be sent!');
+          // if all messages failed to be sent, we reject the message but we make sure the message is
+          // not discarded so we provide 'true' to requeue parameter
+          channel.reject(originalMsg, true);
         } else {
-          if (nacked.length === x.length) {
-            this.logger.verbose?.('All messages failed to be sent!');
-            // if all messages failed to be sent, we reject the message but we make sure the message is
-            // not discarded so we provide 'true' to requeue parameter
-            channel.reject(originalMsg, true);
-          } else {
-            this.logger.verbose?.(
-              `${nacked.length} messages out of total ${x.length} messages failed to be sent!`
-            );
-            // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
-            // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
-            channel.nack(originalMsg, false, false);
-          }
-          // print all rejected notifications
-          nacked.forEach(x => this.logger?.warn(x.reason));
+          this.logger.verbose?.(
+            `${nacked.length} messages out of total ${x.length} messages failed to be sent!`,
+            LogContext.NOTIFICATIONS
+          );
+          // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
+          // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
+          channel.nack(originalMsg, false, false);
         }
-      })
-      .catch(err => {
-        // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
-        // not discarded so we provide 'true' to requeue parameter
-        // channel.reject(originalMsg, true);
-        channel.nack(originalMsg, false, false);
-        this.logger.error(err);
-      });
+        // print all rejected notifications
+        nacked.forEach(x => this.logger?.warn(x.reason));
+      }
+    } catch (err) {
+      // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
+      // not discarded so we provide 'true' to requeue parameter
+      // channel.reject(originalMsg, true);
+      channel.nack(originalMsg, false, false);
+      this.logger.error(err);
+    }
   }
 }
