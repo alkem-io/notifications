@@ -3,7 +3,7 @@ import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
-import { OrganizationMentionEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadOrganizationMessageRoom } from '@alkemio/notifications-lib';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 @Injectable()
@@ -15,7 +15,7 @@ export class OrganizationMentionNotificationBuilder
   emailTemplate = EmailTemplate.ORGANIZATION_MENTION;
 
   public createEmailTemplatePayload(
-    eventPayload: OrganizationMentionEventPayload,
+    eventPayload: NotificationEventPayloadOrganizationMessageRoom,
     recipient: User | PlatformUser
   ): CommunicationOrganizationMentionEmailPayload {
     const notificationPreferenceURL =

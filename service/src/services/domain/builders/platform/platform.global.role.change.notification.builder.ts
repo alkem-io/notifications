@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@src/services/domain/builders/notification
 import { EmailTemplate } from '@common/enums/email.template';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { PlatformGlobalRoleChangeEmailPayload } from '@src/common/email-template-payload/platform.global.role.change.email.payload';
-import { PlatformGlobalRoleChangeEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadPlatformGlobalRole } from '@alkemio/notifications-lib';
 @Injectable()
 export class PlatformGlobalRoleChangeNotificationBuilder
   implements INotificationBuilder
@@ -14,7 +14,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
   emailTemplate = EmailTemplate.PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN;
 
   public createEmailTemplatePayload(
-    eventPayload: PlatformGlobalRoleChangeEventPayload,
+    eventPayload: NotificationEventPayloadPlatformGlobalRole,
     recipient: User
   ): PlatformGlobalRoleChangeEmailPayload {
     const notificationPreferenceURL =

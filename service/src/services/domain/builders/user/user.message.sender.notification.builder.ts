@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@src/services/domain/builders/notification
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUserMessageEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { UserMessageEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadUserMessageDirect } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class UserMessageSenderNotificationBuilder
@@ -15,7 +15,7 @@ export class UserMessageSenderNotificationBuilder
   emailTemplate = EmailTemplate.USER_MESSAGE_SENDER;
 
   public createEmailTemplatePayload(
-    eventPayload: UserMessageEventPayload,
+    eventPayload: NotificationEventPayloadUserMessageDirect,
     recipient: User | PlatformUser
   ): CommunicationUserMessageEmailPayload {
     const notificationPreferenceURL =

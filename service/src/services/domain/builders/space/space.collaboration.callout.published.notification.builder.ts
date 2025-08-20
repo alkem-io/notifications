@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
-import { SpaceCollaborationCalloutPublishedEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
@@ -15,13 +15,13 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
   emailTemplate = EmailTemplate.SPACE_COLLABORATION_CALLOUT_PUBLISHED_MEMBER;
 
   createEmailTemplatePayload(
-    eventPayload: SpaceCollaborationCalloutPublishedEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): CollaborationCalloutPublishedEmailPayload {
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
 
-    const calloutURL = eventPayload.callout.url;
+    const framing = eventPayload.callout.framing;
 
     const result: CollaborationCalloutPublishedEmailPayload = {
       recipient: {
@@ -33,9 +33,9 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
         firstName: eventPayload.triggeredBy.profile.displayName,
       },
       callout: {
-        displayName: eventPayload.callout.displayName,
-        url: calloutURL,
-        type: 'Post', // all callouts are called "Post"
+        displayName: framing.displayName,
+        url: framing.url,
+        type: framing.type,
       },
       space: {
         displayName: eventPayload.space.profile.displayName,

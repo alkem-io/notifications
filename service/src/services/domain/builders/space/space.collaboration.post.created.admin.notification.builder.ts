@@ -3,8 +3,8 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
-import { SpaceCollaborationPostCreatedEventPayload } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class SpaceCollaborationPostCreatedAdminNotificationBuilder
@@ -15,7 +15,7 @@ export class SpaceCollaborationPostCreatedAdminNotificationBuilder
   emailTemplate = EmailTemplate.SPACE_COLLABORATION_POST_CREATED_ADMIN;
 
   createEmailTemplatePayload(
-    eventPayload: SpaceCollaborationPostCreatedEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): CollaborationPostCreatedEmailPayload {
     const notificationPreferenceURL =
@@ -27,12 +27,12 @@ export class SpaceCollaborationPostCreatedAdminNotificationBuilder
         email: eventPayload.triggeredBy.email,
       },
       callout: {
-        displayName: eventPayload.callout.displayName,
-        url: eventPayload.callout.url,
+        displayName: eventPayload.callout.framing.displayName,
+        url: eventPayload.callout.framing.url,
       },
       post: {
-        displayName: eventPayload.post.displayName,
-        url: eventPayload.post.url,
+        displayName: eventPayload.callout.contribution.displayName,
+        url: eventPayload.callout.contribution.url,
       },
       recipient: {
         firstName: recipient.firstName,

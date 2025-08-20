@@ -4,7 +4,7 @@ import { PlatformUser, User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformForumDiscussionCreatedEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { PlatformForumDiscussionCreatedEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadPlatformForumDiscussion } from '@alkemio/notifications-lib';
 @Injectable()
 export class PlatformForumDiscussionCreatedNotificationBuilder
   implements INotificationBuilder
@@ -14,7 +14,7 @@ export class PlatformForumDiscussionCreatedNotificationBuilder
   emailTemplate = EmailTemplate.PLATFORM_FORUM_DISCUSSION_CREATED;
 
   createEmailTemplatePayload(
-    eventPayload: PlatformForumDiscussionCreatedEventPayload,
+    eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     recipient: User | PlatformUser
   ): PlatformForumDiscussionCreatedEmailPayload {
     const notificationPreferenceURL =

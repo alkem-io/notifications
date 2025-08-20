@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@alkemio/client-lib": "0.35.0",
-    "@alkemio/notifications-lib": "0.11.2",
+    "@alkemio/notifications-lib": "0.11.3",
     "@nestjs/cli": "^11.0.7",
     "@nestjs/common": "^11.1.6",
     "@nestjs/config": "^4.0.2",

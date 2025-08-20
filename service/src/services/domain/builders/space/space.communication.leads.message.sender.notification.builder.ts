@@ -3,7 +3,7 @@ import { User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationCommunityLeadsMessageEmailPayload } from '@common/email-template-payload';
-import { SpaceCommunicationLeadsMessageEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunicationMessageDirect } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class SpaceCommunicationLeadsMessageSenderNotificationBuilder
     EmailTemplate.SPACE_COMMUNICATION_COMMUNITY_LEADS_MESSAGE_SENDER;
 
   public createEmailTemplatePayload(
-    eventPayload: SpaceCommunicationLeadsMessageEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     recipient: User
   ): CommunicationCommunityLeadsMessageEmailPayload {
     const notificationPreferenceURL =

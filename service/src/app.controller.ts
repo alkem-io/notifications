@@ -10,27 +10,23 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
 import { NotificationStatus } from 'notifme-sdk';
 import {
-  PlatformUserRemovedEventPayload,
-  PlatformForumDiscussionCreatedEventPayload,
-  PlatformGlobalRoleChangeEventPayload,
-  PlatformUserRegistrationEventPayload,
-  PlatformSpaceCreatedEventPayload,
-  PlatformForumDiscussionCommentEventPayload,
+  NotificationEventPayloadPlatformUserRemoved,
+  NotificationEventPayloadPlatformForumDiscussion,
+  NotificationEventPayloadPlatformGlobalRole,
+  NotificationEventPayloadPlatformUserRegistration,
+  NotificationEventPayloadPlatformSpaceCreated,
   BaseEventPayload,
-  OrganizationMessageEventPayload,
-  OrganizationMentionEventPayload,
-  UserMessageEventPayload,
+  NotificationEventPayloadOrganizationMessageDirect,
+  NotificationEventPayloadOrganizationMessageRoom,
+  NotificationEventPayloadUserMessageDirect,
   SpaceCommunityApplicationCreatedEventPayload,
-  SpaceCommunityInvitationCreatedEventPayload,
+  NotificationEventPayloadSpaceCommunityInvitation,
   SpaceCommunityInvitationVirtualContributorCreatedEventPayload,
   SpaceCommunityNewMemberPayload,
-  SpaceCommunicationLeadsMessageEventPayload,
-  SpaceCommunicationUpdateEventPayload,
+  NotificationEventPayloadSpaceCommunicationMessageDirect,
+  NotificationEventPayloadSpaceCommunicationUpdate,
   UserMentionEventPayload,
-  SpaceCollaborationWhiteboardCreatedEventPayload,
-  SpaceCollaborationPostCreatedEventPayload,
-  SpaceCollaborationPostCommentEventPayload,
-  SpaceCollaborationCalloutPublishedEventPayload,
+  NotificationEventPayloadSpaceCollaborationCallout,
   UserCommentReplyEventPayload,
   SpaceCommunityPlatformInvitationCreatedEventPayload,
 } from '@alkemio/notifications-lib';
@@ -82,7 +78,7 @@ export class AppController {
   @EventPattern(NotificationEvent.SpaceCommunityInvitationUser.valueOf())
   async sendSpaceCommunityInvitationNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: SpaceCommunityInvitationCreatedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -163,7 +159,7 @@ export class AppController {
   @EventPattern(NotificationEvent.PlatformGlobalRoleChange)
   async sendPlatformGlobalRoleChangeNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformGlobalRoleChangeEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformGlobalRole,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -179,7 +175,7 @@ export class AppController {
   @EventPattern(NotificationEvent.PlatformUserProfileCreated)
   async sendPlatformUserRegisteredNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformUserRegistrationEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -195,7 +191,7 @@ export class AppController {
   @EventPattern(NotificationEvent.PlatformUserProfileCreatedAdmin)
   async sendPlatformUserRegisteredAdminNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformUserRegistrationEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -211,7 +207,7 @@ export class AppController {
   @EventPattern(NotificationEvent.PlatformUserProfileRemoved)
   async sendUserRemovedNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformUserRemovedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformUserRemoved,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -228,7 +224,7 @@ export class AppController {
   async sendSpaceCommunicationUpdateNotifications(
     // todo is auto validation possible
     @Payload()
-    eventPayload: SpaceCommunicationUpdateEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -245,7 +241,7 @@ export class AppController {
   async sendSpaceCommunicationUpdateAdminNotifications(
     // todo is auto validation possible
     @Payload()
-    eventPayload: SpaceCommunicationUpdateEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -261,7 +257,7 @@ export class AppController {
   @EventPattern(NotificationEvent.PlatformForumDiscussionCreated)
   async sendPlatformForumDiscussionCreatedNotifications(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformForumDiscussionCreatedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -276,7 +272,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.PlatformForumDiscussionComment)
   async sendPlatformForumDiscussionCommentNotifications(
-    @Payload() eventPayload: PlatformForumDiscussionCommentEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -291,7 +287,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.UserMessageRecipient)
   async sendUserMessageNotifications(
-    @Payload() eventPayload: UserMessageEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -306,7 +302,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.UserMessageSender)
   async sendUserMessageSenderNotifications(
-    @Payload() eventPayload: UserMessageEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -319,7 +315,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.OrganizationMessageRecipient)
   async sendCommunicationOrganizationMessageNotifications(
-    @Payload() eventPayload: OrganizationMessageEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -334,7 +330,8 @@ export class AppController {
 
   @EventPattern(NotificationEvent.SpaceCommunicationMessageRecipient)
   async sendCommunicationCommunityLeadsMessageNotifications(
-    @Payload() eventPayload: SpaceCommunicationLeadsMessageEventPayload,
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -362,7 +359,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.OrganizationMentioned)
   async sendOrganizationMentionNotifications(
-    @Payload() eventPayload: OrganizationMentionEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadOrganizationMessageRoom,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -380,7 +377,7 @@ export class AppController {
     Transport.RMQ
   )
   async sendWhiteboardCreatedNotifications(
-    @Payload() eventPayload: SpaceCollaborationWhiteboardCreatedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -395,7 +392,7 @@ export class AppController {
 
   @EventPattern(NotificationEvent.SpaceCollaborationPostCreated, Transport.RMQ)
   async sendPostCreatedNotifications(
-    @Payload() eventPayload: SpaceCollaborationPostCreatedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -413,7 +410,7 @@ export class AppController {
     Transport.RMQ
   )
   async sendPostCommentCreatedNotifications(
-    @Payload() eventPayload: SpaceCollaborationPostCommentEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -431,7 +428,7 @@ export class AppController {
     Transport.RMQ
   )
   async sendCalloutPublishedNotifications(
-    @Payload() eventPayload: SpaceCollaborationCalloutPublishedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -460,7 +457,7 @@ export class AppController {
   @EventPattern(NotificationEvent.PlatformSpaceCreated)
   async sendPlatformSpaceCreatedNotifications(
     @Payload()
-    eventPayload: PlatformSpaceCreatedEventPayload,
+    eventPayload: NotificationEventPayloadPlatformSpaceCreated,
     @Ctx() context: RmqContext
   ) {
     this.processSent(

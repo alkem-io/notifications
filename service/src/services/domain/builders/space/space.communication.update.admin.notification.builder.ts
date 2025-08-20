@@ -3,7 +3,7 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
-import { SpaceCommunicationUpdateEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunicationUpdate } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
 
@@ -16,7 +16,7 @@ export class SpaceCommunicationUpdateAdminNotificationBuilder
   emailTemplate = EmailTemplate.SPACE_COMMUNICATION_UPDATE_ADMIN;
 
   createEmailTemplatePayload(
-    eventPayload: SpaceCommunicationUpdateEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
     recipient: User
   ): CommunicationUpdateCreatedEmailPayload {
     const notificationPreferenceURL =

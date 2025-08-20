@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@src/services/domain/builders/notification
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUserRemovedEmailPayload } from '@src/common/email-template-payload/platform.user.removed.email.payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { PlatformUserRemovedEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadPlatformUserRemoved } from '@alkemio/notifications-lib';
 @Injectable()
 export class PlatformUserRemovedNotificationBuilder
   implements INotificationBuilder
@@ -14,7 +14,7 @@ export class PlatformUserRemovedNotificationBuilder
   emailTemplate = EmailTemplate.PLATFORM_USER_REMOVED_ADMIN;
 
   public createEmailTemplatePayload(
-    eventPayload: PlatformUserRemovedEventPayload,
+    eventPayload: NotificationEventPayloadPlatformUserRemoved,
     recipient: User
   ): PlatformUserRemovedEmailPayload {
     const notificationPreferenceURL =

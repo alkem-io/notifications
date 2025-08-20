@@ -8,28 +8,24 @@ import {
 } from '@common/enums';
 import {
   BaseEventPayload,
-  SpaceCollaborationCalloutPublishedEventPayload,
-  SpaceCollaborationPostCommentEventPayload,
-  SpaceCollaborationPostCreatedEventPayload,
-  SpaceCollaborationWhiteboardCreatedEventPayload,
+  NotificationEventPayloadSpaceCollaborationCallout,
   UserCommentReplyEventPayload,
-  SpaceCommunicationLeadsMessageEventPayload,
-  OrganizationMentionEventPayload,
-  OrganizationMessageEventPayload,
-  SpaceCommunicationUpdateEventPayload,
+  NotificationEventPayloadSpaceCommunicationMessageDirect,
+  NotificationEventPayloadOrganizationMessageRoom,
+  NotificationEventPayloadOrganizationMessageDirect,
+  NotificationEventPayloadSpaceCommunicationUpdate,
   UserMentionEventPayload,
-  UserMessageEventPayload,
+  NotificationEventPayloadUserMessageDirect,
   SpaceCommunityApplicationCreatedEventPayload,
-  SpaceCommunityInvitationCreatedEventPayload,
+  NotificationEventPayloadSpaceCommunityInvitation,
   SpaceCommunityInvitationVirtualContributorCreatedEventPayload,
   SpaceCommunityNewMemberPayload,
   SpaceCommunityPlatformInvitationCreatedEventPayload,
-  PlatformForumDiscussionCommentEventPayload,
-  PlatformForumDiscussionCreatedEventPayload,
-  PlatformGlobalRoleChangeEventPayload,
-  PlatformUserRegistrationEventPayload,
-  PlatformUserRemovedEventPayload,
-  PlatformSpaceCreatedEventPayload,
+  NotificationEventPayloadPlatformForumDiscussion,
+  NotificationEventPayloadPlatformGlobalRole,
+  NotificationEventPayloadPlatformUserRegistration,
+  NotificationEventPayloadPlatformUserRemoved,
+  NotificationEventPayloadPlatformSpaceCreated,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import {
@@ -134,7 +130,7 @@ export class NotificationService {
   }
 
   async sendSpaceCommunityInvitationUserNotifications(
-    payload: SpaceCommunityInvitationCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCommunityInvitation
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -179,7 +175,7 @@ export class NotificationService {
   }
 
   async sendPlatformGlobalRoleChangeNotification(
-    payload: PlatformGlobalRoleChangeEventPayload
+    payload: NotificationEventPayloadPlatformGlobalRole
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -188,7 +184,7 @@ export class NotificationService {
   }
 
   async sendPlatformUserRegisteredNotification(
-    payload: PlatformUserRegistrationEventPayload
+    payload: NotificationEventPayloadPlatformUserRegistration
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -197,7 +193,7 @@ export class NotificationService {
   }
 
   async sendPlatformUserRemovedNotification(
-    payload: PlatformUserRemovedEventPayload
+    payload: NotificationEventPayloadPlatformUserRemoved
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -206,7 +202,7 @@ export class NotificationService {
   }
 
   async sendPlatformForumDiscussionCommentNotification(
-    payload: PlatformForumDiscussionCommentEventPayload
+    payload: NotificationEventPayloadPlatformForumDiscussion
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -215,7 +211,7 @@ export class NotificationService {
   }
 
   async sendPlatformForumDiscussionCreatedNotification(
-    payload: PlatformForumDiscussionCreatedEventPayload
+    payload: NotificationEventPayloadPlatformForumDiscussion
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -224,7 +220,7 @@ export class NotificationService {
   }
 
   async sendSpaceCommunicationUpdateNotification(
-    payload: SpaceCommunicationUpdateEventPayload
+    payload: NotificationEventPayloadSpaceCommunicationUpdate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -233,7 +229,7 @@ export class NotificationService {
   }
 
   async sendSpaceCommunicationUpdateAdminNotification(
-    payload: SpaceCommunicationUpdateEventPayload
+    payload: NotificationEventPayloadSpaceCommunicationUpdate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -242,7 +238,7 @@ export class NotificationService {
   }
 
   async sendUserMessageRecipientNotification(
-    payload: UserMessageEventPayload
+    payload: NotificationEventPayloadUserMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -251,7 +247,7 @@ export class NotificationService {
   }
 
   async sendUserMessageSenderNotification(
-    payload: UserMessageEventPayload
+    payload: NotificationEventPayloadUserMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -260,7 +256,7 @@ export class NotificationService {
   }
 
   async sendOrganizationMessageRecipientNotification(
-    payload: OrganizationMessageEventPayload
+    payload: NotificationEventPayloadOrganizationMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -269,7 +265,7 @@ export class NotificationService {
   }
 
   async sendOrganizationMentionNotification(
-    payload: OrganizationMentionEventPayload
+    payload: NotificationEventPayloadOrganizationMessageRoom
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -278,7 +274,7 @@ export class NotificationService {
   }
 
   async sendSpaceCommunicationMessageNotification(
-    payload: SpaceCommunicationLeadsMessageEventPayload
+    payload: NotificationEventPayloadSpaceCommunicationMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -287,7 +283,7 @@ export class NotificationService {
   }
 
   async sendSpaceCollaborationPostCreatedNotification(
-    payload: SpaceCollaborationPostCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -296,7 +292,7 @@ export class NotificationService {
   }
 
   async sendSpaceCollaborationWhiteboardCreatedNotification(
-    payload: SpaceCollaborationWhiteboardCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -305,7 +301,7 @@ export class NotificationService {
   }
 
   async sendSpaceCollaborationPostCommentCreatedNotification(
-    payload: SpaceCollaborationPostCommentEventPayload
+    payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -314,7 +310,7 @@ export class NotificationService {
   }
 
   async sendSpaceCollaborationCalloutPublishedNotification(
-    payload: SpaceCollaborationCalloutPublishedEventPayload
+    payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
@@ -341,7 +337,7 @@ export class NotificationService {
   }
 
   async sendPlatformSpaceCreatedNotification(
-    payload: PlatformSpaceCreatedEventPayload
+    payload: NotificationEventPayloadPlatformSpaceCreated
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,

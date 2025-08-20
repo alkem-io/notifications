@@ -3,7 +3,7 @@ import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
 import { CommunicationOrganizationMessageEmailPayload } from '@common/email-template-payload';
-import { OrganizationMessageEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadOrganizationMessageDirect } from '@alkemio/notifications-lib';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class OrganizationMessageSenderNotificationBuilder
   emailTemplate = EmailTemplate.ORGANIZATION_MESSAGE_SENDER;
 
   public createEmailTemplatePayload(
-    eventPayload: OrganizationMessageEventPayload,
+    eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     recipient: User | PlatformUser
   ): CommunicationOrganizationMessageEmailPayload {
     const notificationPreferenceURL =

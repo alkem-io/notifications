@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { SpaceCollaborationPostCommentEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
 import { EmailTemplate } from '@common/enums/email.template';
 import { User } from '@core/models';
@@ -14,20 +14,21 @@ export class SpaceCollaborationPostCommentNotificationBuilder
   emailTemplate = EmailTemplate.SPACE_COLLABORATION_POST_COMMENT_OWNER;
 
   createEmailTemplatePayload(
-    eventPayload: SpaceCollaborationPostCommentEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): CollaborationPostCommentEmailPayload {
     const notificationPreferenceURL =
       this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+    const callout = eventPayload.callout;
 
     return {
       callout: {
-        displayName: eventPayload.callout.displayName,
-        url: eventPayload.callout.url,
+        displayName: callout.framing.displayName,
+        url: callout.framing.url,
       },
       post: {
-        displayName: eventPayload.post.displayName,
-        url: eventPayload.post.url,
+        displayName: callout.contribution.displayName,
+        url: callout.contribution.url,
       },
       recipient: {
         firstName: recipient.firstName,

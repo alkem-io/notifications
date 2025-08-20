@@ -4,7 +4,7 @@ import { INotificationBuilder } from '@src/services/domain/builders/notification
 import { EmailTemplate } from '@common/enums/email.template';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
 import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { PlatformUserRegistrationEventPayload } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadPlatformUserRegistration } from '@alkemio/notifications-lib';
 @Injectable()
 export class PlatformUserRegisteredAdminNotificationBuilder
   implements INotificationBuilder
@@ -14,7 +14,7 @@ export class PlatformUserRegisteredAdminNotificationBuilder
   emailTemplate = EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN;
 
   public createEmailTemplatePayload(
-    eventPayload: PlatformUserRegistrationEventPayload,
+    eventPayload: NotificationEventPayloadPlatformUserRegistration,
     recipient: User
   ): PlatformUserRegisteredEmailPayload {
     const notificationPreferenceURL =
