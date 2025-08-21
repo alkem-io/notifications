@@ -32,7 +32,7 @@ import {
   SpaceCollaborationCalloutPublishedNotificationBuilder,
   SpaceCollaborationPostCommentNotificationBuilder,
   SpaceCollaborationPostCreatedMemberNotificationBuilder,
-  SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
+  SpaceCommunicationMessageDirectRecipientNotificationBuilder,
   OrganizationMentionNotificationBuilder,
   OrganizationMessageSenderNotificationBuilder,
   OrganizationMessageRecipientNotificationBuilder,
@@ -62,6 +62,7 @@ import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { INotificationBuilder } from '../builders/notification.builder.interface';
 import { PlatformUserRegisteredAdminNotificationBuilder } from '../builders/platform/platform.user.registered.admin.notification.builder';
+import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.leads.message.sender.notification.builder';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -76,7 +77,8 @@ export class NotificationService {
     private spaceCommunityPlatformInvitationCreatedNotificationBuilder: SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateMemberNotificationBuilder,
     private spaceCommunicationUpdateAdminNotificationBuilder: SpaceCommunicationUpdateAdminNotificationBuilder,
-    private spaceCommunicationLeadsMessageNotificationBuilder: SpaceCommunicationLeadsMessageRecipientNotificationBuilder,
+    private spaceCommunicationMessageDirectRecipientNotificationBuilder: SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+    private spaceCommunicationMessageDirectSenderNotificationBuilder: SpaceCommunicationMessageDirectSenderNotificationBuilder,
     private userMentionNotificationBuilder: UserMentionNotificationBuilder,
     private spaceCommunityNewMemberNotificationBuilder: SpaceCommunityNewMemberNotificationBuilder,
     private spaceCommunityNewMemberAdminNotificationBuilder: SpaceCommunityNewMemberAdminNotificationBuilder,
@@ -284,12 +286,21 @@ export class NotificationService {
     );
   }
 
-  async sendSpaceCommunicationMessageNotification(
+  async sendSpaceCommunicationMessageRecipientNotification(
     payload: NotificationEventPayloadSpaceCommunicationMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunicationLeadsMessageNotificationBuilder
+      this.spaceCommunicationMessageDirectRecipientNotificationBuilder
+    );
+  }
+
+  async sendSpaceCommunicationMessageSenderNotification(
+    payload: NotificationEventPayloadSpaceCommunicationMessageDirect
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCommunicationMessageDirectSenderNotificationBuilder
     );
   }
 

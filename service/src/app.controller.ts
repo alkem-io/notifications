@@ -329,7 +329,7 @@ export class AppController {
   }
 
   @EventPattern(NotificationEvent.SpaceCommunicationMessageRecipient)
-  async sendCommunicationCommunityLeadsMessageNotifications(
+  async sendSpaceCommunicationMessageRecipientNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
@@ -337,10 +337,26 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCommunicationMessageNotification(
+      this.notificationService.sendSpaceCommunicationMessageRecipientNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCommunicationMessageRecipient
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceCommunicationMessageSender)
+  async sendSpaceCommunicationMessageSenderNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendSpaceCommunicationMessageSenderNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCommunicationMessageSender
     );
   }
 
