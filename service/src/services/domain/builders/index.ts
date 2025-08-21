@@ -4,7 +4,7 @@ export * from './space/space.community.invitation.created.notification.builder';
 export * from './space/space.community.invitation.platform.created.notification.builder';
 export * from './space/space.communication.update.member.notification.builder';
 export * from './space/space.communication.update.admin.notification.builder';
-export * from './space/space.communication.leads.message.recipient.notification.builder';
+export * from './space/space.communication.message.direct.recipient.notification.builder';
 export * from './space/space.community.new.member.notification.builder';
 export * from './space/space.community.new.member.admin.notification.builder';
 export * from './space/space.collaboration.post.created.member.notification.builder';
