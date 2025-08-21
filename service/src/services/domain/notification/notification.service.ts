@@ -62,7 +62,7 @@ import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { INotificationBuilder } from '../builders/notification.builder.interface';
 import { PlatformUserRegisteredAdminNotificationBuilder } from '../builders/platform/platform.user.registered.admin.notification.builder';
-import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.leads.message.sender.notification.builder';
+import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
 @Injectable()
 export class NotificationService {
   constructor(

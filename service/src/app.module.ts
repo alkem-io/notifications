@@ -49,7 +49,7 @@ import { HealthController } from './health.controller';
 import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/builders/platform/platform.space.created.notification.builder';
 import { AlkemioUrlGenerator } from './services/application/alkemio-url-generator/alkemio.url.generator';
 import { PlatformUserRegisteredAdminNotificationBuilder } from './services/domain/builders/platform/platform.user.registered.admin.notification.builder';
-import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from './services/domain/builders/space/space.communication.leads.message.sender.notification.builder';
+import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from './services/domain/builders/space/space.communication.message.direct.sender.notification.builder';
 
 @Module({
   imports: [
