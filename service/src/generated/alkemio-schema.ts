@@ -770,6 +770,7 @@ export type AuthenticationProviderConfigUnion = OryConfig;
 
 export enum AuthenticationType {
   Email = 'EMAIL',
+  Github = 'GITHUB',
   Linkedin = 'LINKEDIN',
   Microsoft = 'MICROSOFT',
   Unknown = 'UNKNOWN',
@@ -780,6 +781,8 @@ export type Authorization = {
   createdDate: Scalars['DateTime']['output'];
   /** The set of credential rules that are contained by this Authorization Policy. */
   credentialRules?: Maybe<Array<AuthorizationPolicyRuleCredential>>;
+  /** Does the current User have the specified privilege based on this Authorization Policy. */
+  hasPrivilege: Scalars['Boolean']['output'];
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
   /** The privileges granted to the current user based on this Authorization Policy. */
@@ -794,6 +797,10 @@ export type Authorization = {
   verifiedCredentialRules?: Maybe<
     Array<AuthorizationPolicyRuleVerifiedCredential>
   >;
+};
+
+export type AuthorizationHasPrivilegeArgs = {
+  privilege: AuthorizationPrivilege;
 };
 
 export enum AuthorizationCredential {
@@ -2642,101 +2649,229 @@ export type ISearchResults = {
   spaceResults: ISearchCategoryResult;
 };
 
-/** An in-app notification type. To not be queried directly */
 export type InAppNotification = {
-  /** Which category (role) is this notification targeted to. */
-  category: InAppNotificationCategory;
+  /** The category of the notification event. */
+  category: NotificationEventCategory;
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** The payload of the notification. */
+  payload: InAppNotificationPayload;
   /** The receiver of the notification. */
   receiver: Contributor;
-  /** The current state of the notification */
-  state: InAppNotificationState;
-  /** When (UTC) was the notification sent. */
+  /** The state of the notification event. */
+  state: NotificationEventInAppState;
+  /** The triggered date of the notification event. */
   triggeredAt: Scalars['DateTime']['output'];
   /** The Contributor who triggered the notification. */
   triggeredBy?: Maybe<Contributor>;
-  /** The type of the notification */
+  /** The type of the notification event. */
   type: NotificationEvent;
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
 };
 
-export type InAppNotificationCalloutPublished = InAppNotification & {
-  /** The Callout that was published. */
-  callout?: Maybe<Callout>;
-  /** Which category (role) is this notification targeted to. */
-  category: InAppNotificationCategory;
-  id: Scalars['UUID']['output'];
-  /** The receiver of the notification. */
-  receiver: Contributor;
-  /** Where the callout is located. */
-  space?: Maybe<Space>;
-  /** The current state of the notification */
-  state: InAppNotificationState;
-  /** When (UTC) was the notification sent. */
-  triggeredAt: Scalars['DateTime']['output'];
-  /** The Contributor who triggered the notification. */
-  triggeredBy?: Maybe<Contributor>;
-  /** The type of the notification */
-  type: NotificationEvent;
+export type InAppNotificationFilterInput = {
+  /** Return Notifications with a type matching one of the provided types. */
+  types?: InputMaybe<Array<NotificationEvent>>;
 };
 
-/** Which category (role) is this notification targeted to. */
-export enum InAppNotificationCategory {
-  Admin = 'ADMIN',
-  Member = 'MEMBER',
-  Self = 'SELF',
-}
-
-export type InAppNotificationCommunityNewMember = InAppNotification & {
-  /** The Contributor that joined. */
-  actor?: Maybe<Contributor>;
-  /** Which category (role) is this notification targeted to. */
-  category: InAppNotificationCategory;
-  /** The type of the Contributor that joined. */
-  contributorType: RoleSetContributorType;
-  id: Scalars['UUID']['output'];
-  /** The receiver of the notification. */
-  receiver: Contributor;
-  /** The Space that was joined. */
-  space?: Maybe<Space>;
-  /** The current state of the notification */
-  state: InAppNotificationState;
-  /** When (UTC) was the notification sent. */
-  triggeredAt: Scalars['DateTime']['output'];
-  /** The Contributor who triggered the notification. */
-  triggeredBy?: Maybe<Contributor>;
-  /** The type of the notification */
-  type: NotificationEvent;
+/** An in-app notification payload. To not be queried directly */
+export type InAppNotificationPayload = {
+  /** The payload type. */
+  type: NotificationEventPayload;
 };
 
-export enum InAppNotificationState {
-  Archived = 'ARCHIVED',
-  Read = 'READ',
-  Unread = 'UNREAD',
-}
-
-export type InAppNotificationUserMentioned = InAppNotification & {
-  /** Which category (role) is this notification targeted to. */
-  category: InAppNotificationCategory;
-  /** The comment that the contributor was mentioned in. */
-  comment: Scalars['String']['output'];
-  /** The display name of the resource where the comment was created. */
-  commentOriginName: Scalars['String']['output'];
-  /** The url of the resource where the comment was created. */
-  commentUrl: Scalars['String']['output'];
-  /** The type of the Contributor that joined. */
-  contributorType: RoleSetContributorType;
-  id: Scalars['UUID']['output'];
-  /** The receiver of the notification. */
-  receiver: Contributor;
-  /** The current state of the notification */
-  state: InAppNotificationState;
-  /** When (UTC) was the notification sent. */
-  triggeredAt: Scalars['DateTime']['output'];
-  /** The Contributor who triggered the notification. */
-  triggeredBy?: Maybe<Contributor>;
-  /** The type of the notification */
-  type: NotificationEvent;
+export type InAppNotificationPayloadOrganization = InAppNotificationPayload & {
+  /** The payload type. */
+  type: NotificationEventPayload;
 };
+
+export type InAppNotificationPayloadOrganizationMessageDirect =
+  InAppNotificationPayload & {
+    /** The message content. */
+    message: Scalars['String']['output'];
+    /** The organization. */
+    organization: Contributor;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadOrganizationMessageRoom =
+  InAppNotificationPayload & {
+    /** The comment that mentioned the organization. */
+    comment?: Maybe<Scalars['String']['output']>;
+    /** The organization. */
+    organization: Organization;
+    /** The Room ID with of the comment. */
+    roomID?: Maybe<Scalars['String']['output']>;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadPlatform = InAppNotificationPayload & {
+  /** The payload type. */
+  type: NotificationEventPayload;
+};
+
+export type InAppNotificationPayloadPlatformForumDiscussion =
+  InAppNotificationPayload & {
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadPlatformGlobalRoleChange =
+  InAppNotificationPayload & {
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadPlatformUser = InAppNotificationPayload & {
+  /** The payload type. */
+  type: NotificationEventPayload;
+};
+
+export type InAppNotificationPayloadPlatformUserMessageRoom =
+  InAppNotificationPayload & {
+    /** The original message ID. */
+    comment?: Maybe<Scalars['String']['output']>;
+    /** The original message ID. */
+    commentOriginName?: Maybe<Scalars['String']['output']>;
+    /** The original message ID. */
+    commentUrl?: Maybe<Scalars['String']['output']>;
+    /** The original message ID. */
+    originalMessageID?: Maybe<Scalars['String']['output']>;
+    /** The room for the message. */
+    roomID?: Maybe<Scalars['String']['output']>;
+    /** The payload type. */
+    type: NotificationEventPayload;
+    /** The User for the message. */
+    user: User;
+  };
+
+export type InAppNotificationPayloadPlatformUserProfileRemoved =
+  InAppNotificationPayload & {
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpace = InAppNotificationPayload & {
+  /** The payload type. */
+  type: NotificationEventPayload;
+};
+
+export type InAppNotificationPayloadSpaceCollaborationCallout =
+  InAppNotificationPayload & {
+    /** The Callout that was published. */
+    callout: Callout;
+    /** Where the callout is located. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCollaborationPost =
+  InAppNotificationPayload & {
+    /** The callout ID. */
+    callout: Scalars['String']['output'];
+    /** The post ID. */
+    post: Scalars['String']['output'];
+    /** The Space where the post was created. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCollaborationPostComment =
+  InAppNotificationPayload & {
+    /** The comment ID. */
+    comment: Scalars['String']['output'];
+    /** The post ID. */
+    post: Scalars['String']['output'];
+    /** The Space where the comment was created. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCollaborationWhiteboard =
+  InAppNotificationPayload & {
+    /** The callout ID. */
+    callout: Scalars['String']['output'];
+    /** The Space where the whiteboard was created. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+    /** The whiteboard ID. */
+    whiteboard: Scalars['String']['output'];
+  };
+
+export type InAppNotificationPayloadSpaceCommunicationMessageDirect =
+  InAppNotificationPayload & {
+    /** The message content. */
+    message: Scalars['String']['output'];
+    /** The Space where the message was sent. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCommunicationUpdate =
+  InAppNotificationPayload & {
+    /** The Space where the update was sent. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+    /** The update content. */
+    update?: Maybe<Scalars['String']['output']>;
+  };
+
+export type InAppNotificationPayloadSpaceCommunityApplication =
+  InAppNotificationPayload & {
+    /** The Application that the notification is related to. */
+    application: Application;
+    /** The Space that the application was made to. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCommunityContributor =
+  InAppNotificationPayload & {
+    /** The Contributor that joined. */
+    contributor: Contributor;
+    /** The Space that was joined. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCommunityInvitation =
+  InAppNotificationPayload & {
+    /** The Space that the invitation is for. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCommunityInvitationPlatform =
+  InAppNotificationPayload & {
+    /** The Space that the invitation is for. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadUserMessageDirect =
+  InAppNotificationPayload & {
+    /** The message content. */
+    message?: Maybe<Scalars['String']['output']>;
+    /** The payload type. */
+    type: NotificationEventPayload;
+    /** The User that was sent the message. */
+    user: User;
+  };
 
 export type InnovationFlow = {
   /** The authorization rules for the entity */
@@ -3848,6 +3983,8 @@ export type Mutation = {
   assignRoleToVirtualContributor: VirtualContributor;
   /** Assigns a User as a member of the specified User Group. */
   assignUserToGroup: UserGroup;
+  /** Ensure all access privileges for the platform roles are re-calculated */
+  authorizationPlatformRolesAccessReset: Scalars['Boolean']['output'];
   /** Reset the Authorization Policy on all entities */
   authorizationPolicyResetAll: Scalars['String']['output'];
   /** Reset the Authorization Policy on the specified Account. */
@@ -4097,7 +4234,7 @@ export type Mutation = {
   /** Updates the specified Memo. */
   updateMemo: Memo;
   /** Update notification state and return the notification. */
-  updateNotificationState: InAppNotificationState;
+  updateNotificationState: NotificationEventInAppState;
   /** Updates the specified Organization. */
   updateOrganization: Organization;
   /** Updates the specified Organization platform settings. */
@@ -4866,6 +5003,44 @@ export enum NotificationEvent {
   UserMessageSender = 'USER_MESSAGE_SENDER',
 }
 
+/** A categorization of notification type. */
+export enum NotificationEventCategory {
+  Organization = 'ORGANIZATION',
+  Platform = 'PLATFORM',
+  SpaceAdmin = 'SPACE_ADMIN',
+  SpaceMember = 'SPACE_MEMBER',
+  User = 'USER',
+}
+
+export enum NotificationEventInAppState {
+  Archived = 'ARCHIVED',
+  Read = 'READ',
+  Unread = 'UNREAD',
+}
+
+export enum NotificationEventPayload {
+  OrganizationMessageDirect = 'ORGANIZATION_MESSAGE_DIRECT',
+  OrganizationMessageRoom = 'ORGANIZATION_MESSAGE_ROOM',
+  PlatformForumDiscussion = 'PLATFORM_FORUM_DISCUSSION',
+  PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
+  PlatformGlobalRoleChange = 'PLATFORM_GLOBAL_ROLE_CHANGE',
+  PlatformUserProfileRemoved = 'PLATFORM_USER_PROFILE_REMOVED',
+  Space = 'SPACE',
+  SpaceCollaborationCallout = 'SPACE_COLLABORATION_CALLOUT',
+  SpaceCollaborationPost = 'SPACE_COLLABORATION_POST',
+  SpaceCollaborationPostComment = 'SPACE_COLLABORATION_POST_COMMENT',
+  SpaceCollaborationWhiteboard = 'SPACE_COLLABORATION_WHITEBOARD',
+  SpaceCommunicationMessageDirect = 'SPACE_COMMUNICATION_MESSAGE_DIRECT',
+  SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
+  SpaceCommunityApplication = 'SPACE_COMMUNITY_APPLICATION',
+  SpaceCommunityContributor = 'SPACE_COMMUNITY_CONTRIBUTOR',
+  SpaceCommunityInvitation = 'SPACE_COMMUNITY_INVITATION',
+  SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
+  User = 'USER',
+  UserMessageDirect = 'USER_MESSAGE_DIRECT',
+  UserMessageRoom = 'USER_MESSAGE_ROOM',
+}
+
 export type NotificationRecipientResult = {
   /** The email recipients for the notification. */
   emailRecipients: Array<User>;
@@ -4876,12 +5051,18 @@ export type NotificationRecipientResult = {
 };
 
 export type NotificationRecipientsInput = {
-  /** The ID of the entity to retrieve the recipients for. This could be a Space, Organization etc, and is specific to the event type. */
-  entityID?: InputMaybe<Scalars['UUID']['input']>;
   /** The type of notification setting to look up recipients for. */
   eventType: NotificationEvent;
+  /** The ID of the Organization to use to determine recipients. */
+  organizationID?: InputMaybe<Scalars['UUID']['input']>;
+  /** The ID of the space to retrieve the recipients for. */
+  spaceID?: InputMaybe<Scalars['UUID']['input']>;
   /** The ID of the User that triggered the event. */
   triggeredBy?: InputMaybe<Scalars['UUID']['input']>;
+  /** The ID of the specific user recipient for user-related notifications (e.g., invitations, mentions). */
+  userID?: InputMaybe<Scalars['UUID']['input']>;
+  /** The ID of the Virtual Contributor to use to determine recipients. */
+  virtualContributorID?: InputMaybe<Scalars['UUID']['input']>;
 };
 
 export enum OpenAiModel {
@@ -5104,6 +5285,13 @@ export type PlatformInnovationHubArgs = {
   subdomain?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type PlatformAccessRole = {
+  /** The privileges to be granted for this Platform Access Role. */
+  grantedPrivileges: Array<AuthorizationPrivilege>;
+  /** The role name for this Platform Access Role. */
+  roleName: RoleName;
+};
+
 export type PlatformAdminCommunicationQueryResults = {
   /** All Users that are members of a given room */
   adminCommunicationMembership: CommunicationAdminMembershipResult;
@@ -5178,6 +5366,7 @@ export enum PlatformFeatureFlagName {
   CommunicationsDiscussions = 'COMMUNICATIONS_DISCUSSIONS',
   GuidenceEngine = 'GUIDENCE_ENGINE',
   LandingPage = 'LANDING_PAGE',
+  Memo = 'MEMO',
   Notifications = 'NOTIFICATIONS',
   Ssi = 'SSI',
   Subscriptions = 'SUBSCRIPTIONS',
@@ -5266,6 +5455,11 @@ export type PlatformLocations = {
   terms: Scalars['String']['output'];
   /** URL where users can get tips and tricks */
   tips: Scalars['String']['output'];
+};
+
+export type PlatformRolesAccess = {
+  /** The platform roles with their associated privileges. */
+  roles: Array<PlatformAccessRole>;
 };
 
 export type PlatformSettings = {
@@ -5390,7 +5584,7 @@ export type Query = {
   /** The notificationRecipients for the provided event on the given entity. */
   notificationRecipients: NotificationRecipientResult;
   /** Get all notifications for the logged in user. */
-  notifications: Array<InAppNotification>;
+  notificationsInApp: Array<InAppNotification>;
   /** A particular Organization */
   organization: Organization;
   /** The Organizations on this platform */
@@ -5457,6 +5651,10 @@ export type QueryExploreSpacesArgs = {
 
 export type QueryNotificationRecipientsArgs = {
   eventData: NotificationRecipientsInput;
+};
+
+export type QueryNotificationsInAppArgs = {
+  filter?: InputMaybe<InAppNotificationFilterInput>;
 };
 
 export type QueryOrganizationArgs = {
@@ -5625,6 +5823,8 @@ export type RelayPaginatedSpace = {
   license: License;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
+  /** The calculated platform access for this Space. */
+  platformAccess: PlatformRolesAccess;
   /** The settings for this Space. */
   settings: SpaceSettings;
   /** The StorageAggregator in use by this Space */
@@ -5762,6 +5962,7 @@ export type Role = {
 
 export enum RoleName {
   Admin = 'ADMIN',
+  Anonymous = 'ANONYMOUS',
   Associate = 'ASSOCIATE',
   GlobalAdmin = 'GLOBAL_ADMIN',
   GlobalCommunityReader = 'GLOBAL_COMMUNITY_READER',
@@ -5775,6 +5976,7 @@ export enum RoleName {
   Owner = 'OWNER',
   PlatformBetaTester = 'PLATFORM_BETA_TESTER',
   PlatformVcCampaign = 'PLATFORM_VC_CAMPAIGN',
+  Registered = 'REGISTERED',
 }
 
 export type RoleSet = {
@@ -6266,6 +6468,8 @@ export type Space = {
   license: License;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
+  /** The calculated platform access for this Space. */
+  platformAccess: PlatformRolesAccess;
   /** The settings for this Space. */
   settings: SpaceSettings;
   /** The StorageAggregator in use by this Space */
@@ -7159,7 +7363,7 @@ export type UpdateNotificationStateInput = {
   /** The ID of the notification to update. */
   ID: Scalars['UUID']['input'];
   /** The new state of the notification. */
-  state: InAppNotificationState;
+  state: NotificationEventInAppState;
 };
 
 export type UpdateOrganizationInput = {
@@ -7657,8 +7861,8 @@ export type UserAuthenticationResult = {
   authenticatedAt?: Maybe<Scalars['DateTime']['output']>;
   /** When the Kratos Account for the user was created */
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The Authentication Method used for this User. One of email, linkedin, microsoft, or unknown */
-  method: AuthenticationType;
+  /** The Authentication Methods used for this User. One of email, linkedin, microsoft, github or unknown */
+  methods: Array<AuthenticationType>;
 };
 
 export type UserAuthorizationResetInput = {
@@ -8239,28 +8443,63 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
           profile: _RefType['Profile'];
           roleSet: _RefType['RoleSet'];
         });
-    InAppNotification:
+    InAppNotificationPayload:
+      | InAppNotificationPayloadOrganization
       | (Omit<
-          InAppNotificationCalloutPublished,
-          'callout' | 'receiver' | 'space' | 'triggeredBy'
-        > & {
-          callout?: Maybe<_RefType['Callout']>;
-          receiver: _RefType['Contributor'];
-          space?: Maybe<_RefType['Space']>;
-          triggeredBy?: Maybe<_RefType['Contributor']>;
+          InAppNotificationPayloadOrganizationMessageDirect,
+          'organization'
+        > & { organization: _RefType['Contributor'] })
+      | (Omit<
+          InAppNotificationPayloadOrganizationMessageRoom,
+          'organization'
+        > & { organization: _RefType['Organization'] })
+      | InAppNotificationPayloadPlatform
+      | InAppNotificationPayloadPlatformForumDiscussion
+      | InAppNotificationPayloadPlatformGlobalRoleChange
+      | InAppNotificationPayloadPlatformUser
+      | (Omit<InAppNotificationPayloadPlatformUserMessageRoom, 'user'> & {
+          user: _RefType['User'];
+        })
+      | InAppNotificationPayloadPlatformUserProfileRemoved
+      | InAppNotificationPayloadSpace
+      | (Omit<
+          InAppNotificationPayloadSpaceCollaborationCallout,
+          'callout' | 'space'
+        > & { callout: _RefType['Callout']; space: _RefType['Space'] })
+      | (Omit<InAppNotificationPayloadSpaceCollaborationPost, 'space'> & {
+          space: _RefType['Space'];
         })
       | (Omit<
-          InAppNotificationCommunityNewMember,
-          'actor' | 'receiver' | 'space' | 'triggeredBy'
-        > & {
-          actor?: Maybe<_RefType['Contributor']>;
-          receiver: _RefType['Contributor'];
-          space?: Maybe<_RefType['Space']>;
-          triggeredBy?: Maybe<_RefType['Contributor']>;
+          InAppNotificationPayloadSpaceCollaborationPostComment,
+          'space'
+        > & { space: _RefType['Space'] })
+      | (Omit<InAppNotificationPayloadSpaceCollaborationWhiteboard, 'space'> & {
+          space: _RefType['Space'];
         })
-      | (Omit<InAppNotificationUserMentioned, 'receiver' | 'triggeredBy'> & {
-          receiver: _RefType['Contributor'];
-          triggeredBy?: Maybe<_RefType['Contributor']>;
+      | (Omit<
+          InAppNotificationPayloadSpaceCommunicationMessageDirect,
+          'space'
+        > & { space: _RefType['Space'] })
+      | (Omit<InAppNotificationPayloadSpaceCommunicationUpdate, 'space'> & {
+          space: _RefType['Space'];
+        })
+      | (Omit<
+          InAppNotificationPayloadSpaceCommunityApplication,
+          'application' | 'space'
+        > & { application: _RefType['Application']; space: _RefType['Space'] })
+      | (Omit<
+          InAppNotificationPayloadSpaceCommunityContributor,
+          'contributor' | 'space'
+        > & { contributor: _RefType['Contributor']; space: _RefType['Space'] })
+      | (Omit<InAppNotificationPayloadSpaceCommunityInvitation, 'space'> & {
+          space: _RefType['Space'];
+        })
+      | (Omit<
+          InAppNotificationPayloadSpaceCommunityInvitationPlatform,
+          'space'
+        > & { space: _RefType['Space'] })
+      | (Omit<InAppNotificationPayloadUserMessageDirect, 'user'> & {
+          user: _RefType['User'];
         });
     SearchResult:
       | (Omit<SearchResultCallout, 'callout' | 'space'> & {
@@ -8810,36 +9049,100 @@ export type ResolversTypes = {
     }
   >;
   InAppNotification: ResolverTypeWrapper<
-    ResolversInterfaceTypes<ResolversTypes>['InAppNotification']
-  >;
-  InAppNotificationCalloutPublished: ResolverTypeWrapper<
-    Omit<
-      InAppNotificationCalloutPublished,
-      'callout' | 'receiver' | 'space' | 'triggeredBy'
-    > & {
-      callout?: Maybe<ResolversTypes['Callout']>;
+    Omit<InAppNotification, 'payload' | 'receiver' | 'triggeredBy'> & {
+      payload: ResolversTypes['InAppNotificationPayload'];
       receiver: ResolversTypes['Contributor'];
-      space?: Maybe<ResolversTypes['Space']>;
       triggeredBy?: Maybe<ResolversTypes['Contributor']>;
     }
   >;
-  InAppNotificationCategory: InAppNotificationCategory;
-  InAppNotificationCommunityNewMember: ResolverTypeWrapper<
-    Omit<
-      InAppNotificationCommunityNewMember,
-      'actor' | 'receiver' | 'space' | 'triggeredBy'
-    > & {
-      actor?: Maybe<ResolversTypes['Contributor']>;
-      receiver: ResolversTypes['Contributor'];
-      space?: Maybe<ResolversTypes['Space']>;
-      triggeredBy?: Maybe<ResolversTypes['Contributor']>;
+  InAppNotificationFilterInput: InAppNotificationFilterInput;
+  InAppNotificationPayload: ResolverTypeWrapper<
+    ResolversInterfaceTypes<ResolversTypes>['InAppNotificationPayload']
+  >;
+  InAppNotificationPayloadOrganization: ResolverTypeWrapper<InAppNotificationPayloadOrganization>;
+  InAppNotificationPayloadOrganizationMessageDirect: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadOrganizationMessageDirect, 'organization'> & {
+      organization: ResolversTypes['Contributor'];
     }
   >;
-  InAppNotificationState: InAppNotificationState;
-  InAppNotificationUserMentioned: ResolverTypeWrapper<
-    Omit<InAppNotificationUserMentioned, 'receiver' | 'triggeredBy'> & {
-      receiver: ResolversTypes['Contributor'];
-      triggeredBy?: Maybe<ResolversTypes['Contributor']>;
+  InAppNotificationPayloadOrganizationMessageRoom: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadOrganizationMessageRoom, 'organization'> & {
+      organization: ResolversTypes['Organization'];
+    }
+  >;
+  InAppNotificationPayloadPlatform: ResolverTypeWrapper<InAppNotificationPayloadPlatform>;
+  InAppNotificationPayloadPlatformForumDiscussion: ResolverTypeWrapper<InAppNotificationPayloadPlatformForumDiscussion>;
+  InAppNotificationPayloadPlatformGlobalRoleChange: ResolverTypeWrapper<InAppNotificationPayloadPlatformGlobalRoleChange>;
+  InAppNotificationPayloadPlatformUser: ResolverTypeWrapper<InAppNotificationPayloadPlatformUser>;
+  InAppNotificationPayloadPlatformUserMessageRoom: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadPlatformUserMessageRoom, 'user'> & {
+      user: ResolversTypes['User'];
+    }
+  >;
+  InAppNotificationPayloadPlatformUserProfileRemoved: ResolverTypeWrapper<InAppNotificationPayloadPlatformUserProfileRemoved>;
+  InAppNotificationPayloadSpace: ResolverTypeWrapper<InAppNotificationPayloadSpace>;
+  InAppNotificationPayloadSpaceCollaborationCallout: ResolverTypeWrapper<
+    Omit<
+      InAppNotificationPayloadSpaceCollaborationCallout,
+      'callout' | 'space'
+    > & { callout: ResolversTypes['Callout']; space: ResolversTypes['Space'] }
+  >;
+  InAppNotificationPayloadSpaceCollaborationPost: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCollaborationPost, 'space'> & {
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCollaborationPostComment: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCollaborationPostComment, 'space'> & {
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCollaborationWhiteboard: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCollaborationWhiteboard, 'space'> & {
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunicationMessageDirect: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCommunicationMessageDirect, 'space'> & {
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunicationUpdate: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCommunicationUpdate, 'space'> & {
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunityApplication: ResolverTypeWrapper<
+    Omit<
+      InAppNotificationPayloadSpaceCommunityApplication,
+      'application' | 'space'
+    > & {
+      application: ResolversTypes['Application'];
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunityContributor: ResolverTypeWrapper<
+    Omit<
+      InAppNotificationPayloadSpaceCommunityContributor,
+      'contributor' | 'space'
+    > & {
+      contributor: ResolversTypes['Contributor'];
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunityInvitation: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCommunityInvitation, 'space'> & {
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunityInvitationPlatform: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCommunityInvitationPlatform, 'space'> & {
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadUserMessageDirect: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadUserMessageDirect, 'user'> & {
+      user: ResolversTypes['User'];
     }
   >;
   InnovationFlow: ResolverTypeWrapper<
@@ -9052,6 +9355,9 @@ export type ResolversTypes = {
   NVP: ResolverTypeWrapper<Nvp>;
   NameID: ResolverTypeWrapper<Scalars['NameID']['output']>;
   NotificationEvent: NotificationEvent;
+  NotificationEventCategory: NotificationEventCategory;
+  NotificationEventInAppState: NotificationEventInAppState;
+  NotificationEventPayload: NotificationEventPayload;
   NotificationRecipientResult: ResolverTypeWrapper<
     Omit<
       NotificationRecipientResult,
@@ -9135,6 +9441,7 @@ export type ResolversTypes = {
       templatesManager?: Maybe<ResolversTypes['TemplatesManager']>;
     }
   >;
+  PlatformAccessRole: ResolverTypeWrapper<PlatformAccessRole>;
   PlatformAdminCommunicationQueryResults: ResolverTypeWrapper<PlatformAdminCommunicationQueryResults>;
   PlatformAdminQueryResults: ResolverTypeWrapper<
     Omit<
@@ -9163,6 +9470,7 @@ export type ResolversTypes = {
     }
   >;
   PlatformLocations: ResolverTypeWrapper<PlatformLocations>;
+  PlatformRolesAccess: ResolverTypeWrapper<PlatformRolesAccess>;
   PlatformSettings: ResolverTypeWrapper<PlatformSettings>;
   Post: ResolverTypeWrapper<
     Omit<Post, 'comments' | 'createdBy' | 'profile'> & {
@@ -10108,32 +10416,88 @@ export type ResolversParentTypes = {
     contributorResults: ResolversParentTypes['ISearchCategoryResult'];
     spaceResults: ResolversParentTypes['ISearchCategoryResult'];
   };
-  InAppNotification: ResolversInterfaceTypes<ResolversParentTypes>['InAppNotification'];
-  InAppNotificationCalloutPublished: Omit<
-    InAppNotificationCalloutPublished,
-    'callout' | 'receiver' | 'space' | 'triggeredBy'
+  InAppNotification: Omit<
+    InAppNotification,
+    'payload' | 'receiver' | 'triggeredBy'
   > & {
-    callout?: Maybe<ResolversParentTypes['Callout']>;
-    receiver: ResolversParentTypes['Contributor'];
-    space?: Maybe<ResolversParentTypes['Space']>;
-    triggeredBy?: Maybe<ResolversParentTypes['Contributor']>;
-  };
-  InAppNotificationCommunityNewMember: Omit<
-    InAppNotificationCommunityNewMember,
-    'actor' | 'receiver' | 'space' | 'triggeredBy'
-  > & {
-    actor?: Maybe<ResolversParentTypes['Contributor']>;
-    receiver: ResolversParentTypes['Contributor'];
-    space?: Maybe<ResolversParentTypes['Space']>;
-    triggeredBy?: Maybe<ResolversParentTypes['Contributor']>;
-  };
-  InAppNotificationUserMentioned: Omit<
-    InAppNotificationUserMentioned,
-    'receiver' | 'triggeredBy'
-  > & {
+    payload: ResolversParentTypes['InAppNotificationPayload'];
     receiver: ResolversParentTypes['Contributor'];
     triggeredBy?: Maybe<ResolversParentTypes['Contributor']>;
   };
+  InAppNotificationFilterInput: InAppNotificationFilterInput;
+  InAppNotificationPayload: ResolversInterfaceTypes<ResolversParentTypes>['InAppNotificationPayload'];
+  InAppNotificationPayloadOrganization: InAppNotificationPayloadOrganization;
+  InAppNotificationPayloadOrganizationMessageDirect: Omit<
+    InAppNotificationPayloadOrganizationMessageDirect,
+    'organization'
+  > & { organization: ResolversParentTypes['Contributor'] };
+  InAppNotificationPayloadOrganizationMessageRoom: Omit<
+    InAppNotificationPayloadOrganizationMessageRoom,
+    'organization'
+  > & { organization: ResolversParentTypes['Organization'] };
+  InAppNotificationPayloadPlatform: InAppNotificationPayloadPlatform;
+  InAppNotificationPayloadPlatformForumDiscussion: InAppNotificationPayloadPlatformForumDiscussion;
+  InAppNotificationPayloadPlatformGlobalRoleChange: InAppNotificationPayloadPlatformGlobalRoleChange;
+  InAppNotificationPayloadPlatformUser: InAppNotificationPayloadPlatformUser;
+  InAppNotificationPayloadPlatformUserMessageRoom: Omit<
+    InAppNotificationPayloadPlatformUserMessageRoom,
+    'user'
+  > & { user: ResolversParentTypes['User'] };
+  InAppNotificationPayloadPlatformUserProfileRemoved: InAppNotificationPayloadPlatformUserProfileRemoved;
+  InAppNotificationPayloadSpace: InAppNotificationPayloadSpace;
+  InAppNotificationPayloadSpaceCollaborationCallout: Omit<
+    InAppNotificationPayloadSpaceCollaborationCallout,
+    'callout' | 'space'
+  > & {
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
+  };
+  InAppNotificationPayloadSpaceCollaborationPost: Omit<
+    InAppNotificationPayloadSpaceCollaborationPost,
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadSpaceCollaborationPostComment: Omit<
+    InAppNotificationPayloadSpaceCollaborationPostComment,
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadSpaceCollaborationWhiteboard: Omit<
+    InAppNotificationPayloadSpaceCollaborationWhiteboard,
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadSpaceCommunicationMessageDirect: Omit<
+    InAppNotificationPayloadSpaceCommunicationMessageDirect,
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadSpaceCommunicationUpdate: Omit<
+    InAppNotificationPayloadSpaceCommunicationUpdate,
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadSpaceCommunityApplication: Omit<
+    InAppNotificationPayloadSpaceCommunityApplication,
+    'application' | 'space'
+  > & {
+    application: ResolversParentTypes['Application'];
+    space: ResolversParentTypes['Space'];
+  };
+  InAppNotificationPayloadSpaceCommunityContributor: Omit<
+    InAppNotificationPayloadSpaceCommunityContributor,
+    'contributor' | 'space'
+  > & {
+    contributor: ResolversParentTypes['Contributor'];
+    space: ResolversParentTypes['Space'];
+  };
+  InAppNotificationPayloadSpaceCommunityInvitation: Omit<
+    InAppNotificationPayloadSpaceCommunityInvitation,
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadSpaceCommunityInvitationPlatform: Omit<
+    InAppNotificationPayloadSpaceCommunityInvitationPlatform,
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadUserMessageDirect: Omit<
+    InAppNotificationPayloadUserMessageDirect,
+    'user'
+  > & { user: ResolversParentTypes['User'] };
   InnovationFlow: Omit<InnovationFlow, 'profile'> & {
     profile: ResolversParentTypes['Profile'];
   };
@@ -10387,6 +10751,7 @@ export type ResolversParentTypes = {
     roleSet: ResolversParentTypes['RoleSet'];
     templatesManager?: Maybe<ResolversParentTypes['TemplatesManager']>;
   };
+  PlatformAccessRole: PlatformAccessRole;
   PlatformAdminCommunicationQueryResults: PlatformAdminCommunicationQueryResults;
   PlatformAdminQueryResults: Omit<
     PlatformAdminQueryResults,
@@ -10410,6 +10775,7 @@ export type ResolversParentTypes = {
     createdBy: ResolversParentTypes['User'];
   };
   PlatformLocations: PlatformLocations;
+  PlatformRolesAccess: PlatformRolesAccess;
   PlatformSettings: PlatformSettings;
   Post: Omit<Post, 'comments' | 'createdBy' | 'profile'> & {
     comments: ResolversParentTypes['Room'];
@@ -11594,6 +11960,12 @@ export type AuthorizationResolvers<
     Maybe<Array<ResolversTypes['AuthorizationPolicyRuleCredential']>>,
     ParentType,
     ContextType
+  >;
+  hasPrivilege?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<AuthorizationHasPrivilegeArgs, 'privilege'>
   >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   myPrivileges?: Resolver<
@@ -13143,137 +13515,404 @@ export type InAppNotificationResolvers<
   ParentType extends
     ResolversParentTypes['InAppNotification'] = ResolversParentTypes['InAppNotification'],
 > = {
+  category?: Resolver<
+    ResolversTypes['NotificationEventCategory'],
+    ParentType,
+    ContextType
+  >;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  payload?: Resolver<
+    ResolversTypes['InAppNotificationPayload'],
+    ParentType,
+    ContextType
+  >;
+  receiver?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
+  state?: Resolver<
+    ResolversTypes['NotificationEventInAppState'],
+    ParentType,
+    ContextType
+  >;
+  triggeredAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  triggeredBy?: Resolver<
+    Maybe<ResolversTypes['Contributor']>,
+    ParentType,
+    ContextType
+  >;
+  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayload'] = ResolversParentTypes['InAppNotificationPayload'],
+> = {
   __resolveType: TypeResolveFn<
-    | 'InAppNotificationCalloutPublished'
-    | 'InAppNotificationCommunityNewMember'
-    | 'InAppNotificationUserMentioned',
+    | 'InAppNotificationPayloadOrganization'
+    | 'InAppNotificationPayloadOrganizationMessageDirect'
+    | 'InAppNotificationPayloadOrganizationMessageRoom'
+    | 'InAppNotificationPayloadPlatform'
+    | 'InAppNotificationPayloadPlatformForumDiscussion'
+    | 'InAppNotificationPayloadPlatformGlobalRoleChange'
+    | 'InAppNotificationPayloadPlatformUser'
+    | 'InAppNotificationPayloadPlatformUserMessageRoom'
+    | 'InAppNotificationPayloadPlatformUserProfileRemoved'
+    | 'InAppNotificationPayloadSpace'
+    | 'InAppNotificationPayloadSpaceCollaborationCallout'
+    | 'InAppNotificationPayloadSpaceCollaborationPost'
+    | 'InAppNotificationPayloadSpaceCollaborationPostComment'
+    | 'InAppNotificationPayloadSpaceCollaborationWhiteboard'
+    | 'InAppNotificationPayloadSpaceCommunicationMessageDirect'
+    | 'InAppNotificationPayloadSpaceCommunicationUpdate'
+    | 'InAppNotificationPayloadSpaceCommunityApplication'
+    | 'InAppNotificationPayloadSpaceCommunityContributor'
+    | 'InAppNotificationPayloadSpaceCommunityInvitation'
+    | 'InAppNotificationPayloadSpaceCommunityInvitationPlatform'
+    | 'InAppNotificationPayloadUserMessageDirect',
     ParentType,
     ContextType
   >;
-  category?: Resolver<
-    ResolversTypes['InAppNotificationCategory'],
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
     ParentType,
     ContextType
   >;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  receiver?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
-  state?: Resolver<
-    ResolversTypes['InAppNotificationState'],
-    ParentType,
-    ContextType
-  >;
-  triggeredAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  triggeredBy?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
-    ParentType,
-    ContextType
-  >;
-  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
 };
 
-export type InAppNotificationCalloutPublishedResolvers<
+export type InAppNotificationPayloadOrganizationResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationCalloutPublished'] = ResolversParentTypes['InAppNotificationCalloutPublished'],
+    ResolversParentTypes['InAppNotificationPayloadOrganization'] = ResolversParentTypes['InAppNotificationPayloadOrganization'],
 > = {
-  callout?: Resolver<Maybe<ResolversTypes['Callout']>, ParentType, ContextType>;
-  category?: Resolver<
-    ResolversTypes['InAppNotificationCategory'],
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
     ParentType,
     ContextType
   >;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  receiver?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
-  state?: Resolver<
-    ResolversTypes['InAppNotificationState'],
-    ParentType,
-    ContextType
-  >;
-  triggeredAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  triggeredBy?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
-    ParentType,
-    ContextType
-  >;
-  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InAppNotificationCommunityNewMemberResolvers<
+export type InAppNotificationPayloadOrganizationMessageDirectResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationCommunityNewMember'] = ResolversParentTypes['InAppNotificationCommunityNewMember'],
+    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageDirect'] = ResolversParentTypes['InAppNotificationPayloadOrganizationMessageDirect'],
 > = {
-  actor?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organization?: Resolver<
+    ResolversTypes['Contributor'],
     ParentType,
     ContextType
   >;
-  category?: Resolver<
-    ResolversTypes['InAppNotificationCategory'],
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
     ParentType,
     ContextType
   >;
-  contributorType?: Resolver<
-    ResolversTypes['RoleSetContributorType'],
-    ParentType,
-    ContextType
-  >;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  receiver?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
-  state?: Resolver<
-    ResolversTypes['InAppNotificationState'],
-    ParentType,
-    ContextType
-  >;
-  triggeredAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  triggeredBy?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
-    ParentType,
-    ContextType
-  >;
-  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InAppNotificationUserMentionedResolvers<
+export type InAppNotificationPayloadOrganizationMessageRoomResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationUserMentioned'] = ResolversParentTypes['InAppNotificationUserMentioned'],
+    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageRoom'] = ResolversParentTypes['InAppNotificationPayloadOrganizationMessageRoom'],
 > = {
-  category?: Resolver<
-    ResolversTypes['InAppNotificationCategory'],
+  comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organization?: Resolver<
+    ResolversTypes['Organization'],
     ParentType,
     ContextType
   >;
-  comment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  roomID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadPlatformResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadPlatform'] = ResolversParentTypes['InAppNotificationPayloadPlatform'],
+> = {
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadPlatformForumDiscussionResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadPlatformForumDiscussion'] = ResolversParentTypes['InAppNotificationPayloadPlatformForumDiscussion'],
+> = {
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadPlatformGlobalRoleChangeResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'] = ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'],
+> = {
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadPlatformUserResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadPlatformUser'] = ResolversParentTypes['InAppNotificationPayloadPlatformUser'],
+> = {
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadPlatformUserMessageRoomResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadPlatformUserMessageRoom'] = ResolversParentTypes['InAppNotificationPayloadPlatformUserMessageRoom'],
+> = {
+  comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   commentOriginName?: Resolver<
-    ResolversTypes['String'],
+    Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
-  commentUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  contributorType?: Resolver<
-    ResolversTypes['RoleSetContributorType'],
+  commentUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  receiver?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
-  state?: Resolver<
-    ResolversTypes['InAppNotificationState'],
+  originalMessageID?: Resolver<
+    Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
-  triggeredAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  triggeredBy?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
+  roomID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
     ParentType,
     ContextType
   >;
-  type?: Resolver<ResolversTypes['NotificationEvent'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadPlatformUserProfileRemovedResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadPlatformUserProfileRemoved'] = ResolversParentTypes['InAppNotificationPayloadPlatformUserProfileRemoved'],
+> = {
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpace'] = ResolversParentTypes['InAppNotificationPayloadSpace'],
+> = {
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCollaborationCalloutResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'],
+> = {
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCollaborationPostResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPost'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPost'],
+> = {
+  callout?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  post?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCollaborationPostCommentResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPostComment'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPostComment'],
+> = {
+  comment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  post?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCollaborationWhiteboardResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationWhiteboard'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationWhiteboard'],
+> = {
+  callout?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  whiteboard?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationMessageDirect'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationMessageDirect'],
+> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunicationUpdateResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'],
+> = {
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  update?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunityApplicationResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityApplication'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityApplication'],
+> = {
+  application?: Resolver<
+    ResolversTypes['Application'],
+    ParentType,
+    ContextType
+  >;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunityContributorResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'],
+> = {
+  contributor?: Resolver<
+    ResolversTypes['Contributor'],
+    ParentType,
+    ContextType
+  >;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunityInvitationResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'],
+> = {
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunityInvitationPlatformResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'],
+> = {
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadUserMessageDirectResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'] = ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'],
+> = {
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -14686,6 +15325,11 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAssignUserToGroupArgs, 'membershipData'>
   >;
+  authorizationPlatformRolesAccessReset?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
   authorizationPolicyResetAll?: Resolver<
     ResolversTypes['String'],
     ParentType,
@@ -15476,7 +16120,7 @@ export type MutationResolvers<
     RequireFields<MutationUpdateMemoArgs, 'memoData'>
   >;
   updateNotificationState?: Resolver<
-    ResolversTypes['InAppNotificationState'],
+    ResolversTypes['NotificationEventInAppState'],
     ParentType,
     ContextType,
     RequireFields<MutationUpdateNotificationStateArgs, 'notificationData'>
@@ -16006,6 +16650,20 @@ export type PlatformResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PlatformAccessRoleResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['PlatformAccessRole'] = ResolversParentTypes['PlatformAccessRole'],
+> = {
+  grantedPrivileges?: Resolver<
+    Array<ResolversTypes['AuthorizationPrivilege']>,
+    ParentType,
+    ContextType
+  >;
+  roleName?: Resolver<ResolversTypes['RoleName'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PlatformAdminCommunicationQueryResultsResolvers<
   ContextType = any,
   ParentType extends
@@ -16185,6 +16843,19 @@ export type PlatformLocationsResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PlatformRolesAccessResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['PlatformRolesAccess'] = ResolversParentTypes['PlatformRolesAccess'],
+> = {
+  roles?: Resolver<
+    Array<ResolversTypes['PlatformAccessRole']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PlatformSettingsResolvers<
   ContextType = any,
   ParentType extends
@@ -16352,10 +17023,11 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryNotificationRecipientsArgs, 'eventData'>
   >;
-  notifications?: Resolver<
+  notificationsInApp?: Resolver<
     Array<ResolversTypes['InAppNotification']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<QueryNotificationsInAppArgs>
   >;
   organization?: Resolver<
     ResolversTypes['Organization'],
@@ -16563,6 +17235,11 @@ export type RelayPaginatedSpaceResolvers<
   >;
   license?: Resolver<ResolversTypes['License'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  platformAccess?: Resolver<
+    ResolversTypes['PlatformRolesAccess'],
+    ParentType,
+    ContextType
+  >;
   settings?: Resolver<ResolversTypes['SpaceSettings'], ParentType, ContextType>;
   storageAggregator?: Resolver<
     ResolversTypes['StorageAggregator'],
@@ -17135,6 +17812,11 @@ export type SpaceResolvers<
   >;
   license?: Resolver<ResolversTypes['License'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  platformAccess?: Resolver<
+    ResolversTypes['PlatformRolesAccess'],
+    ParentType,
+    ContextType
+  >;
   settings?: Resolver<ResolversTypes['SpaceSettings'], ParentType, ContextType>;
   storageAggregator?: Resolver<
     ResolversTypes['StorageAggregator'],
@@ -18097,8 +18779,8 @@ export type UserAuthenticationResultResolvers<
     ParentType,
     ContextType
   >;
-  method?: Resolver<
-    ResolversTypes['AuthenticationType'],
+  methods?: Resolver<
+    Array<ResolversTypes['AuthenticationType']>,
     ParentType,
     ContextType
   >;
@@ -18701,9 +19383,28 @@ export type Resolvers<ContextType = any> = {
   ISearchCategoryResult?: ISearchCategoryResultResolvers<ContextType>;
   ISearchResults?: ISearchResultsResolvers<ContextType>;
   InAppNotification?: InAppNotificationResolvers<ContextType>;
-  InAppNotificationCalloutPublished?: InAppNotificationCalloutPublishedResolvers<ContextType>;
-  InAppNotificationCommunityNewMember?: InAppNotificationCommunityNewMemberResolvers<ContextType>;
-  InAppNotificationUserMentioned?: InAppNotificationUserMentionedResolvers<ContextType>;
+  InAppNotificationPayload?: InAppNotificationPayloadResolvers<ContextType>;
+  InAppNotificationPayloadOrganization?: InAppNotificationPayloadOrganizationResolvers<ContextType>;
+  InAppNotificationPayloadOrganizationMessageDirect?: InAppNotificationPayloadOrganizationMessageDirectResolvers<ContextType>;
+  InAppNotificationPayloadOrganizationMessageRoom?: InAppNotificationPayloadOrganizationMessageRoomResolvers<ContextType>;
+  InAppNotificationPayloadPlatform?: InAppNotificationPayloadPlatformResolvers<ContextType>;
+  InAppNotificationPayloadPlatformForumDiscussion?: InAppNotificationPayloadPlatformForumDiscussionResolvers<ContextType>;
+  InAppNotificationPayloadPlatformGlobalRoleChange?: InAppNotificationPayloadPlatformGlobalRoleChangeResolvers<ContextType>;
+  InAppNotificationPayloadPlatformUser?: InAppNotificationPayloadPlatformUserResolvers<ContextType>;
+  InAppNotificationPayloadPlatformUserMessageRoom?: InAppNotificationPayloadPlatformUserMessageRoomResolvers<ContextType>;
+  InAppNotificationPayloadPlatformUserProfileRemoved?: InAppNotificationPayloadPlatformUserProfileRemovedResolvers<ContextType>;
+  InAppNotificationPayloadSpace?: InAppNotificationPayloadSpaceResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCollaborationCallout?: InAppNotificationPayloadSpaceCollaborationCalloutResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCollaborationPost?: InAppNotificationPayloadSpaceCollaborationPostResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCollaborationPostComment?: InAppNotificationPayloadSpaceCollaborationPostCommentResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCollaborationWhiteboard?: InAppNotificationPayloadSpaceCollaborationWhiteboardResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunicationMessageDirect?: InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunicationUpdate?: InAppNotificationPayloadSpaceCommunicationUpdateResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunityApplication?: InAppNotificationPayloadSpaceCommunityApplicationResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunityContributor?: InAppNotificationPayloadSpaceCommunityContributorResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunityInvitation?: InAppNotificationPayloadSpaceCommunityInvitationResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunityInvitationPlatform?: InAppNotificationPayloadSpaceCommunityInvitationPlatformResolvers<ContextType>;
+  InAppNotificationPayloadUserMessageDirect?: InAppNotificationPayloadUserMessageDirectResolvers<ContextType>;
   InnovationFlow?: InnovationFlowResolvers<ContextType>;
   InnovationFlowSettings?: InnovationFlowSettingsResolvers<ContextType>;
   InnovationFlowState?: InnovationFlowStateResolvers<ContextType>;
@@ -18760,12 +19461,14 @@ export type Resolvers<ContextType = any> = {
   PaginatedUsers?: PaginatedUsersResolvers<ContextType>;
   PaginatedVirtualContributor?: PaginatedVirtualContributorResolvers<ContextType>;
   Platform?: PlatformResolvers<ContextType>;
+  PlatformAccessRole?: PlatformAccessRoleResolvers<ContextType>;
   PlatformAdminCommunicationQueryResults?: PlatformAdminCommunicationQueryResultsResolvers<ContextType>;
   PlatformAdminQueryResults?: PlatformAdminQueryResultsResolvers<ContextType>;
   PlatformFeatureFlag?: PlatformFeatureFlagResolvers<ContextType>;
   PlatformIntegrationSettings?: PlatformIntegrationSettingsResolvers<ContextType>;
   PlatformInvitation?: PlatformInvitationResolvers<ContextType>;
   PlatformLocations?: PlatformLocationsResolvers<ContextType>;
+  PlatformRolesAccess?: PlatformRolesAccessResolvers<ContextType>;
   PlatformSettings?: PlatformSettingsResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
@@ -18861,16 +19564,6 @@ export type Resolvers<ContextType = any> = {
 
 export type DirectiveResolvers<ContextType = any> = {
   oneOf?: OneOfDirectiveResolver<any, any, ContextType>;
-};
-
-export type FeatureFlagsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type FeatureFlagsQuery = {
-  platform: {
-    configuration: {
-      featureFlags: Array<{ name: PlatformFeatureFlagName; enabled: boolean }>;
-    };
-  };
 };
 
 export type UserLookupQueryVariables = Exact<{

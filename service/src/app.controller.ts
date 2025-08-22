@@ -32,7 +32,7 @@ import {
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { LogContext } from './common/enums/logging.context';
-import { NotificationEvent } from './generated/graphql';
+import { NotificationEvent } from './generated/alkemio-schema';
 
 @Controller()
 export class AppController {
