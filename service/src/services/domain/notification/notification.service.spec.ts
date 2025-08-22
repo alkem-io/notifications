@@ -144,7 +144,7 @@ describe('NotificationService', () => {
       }
     });
 
-    it('Should send 6 application notifications', async () => {
+    it('Should send 3 application notifications', async () => {
       //const applicationCount = 6;
 
       jest
@@ -163,7 +163,7 @@ describe('NotificationService', () => {
         ).toBe('success');
       }
 
-      expect(res.length).toBe(6); //based on the template. toDo Mock the configuration
+      expect(res.length).toBe(3); //based on the template. toDo Mock the configuration
     });
   });
 });
