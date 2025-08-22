@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommunicationUserMentionEmailPayload } from '@common/email-template-payload';
 import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { NotificationEventPayloadUserMessageRoom } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class UserMentionNotificationBuilder implements INotificationBuilder {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.USER_MENTION;
 
@@ -18,7 +18,7 @@ export class UserMentionNotificationBuilder implements INotificationBuilder {
     recipient: User | PlatformUser
   ): CommunicationUserMentionEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
 
     const htmlComment: string = convertMarkdownToText(eventPayload.comment);
 

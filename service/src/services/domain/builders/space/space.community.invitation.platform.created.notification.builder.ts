@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { SpaceCommunityInvitationPlatformCreatedEmailPayload } from '@common/email-template-payload';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes } from '@src/common/enums';
 import { INotificationBuilder } from '../notification.builder.interface';
@@ -13,10 +13,7 @@ export class SpaceCommunityInvitationPlatformCreatedNotificationBuilder
   implements INotificationBuilder
 {
   invitationsPath: string;
-  constructor(
-    private readonly alkemioUrlGenerator: AlkemioUrlGenerator,
-    private readonly configService: ConfigService
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.invitationsPath = this.configService.get(
       ConfigurationTypes.ALKEMIO
     )?.webclient_invitations_path;
@@ -29,7 +26,7 @@ export class SpaceCommunityInvitationPlatformCreatedNotificationBuilder
     recipient: User
   ): SpaceCommunityInvitationPlatformCreatedEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
 
     const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
       this.invitationsPath

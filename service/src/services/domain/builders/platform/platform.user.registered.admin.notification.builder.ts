@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { NotificationEventPayloadPlatformUserRegistration } from '@alkemio/notifications-lib';
 @Injectable()
 export class PlatformUserRegisteredAdminNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN;
 
@@ -18,7 +18,7 @@ export class PlatformUserRegisteredAdminNotificationBuilder
     recipient: User
   ): PlatformUserRegisteredEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
     return {
       registrant: {
         displayName: eventPayload.user.profile.displayName,

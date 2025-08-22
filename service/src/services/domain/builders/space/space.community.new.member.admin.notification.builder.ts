@@ -3,15 +3,15 @@ import { RoleSetContributorType } from '@alkemio/client-lib';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { NotificationEventPayloadSpaceCommunityContributor } from '@alkemio/notifications-lib';
 
 @Injectable()
 export class SpaceCommunityNewMemberAdminNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.SPACE_COMMUNITY_NEW_MEMBER_ADMIN;
 
@@ -20,7 +20,7 @@ export class SpaceCommunityNewMemberAdminNotificationBuilder
     recipient: User
   ): CommunityNewMemberEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
 
     const newMember = eventPayload.contributor;
     const typeName =

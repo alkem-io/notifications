@@ -31,8 +31,7 @@ import {
   NotificationEventPayloadUserMessageRoom,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
-import { AlkemioClientAdapter } from './services';
+import { LogContext } from './common/enums/logging.context';
 import { NotificationEvent } from './generated/graphql';
 
 @Controller()
@@ -40,9 +39,7 @@ export class AppController {
   constructor(
     private notificationService: NotificationService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly featureFlagProvider: AlkemioClientAdapter
+    private readonly logger: LoggerService
   ) {}
 
   @EventPattern(NotificationEvent.SpaceCommunityApplicationApplicant)
@@ -499,11 +496,6 @@ export class AppController {
 
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
-
-    if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
-      channel.ack(originalMsg);
-      return;
-    }
 
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     try {
