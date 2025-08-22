@@ -34,76 +34,21 @@ npm run start:services
 
 To add a template:
 
-1. Create a file under src/templates.
-2. Copy welcome.js
-3. Change the template name
-4. Define your channels. You can use [this](https://github.com/notifme/notifme-template/tree/master/example) as an example.
-5. In the file you want to use the template, import nunjucks and notifme-template.
-6. Render your template
+1. Create a new file in the appropriate domain directory (e.g., `lib/src/dto/space/notification.event.payload.space.mynewtype.ts`);
+2. Define your interface, extending the relevant base payload (e.g., `NotificationEventPayloadSpace`)
+3. Create or update the email payload TypeScript file under `service/src/common/email-template-payload/`, using the new naming convention (e.g., `space.mynewtype.email.payload.ts`).
+4. Implement a notification builder class in `service/src/services/domain/builders/space/`.
+5. Register your builder in `app.module.ts` providers.
+6. Add or update the email template in `service/src/email-templates/`
 
-```typescript
-const notification = await render('template_name', payload, 'en-US');
-```
+## Additional Information
 
-7. Send notification
+After the latest refactoring the the code follows the domain structure of the `server`.
+Most notification payloads, categories, and related enums or types have been deleted, focusing the codebase solely on email/external notifications. Types are obtain with codegen.
+There's no additional service/sdk communication logic. The service receives all the required data - payload with recipients.
+There are no additional checks, just sending the matched template to the provided set of recipients.
 
-```typescript
-await notifmeSdk.send(notification.channels).then(console.log);
-```
+### New DTO Structure:
 
-To test the welcome (sample) template, you can use the following payload in RabbitMQ Management UI
-
-```json
-{
-  "pattern": "communityApplicationCreated",
-  "data": {
-    "applicantionCreatorID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
-    "applicantID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
-    "community": {
-      "name": "02 Zero Hunger",
-      "type": "challenge"
-    },
-    "space": {
-      "id": "32818605-ef2f-4395-bb49-1dc2835c23de",
-      "challenge": {
-        "id": "7b86f954-d8c3-4fac-a652-b922c80e5c20",
-        "opportunity": {
-          "id": "636be60f-b64a-4742-8b50-69e608601935"
-        }
-      }
-    }
-  }
-}
-```
-
-Note: replace applicantionCreatorID, applicantID, and space + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
-
-```gql
-query {
-  spaces {
-    id
-    displayName
-    challenges {
-      id
-      displayName
-      nameID
-      community {
-        id
-        displayName
-      }
-      opportunities {
-        displayName
-        id
-      }
-    }
-  }
-}
-```
-
-```gql
-query {
-  me {
-    id
-  }
-}
-```
+- Notification payloads now use more specific interfaces, grouped under folders like `space/`, `platform/`, `organization/`, and `user/`.
+- DTOs now use `UserPayload` and `ContributorPayload` types for strong typing of `users/recipients`.

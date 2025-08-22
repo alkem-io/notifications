@@ -2,324 +2,425 @@ import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import {
-  ALKEMIO_CLIENT_ADAPTER,
   ConfigurationTypes,
   LogContext,
   NOTIFICATIONS_PROVIDER,
 } from '@common/enums';
 import {
   BaseEventPayload,
-  CollaborationCalloutPublishedEventPayload,
-  CollaborationDiscussionCommentEventPayload,
-  CollaborationPostCommentEventPayload,
-  CollaborationPostCreatedEventPayload,
-  CollaborationWhiteboardCreatedEventPayload,
-  CommentReplyEventPayload,
-  CommunicationCommunityLeadsMessageEventPayload,
-  CommunicationOrganizationMentionEventPayload,
-  CommunicationOrganizationMessageEventPayload,
-  CommunicationUpdateEventPayload,
-  CommunicationUserMentionEventPayload,
-  CommunicationUserMessageEventPayload,
-  CommunityApplicationCreatedEventPayload,
-  CommunityInvitationCreatedEventPayload,
-  CommunityInvitationVirtualContributorCreatedEventPayload,
-  CommunityNewMemberPayload,
-  CommunityPlatformInvitationCreatedEventPayload,
-  PlatformForumDiscussionCommentEventPayload,
-  PlatformForumDiscussionCreatedEventPayload,
-  PlatformGlobalRoleChangeEventPayload,
-  PlatformUserRegistrationEventPayload,
-  PlatformUserRemovedEventPayload,
-  SpaceCreatedEventPayload,
+  NotificationEventPayloadSpaceCollaborationCallout,
+  NotificationEventPayloadSpaceCommunicationMessageDirect,
+  NotificationEventPayloadOrganizationMessageRoom,
+  NotificationEventPayloadOrganizationMessageDirect,
+  NotificationEventPayloadSpaceCommunicationUpdate,
+  NotificationEventPayloadUserMessageDirect,
+  NotificationEventPayloadSpaceCommunityInvitation,
+  NotificationEventPayloadPlatformForumDiscussion,
+  NotificationEventPayloadPlatformGlobalRole,
+  NotificationEventPayloadPlatformUserRegistration,
+  NotificationEventPayloadPlatformUserRemoved,
+  NotificationEventPayloadPlatformSpaceCreated,
+  NotificationEventPayloadSpaceCommunityApplication,
+  NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+  NotificationEventPayloadSpaceCommunityInvitationPlatform,
+  NotificationEventPayloadSpaceCommunityContributor,
+  NotificationEventPayloadUserMessageRoomReply,
+  NotificationEventPayloadUserMessageRoom,
 } from '@alkemio/notifications-lib';
-import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
-import { INotificationBuilder } from '@core/contracts';
 import {
-  CollaborationCalloutPublishedNotificationBuilder,
-  CollaborationPostCommentNotificationBuilder,
-  CollaborationPostCreatedNotificationBuilder,
-  CommunicationCommunityLeadsMessageNotificationBuilder,
-  CommunicationOrganizationMentionNotificationBuilder,
-  CommunicationOrganizationMessageNotificationBuilder,
-  CommunicationUpdateCreatedNotificationBuilder,
-  CommunicationUserMentionNotificationBuilder,
-  CommunicationUserMessageNotificationBuilder,
-  CommunityApplicationCreatedNotificationBuilder,
-  CommunityInvitationCreatedNotificationBuilder,
-  CommunityNewMemberNotificationBuilder,
-  CommunityPlatformInvitationCreatedNotificationBuilder,
+  SpaceCollaborationCalloutPublishedNotificationBuilder,
+  SpaceCollaborationPostCommentNotificationBuilder,
+  SpaceCollaborationPostCreatedMemberNotificationBuilder,
+  SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+  OrganizationMentionNotificationBuilder,
+  OrganizationMessageSenderNotificationBuilder,
+  OrganizationMessageRecipientNotificationBuilder,
+  SpaceCommunicationUpdateMemberNotificationBuilder,
+  SpaceCommunicationUpdateAdminNotificationBuilder,
+  UserMentionNotificationBuilder,
+  UserMessageRecipientNotificationBuilder,
+  UserMessageSenderNotificationBuilder,
+  SpaceCommunityApplicationCreatedAdminNotificationBuilder,
+  SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+  SpaceCommunityNewMemberNotificationBuilder,
+  SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   PlatformForumDiscussionCreatedNotificationBuilder,
   PlatformUserRegisteredNotificationBuilder,
+  SpaceCommunityApplicationApplicantNotificationBuilder,
+  SpaceCommunityNewMemberAdminNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
-import { PlatformUserRemovedNotificationBuilder } from '../builders/platform-user-removed/platform.user.removed.notification.builder';
-import { CollaborationWhiteboardCreatedNotificationBuilder } from '../builders/collaboration-whiteboard-created/collaboration.whiteboard.created.notification.builder';
-import { CollaborationDiscussionCommentNotificationBuilder } from '../builders/collaboration-discussion-comment/collaboration.discussion.comment.notification.builder';
-import { CommentReplyNotificationBuilder } from '../builders/comment-reply/comment.reply.notification.builder';
-import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform-global-role-change/platform.global.role.change.notification.builder';
-import { CommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/community-invitation-virtual-contributor-created/community.invitation.virtual.contributor.created.notification.builder';
-import { SpaceCreatedNotificationBuilder } from '../builders/space-created/space.created.notification.builder';
+import { PlatformUserRemovedNotificationBuilder } from '../builders/platform/platform.user.removed.notification.builder';
+import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/space.collaboration.whiteboard.created.notification.builder';
+import { UserCommentReplyNotificationBuilder } from '../builders/user/user.comment.reply.notification.builder';
+import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
+import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/space.community.invitation.virtual.contributor.created.notification.builder';
+import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
 import { ConfigService } from '@nestjs/config';
-
+import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
+import { INotificationBuilder } from '../builders/notification.builder.interface';
+import { PlatformUserRegisteredAdminNotificationBuilder } from '../builders/platform/platform.user.registered.admin.notification.builder';
+import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
 @Injectable()
 export class NotificationService {
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly alkemioClientAdapter: AlkemioClientAdapter,
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
     private readonly configService: ConfigService,
-    private communityApplicationCreatedNotificationBuilder: CommunityApplicationCreatedNotificationBuilder,
-    private communityInvitationCreatedNotificationBuilder: CommunityInvitationCreatedNotificationBuilder,
-    private communityPlatformInvitationCreatedNotificationBuilder: CommunityPlatformInvitationCreatedNotificationBuilder,
+    private spaceCommunityApplicationApplicantNotificationBuilder: SpaceCommunityApplicationApplicantNotificationBuilder,
+    private spaceCommunityApplicationAdminNotificationBuilder: SpaceCommunityApplicationCreatedAdminNotificationBuilder,
+    private spaceCommunityInvitationCreatedNotificationBuilder: SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+    private spaceCommunityPlatformInvitationCreatedNotificationBuilder: SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
+    private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateMemberNotificationBuilder,
+    private spaceCommunicationUpdateAdminNotificationBuilder: SpaceCommunicationUpdateAdminNotificationBuilder,
+    private spaceCommunicationMessageDirectRecipientNotificationBuilder: SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+    private spaceCommunicationMessageDirectSenderNotificationBuilder: SpaceCommunicationMessageDirectSenderNotificationBuilder,
+    private userMentionNotificationBuilder: UserMentionNotificationBuilder,
+    private spaceCommunityNewMemberNotificationBuilder: SpaceCommunityNewMemberNotificationBuilder,
+    private spaceCommunityNewMemberAdminNotificationBuilder: SpaceCommunityNewMemberAdminNotificationBuilder,
+    private spaceCollaborationWhiteboardCreatedNotificationBuilder: SpaceCollaborationWhiteboardCreatedNotificationBuilder,
+    private spaceCollaborationPostCreatedNotificationBuilder: SpaceCollaborationPostCreatedMemberNotificationBuilder,
+    private spaceCollaborationPostCommentNotificationBuilder: SpaceCollaborationPostCommentNotificationBuilder,
+    private spaceCollaborationCalloutPublishedNotificationBuilder: SpaceCollaborationCalloutPublishedNotificationBuilder,
+    private userCommentReplyNotificationBuilder: UserCommentReplyNotificationBuilder,
+    private spaceCommunityInvitationVirtualContributorCreatedNotificationBuilder: SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
+    private platformForumDiscussionCreatedNotificationBuilder: PlatformForumDiscussionCreatedNotificationBuilder,
     private platformGlobalRoleChangeNotificationBuilder: PlatformGlobalRoleChangeNotificationBuilder,
     private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
+    private platformUserRegisteredAdminNotificationBuilder: PlatformUserRegisteredAdminNotificationBuilder,
     private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
     private platformForumDiscussionCommentNotificationBuilder: PlatformForumDiscussionCommentNotificationBuilder,
-    private communicationUpdatedNotificationBuilder: CommunicationUpdateCreatedNotificationBuilder,
-    private communicationDiscussionCreatedNotificationBuilder: PlatformForumDiscussionCreatedNotificationBuilder,
-    private communicationUserMessageNotificationBuilder: CommunicationUserMessageNotificationBuilder,
-    private communicationOrganizationMessageNotificationBuilder: CommunicationOrganizationMessageNotificationBuilder,
-    private communicationCommunityLeadsMessageNotificationBuilder: CommunicationCommunityLeadsMessageNotificationBuilder,
-    private communicationUserMentionNotificationBuilder: CommunicationUserMentionNotificationBuilder,
-    private communicationOrganizationMentionNotificationBuilder: CommunicationOrganizationMentionNotificationBuilder,
-    private communityNewMemberNotificationBuilder: CommunityNewMemberNotificationBuilder,
-    private collaborationWhiteboardCreatedNotificationBuilder: CollaborationWhiteboardCreatedNotificationBuilder,
-    private collaborationPostCreatedNotificationBuilder: CollaborationPostCreatedNotificationBuilder,
-    private collaborationPostCommentNotificationBuilder: CollaborationPostCommentNotificationBuilder,
-    private collaborationCalloutPublishedNotificationBuilder: CollaborationCalloutPublishedNotificationBuilder,
-    private collaborationDiscussionCommentNotificationBuilder: CollaborationDiscussionCommentNotificationBuilder,
-    private commentReplyNotificationBuilder: CommentReplyNotificationBuilder,
-    private communityInvitationvirtualContributorCreatedNotificationBuilder: CommunityInvitationVirtualContributorCreatedNotificationBuilder,
-    private spaceCreatedNotificationBuilder: SpaceCreatedNotificationBuilder
+    private platformSpaceCreatedNotificationBuilder: PlatformSpaceCreatedNotificationBuilder,
+    private organizationMessageRecipientNotificationBuilder: OrganizationMessageRecipientNotificationBuilder,
+    private organizationMessageSenderNotificationBuilder: OrganizationMessageSenderNotificationBuilder,
+    private organizationMentionNotificationBuilder: OrganizationMentionNotificationBuilder,
+    private userMessageRecipientNotificationBuilder: UserMessageRecipientNotificationBuilder,
+    private userMessageSenderNotificationBuilder: UserMessageSenderNotificationBuilder,
+    private notificationTemplateBuilder: NotificationTemplateBuilder
   ) {}
 
-  async sendApplicationCreatedNotifications(
-    payload: CommunityApplicationCreatedEventPayload
+  private async processNotificationEvent(
+    payload: BaseEventPayload,
+    builder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    const emailResults = await this.buildAndSendEmailNotifications(
       payload,
-      this.communityApplicationCreatedNotificationBuilder
+      builder
+    );
+
+    return [...emailResults];
+  }
+
+  async sendSpaceCommunityApplicationApplicantNotifications(
+    payload: NotificationEventPayloadSpaceCommunityApplication
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCommunityApplicationApplicantNotificationBuilder
     );
   }
 
-  async sendInvitationCreatedNotifications(
-    payload: CommunityInvitationCreatedEventPayload
+  async sendSpaceCommunityApplicationAdminNotifications(
+    payload: NotificationEventPayloadSpaceCommunityApplication
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communityInvitationCreatedNotificationBuilder
+      this.spaceCommunityApplicationAdminNotificationBuilder
+    );
+  }
+
+  async sendSpaceCommunityInvitationUserNotifications(
+    payload: NotificationEventPayloadSpaceCommunityInvitation
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCommunityInvitationCreatedNotificationBuilder
     );
   }
 
   async sendVirtualContributorInvitationCreatedNotifications(
-    payload: CommunityInvitationVirtualContributorCreatedEventPayload
+    payload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communityInvitationvirtualContributorCreatedNotificationBuilder
+      this.spaceCommunityInvitationVirtualContributorCreatedNotificationBuilder
     );
   }
 
-  async sendCommunityPlatformInvitationCreatedNotifications(
-    payload: CommunityPlatformInvitationCreatedEventPayload
+  async sendCommunityInvitationPlatformNotifications(
+    payload: NotificationEventPayloadSpaceCommunityInvitationPlatform
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communityPlatformInvitationCreatedNotificationBuilder
+      this.spaceCommunityPlatformInvitationCreatedNotificationBuilder
     );
   }
 
   async sendCommunityNewMemberNotifications(
-    payload: CommunityNewMemberPayload
+    payload: NotificationEventPayloadSpaceCommunityContributor
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communityNewMemberNotificationBuilder
+      this.spaceCommunityNewMemberNotificationBuilder
     );
   }
 
-  async sendGlobalRoleChangeNotification(
-    payload: PlatformGlobalRoleChangeEventPayload
+  async sendCommunityNewMemberAdminNotifications(
+    payload: NotificationEventPayloadSpaceCommunityContributor
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCommunityNewMemberAdminNotificationBuilder
+    );
+  }
+
+  async sendPlatformGlobalRoleChangeNotification(
+    payload: NotificationEventPayloadPlatformGlobalRole
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
       payload,
       this.platformGlobalRoleChangeNotificationBuilder
     );
   }
 
-  async sendUserRegisteredNotification(
-    payload: PlatformUserRegistrationEventPayload
+  async sendPlatformUserRegisteredRegistrantNotification(
+    payload: NotificationEventPayloadPlatformUserRegistration
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.platformUserRegisteredNotificationBuilder
     );
   }
 
-  async sendUserRemovedNotification(
-    payload: PlatformUserRemovedEventPayload
+  async sendPlatformUserRegisteredAdminNotification(
+    payload: NotificationEventPayloadPlatformUserRegistration
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
+      payload,
+      this.platformUserRegisteredAdminNotificationBuilder
+    );
+  }
+
+  async sendPlatformUserRemovedNotification(
+    payload: NotificationEventPayloadPlatformUserRemoved
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
       payload,
       this.platformUserRemovedNotificationBuilder
     );
   }
 
-  async sendCommunicationUpdatedNotification(
-    payload: CommunicationUpdateEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
-      payload,
-      this.communicationUpdatedNotificationBuilder
-    );
-  }
-
-  async sendPlatformForumDiscussionCreatedNotification(
-    payload: PlatformForumDiscussionCreatedEventPayload
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
-      payload,
-      this.communicationDiscussionCreatedNotificationBuilder
-    );
-  }
-
   async sendPlatformForumDiscussionCommentNotification(
-    payload: PlatformForumDiscussionCommentEventPayload
+    payload: NotificationEventPayloadPlatformForumDiscussion
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
       this.platformForumDiscussionCommentNotificationBuilder
     );
   }
 
-  async sendCommunicationUserMessageNotification(
-    payload: CommunicationUserMessageEventPayload
+  async sendPlatformForumDiscussionCreatedNotification(
+    payload: NotificationEventPayloadPlatformForumDiscussion
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communicationUserMessageNotificationBuilder
+      this.platformForumDiscussionCreatedNotificationBuilder
     );
   }
 
-  async sendCommunicationOrganizationMessageNotification(
-    payload: CommunicationOrganizationMessageEventPayload
+  async sendSpaceCommunicationUpdateNotification(
+    payload: NotificationEventPayloadSpaceCommunicationUpdate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communicationOrganizationMessageNotificationBuilder
+      this.spaceCommunicationUpdateNotificationBuilder
     );
   }
 
-  async sendCommunicationCommunityLeadsMessageNotification(
-    payload: CommunicationCommunityLeadsMessageEventPayload
+  async sendSpaceCommunicationUpdateAdminNotification(
+    payload: NotificationEventPayloadSpaceCommunicationUpdate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communicationCommunityLeadsMessageNotificationBuilder
+      this.spaceCommunicationUpdateAdminNotificationBuilder
     );
   }
 
-  async sendCommunicationUserMentionNotification(
-    payload: CommunicationUserMentionEventPayload
+  async sendUserMessageRecipientNotification(
+    payload: NotificationEventPayloadUserMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communicationUserMentionNotificationBuilder
+      this.userMessageRecipientNotificationBuilder
     );
   }
 
-  async sendCommunicationOrganizationMentionNotification(
-    payload: CommunicationOrganizationMentionEventPayload
+  async sendUserMessageSenderNotification(
+    payload: NotificationEventPayloadUserMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.communicationOrganizationMentionNotificationBuilder
+      this.userMessageSenderNotificationBuilder
     );
   }
 
-  async sendPostCreatedNotification(
-    payload: CollaborationPostCreatedEventPayload
+  async sendOrganizationMessageRecipientNotification(
+    payload: NotificationEventPayloadOrganizationMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.collaborationPostCreatedNotificationBuilder
+      this.organizationMessageRecipientNotificationBuilder
     );
   }
 
-  async sendWhiteboardCreatedNotification(
-    payload: CollaborationWhiteboardCreatedEventPayload
+  async sendOrganizationMentionNotification(
+    payload: NotificationEventPayloadOrganizationMessageRoom
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.collaborationWhiteboardCreatedNotificationBuilder
+      this.organizationMentionNotificationBuilder
     );
   }
 
-  async sendPostCommentCreatedNotification(
-    payload: CollaborationPostCommentEventPayload
+  async sendSpaceCommunicationMessageRecipientNotification(
+    payload: NotificationEventPayloadSpaceCommunicationMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.collaborationPostCommentNotificationBuilder
+      this.spaceCommunicationMessageDirectRecipientNotificationBuilder
     );
   }
 
-  async sendDiscussionCommentCreatedNotification(
-    payload: CollaborationDiscussionCommentEventPayload
+  async sendSpaceCommunicationMessageSenderNotification(
+    payload: NotificationEventPayloadSpaceCommunicationMessageDirect
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.collaborationDiscussionCommentNotificationBuilder
+      this.spaceCommunicationMessageDirectSenderNotificationBuilder
     );
   }
 
-  async sendCalloutPublishedNotification(
-    payload: CollaborationCalloutPublishedEventPayload
+  async sendSpaceCollaborationPostCreatedNotification(
+    payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(
+    return this.processNotificationEvent(
       payload,
-      this.collaborationCalloutPublishedNotificationBuilder
+      this.spaceCollaborationPostCreatedNotificationBuilder
     );
   }
 
-  async sendCommentReplyNotification(
-    payload: CommentReplyEventPayload
+  async sendSpaceCollaborationWhiteboardCreatedNotification(
+    payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(payload, this.commentReplyNotificationBuilder);
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCollaborationWhiteboardCreatedNotificationBuilder
+    );
   }
 
-  async buildAndSendSpaceCreatedNotification(
-    payload: SpaceCreatedEventPayload
+  async sendSpaceCollaborationPostCommentCreatedNotification(
+    payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.buildAndSend(payload, this.spaceCreatedNotificationBuilder);
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCollaborationPostCommentNotificationBuilder
+    );
   }
 
-  private async buildAndSend(
+  async sendSpaceCollaborationCalloutPublishedNotification(
+    payload: NotificationEventPayloadSpaceCollaborationCallout
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.spaceCollaborationCalloutPublishedNotificationBuilder
+    );
+  }
+
+  async sendUserCommentReplyNotification(
+    payload: NotificationEventPayloadUserMessageRoomReply
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.userCommentReplyNotificationBuilder
+    );
+  }
+
+  async sendUserMentionNotification(
+    payload: NotificationEventPayloadUserMessageRoom
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.userMentionNotificationBuilder
+    );
+  }
+
+  async sendPlatformSpaceCreatedNotification(
+    payload: NotificationEventPayloadPlatformSpaceCreated
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.platformSpaceCreatedNotificationBuilder
+    );
+  }
+
+  private async buildAndSendEmailNotifications(
     payload: BaseEventPayload,
-    notificationBuilder: INotificationBuilder
+    builder: INotificationBuilder
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    const notificationsEnabled =
-      await this.alkemioClientAdapter.areNotificationsEnabled();
-    if (!notificationsEnabled) {
+    const notificationTemplatesToSend: Promise<
+      NotificationTemplateType | undefined
+    >[] = [];
+
+    if (!payload?.recipients || payload.recipients.length === 0) {
       this.logger.verbose?.(
-        'Notification disabled. No notifications are going to be built.',
+        `[${payload.eventType}] - No recipients found, aborting notification sending.`,
         LogContext.NOTIFICATIONS
       );
-
       return [];
     }
 
-    const notifications = await notificationBuilder.build(payload);
+    for (const recipient of payload.recipients) {
+      const templatePayload = builder.createEmailTemplatePayload(
+        payload,
+        recipient
+      );
+      const emailNotificationTemplate =
+        this.notificationTemplateBuilder.buildTemplate(
+          builder.emailTemplate,
+          templatePayload
+        );
 
+      notificationTemplatesToSend.push(emailNotificationTemplate);
+    }
+
+    this.logger.verbose?.(
+      ' ...building notifications - completed',
+      LogContext.NOTIFICATIONS
+    );
+
+    // filter all rejected notifications and log them
+    const notificationResults = await Promise.allSettled(
+      notificationTemplatesToSend
+    );
+    const notificationTemplateTypes: NotificationTemplateType[] = [];
+    notificationResults.forEach(notification => {
+      if (this.isPromiseFulfilledResult(notification)) {
+        const value = notification.value;
+        if (value) notificationTemplateTypes.push(value);
+      } else {
+        this.logger.warn(
+          `Filtering rejected notification content: ${notification.reason}`,
+          LogContext.NOTIFICATIONS
+        );
+      }
+    });
     try {
       return Promise.allSettled(
-        notifications.map(x => this.sendNotification(x))
+        notificationTemplateTypes.map(x => this.sendNotification(x))
       );
     } catch (error: any) {
       this.logger.error(error.message);
@@ -362,28 +463,26 @@ export class NotificationService {
     const mailFromNameConfigured = mailFromName
       ? `${mailFromName} <${mailFrom}>`
       : mailFrom;
-    this.logger.verbose?.(
-      `Notification mail from ${mailFromNameConfigured}`,
-      LogContext.NOTIFICATIONS
-    );
 
     notification.channels.email.from = mailFromNameConfigured;
 
-    return this.notifmeService.send(notification.channels).then(
-      res => {
-        this.logger.verbose?.(
-          `Notification status: ${res.status}`,
-          LogContext.NOTIFICATIONS
-        );
-        return res;
-      },
-      reason => {
-        this.logger.warn?.(
-          `Notification rejected with reason: ${reason}`,
-          LogContext.NOTIFICATIONS
-        );
-        return { status: 'error' };
-      }
-    );
+    try {
+      const res = await this.notifmeService.send(notification.channels);
+      this.logger.verbose?.(
+        `[${notification.name}] Notification sent from ${mailFromNameConfigured} - status: ${res.status}`,
+        LogContext.NOTIFICATIONS
+      );
+      return res;
+    } catch (reason) {
+      this.logger.warn?.(
+        `Notification rejected with reason: ${reason}`,
+        LogContext.NOTIFICATIONS
+      );
+      return { status: 'error' };
+    }
   }
+
+  private isPromiseFulfilledResult = (
+    result: PromiseSettledResult<any>
+  ): result is PromiseFulfilledResult<any> => result.status === 'fulfilled';
 }
