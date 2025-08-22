@@ -18,9 +18,3 @@ export type PlatformUser = {
   lastName: string;
   email: string;
 };
-
-export const isExistingAlkemioUser = (
-  user: User | PlatformUser
-): user is User => {
-  return (user as User).nameID !== undefined;
-};

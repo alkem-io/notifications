@@ -4,13 +4,13 @@ import { EmailTemplate } from '@src/common/enums/email.template';
 import { User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
 import { NotificationEventPayloadPlatformSpaceCreated } from '@alkemio/notifications-lib';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 
 @Injectable()
 export class PlatformSpaceCreatedNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.PLATFORM_SPACE_CREATED_ADMIN;
 
@@ -19,7 +19,7 @@ export class PlatformSpaceCreatedNotificationBuilder
     recipient: User
   ): SpaceCreatedEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
 
     return {
       recipient: {

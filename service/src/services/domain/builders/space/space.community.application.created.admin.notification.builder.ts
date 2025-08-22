@@ -1,7 +1,7 @@
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
@@ -10,7 +10,7 @@ import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/noti
 export class SpaceCommunityApplicationCreatedAdminNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.SPACE_COMMUNITY_USER_APPLICATION_ADMIN;
 
@@ -22,7 +22,7 @@ export class SpaceCommunityApplicationCreatedAdminNotificationBuilder
     const spaceType = isLevel0Space ? 'space' : 'subspace';
 
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
     return {
       applicant: {
         firstName: eventPayload.triggeredBy.firstName,

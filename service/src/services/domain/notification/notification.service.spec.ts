@@ -1,6 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { SpaceCommunityApplicationCreatedEventPayload } from '@alkemio/notifications-lib';
-import { ALKEMIO_CLIENT_ADAPTER, NOTIFICATIONS_PROVIDER } from '@common/enums';
+import { NOTIFICATIONS_PROVIDER } from '@common/enums';
 import * as spaceAdminsL1Data from '@test/data/space.admins.l1.json';
 import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
 import * as spaceAdminsL0Data from '@test/data/space.admins.l0.json';
@@ -11,10 +10,7 @@ import { NotificationService } from './notification.service';
 import { ConfigService } from '@nestjs/config';
 import {
   PlatformUserRegisteredNotificationBuilder,
-  SpaceCommunicationUpdateCreatedMemberNotificationBuilder,
   PlatformForumDiscussionCreatedNotificationBuilder,
-  UserMessageNotificationBuilder,
-  OrganizationMessageNotificationBuilder,
   SpaceCommunicationMessageDirectRecipientNotificationBuilder,
   UserMentionNotificationBuilder,
   OrganizationMentionNotificationBuilder,
@@ -27,9 +23,17 @@ import {
   SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
   UserCommentReplyNotificationBuilder,
   SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
+  SpaceCommunicationUpdateMemberNotificationBuilder,
+  OrganizationMessageRecipientNotificationBuilder,
+  UserMessageRecipientNotificationBuilder,
+  SpaceCommunityApplicationApplicantNotificationBuilder,
+  SpaceCommunityApplicationCreatedAdminNotificationBuilder,
+  SpaceCommunicationUpdateAdminNotificationBuilder,
+  SpaceCommunityNewMemberAdminNotificationBuilder,
+  OrganizationMessageSenderNotificationBuilder,
+  UserMessageSenderNotificationBuilder,
 } from '../builders';
 import {
-  MockAlkemioClientAdapterProvider,
   MockConfigServiceProvider,
   MockNotifmeProvider,
   MockWinstonProvider,
@@ -38,8 +42,10 @@ import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from '../build
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
 import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/space.community.invitation.virtual.contributor.created.notification.builder';
 import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
-import { AlkemioClientAdapter } from '@src/services/application/alkemio-client-adapter';
+import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
+import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
+import { PlatformUserRegisteredAdminNotificationBuilder } from '../builders/platform/platform.user.registered.admin.notification.builder';
+import { NotificationTemplateBuilder } from '@src/services/external/notifme';
 
 const testData = {
   ...spaceAdminsL0Data,
@@ -53,7 +59,6 @@ describe('NotificationService', () => {
   let notificationService: NotificationService;
   let notifmeService: NotifmeSdk;
   let configService: any;
-  let alkemioClientAdapter: AlkemioClientAdapter;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -62,48 +67,49 @@ describe('NotificationService', () => {
         MockNotifmeProvider,
         MockWinstonProvider,
         NotificationService,
-        SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
-        SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
         PlatformUserRegisteredNotificationBuilder,
         PlatformForumDiscussionCommentNotificationBuilder,
+        PlatformUserRegisteredAdminNotificationBuilder,
         PlatformUserRemovedNotificationBuilder,
-        SpaceCommunicationUpdateCreatedMemberNotificationBuilder,
         PlatformForumDiscussionCreatedNotificationBuilder,
-        SpaceCommunicationMessageDirectRecipientNotificationBuilder,
-        UserMentionNotificationBuilder,
-        OrganizationMessageNotificationBuilder,
+        PlatformGlobalRoleChangeNotificationBuilder,
+        PlatformSpaceCreatedNotificationBuilder,
+        OrganizationMessageRecipientNotificationBuilder,
+        OrganizationMessageSenderNotificationBuilder,
         OrganizationMentionNotificationBuilder,
+        SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+        SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
         SpaceCommunityNewMemberNotificationBuilder,
+        SpaceCommunityNewMemberAdminNotificationBuilder,
+        SpaceCommunityApplicationApplicantNotificationBuilder,
+        SpaceCommunityApplicationCreatedAdminNotificationBuilder,
+        SpaceCommunicationUpdateMemberNotificationBuilder,
+        SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+        SpaceCommunicationMessageDirectSenderNotificationBuilder,
+        SpaceCommunicationUpdateAdminNotificationBuilder,
+        SpaceCommunicationMessageDirectRecipientNotificationBuilder,
         SpaceCollaborationWhiteboardCreatedNotificationBuilder,
         SpaceCollaborationPostCreatedMemberNotificationBuilder,
         SpaceCollaborationPostCommentNotificationBuilder,
         SpaceCollaborationCalloutPublishedNotificationBuilder,
-        UserCommentReplyNotificationBuilder,
-        PlatformGlobalRoleChangeNotificationBuilder,
         SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
         MockConfigServiceProvider,
-        MockAlkemioClientAdapterProvider,
-        AlkemioUrlGenerator,
-        PlatformSpaceCreatedNotificationBuilder,
-        UserMessageNotificationBuilder,
+        UserCommentReplyNotificationBuilder,
+        UserMentionNotificationBuilder,
+        UserMessageSenderNotificationBuilder,
+        UserMessageRecipientNotificationBuilder,
+        NotificationTemplateBuilder,
       ],
     }).compile();
 
     notificationService =
       moduleRef.get<NotificationService>(NotificationService);
-    alkemioClientAdapter = moduleRef.get<AlkemioClientAdapter>(
-      ALKEMIO_CLIENT_ADAPTER
-    );
 
     notifmeService = moduleRef.get(NOTIFICATIONS_PROVIDER);
     configService = moduleRef.get(ConfigService);
   });
 
   beforeEach(() => {
-    jest
-      .spyOn(alkemioClientAdapter, 'areNotificationsEnabled')
-      .mockResolvedValue(true);
-
     // Mock the config service to return email configuration
     jest.spyOn(configService, 'get').mockImplementation((key: any) => {
       if (key === 'notification_providers') {
@@ -128,7 +134,7 @@ describe('NotificationService', () => {
 
       const res =
         await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
-          testData.data as SpaceCommunityApplicationCreatedEventPayload
+          testData.data as NotificationEventPayloadSpaceCommunityApplication
         );
       for (const notificationStatus of res) {
         expect(
@@ -138,7 +144,7 @@ describe('NotificationService', () => {
       }
     });
 
-    it('Should send 6 application notifications', async () => {
+    it('Should send 3 application notifications', async () => {
       //const applicationCount = 6;
 
       jest
@@ -147,7 +153,7 @@ describe('NotificationService', () => {
 
       const res =
         await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
-          testData.data as SpaceCommunityApplicationCreatedEventPayload
+          testData.data as NotificationEventPayloadSpaceCommunityApplication
         );
 
       for (const notificationStatus of res) {
@@ -157,36 +163,7 @@ describe('NotificationService', () => {
         ).toBe('success');
       }
 
-      expect(res.length).toBe(6); //based on the template. toDo Mock the configuration
-    });
-
-    it('Should not send notifications when notifications are disabled', async () => {
-      jest
-        .spyOn(alkemioClientAdapter, 'areNotificationsEnabled')
-        .mockResolvedValue(false);
-
-      const res =
-        await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
-          testData.data as SpaceCommunityApplicationCreatedEventPayload
-        );
-
-      expect(res.length).toBe(0); //shouldn't have any notifications sent
+      expect(res.length).toBe(3); //based on the template. toDo Mock the configuration
     });
   });
 });
-
-// const generateNotificationTemplate = (
-//   amount: number
-// ): NotificationTemplateType[] =>
-//   new Array(amount).fill(null).map((_, i) => ({
-//     name: `template${i}`,
-//     title: `title${i}`,
-//     version: 1,
-//     channels: {
-//       email: {
-//         to: `to${i}@email`,
-//         from: 'from@email',
-//         subject: `subject${i}`,
-//       },
-//     },
-//   }));

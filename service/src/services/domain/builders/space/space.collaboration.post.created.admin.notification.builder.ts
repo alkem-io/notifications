@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { LogContext } from '@src/common/enums';
@@ -12,7 +12,7 @@ import { LogContext } from '@src/common/enums';
 export class SpaceCollaborationPostCreatedAdminNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.SPACE_COLLABORATION_POST_CREATED_ADMIN;
 
@@ -21,7 +21,7 @@ export class SpaceCollaborationPostCreatedAdminNotificationBuilder
     recipient: User
   ): CollaborationPostCreatedEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
 
     const contribution = eventPayload.callout.contribution;
     if (!contribution) {

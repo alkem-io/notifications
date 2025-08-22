@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class SpaceCollaborationCalloutPublishedNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.SPACE_COLLABORATION_CALLOUT_PUBLISHED_MEMBER;
 
@@ -19,7 +19,7 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
     recipient: User
   ): CollaborationCalloutPublishedEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
 
     const framing = eventPayload.callout.framing;
 

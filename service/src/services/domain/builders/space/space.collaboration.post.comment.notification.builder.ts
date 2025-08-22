@@ -3,15 +3,15 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { User } from '@core/models';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { LogContext } from '@src/common/enums/logging.context';
 @Injectable()
 export class SpaceCollaborationPostCommentNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.SPACE_COLLABORATION_POST_COMMENT_OWNER;
 
@@ -20,7 +20,7 @@ export class SpaceCollaborationPostCommentNotificationBuilder
     recipient: User
   ): CollaborationPostCommentEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
     const callout = eventPayload.callout;
 
     const contribution = eventPayload.callout.contribution;

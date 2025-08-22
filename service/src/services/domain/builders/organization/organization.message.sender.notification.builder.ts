@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
 import { EmailTemplate } from '@common/enums/email.template';
+import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommunicationOrganizationMessageEmailPayload } from '@common/email-template-payload';
 import { NotificationEventPayloadOrganizationMessageDirect } from '@alkemio/notifications-lib';
-import { AlkemioUrlGenerator } from '@src/services/application/alkemio-url-generator/alkemio.url.generator';
 
 @Injectable()
 export class OrganizationMessageSenderNotificationBuilder
   implements INotificationBuilder
 {
-  constructor(private readonly alkemioUrlGenerator: AlkemioUrlGenerator) {}
+  constructor() {}
 
   emailTemplate = EmailTemplate.ORGANIZATION_MESSAGE_SENDER;
 
@@ -19,7 +19,7 @@ export class OrganizationMessageSenderNotificationBuilder
     recipient: User | PlatformUser
   ): CommunicationOrganizationMessageEmailPayload {
     const notificationPreferenceURL =
-      this.alkemioUrlGenerator.createUserNotificationPreferencesURL(recipient);
+      createUserNotificationPreferencesURL(recipient);
 
     return {
       messageSender: {
