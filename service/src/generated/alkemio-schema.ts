@@ -2771,42 +2771,6 @@ export type InAppNotificationPayloadSpaceCollaborationCallout =
     type: NotificationEventPayload;
   };
 
-export type InAppNotificationPayloadSpaceCollaborationPost =
-  InAppNotificationPayload & {
-    /** The callout ID. */
-    callout: Scalars['String']['output'];
-    /** The post ID. */
-    post: Scalars['String']['output'];
-    /** The Space where the post was created. */
-    space: Space;
-    /** The payload type. */
-    type: NotificationEventPayload;
-  };
-
-export type InAppNotificationPayloadSpaceCollaborationPostComment =
-  InAppNotificationPayload & {
-    /** The comment ID. */
-    comment: Scalars['String']['output'];
-    /** The post ID. */
-    post: Scalars['String']['output'];
-    /** The Space where the comment was created. */
-    space: Space;
-    /** The payload type. */
-    type: NotificationEventPayload;
-  };
-
-export type InAppNotificationPayloadSpaceCollaborationWhiteboard =
-  InAppNotificationPayload & {
-    /** The callout ID. */
-    callout: Scalars['String']['output'];
-    /** The Space where the whiteboard was created. */
-    space: Space;
-    /** The payload type. */
-    type: NotificationEventPayload;
-    /** The whiteboard ID. */
-    whiteboard: Scalars['String']['output'];
-  };
-
 export type InAppNotificationPayloadSpaceCommunicationMessageDirect =
   InAppNotificationPayload & {
     /** The message content. */
@@ -3813,7 +3777,7 @@ export type MeQueryResultsSpaceMembershipsHierarchicalArgs = {
 export type Memo = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
-  /** The binary state V2 of the Yjs document, used to collaborate on the Memo, represented in base64. */
+  /** The last saved binary stateV2 of the Yjs document, used to collaborate on the Memo, represented in base64. */
   content?: Maybe<Scalars['String']['output']>;
   /** The policy governing who can update the Memo content. */
   contentUpdatePolicy: ContentUpdatePolicy;
@@ -3825,6 +3789,8 @@ export type Memo = {
   id: Scalars['UUID']['output'];
   /** Whether the Memo is multi-user enabled on Space level. */
   isMultiUser: Scalars['Boolean']['output'];
+  /** The last saved content of the Memo, represented in Markdown. */
+  markdown?: Maybe<Scalars['Markdown']['output']>;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
   /** The Profile for this Memo. */
@@ -4971,36 +4937,36 @@ export type Nvp = {
 };
 
 export enum NotificationEvent {
-  OrganizationMentioned = 'ORGANIZATION_MENTIONED',
-  OrganizationMessageRecipient = 'ORGANIZATION_MESSAGE_RECIPIENT',
+  OrganizationAdminMentioned = 'ORGANIZATION_ADMIN_MENTIONED',
+  OrganizationAdminMessage = 'ORGANIZATION_ADMIN_MESSAGE',
   OrganizationMessageSender = 'ORGANIZATION_MESSAGE_SENDER',
+  PlatformAdminGlobalRoleChanged = 'PLATFORM_ADMIN_GLOBAL_ROLE_CHANGED',
+  PlatformAdminSpaceCreated = 'PLATFORM_ADMIN_SPACE_CREATED',
+  PlatformAdminUserProfileCreated = 'PLATFORM_ADMIN_USER_PROFILE_CREATED',
+  PlatformAdminUserProfileRemoved = 'PLATFORM_ADMIN_USER_PROFILE_REMOVED',
   PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
   PlatformForumDiscussionCreated = 'PLATFORM_FORUM_DISCUSSION_CREATED',
-  PlatformGlobalRoleChange = 'PLATFORM_GLOBAL_ROLE_CHANGE',
-  PlatformSpaceCreated = 'PLATFORM_SPACE_CREATED',
-  PlatformUserProfileCreated = 'PLATFORM_USER_PROFILE_CREATED',
-  PlatformUserProfileCreatedAdmin = 'PLATFORM_USER_PROFILE_CREATED_ADMIN',
-  PlatformUserProfileRemoved = 'PLATFORM_USER_PROFILE_REMOVED',
+  SpaceAdminCollaborationCalloutContribution = 'SPACE_ADMIN_COLLABORATION_CALLOUT_CONTRIBUTION',
+  SpaceAdminCommunicationMessage = 'SPACE_ADMIN_COMMUNICATION_MESSAGE',
+  SpaceAdminCommunityApplication = 'SPACE_ADMIN_COMMUNITY_APPLICATION',
+  SpaceAdminCommunityNewMember = 'SPACE_ADMIN_COMMUNITY_NEW_MEMBER',
+  SpaceCollaborationCalloutComment = 'SPACE_COLLABORATION_CALLOUT_COMMENT',
+  SpaceCollaborationCalloutContribution = 'SPACE_COLLABORATION_CALLOUT_CONTRIBUTION',
+  SpaceCollaborationCalloutPostContributionComment = 'SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT',
   SpaceCollaborationCalloutPublished = 'SPACE_COLLABORATION_CALLOUT_PUBLISHED',
-  SpaceCollaborationPostCommentCreated = 'SPACE_COLLABORATION_POST_COMMENT_CREATED',
-  SpaceCollaborationPostCreated = 'SPACE_COLLABORATION_POST_CREATED',
-  SpaceCollaborationPostCreatedAdmin = 'SPACE_COLLABORATION_POST_CREATED_ADMIN',
-  SpaceCollaborationWhiteboardCreated = 'SPACE_COLLABORATION_WHITEBOARD_CREATED',
-  SpaceCommunicationMessageRecipient = 'SPACE_COMMUNICATION_MESSAGE_RECIPIENT',
   SpaceCommunicationMessageSender = 'SPACE_COMMUNICATION_MESSAGE_SENDER',
   SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
-  SpaceCommunicationUpdateAdmin = 'SPACE_COMMUNICATION_UPDATE_ADMIN',
-  SpaceCommunityApplicationAdmin = 'SPACE_COMMUNITY_APPLICATION_ADMIN',
-  SpaceCommunityApplicationApplicant = 'SPACE_COMMUNITY_APPLICATION_APPLICANT',
-  SpaceCommunityInvitationUser = 'SPACE_COMMUNITY_INVITATION_USER',
   SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
-  SpaceCommunityInvitationVc = 'SPACE_COMMUNITY_INVITATION_VC',
-  SpaceCommunityNewMember = 'SPACE_COMMUNITY_NEW_MEMBER',
-  SpaceCommunityNewMemberAdmin = 'SPACE_COMMUNITY_NEW_MEMBER_ADMIN',
   UserCommentReply = 'USER_COMMENT_REPLY',
-  UserMention = 'USER_MENTION',
-  UserMessageRecipient = 'USER_MESSAGE_RECIPIENT',
+  UserCopyOfMessageSent = 'USER_COPY_OF_MESSAGE_SENT',
+  UserMentioned = 'USER_MENTIONED',
+  UserMessage = 'USER_MESSAGE',
   UserMessageSender = 'USER_MESSAGE_SENDER',
+  UserSignUpWelcome = 'USER_SIGN_UP_WELCOME',
+  UserSpaceCommunityApplication = 'USER_SPACE_COMMUNITY_APPLICATION',
+  UserSpaceCommunityInvitation = 'USER_SPACE_COMMUNITY_INVITATION',
+  UserSpaceCommunityJoined = 'USER_SPACE_COMMUNITY_JOINED',
+  VirtualContributorAdminSpaceCommunityInvitation = 'VIRTUAL_CONTRIBUTOR_ADMIN_SPACE_COMMUNITY_INVITATION',
 }
 
 /** A categorization of notification type. */
@@ -5010,6 +4976,7 @@ export enum NotificationEventCategory {
   SpaceAdmin = 'SPACE_ADMIN',
   SpaceMember = 'SPACE_MEMBER',
   User = 'USER',
+  VirtualContributor = 'VIRTUAL_CONTRIBUTOR',
 }
 
 export enum NotificationEventInAppState {
@@ -5027,9 +4994,6 @@ export enum NotificationEventPayload {
   PlatformUserProfileRemoved = 'PLATFORM_USER_PROFILE_REMOVED',
   Space = 'SPACE',
   SpaceCollaborationCallout = 'SPACE_COLLABORATION_CALLOUT',
-  SpaceCollaborationPost = 'SPACE_COLLABORATION_POST',
-  SpaceCollaborationPostComment = 'SPACE_COLLABORATION_POST_COMMENT',
-  SpaceCollaborationWhiteboard = 'SPACE_COLLABORATION_WHITEBOARD',
   SpaceCommunicationMessageDirect = 'SPACE_COMMUNICATION_MESSAGE_DIRECT',
   SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
   SpaceCommunityApplication = 'SPACE_COMMUNITY_APPLICATION',
@@ -5039,6 +5003,7 @@ export enum NotificationEventPayload {
   User = 'USER',
   UserMessageDirect = 'USER_MESSAGE_DIRECT',
   UserMessageRoom = 'USER_MESSAGE_ROOM',
+  VirtualContributor = 'VIRTUAL_CONTRIBUTOR',
 }
 
 export type NotificationRecipientResult = {
@@ -7613,68 +7578,94 @@ export type UpdateUserSettingsNotificationInput = {
   space?: InputMaybe<UpdateUserSettingsNotificationSpaceInput>;
   /** Settings related to User Notifications. */
   user?: InputMaybe<UpdateUserSettingsNotificationUserInput>;
+  /** Settings related to Virtual Contributor Notifications. */
+  virtualContributor?: InputMaybe<UpdateUserSettingsNotificationVirtualContributorInput>;
 };
 
 export type UpdateUserSettingsNotificationOrganizationInput = {
   /** Receive a notification when the organization you are admin of is mentioned */
-  mentioned?: InputMaybe<Scalars['Boolean']['input']>;
+  adminMentioned?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive notification when the organization you are admin of is messaged */
-  messageReceived?: InputMaybe<Scalars['Boolean']['input']>;
+  adminMessageReceived?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type UpdateUserSettingsNotificationPlatformInput = {
-  /** Receive a notification when a new comment is added to a Discussion I created in the Forum */
-  forumDiscussionComment?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a new Discussion is created in the Forum */
-  forumDiscussionCreated?: InputMaybe<Scalars['Boolean']['input']>;
-  /** [Admin] Receive notification when a new user signs up */
-  newUserSignUp?: InputMaybe<Scalars['Boolean']['input']>;
+export type UpdateUserSettingsNotificationPlatformAdminInput = {
   /** [Admin] Receive a notification when a new L0 Space is created */
   spaceCreated?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Admin] Receive a notification user is assigned or removed from a global role */
+  userGlobalRoleChanged?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Admin] Receive notification when a new user signs up */
+  userProfileCreated?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Admin] Receive a notification when a user profile is removed */
   userProfileRemoved?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export type UpdateUserSettingsNotificationSpaceInput = {
-  /** Receive a notification when a callout is published */
-  collaborationCalloutPublished?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a comment is created on a post */
-  collaborationPostCommentCreated?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a post is created */
-  collaborationPostCreated?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a post is created (admin) */
-  collaborationPostCreatedAdmin?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a whiteboard is created */
-  collaborationWhiteboardCreated?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a copy of messages that I send to a Space */
-  communicationMessage?: InputMaybe<Scalars['Boolean']['input']>;
+export type UpdateUserSettingsNotificationPlatformInput = {
+  /** Settings related to Platform Admin Notifications. */
+  admin?: InputMaybe<UpdateUserSettingsNotificationPlatformAdminInput>;
+  /** Receive a notification when a new comment is added to a Discussion I created in the Forum */
+  forumDiscussionComment?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when a new Discussion is created in the Forum */
+  forumDiscussionCreated?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateUserSettingsNotificationSpaceAdminInput = {
+  /** Receive a notification when a contribution is added (admin) */
+  collaborationCalloutContributionCreated?: InputMaybe<
+    Scalars['Boolean']['input']
+  >;
   /** Receive a notification when a message is sent to a Space I lead */
-  communicationMessageAdmin?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification for community updates */
-  communicationUpdates?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification for community updates as admin */
-  communicationUpdatesAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  communicationMessageReceived?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification when an application is received */
   communityApplicationReceived?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when an application is submitted */
-  communityApplicationSubmitted?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification for community invitation */
-  communityInvitationUser?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive a notification when a new member joins the community */
-  communityNewMember?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive a notification when a new member joins the community (admin) */
-  communityNewMemberAdmin?: InputMaybe<Scalars['Boolean']['input']>;
+  communityNewMember?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateUserSettingsNotificationSpaceInput = {
+  /** Settings related to Space Admin Notifications. */
+  admin?: InputMaybe<UpdateUserSettingsNotificationSpaceAdminInput>;
+  /** Receive a notification when a comment is added to a Callout */
+  collaborationCalloutComment?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when a contribution is added */
+  collaborationCalloutContributionCreated?: InputMaybe<
+    Scalars['Boolean']['input']
+  >;
+  /** Receive a notification when a comment is created on a contribution */
+  collaborationCalloutPostContributionComment?: InputMaybe<
+    Scalars['Boolean']['input']
+  >;
+  /** Receive a notification when a callout is published */
+  collaborationCalloutPublished?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification for community updates */
+  communicationUpdates?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateUserSettingsNotificationUserInput = {
   /** Receive a notification when someone replies to a comment I made. */
   commentReply?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive notification I send a message to a User, Organization or Space. */
+  copyOfMessageSent?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Settings related to User Membership Notifications. */
+  membership?: InputMaybe<UpdateUserSettingsNotificationUserMembershipInput>;
   /** Receive a notification you are mentioned */
   mentioned?: InputMaybe<Scalars['Boolean']['input']>;
   /** Receive notification when I receive a message. */
   messageReceived?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Receive notification I send a message. */
-  messageSent?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateUserSettingsNotificationUserMembershipInput = {
+  /** Receive a notification when an application is submitted */
+  spaceCommunityApplicationSubmitted?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification for community invitation */
+  spaceCommunityInvitationReceived?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Receive a notification when I join a new community */
+  spaceCommunityJoined?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type UpdateUserSettingsNotificationVirtualContributorInput = {
+  /** Receive notification when a Virtual Contributor receives an invitation to join a Space. */
+  adminSpaceCommunityInvitation?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateUserSettingsPrivacyInput = {
@@ -7932,68 +7923,95 @@ export type UserSettingsNotification = {
   space: UserSettingsNotificationSpace;
   /** The notifications settings for User events for this User */
   user: UserSettingsNotificationUser;
+  /** The notifications settings for Virtual Contributor events for this User */
+  virtualContributor: UserSettingsNotificationVirtualContributor;
+};
+
+export type UserSettingsNotificationChannels = {
+  /** Receive notifications by email. */
+  email: Scalars['Boolean']['output'];
+  /** Receive notifications by inApp. */
+  inApp: Scalars['Boolean']['output'];
 };
 
 export type UserSettingsNotificationOrganization = {
   /** Receive a notification when the organization you are admin of is mentioned */
-  mentioned: Scalars['Boolean']['output'];
+  adminMentioned: UserSettingsNotificationChannels;
   /** Receive notification when the organization you are admin of is messaged */
-  messageReceived: Scalars['Boolean']['output'];
+  adminMessageReceived: UserSettingsNotificationChannels;
 };
 
 export type UserSettingsNotificationPlatform = {
+  /** The notifications settings for Platform Admin events for this User */
+  admin: UserSettingsNotificationPlatformAdmin;
   /** Receive a notification when a new comment is added to a Discussion I created in the Forum */
-  forumDiscussionComment: Scalars['Boolean']['output'];
+  forumDiscussionComment: UserSettingsNotificationChannels;
   /** Receive a notification when a new Discussion is created in the Forum */
-  forumDiscussionCreated: Scalars['Boolean']['output'];
-  /** Receive notification when a new user signs up */
-  newUserSignUp: Scalars['Boolean']['output'];
+  forumDiscussionCreated: UserSettingsNotificationChannels;
+};
+
+export type UserSettingsNotificationPlatformAdmin = {
   /** Receive a notification when a new L0 Space is created */
-  spaceCreated: Scalars['Boolean']['output'];
+  spaceCreated: UserSettingsNotificationChannels;
+  /** Receive a notification when a user global role is assigned or removed. */
+  userGlobalRoleChanged: UserSettingsNotificationChannels;
+  /** Receive notification when a new user signs up */
+  userProfileCreated: UserSettingsNotificationChannels;
   /** Receive a notification when a user profile is removed */
-  userProfileRemoved: Scalars['Boolean']['output'];
+  userProfileRemoved: UserSettingsNotificationChannels;
 };
 
 export type UserSettingsNotificationSpace = {
+  /** The notifications settings for Space Admin events for this User */
+  admin: UserSettingsNotificationSpaceAdmin;
+  /** Receive a notification when a comment is made on a Callout */
+  collaborationCalloutComment: UserSettingsNotificationChannels;
+  /** Receive a notification when a contribution is created */
+  collaborationCalloutContributionCreated: UserSettingsNotificationChannels;
+  /** Receive a notification when a comment is created on a Post contribution */
+  collaborationCalloutPostContributionComment: UserSettingsNotificationChannels;
   /** Receive a notification when a callout is published */
-  collaborationCalloutPublished: Scalars['Boolean']['output'];
-  /** Receive a notification when a comment is created on a post */
-  collaborationPostCommentCreated: Scalars['Boolean']['output'];
-  /** Receive a notification when a post is created */
-  collaborationPostCreated: Scalars['Boolean']['output'];
-  /** Receive a notification when a post is created (admin) */
-  collaborationPostCreatedAdmin: Scalars['Boolean']['output'];
-  /** Receive a notification when a whiteboard is created */
-  collaborationWhiteboardCreated: Scalars['Boolean']['output'];
-  /** Receive a copy of messages that I send to a Space */
-  communicationMessage: Scalars['Boolean']['output'];
-  /** Receive a notification when a message is sent to a Space I lead */
-  communicationMessageAdmin: Scalars['Boolean']['output'];
+  collaborationCalloutPublished: UserSettingsNotificationChannels;
   /** Receive a notification for community updates */
-  communicationUpdates: Scalars['Boolean']['output'];
-  /** Receive a notification for community updates as Admin */
-  communicationUpdatesAdmin: Scalars['Boolean']['output'];
+  communicationUpdates: UserSettingsNotificationChannels;
+};
+
+export type UserSettingsNotificationSpaceAdmin = {
+  /** Receive a notification when a contribution is created (admin) */
+  collaborationCalloutContributionCreated: UserSettingsNotificationChannels;
+  /** Receive a notification when a message is sent to a Space I lead */
+  communicationMessageReceived: UserSettingsNotificationChannels;
   /** Receive a notification when an application is received */
-  communityApplicationReceived: Scalars['Boolean']['output'];
-  /** Receive a notification when an application is submitted */
-  communityApplicationSubmitted: Scalars['Boolean']['output'];
-  /** Receive a notification for community invitation */
-  communityInvitationUser: Scalars['Boolean']['output'];
-  /** Receive a notification when a new member joins the community */
-  communityNewMember: Scalars['Boolean']['output'];
+  communityApplicationReceived: UserSettingsNotificationChannels;
   /** Receive a notification when a new member joins the community (admin) */
-  communityNewMemberAdmin: Scalars['Boolean']['output'];
+  communityNewMember: UserSettingsNotificationChannels;
 };
 
 export type UserSettingsNotificationUser = {
   /** Receive a notification when someone replies to a comment I made. */
-  commentReply: Scalars['Boolean']['output'];
+  commentReply: UserSettingsNotificationChannels;
+  /** Receive notification I send a message to a User, Organization or Space. */
+  copyOfMessageSent: UserSettingsNotificationChannels;
+  /** The notifications settings for membership events for this User */
+  membership: UserSettingsNotificationUserMembership;
   /** Receive a notification you are mentioned */
-  mentioned: Scalars['Boolean']['output'];
-  /** Receive notification when I receive a message. */
-  messageReceived: Scalars['Boolean']['output'];
-  /** Receive notification I send a message. */
-  messageSent: Scalars['Boolean']['output'];
+  mentioned: UserSettingsNotificationChannels;
+  /** Receive notification when I receive a direct message. */
+  messageReceived: UserSettingsNotificationChannels;
+};
+
+export type UserSettingsNotificationUserMembership = {
+  /** Receive a notification when an application for a Space is submitted */
+  spaceCommunityApplicationSubmitted: UserSettingsNotificationChannels;
+  /** Receive a notification when I am invited to join a Space community */
+  spaceCommunityInvitationReceived: UserSettingsNotificationChannels;
+  /** Receive a notification when I join a Space */
+  spaceCommunityJoined: UserSettingsNotificationChannels;
+};
+
+export type UserSettingsNotificationVirtualContributor = {
+  /** Receive notification when a Virtual Contributor receives an invitation to join a Space. */
+  adminSpaceCommunityInvitation: UserSettingsNotificationChannels;
 };
 
 export type UserSettingsPrivacy = {
@@ -8466,16 +8484,6 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
           InAppNotificationPayloadSpaceCollaborationCallout,
           'callout' | 'space'
         > & { callout: _RefType['Callout']; space: _RefType['Space'] })
-      | (Omit<InAppNotificationPayloadSpaceCollaborationPost, 'space'> & {
-          space: _RefType['Space'];
-        })
-      | (Omit<
-          InAppNotificationPayloadSpaceCollaborationPostComment,
-          'space'
-        > & { space: _RefType['Space'] })
-      | (Omit<InAppNotificationPayloadSpaceCollaborationWhiteboard, 'space'> & {
-          space: _RefType['Space'];
-        })
       | (Omit<
           InAppNotificationPayloadSpaceCommunicationMessageDirect,
           'space'
@@ -9086,21 +9094,6 @@ export type ResolversTypes = {
       InAppNotificationPayloadSpaceCollaborationCallout,
       'callout' | 'space'
     > & { callout: ResolversTypes['Callout']; space: ResolversTypes['Space'] }
-  >;
-  InAppNotificationPayloadSpaceCollaborationPost: ResolverTypeWrapper<
-    Omit<InAppNotificationPayloadSpaceCollaborationPost, 'space'> & {
-      space: ResolversTypes['Space'];
-    }
-  >;
-  InAppNotificationPayloadSpaceCollaborationPostComment: ResolverTypeWrapper<
-    Omit<InAppNotificationPayloadSpaceCollaborationPostComment, 'space'> & {
-      space: ResolversTypes['Space'];
-    }
-  >;
-  InAppNotificationPayloadSpaceCollaborationWhiteboard: ResolverTypeWrapper<
-    Omit<InAppNotificationPayloadSpaceCollaborationWhiteboard, 'space'> & {
-      space: ResolversTypes['Space'];
-    }
   >;
   InAppNotificationPayloadSpaceCommunicationMessageDirect: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadSpaceCommunicationMessageDirect, 'space'> & {
@@ -9873,9 +9866,13 @@ export type ResolversTypes = {
   UpdateUserSettingsInput: UpdateUserSettingsInput;
   UpdateUserSettingsNotificationInput: UpdateUserSettingsNotificationInput;
   UpdateUserSettingsNotificationOrganizationInput: UpdateUserSettingsNotificationOrganizationInput;
+  UpdateUserSettingsNotificationPlatformAdminInput: UpdateUserSettingsNotificationPlatformAdminInput;
   UpdateUserSettingsNotificationPlatformInput: UpdateUserSettingsNotificationPlatformInput;
+  UpdateUserSettingsNotificationSpaceAdminInput: UpdateUserSettingsNotificationSpaceAdminInput;
   UpdateUserSettingsNotificationSpaceInput: UpdateUserSettingsNotificationSpaceInput;
   UpdateUserSettingsNotificationUserInput: UpdateUserSettingsNotificationUserInput;
+  UpdateUserSettingsNotificationUserMembershipInput: UpdateUserSettingsNotificationUserMembershipInput;
+  UpdateUserSettingsNotificationVirtualContributorInput: UpdateUserSettingsNotificationVirtualContributorInput;
   UpdateUserSettingsPrivacyInput: UpdateUserSettingsPrivacyInput;
   UpdateVirtualContributorInput: UpdateVirtualContributorInput;
   UpdateVirtualContributorSettingsEntityInput: UpdateVirtualContributorSettingsEntityInput;
@@ -9919,10 +9916,15 @@ export type ResolversTypes = {
   UserSettings: ResolverTypeWrapper<UserSettings>;
   UserSettingsCommunication: ResolverTypeWrapper<UserSettingsCommunication>;
   UserSettingsNotification: ResolverTypeWrapper<UserSettingsNotification>;
+  UserSettingsNotificationChannels: ResolverTypeWrapper<UserSettingsNotificationChannels>;
   UserSettingsNotificationOrganization: ResolverTypeWrapper<UserSettingsNotificationOrganization>;
   UserSettingsNotificationPlatform: ResolverTypeWrapper<UserSettingsNotificationPlatform>;
+  UserSettingsNotificationPlatformAdmin: ResolverTypeWrapper<UserSettingsNotificationPlatformAdmin>;
   UserSettingsNotificationSpace: ResolverTypeWrapper<UserSettingsNotificationSpace>;
+  UserSettingsNotificationSpaceAdmin: ResolverTypeWrapper<UserSettingsNotificationSpaceAdmin>;
   UserSettingsNotificationUser: ResolverTypeWrapper<UserSettingsNotificationUser>;
+  UserSettingsNotificationUserMembership: ResolverTypeWrapper<UserSettingsNotificationUserMembership>;
+  UserSettingsNotificationVirtualContributor: ResolverTypeWrapper<UserSettingsNotificationVirtualContributor>;
   UserSettingsPrivacy: ResolverTypeWrapper<UserSettingsPrivacy>;
   UsersInRolesResponse: ResolverTypeWrapper<
     Omit<UsersInRolesResponse, 'users'> & {
@@ -10452,18 +10454,6 @@ export type ResolversParentTypes = {
     callout: ResolversParentTypes['Callout'];
     space: ResolversParentTypes['Space'];
   };
-  InAppNotificationPayloadSpaceCollaborationPost: Omit<
-    InAppNotificationPayloadSpaceCollaborationPost,
-    'space'
-  > & { space: ResolversParentTypes['Space'] };
-  InAppNotificationPayloadSpaceCollaborationPostComment: Omit<
-    InAppNotificationPayloadSpaceCollaborationPostComment,
-    'space'
-  > & { space: ResolversParentTypes['Space'] };
-  InAppNotificationPayloadSpaceCollaborationWhiteboard: Omit<
-    InAppNotificationPayloadSpaceCollaborationWhiteboard,
-    'space'
-  > & { space: ResolversParentTypes['Space'] };
   InAppNotificationPayloadSpaceCommunicationMessageDirect: Omit<
     InAppNotificationPayloadSpaceCommunicationMessageDirect,
     'space'
@@ -11134,9 +11124,13 @@ export type ResolversParentTypes = {
   UpdateUserSettingsInput: UpdateUserSettingsInput;
   UpdateUserSettingsNotificationInput: UpdateUserSettingsNotificationInput;
   UpdateUserSettingsNotificationOrganizationInput: UpdateUserSettingsNotificationOrganizationInput;
+  UpdateUserSettingsNotificationPlatformAdminInput: UpdateUserSettingsNotificationPlatformAdminInput;
   UpdateUserSettingsNotificationPlatformInput: UpdateUserSettingsNotificationPlatformInput;
+  UpdateUserSettingsNotificationSpaceAdminInput: UpdateUserSettingsNotificationSpaceAdminInput;
   UpdateUserSettingsNotificationSpaceInput: UpdateUserSettingsNotificationSpaceInput;
   UpdateUserSettingsNotificationUserInput: UpdateUserSettingsNotificationUserInput;
+  UpdateUserSettingsNotificationUserMembershipInput: UpdateUserSettingsNotificationUserMembershipInput;
+  UpdateUserSettingsNotificationVirtualContributorInput: UpdateUserSettingsNotificationVirtualContributorInput;
   UpdateUserSettingsPrivacyInput: UpdateUserSettingsPrivacyInput;
   UpdateVirtualContributorInput: UpdateVirtualContributorInput;
   UpdateVirtualContributorSettingsEntityInput: UpdateVirtualContributorSettingsEntityInput;
@@ -11175,10 +11169,15 @@ export type ResolversParentTypes = {
   UserSettings: UserSettings;
   UserSettingsCommunication: UserSettingsCommunication;
   UserSettingsNotification: UserSettingsNotification;
+  UserSettingsNotificationChannels: UserSettingsNotificationChannels;
   UserSettingsNotificationOrganization: UserSettingsNotificationOrganization;
   UserSettingsNotificationPlatform: UserSettingsNotificationPlatform;
+  UserSettingsNotificationPlatformAdmin: UserSettingsNotificationPlatformAdmin;
   UserSettingsNotificationSpace: UserSettingsNotificationSpace;
+  UserSettingsNotificationSpaceAdmin: UserSettingsNotificationSpaceAdmin;
   UserSettingsNotificationUser: UserSettingsNotificationUser;
+  UserSettingsNotificationUserMembership: UserSettingsNotificationUserMembership;
+  UserSettingsNotificationVirtualContributor: UserSettingsNotificationVirtualContributor;
   UserSettingsPrivacy: UserSettingsPrivacy;
   UsersInRolesResponse: Omit<UsersInRolesResponse, 'users'> & {
     users: Array<ResolversParentTypes['User']>;
@@ -13561,9 +13560,6 @@ export type InAppNotificationPayloadResolvers<
     | 'InAppNotificationPayloadPlatformUserProfileRemoved'
     | 'InAppNotificationPayloadSpace'
     | 'InAppNotificationPayloadSpaceCollaborationCallout'
-    | 'InAppNotificationPayloadSpaceCollaborationPost'
-    | 'InAppNotificationPayloadSpaceCollaborationPostComment'
-    | 'InAppNotificationPayloadSpaceCollaborationWhiteboard'
     | 'InAppNotificationPayloadSpaceCommunicationMessageDirect'
     | 'InAppNotificationPayloadSpaceCommunicationUpdate'
     | 'InAppNotificationPayloadSpaceCommunityApplication'
@@ -13754,54 +13750,6 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutResolvers<
     ParentType,
     ContextType
   >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type InAppNotificationPayloadSpaceCollaborationPostResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPost'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPost'],
-> = {
-  callout?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  post?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
-  type?: Resolver<
-    ResolversTypes['NotificationEventPayload'],
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type InAppNotificationPayloadSpaceCollaborationPostCommentResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPostComment'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPostComment'],
-> = {
-  comment?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  post?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
-  type?: Resolver<
-    ResolversTypes['NotificationEventPayload'],
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type InAppNotificationPayloadSpaceCollaborationWhiteboardResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationWhiteboard'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationWhiteboard'],
-> = {
-  callout?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
-  type?: Resolver<
-    ResolversTypes['NotificationEventPayload'],
-    ParentType,
-    ContextType
-  >;
-  whiteboard?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -15024,6 +14972,11 @@ export type MemoResolvers<
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   isMultiUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  markdown?: Resolver<
+    Maybe<ResolversTypes['Markdown']>,
+    ParentType,
+    ContextType
+  >;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -18883,6 +18836,21 @@ export type UserSettingsNotificationResolvers<
     ParentType,
     ContextType
   >;
+  virtualContributor?: Resolver<
+    ResolversTypes['UserSettingsNotificationVirtualContributor'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsNotificationChannelsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['UserSettingsNotificationChannels'] = ResolversParentTypes['UserSettingsNotificationChannels'],
+> = {
+  email?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  inApp?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -18891,9 +18859,13 @@ export type UserSettingsNotificationOrganizationResolvers<
   ParentType extends
     ResolversParentTypes['UserSettingsNotificationOrganization'] = ResolversParentTypes['UserSettingsNotificationOrganization'],
 > = {
-  mentioned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  messageReceived?: Resolver<
-    ResolversTypes['Boolean'],
+  adminMentioned?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  adminMessageReceived?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
@@ -18905,20 +18877,46 @@ export type UserSettingsNotificationPlatformResolvers<
   ParentType extends
     ResolversParentTypes['UserSettingsNotificationPlatform'] = ResolversParentTypes['UserSettingsNotificationPlatform'],
 > = {
+  admin?: Resolver<
+    ResolversTypes['UserSettingsNotificationPlatformAdmin'],
+    ParentType,
+    ContextType
+  >;
   forumDiscussionComment?: Resolver<
-    ResolversTypes['Boolean'],
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
   forumDiscussionCreated?: Resolver<
-    ResolversTypes['Boolean'],
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
-  newUserSignUp?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  spaceCreated?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsNotificationPlatformAdminResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['UserSettingsNotificationPlatformAdmin'] = ResolversParentTypes['UserSettingsNotificationPlatformAdmin'],
+> = {
+  spaceCreated?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  userGlobalRoleChanged?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  userProfileCreated?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
   userProfileRemoved?: Resolver<
-    ResolversTypes['Boolean'],
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
@@ -18930,73 +18928,61 @@ export type UserSettingsNotificationSpaceResolvers<
   ParentType extends
     ResolversParentTypes['UserSettingsNotificationSpace'] = ResolversParentTypes['UserSettingsNotificationSpace'],
 > = {
+  admin?: Resolver<
+    ResolversTypes['UserSettingsNotificationSpaceAdmin'],
+    ParentType,
+    ContextType
+  >;
+  collaborationCalloutComment?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  collaborationCalloutContributionCreated?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  collaborationCalloutPostContributionComment?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
   collaborationCalloutPublished?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  collaborationPostCommentCreated?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  collaborationPostCreated?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  collaborationPostCreatedAdmin?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  collaborationWhiteboardCreated?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  communicationMessage?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  communicationMessageAdmin?: Resolver<
-    ResolversTypes['Boolean'],
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
   communicationUpdates?: Resolver<
-    ResolversTypes['Boolean'],
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
-  communicationUpdatesAdmin?: Resolver<
-    ResolversTypes['Boolean'],
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsNotificationSpaceAdminResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['UserSettingsNotificationSpaceAdmin'] = ResolversParentTypes['UserSettingsNotificationSpaceAdmin'],
+> = {
+  collaborationCalloutContributionCreated?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  communicationMessageReceived?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
   communityApplicationReceived?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  communityApplicationSubmitted?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  communityInvitationUser?: Resolver<
-    ResolversTypes['Boolean'],
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
   communityNewMember?: Resolver<
-    ResolversTypes['Boolean'],
-    ParentType,
-    ContextType
-  >;
-  communityNewMemberAdmin?: Resolver<
-    ResolversTypes['Boolean'],
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
@@ -19008,14 +18994,67 @@ export type UserSettingsNotificationUserResolvers<
   ParentType extends
     ResolversParentTypes['UserSettingsNotificationUser'] = ResolversParentTypes['UserSettingsNotificationUser'],
 > = {
-  commentReply?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  mentioned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  messageReceived?: Resolver<
-    ResolversTypes['Boolean'],
+  commentReply?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
   >;
-  messageSent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  copyOfMessageSent?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  membership?: Resolver<
+    ResolversTypes['UserSettingsNotificationUserMembership'],
+    ParentType,
+    ContextType
+  >;
+  mentioned?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  messageReceived?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsNotificationUserMembershipResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['UserSettingsNotificationUserMembership'] = ResolversParentTypes['UserSettingsNotificationUserMembership'],
+> = {
+  spaceCommunityApplicationSubmitted?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  spaceCommunityInvitationReceived?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  spaceCommunityJoined?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsNotificationVirtualContributorResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['UserSettingsNotificationVirtualContributor'] = ResolversParentTypes['UserSettingsNotificationVirtualContributor'],
+> = {
+  adminSpaceCommunityInvitation?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -19395,9 +19434,6 @@ export type Resolvers<ContextType = any> = {
   InAppNotificationPayloadPlatformUserProfileRemoved?: InAppNotificationPayloadPlatformUserProfileRemovedResolvers<ContextType>;
   InAppNotificationPayloadSpace?: InAppNotificationPayloadSpaceResolvers<ContextType>;
   InAppNotificationPayloadSpaceCollaborationCallout?: InAppNotificationPayloadSpaceCollaborationCalloutResolvers<ContextType>;
-  InAppNotificationPayloadSpaceCollaborationPost?: InAppNotificationPayloadSpaceCollaborationPostResolvers<ContextType>;
-  InAppNotificationPayloadSpaceCollaborationPostComment?: InAppNotificationPayloadSpaceCollaborationPostCommentResolvers<ContextType>;
-  InAppNotificationPayloadSpaceCollaborationWhiteboard?: InAppNotificationPayloadSpaceCollaborationWhiteboardResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunicationMessageDirect?: InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunicationUpdate?: InAppNotificationPayloadSpaceCommunicationUpdateResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityApplication?: InAppNotificationPayloadSpaceCommunityApplicationResolvers<ContextType>;
@@ -19542,10 +19578,15 @@ export type Resolvers<ContextType = any> = {
   UserSettings?: UserSettingsResolvers<ContextType>;
   UserSettingsCommunication?: UserSettingsCommunicationResolvers<ContextType>;
   UserSettingsNotification?: UserSettingsNotificationResolvers<ContextType>;
+  UserSettingsNotificationChannels?: UserSettingsNotificationChannelsResolvers<ContextType>;
   UserSettingsNotificationOrganization?: UserSettingsNotificationOrganizationResolvers<ContextType>;
   UserSettingsNotificationPlatform?: UserSettingsNotificationPlatformResolvers<ContextType>;
+  UserSettingsNotificationPlatformAdmin?: UserSettingsNotificationPlatformAdminResolvers<ContextType>;
   UserSettingsNotificationSpace?: UserSettingsNotificationSpaceResolvers<ContextType>;
+  UserSettingsNotificationSpaceAdmin?: UserSettingsNotificationSpaceAdminResolvers<ContextType>;
   UserSettingsNotificationUser?: UserSettingsNotificationUserResolvers<ContextType>;
+  UserSettingsNotificationUserMembership?: UserSettingsNotificationUserMembershipResolvers<ContextType>;
+  UserSettingsNotificationVirtualContributor?: UserSettingsNotificationVirtualContributorResolvers<ContextType>;
   UserSettingsPrivacy?: UserSettingsPrivacyResolvers<ContextType>;
   UsersInRolesResponse?: UsersInRolesResponseResolvers<ContextType>;
   VcInteraction?: VcInteractionResolvers<ContextType>;

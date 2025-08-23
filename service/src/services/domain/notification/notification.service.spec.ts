@@ -133,7 +133,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res =
-        await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
+        await notificationService.sendUserSpaceCommunityApplicationNotifications(
           testData.data as NotificationEventPayloadSpaceCommunityApplication
         );
       for (const notificationStatus of res) {
@@ -152,7 +152,7 @@ describe('NotificationService', () => {
         .mockResolvedValue({ status: 'success' });
 
       const res =
-        await notificationService.sendSpaceCommunityApplicationApplicantNotifications(
+        await notificationService.sendUserSpaceCommunityApplicationNotifications(
           testData.data as NotificationEventPayloadSpaceCommunityApplication
         );
 
