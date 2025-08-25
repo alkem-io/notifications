@@ -115,7 +115,7 @@ export class NotificationService {
     return [...emailResults];
   }
 
-  async sendSpaceCommunityApplicationApplicantNotifications(
+  async sendUserSpaceCommunityApplicationNotifications(
     payload: NotificationEventPayloadSpaceCommunityApplication
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
@@ -133,7 +133,7 @@ export class NotificationService {
     );
   }
 
-  async sendSpaceCommunityInvitationUserNotifications(
+  async sendUserSpaceCommunityInvitationNotifications(
     payload: NotificationEventPayloadSpaceCommunityInvitation
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
@@ -160,7 +160,7 @@ export class NotificationService {
     );
   }
 
-  async sendCommunityNewMemberNotifications(
+  async sendUserSpaceCommunityJoinedNotifications(
     payload: NotificationEventPayloadSpaceCommunityContributor
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
@@ -187,7 +187,7 @@ export class NotificationService {
     );
   }
 
-  async sendPlatformUserRegisteredRegistrantNotification(
+  async sendUserSignUpWelcomeNotification(
     payload: NotificationEventPayloadPlatformUserRegistration
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
@@ -196,7 +196,7 @@ export class NotificationService {
     );
   }
 
-  async sendPlatformUserRegisteredAdminNotification(
+  async sendPlatformAdminUserProfileCreatedNotification(
     payload: NotificationEventPayloadPlatformUserRegistration
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
