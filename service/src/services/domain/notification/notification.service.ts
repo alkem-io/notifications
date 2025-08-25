@@ -41,13 +41,13 @@ import {
   UserMessageRecipientNotificationBuilder,
   UserMessageSenderNotificationBuilder,
   SpaceAdminCommunityApplicationReceivedNotificationBuilder,
-  USERSpaceCommunityInvitationReceivedNotificationBuilder,
-  SpaceCommunityNewMemberNotificationBuilder,
+  UserSpaceCommunityInvitationReceivedNotificationBuilder,
+  UserSpaceCommunityJoinedNotificationBuilder,
   SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   PlatformForumDiscussionCreatedNotificationBuilder,
   PlatformUserRegisteredNotificationBuilder,
-  SpaceCommunityApplicationApplicantNotificationBuilder,
+  UserSpaceCommunityApplicationSubmittedNotificationBuilder,
   SpaceAdminCommunityNewMemberNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -70,15 +70,13 @@ export class NotificationService {
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
     private readonly configService: ConfigService,
-    private spaceCommunityApplicationApplicantNotificationBuilder: SpaceCommunityApplicationApplicantNotificationBuilder,
     private spaceCommunityApplicationAdminNotificationBuilder: SpaceAdminCommunityApplicationReceivedNotificationBuilder,
-    private spaceCommunityInvitationCreatedNotificationBuilder: USERSpaceCommunityInvitationReceivedNotificationBuilder,
     private spaceCommunityPlatformInvitationCreatedNotificationBuilder: SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateNotificationBuilder,
     private spaceCommunicationMessageDirectRecipientNotificationBuilder: SpaceAdminCommunicationMessageDirectNotificationBuilder,
     private spaceCommunicationMessageDirectSenderNotificationBuilder: SpaceCommunicationMessageDirectSenderNotificationBuilder,
     private userMentionNotificationBuilder: UserMentionNotificationBuilder,
-    private spaceCommunityNewMemberNotificationBuilder: SpaceCommunityNewMemberNotificationBuilder,
+    private spaceCommunityNewMemberNotificationBuilder: UserSpaceCommunityJoinedNotificationBuilder,
     private spaceCommunityNewMemberAdminNotificationBuilder: SpaceAdminCommunityNewMemberNotificationBuilder,
     private spaceCollaborationWhiteboardCreatedNotificationBuilder: SpaceCollaborationCalloutCommentNotificationBuilder,
     private spaceCollaborationPostCreatedNotificationBuilder: SpaceCollaborationCalloutContributionNotificationBuilder,
@@ -96,6 +94,8 @@ export class NotificationService {
     private organizationMessageRecipientNotificationBuilder: OrganizationMessageRecipientNotificationBuilder,
     private organizationMessageSenderNotificationBuilder: OrganizationMessageSenderNotificationBuilder,
     private organizationMentionNotificationBuilder: OrganizationMentionNotificationBuilder,
+    private userSpaceCommunityApplicationSubmittedNotificationBuilder: UserSpaceCommunityApplicationSubmittedNotificationBuilder,
+    private userSpaceCommunityInvitationReceivedNotificationBuilder: UserSpaceCommunityInvitationReceivedNotificationBuilder,
     private userMessageRecipientNotificationBuilder: UserMessageRecipientNotificationBuilder,
     private userMessageSenderNotificationBuilder: UserMessageSenderNotificationBuilder,
     private notificationTemplateBuilder: NotificationTemplateBuilder
@@ -118,7 +118,16 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunityApplicationApplicantNotificationBuilder
+      this.userSpaceCommunityApplicationSubmittedNotificationBuilder
+    );
+  }
+
+  async sendUserSpaceCommunityApplicationNotifications2(
+    payload: NotificationEventPayloadSpaceCommunityApplication
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.userSpaceCommunityApplicationSubmittedNotificationBuilder
     );
   }
 
@@ -136,7 +145,7 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunityInvitationCreatedNotificationBuilder
+      this.userSpaceCommunityInvitationReceivedNotificationBuilder
     );
   }
 

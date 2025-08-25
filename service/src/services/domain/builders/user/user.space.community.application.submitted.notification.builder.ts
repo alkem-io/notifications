@@ -7,7 +7,7 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class SpaceCommunityApplicationApplicantNotificationBuilder
+export class UserSpaceCommunityApplicationSubmittedNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}

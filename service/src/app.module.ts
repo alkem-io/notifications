@@ -8,7 +8,7 @@ import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import {
   PlatformForumDiscussionCreatedNotificationBuilder,
-  SpaceCommunityNewMemberNotificationBuilder,
+  UserSpaceCommunityJoinedNotificationBuilder,
   SpaceCollaborationCalloutContributionNotificationBuilder,
   SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
   SpaceCollaborationCalloutPublishedNotificationBuilder,
@@ -23,13 +23,13 @@ import {
   OrganizationMessageRecipientNotificationBuilder,
   UserMessageSenderNotificationBuilder,
   OrganizationMessageSenderNotificationBuilder,
-  SpaceCommunityApplicationApplicantNotificationBuilder,
+  UserSpaceCommunityApplicationSubmittedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   SpaceAdminCommunityNewMemberNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
 import { SpaceCollaborationCalloutCommentNotificationBuilder } from './services/domain/builders/space/space.collaboration.callout.comment.notification.builder';
-import { USERSpaceCommunityInvitationReceivedNotificationBuilder } from './services/domain/builders/user/user.space.community.invitation.received.notification.builder';
+import { UserSpaceCommunityInvitationReceivedNotificationBuilder } from './services/domain/builders/user/user.space.community.invitation.received.notification.builder';
 import { UserCommentReplyNotificationBuilder } from './services/domain/builders/user/user.comment.reply.notification.builder';
 import { SpaceCommunityInvitationPlatformCreatedNotificationBuilder } from './services/domain/builders/user/space.community.invitation.platform.created.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform/platform.global.role.change.notification.builder';
@@ -61,13 +61,13 @@ import { NotificationTemplateBuilder } from './services/external/notifme/notific
     NotificationTemplateBuilder,
     NotificationService,
     SpaceAdminCommunityApplicationReceivedNotificationBuilder,
-    SpaceCommunityApplicationApplicantNotificationBuilder,
-    USERSpaceCommunityInvitationReceivedNotificationBuilder,
+    UserSpaceCommunityApplicationSubmittedNotificationBuilder,
+    UserSpaceCommunityInvitationReceivedNotificationBuilder,
     SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     SpaceAdminCommunicationMessageDirectNotificationBuilder,
     SpaceCommunicationMessageDirectSenderNotificationBuilder,
     SpaceCommunicationUpdateNotificationBuilder,
-    SpaceCommunityNewMemberNotificationBuilder,
+    UserSpaceCommunityJoinedNotificationBuilder,
     SpaceAdminCommunityNewMemberNotificationBuilder,
     SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
     SpaceCollaborationCalloutCommentNotificationBuilder,

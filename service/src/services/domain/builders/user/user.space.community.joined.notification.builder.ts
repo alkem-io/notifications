@@ -8,7 +8,7 @@ import { NotificationEventPayloadSpaceCommunityContributor } from '@alkemio/noti
 import { RoleSetContributorType } from '@src/generated/alkemio-schema';
 
 @Injectable()
-export class SpaceCommunityNewMemberNotificationBuilder
+export class UserSpaceCommunityJoinedNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
