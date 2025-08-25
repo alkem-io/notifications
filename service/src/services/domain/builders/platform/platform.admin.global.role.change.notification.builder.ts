@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { PlatformGlobalRoleChangeEmailPayload } from '@src/common/email-template-payload/platform.global.role.change.email.payload';
 import { NotificationEventPayloadPlatformGlobalRole } from '@alkemio/notifications-lib';
 @Injectable()
-export class PlatformGlobalRoleChangeNotificationBuilder
+export class PlatformAdminGlobalRoleChangeNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.PLATFORM_ADMIN_USER_GLOBAL_ROLE_CHANGE;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformGlobalRole,

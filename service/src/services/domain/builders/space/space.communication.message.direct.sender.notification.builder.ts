@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { SpaceCommunicationMessageDirectEmailPayload } from '@common/email-template-payload';
 import { NotificationEventPayloadSpaceCommunicationMessageDirect } from '@alkemio/notifications-lib';
@@ -11,8 +10,6 @@ export class SpaceCommunicationMessageDirectSenderNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.SPACE_COMMUNICATION_MESSAGE_DIRECT_SENDER;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,

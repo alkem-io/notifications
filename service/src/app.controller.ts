@@ -65,7 +65,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCommunityApplicationAdminNotifications(
+      this.notificationService.sendSpaceAdminCommunityApplicationReceivedNotifications(
         eventPayload
       ),
       NotificationEvent.SpaceAdminCommunityApplication
@@ -462,7 +462,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPlatformSpaceCreatedNotification(
+      this.notificationService.sendPlatformAdminSpaceCreatedNotification(
         eventPayload
       ),
       NotificationEvent.PlatformAdminSpaceCreated

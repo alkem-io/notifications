@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommunityNewMemberEmailPayload } from '@common/email-template-payload';
 import { NotificationEventPayloadSpaceCommunityContributor } from '@alkemio/notifications-lib';
@@ -12,8 +11,6 @@ export class UserSpaceCommunityJoinedNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.USER_SPACE_COMMUNITY_JOINED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityContributor,

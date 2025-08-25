@@ -1,5 +1,4 @@
 import { User } from '@core/models';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommunityApplicationCreatedEmailPayload } from '@common/email-template-payload';
 import { Injectable } from '@nestjs/common';
@@ -11,8 +10,6 @@ export class UserSpaceCommunityApplicationSubmittedNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.USER_SPACE_COMMUNITY_APPLICATION_SUBMITTED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityApplication,

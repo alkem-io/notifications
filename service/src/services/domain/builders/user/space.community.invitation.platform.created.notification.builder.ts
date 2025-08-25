@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@core/models';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { SpaceCommunityInvitationPlatformCreatedEmailPayload } from '@common/email-template-payload';
 import { ConfigService } from '@nestjs/config';
@@ -18,8 +17,6 @@ export class SpaceCommunityInvitationPlatformCreatedNotificationBuilder
       ConfigurationTypes.ALKEMIO
     )?.webclient_invitations_path;
   }
-
-  emailTemplate = EmailTemplate.USER_SPACE_COMMUNITY_INVITATION_RECEIVED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,

@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { PlatformUserRegisteredEmailPayload } from '@common/email-template-payload';
 import { NotificationEventPayloadPlatformUserRegistration } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class PlatformUserRegisteredNotificationBuilder
+export class UserSignUpWelcomeNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.USER_SIGN_UP_WELCOME;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformUserRegistration,

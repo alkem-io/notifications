@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
-import { EmailTemplate } from '@src/common/enums/email.template';
 import { CommunityInvitationVirtualContributorCreatedEmailPayload } from '@src/common/email-template-payload';
 import { NotificationEventPayloadSpaceCommunityInvitationVirtualContributor } from '@alkemio/notifications-lib';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
@@ -11,8 +10,6 @@ export class SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilde
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.VIRTUAL_CONTRIBUTOR_INVITATION_RECEIVED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,

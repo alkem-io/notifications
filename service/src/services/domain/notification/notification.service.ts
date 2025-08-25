@@ -46,22 +46,23 @@ import {
   SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   PlatformForumDiscussionCreatedNotificationBuilder,
-  PlatformUserRegisteredNotificationBuilder,
+  UserSignUpWelcomeNotificationBuilder,
   UserSpaceCommunityApplicationSubmittedNotificationBuilder,
   SpaceAdminCommunityNewMemberNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
-import { PlatformUserRemovedNotificationBuilder } from '../builders/platform/platform.user.removed.notification.builder';
+import { PlatformAdminUserProfileRemovedNotificationBuilder } from '../builders/platform/platform.admin.user.profile.removed.notification.builder';
 import { SpaceCollaborationCalloutCommentNotificationBuilder } from '../builders/space/space.collaboration.callout.comment.notification.builder';
 import { UserCommentReplyNotificationBuilder } from '../builders/user/user.comment.reply.notification.builder';
-import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
+import { PlatformAdminGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.admin.global.role.change.notification.builder';
 import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
-import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
+import { PlatformAdminSpaceCreatedNotificationBuilder } from '../builders/platform/platform.admin.space.created.notification.builder';
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme/notification.templates.builder';
 import { INotificationBuilder } from '../builders/notification.builder.interface';
-import { PlatformUserRegisteredAdminNotificationBuilder } from '../builders/platform/platform.user.registered.admin.notification.builder';
+import { PlatformAdminUserProfileCreatedNotificationBuilder } from '../builders/platform/platform.admin.user.profile.created.notification.builder';
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
+import { EmailTemplate } from '@src/common/enums/email.template';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -85,12 +86,12 @@ export class NotificationService {
     private userCommentReplyNotificationBuilder: UserCommentReplyNotificationBuilder,
     private spaceCommunityInvitationVirtualContributorCreatedNotificationBuilder: SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
     private platformForumDiscussionCreatedNotificationBuilder: PlatformForumDiscussionCreatedNotificationBuilder,
-    private platformGlobalRoleChangeNotificationBuilder: PlatformGlobalRoleChangeNotificationBuilder,
-    private platformUserRegisteredNotificationBuilder: PlatformUserRegisteredNotificationBuilder,
-    private platformUserRegisteredAdminNotificationBuilder: PlatformUserRegisteredAdminNotificationBuilder,
-    private platformUserRemovedNotificationBuilder: PlatformUserRemovedNotificationBuilder,
+    private platformGlobalRoleChangeNotificationBuilder: PlatformAdminGlobalRoleChangeNotificationBuilder,
+    private platformUserRegisteredNotificationBuilder: UserSignUpWelcomeNotificationBuilder,
+    private platformUserRegisteredAdminNotificationBuilder: PlatformAdminUserProfileCreatedNotificationBuilder,
+    private platformUserRemovedNotificationBuilder: PlatformAdminUserProfileRemovedNotificationBuilder,
     private platformForumDiscussionCommentNotificationBuilder: PlatformForumDiscussionCommentNotificationBuilder,
-    private platformSpaceCreatedNotificationBuilder: PlatformSpaceCreatedNotificationBuilder,
+    private platformSpaceCreatedNotificationBuilder: PlatformAdminSpaceCreatedNotificationBuilder,
     private organizationMessageRecipientNotificationBuilder: OrganizationMessageRecipientNotificationBuilder,
     private organizationMessageSenderNotificationBuilder: OrganizationMessageSenderNotificationBuilder,
     private organizationMentionNotificationBuilder: OrganizationMentionNotificationBuilder,
@@ -103,11 +104,13 @@ export class NotificationService {
 
   private async processNotificationEvent(
     payload: BaseEventPayload,
-    builder: INotificationBuilder
+    builder: INotificationBuilder,
+    emailTemplate: EmailTemplate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const emailResults = await this.buildAndSendEmailNotifications(
       payload,
-      builder
+      builder,
+      emailTemplate
     );
 
     return [...emailResults];
@@ -118,25 +121,18 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.userSpaceCommunityApplicationSubmittedNotificationBuilder
+      this.userSpaceCommunityApplicationSubmittedNotificationBuilder,
+      EmailTemplate.USER_SPACE_COMMUNITY_APPLICATION_SUBMITTED
     );
   }
 
-  async sendUserSpaceCommunityApplicationNotifications2(
+  async sendSpaceAdminCommunityApplicationReceivedNotifications(
     payload: NotificationEventPayloadSpaceCommunityApplication
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.userSpaceCommunityApplicationSubmittedNotificationBuilder
-    );
-  }
-
-  async sendSpaceCommunityApplicationAdminNotifications(
-    payload: NotificationEventPayloadSpaceCommunityApplication
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    return this.processNotificationEvent(
-      payload,
-      this.spaceCommunityApplicationAdminNotificationBuilder
+      this.spaceCommunityApplicationAdminNotificationBuilder,
+      EmailTemplate.SPACE_ADMIN_COMMUNITY_USER_APPLICATION_RECEIVED
     );
   }
 
@@ -145,7 +141,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.userSpaceCommunityInvitationReceivedNotificationBuilder
+      this.userSpaceCommunityInvitationReceivedNotificationBuilder,
+      EmailTemplate.USER_SPACE_COMMUNITY_INVITATION_RECEIVED
     );
   }
 
@@ -154,7 +151,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunityInvitationVirtualContributorCreatedNotificationBuilder
+      this.spaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
+      EmailTemplate.VIRTUAL_CONTRIBUTOR_INVITATION_RECEIVED
     );
   }
 
@@ -163,7 +161,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunityPlatformInvitationCreatedNotificationBuilder
+      this.spaceCommunityPlatformInvitationCreatedNotificationBuilder,
+      EmailTemplate.USER_SPACE_COMMUNITY_INVITATION_RECEIVED
     );
   }
 
@@ -172,7 +171,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunityNewMemberNotificationBuilder
+      this.spaceCommunityNewMemberNotificationBuilder,
+      EmailTemplate.USER_SPACE_COMMUNITY_JOINED
     );
   }
 
@@ -181,7 +181,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunityNewMemberAdminNotificationBuilder
+      this.spaceCommunityNewMemberAdminNotificationBuilder,
+      EmailTemplate.SPACE_ADMIN_COMMUNITY_NEW_MEMBER
     );
   }
 
@@ -190,7 +191,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformGlobalRoleChangeNotificationBuilder
+      this.platformGlobalRoleChangeNotificationBuilder,
+      EmailTemplate.PLATFORM_ADMIN_USER_GLOBAL_ROLE_CHANGE
     );
   }
 
@@ -199,7 +201,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformUserRegisteredNotificationBuilder
+      this.platformUserRegisteredNotificationBuilder,
+      EmailTemplate.USER_SIGN_UP_WELCOME
     );
   }
 
@@ -208,7 +211,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformUserRegisteredAdminNotificationBuilder
+      this.platformUserRegisteredAdminNotificationBuilder,
+      EmailTemplate.PLATFORM_ADMIN_USER_PROFILE_CREATED
     );
   }
 
@@ -217,7 +221,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformUserRemovedNotificationBuilder
+      this.platformUserRemovedNotificationBuilder,
+      EmailTemplate.PLATFORM_ADMIN_USER_PROFILE_REMOVED
     );
   }
 
@@ -226,7 +231,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformForumDiscussionCommentNotificationBuilder
+      this.platformForumDiscussionCommentNotificationBuilder,
+      EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT
     );
   }
 
@@ -235,7 +241,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformForumDiscussionCreatedNotificationBuilder
+      this.platformForumDiscussionCreatedNotificationBuilder,
+      EmailTemplate.PLATFORM_FORUM_DISCUSSION_CREATED
     );
   }
 
@@ -244,7 +251,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunicationUpdateNotificationBuilder
+      this.spaceCommunicationUpdateNotificationBuilder,
+      EmailTemplate.SPACE_COMMUNICATION_UPDATE_MEMBER
     );
   }
 
@@ -253,7 +261,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.userMessageRecipientNotificationBuilder
+      this.userMessageRecipientNotificationBuilder,
+      EmailTemplate.USER_MESSAGE_RECIPIENT
     );
   }
 
@@ -262,7 +271,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.userMessageSenderNotificationBuilder
+      this.userMessageSenderNotificationBuilder,
+      EmailTemplate.USER_MESSAGE_SENDER
     );
   }
 
@@ -271,7 +281,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.organizationMessageRecipientNotificationBuilder
+      this.organizationMessageRecipientNotificationBuilder,
+      EmailTemplate.ORGANIZATION_MESSAGE_RECIPIENT
     );
   }
 
@@ -280,7 +291,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.organizationMentionNotificationBuilder
+      this.organizationMentionNotificationBuilder,
+      EmailTemplate.ORGANIZATION_MENTION
     );
   }
 
@@ -289,7 +301,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunicationMessageDirectRecipientNotificationBuilder
+      this.spaceCommunicationMessageDirectRecipientNotificationBuilder,
+      EmailTemplate.SPACE_ADMIN_COMMUNICATION_MESSAGE_DIRECT
     );
   }
 
@@ -298,7 +311,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCommunicationMessageDirectSenderNotificationBuilder
+      this.spaceCommunicationMessageDirectSenderNotificationBuilder,
+      EmailTemplate.SPACE_COMMUNICATION_MESSAGE_DIRECT_SENDER
     );
   }
 
@@ -307,7 +321,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCollaborationPostCreatedNotificationBuilder
+      this.spaceCollaborationPostCreatedNotificationBuilder,
+      EmailTemplate.SPACE_COLLABORATION_CALLOUT_CONTRIBUTION
     );
   }
 
@@ -316,7 +331,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCollaborationWhiteboardCreatedNotificationBuilder
+      this.spaceCollaborationWhiteboardCreatedNotificationBuilder,
+      EmailTemplate.SPACE_COLLABORATION_CALLOUT_COMMENT
     );
   }
 
@@ -325,7 +341,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCollaborationPostCommentNotificationBuilder
+      this.spaceCollaborationPostCommentNotificationBuilder,
+      EmailTemplate.SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT
     );
   }
 
@@ -334,7 +351,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceCollaborationCalloutPublishedNotificationBuilder
+      this.spaceCollaborationCalloutPublishedNotificationBuilder,
+      EmailTemplate.SPACE_COLLABORATION_CALLOUT_PUBLISHED
     );
   }
 
@@ -343,7 +361,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.userCommentReplyNotificationBuilder
+      this.userCommentReplyNotificationBuilder,
+      EmailTemplate.USER_COMMENT_REPLY
     );
   }
 
@@ -352,22 +371,25 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.userMentionNotificationBuilder
+      this.userMentionNotificationBuilder,
+      EmailTemplate.USER_MENTION
     );
   }
 
-  async sendPlatformSpaceCreatedNotification(
+  async sendPlatformAdminSpaceCreatedNotification(
     payload: NotificationEventPayloadPlatformSpaceCreated
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.platformSpaceCreatedNotificationBuilder
+      this.platformSpaceCreatedNotificationBuilder,
+      EmailTemplate.PLATFORM_ADMIN_SPACE_CREATED
     );
   }
 
   private async buildAndSendEmailNotifications(
     payload: BaseEventPayload,
-    builder: INotificationBuilder
+    builder: INotificationBuilder,
+    emailTemplate: EmailTemplate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const notificationTemplatesToSend: Promise<
       NotificationTemplateType | undefined
@@ -388,7 +410,7 @@ export class NotificationService {
       );
       const emailNotificationTemplate =
         this.notificationTemplateBuilder.buildTemplate(
-          builder.emailTemplate,
+          emailTemplate,
           templatePayload
         );
 

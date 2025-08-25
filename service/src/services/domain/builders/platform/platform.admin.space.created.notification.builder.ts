@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { EmailTemplate } from '@src/common/enums/email.template';
 import { User } from '@src/core/models';
 import { SpaceCreatedEmailPayload } from '@src/common/email-template-payload';
 import { NotificationEventPayloadPlatformSpaceCreated } from '@alkemio/notifications-lib';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 
 @Injectable()
-export class PlatformSpaceCreatedNotificationBuilder
+export class PlatformAdminSpaceCreatedNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.PLATFORM_ADMIN_SPACE_CREATED;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformSpaceCreated,

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { User } from '@core/models';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
@@ -12,9 +11,6 @@ export class SpaceCollaborationCalloutPostContributionCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate =
-    EmailTemplate.SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,

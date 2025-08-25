@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { INotificationBuilder } from '@src/services/domain/builders/notification.builder.interface';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommunicationOrganizationMentionEmailPayload } from '@common/email-template-payload';
 import { NotificationEventPayloadOrganizationMessageRoom } from '@alkemio/notifications-lib';
@@ -11,8 +10,6 @@ export class OrganizationMentionNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.ORGANIZATION_MENTION;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadOrganizationMessageRoom,

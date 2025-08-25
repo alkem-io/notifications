@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
 import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
@@ -13,9 +12,6 @@ export class SpaceAdminCollaborationCalloutContributionNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate =
-    EmailTemplate.SPACE_ADMIN_COLLABORATION_CALLOUT_CONTRIBUTION_ADMIN;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
