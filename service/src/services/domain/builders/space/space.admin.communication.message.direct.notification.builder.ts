@@ -7,7 +7,7 @@ import { SpaceCommunicationMessageDirectEmailPayload } from '@common/email-templ
 import { NotificationEventPayloadSpaceCommunicationMessageDirect } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class SpaceCommunicationMessageDirectRecipientNotificationBuilder
+export class SpaceAdminCommunicationMessageDirectNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}

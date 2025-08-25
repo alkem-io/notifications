@@ -8,7 +8,7 @@ import { NotificationEventPayloadSpaceCommunicationUpdate } from '@alkemio/notif
 import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
 
 @Injectable()
-export class SpaceCommunicationUpdateMemberNotificationBuilder
+export class SpaceCommunicationUpdateNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}

@@ -8,7 +8,7 @@ import { User } from '@core/models';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { LogContext } from '@src/common/enums/logging.context';
 @Injectable()
-export class SpaceCollaborationPostCommentNotificationBuilder
+export class SpaceCollaborationCalloutPostContributionCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}

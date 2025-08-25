@@ -9,7 +9,7 @@ import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.p
 import { LogContext } from '@src/common/enums';
 
 @Injectable()
-export class SpaceCollaborationPostCreatedMemberNotificationBuilder
+export class SpaceCollaborationCalloutContributionNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}

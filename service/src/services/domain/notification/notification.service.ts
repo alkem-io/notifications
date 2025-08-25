@@ -30,17 +30,17 @@ import {
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import {
   SpaceCollaborationCalloutPublishedNotificationBuilder,
-  SpaceCollaborationPostCommentNotificationBuilder,
-  SpaceCollaborationPostCreatedMemberNotificationBuilder,
-  SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+  SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
+  SpaceCollaborationCalloutContributionNotificationBuilder,
+  SpaceAdminCommunicationMessageDirectNotificationBuilder,
   OrganizationMentionNotificationBuilder,
   OrganizationMessageSenderNotificationBuilder,
   OrganizationMessageRecipientNotificationBuilder,
-  SpaceCommunicationUpdateMemberNotificationBuilder,
+  SpaceCommunicationUpdateNotificationBuilder,
   UserMentionNotificationBuilder,
   UserMessageRecipientNotificationBuilder,
   UserMessageSenderNotificationBuilder,
-  SpaceCommunityApplicationCreatedAdminNotificationBuilder,
+  SpaceAdminCommunityApplicationReceivedNotificationBuilder,
   USERSpaceCommunityInvitationReceivedNotificationBuilder,
   SpaceCommunityNewMemberNotificationBuilder,
   SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
@@ -48,11 +48,11 @@ import {
   PlatformForumDiscussionCreatedNotificationBuilder,
   PlatformUserRegisteredNotificationBuilder,
   SpaceCommunityApplicationApplicantNotificationBuilder,
-  SpaceCommunityNewMemberAdminNotificationBuilder,
+  SpaceAdminCommunityNewMemberNotificationBuilder,
 } from '../builders';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { PlatformUserRemovedNotificationBuilder } from '../builders/platform/platform.user.removed.notification.builder';
-import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/space.collaboration.callout.comment.notification.builder';
+import { SpaceCollaborationCalloutCommentNotificationBuilder } from '../builders/space/space.collaboration.callout.comment.notification.builder';
 import { UserCommentReplyNotificationBuilder } from '../builders/user/user.comment.reply.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
 import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
@@ -71,18 +71,18 @@ export class NotificationService {
     private readonly notifmeService: NotifmeSdk,
     private readonly configService: ConfigService,
     private spaceCommunityApplicationApplicantNotificationBuilder: SpaceCommunityApplicationApplicantNotificationBuilder,
-    private spaceCommunityApplicationAdminNotificationBuilder: SpaceCommunityApplicationCreatedAdminNotificationBuilder,
+    private spaceCommunityApplicationAdminNotificationBuilder: SpaceAdminCommunityApplicationReceivedNotificationBuilder,
     private spaceCommunityInvitationCreatedNotificationBuilder: USERSpaceCommunityInvitationReceivedNotificationBuilder,
     private spaceCommunityPlatformInvitationCreatedNotificationBuilder: SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
-    private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateMemberNotificationBuilder,
-    private spaceCommunicationMessageDirectRecipientNotificationBuilder: SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+    private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateNotificationBuilder,
+    private spaceCommunicationMessageDirectRecipientNotificationBuilder: SpaceAdminCommunicationMessageDirectNotificationBuilder,
     private spaceCommunicationMessageDirectSenderNotificationBuilder: SpaceCommunicationMessageDirectSenderNotificationBuilder,
     private userMentionNotificationBuilder: UserMentionNotificationBuilder,
     private spaceCommunityNewMemberNotificationBuilder: SpaceCommunityNewMemberNotificationBuilder,
-    private spaceCommunityNewMemberAdminNotificationBuilder: SpaceCommunityNewMemberAdminNotificationBuilder,
-    private spaceCollaborationWhiteboardCreatedNotificationBuilder: SpaceCollaborationWhiteboardCreatedNotificationBuilder,
-    private spaceCollaborationPostCreatedNotificationBuilder: SpaceCollaborationPostCreatedMemberNotificationBuilder,
-    private spaceCollaborationPostCommentNotificationBuilder: SpaceCollaborationPostCommentNotificationBuilder,
+    private spaceCommunityNewMemberAdminNotificationBuilder: SpaceAdminCommunityNewMemberNotificationBuilder,
+    private spaceCollaborationWhiteboardCreatedNotificationBuilder: SpaceCollaborationCalloutCommentNotificationBuilder,
+    private spaceCollaborationPostCreatedNotificationBuilder: SpaceCollaborationCalloutContributionNotificationBuilder,
+    private spaceCollaborationPostCommentNotificationBuilder: SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
     private spaceCollaborationCalloutPublishedNotificationBuilder: SpaceCollaborationCalloutPublishedNotificationBuilder,
     private userCommentReplyNotificationBuilder: UserCommentReplyNotificationBuilder,
     private spaceCommunityInvitationVirtualContributorCreatedNotificationBuilder: SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
