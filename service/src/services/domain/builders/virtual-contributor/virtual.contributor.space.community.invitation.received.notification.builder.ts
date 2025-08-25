@@ -6,7 +6,7 @@ import { NotificationEventPayloadSpaceCommunityInvitationVirtualContributor } fr
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 
 @Injectable()
-export class SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder
+export class VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}

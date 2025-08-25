@@ -10,27 +10,27 @@ import { NotificationService } from './notification.service';
 import { ConfigService } from '@nestjs/config';
 import {
   UserSignUpWelcomeNotificationBuilder,
-  PlatformForumDiscussionCreatedNotificationBuilder,
-  SpaceAdminCommunicationMessageDirectNotificationBuilder,
   UserMentionNotificationBuilder,
-  OrganizationMentionNotificationBuilder,
   UserSpaceCommunityJoinedNotificationBuilder,
+  UserMessageRecipientNotificationBuilder,
+  UserMessageSenderNotificationBuilder,
+  UserSpaceCommunityApplicationSubmittedNotificationBuilder,
+  UserSpaceCommunityInvitationReceivedNotificationBuilder,
+  UserCommentReplyNotificationBuilder,
   SpaceCollaborationCalloutContributionNotificationBuilder,
   SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
   SpaceCollaborationCalloutPublishedNotificationBuilder,
-  PlatformAdminUserProfileRemovedNotificationBuilder,
+  PlatformForumDiscussionCreatedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
-  UserSpaceCommunityInvitationReceivedNotificationBuilder,
-  UserCommentReplyNotificationBuilder,
   SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
   SpaceCommunicationUpdateNotificationBuilder,
-  OrganizationMessageRecipientNotificationBuilder,
-  UserMessageRecipientNotificationBuilder,
-  UserSpaceCommunityApplicationSubmittedNotificationBuilder,
+  PlatformAdminUserProfileRemovedNotificationBuilder,
+  SpaceAdminCommunicationMessageDirectNotificationBuilder,
   SpaceAdminCommunityApplicationReceivedNotificationBuilder,
   SpaceAdminCommunityNewMemberNotificationBuilder,
+  OrganizationMentionNotificationBuilder,
   OrganizationMessageSenderNotificationBuilder,
-  UserMessageSenderNotificationBuilder,
+  OrganizationMessageRecipientNotificationBuilder,
 } from '../builders';
 import {
   MockConfigServiceProvider,
@@ -39,7 +39,7 @@ import {
 } from '@test/mocks';
 import { SpaceCollaborationCalloutCommentNotificationBuilder } from '../builders/space/space.collaboration.callout.comment.notification.builder';
 import { PlatformAdminGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.admin.global.role.change.notification.builder';
-import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
+import { VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder } from '../builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
 import { PlatformAdminSpaceCreatedNotificationBuilder } from '../builders/platform/platform.admin.space.created.notification.builder';
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
@@ -90,7 +90,7 @@ describe('NotificationService', () => {
         SpaceCollaborationCalloutContributionNotificationBuilder,
         SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
         SpaceCollaborationCalloutPublishedNotificationBuilder,
-        SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
+        VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder,
         MockConfigServiceProvider,
         UserCommentReplyNotificationBuilder,
         UserMentionNotificationBuilder,

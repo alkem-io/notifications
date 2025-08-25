@@ -33,7 +33,7 @@ import { UserSpaceCommunityInvitationReceivedNotificationBuilder } from './servi
 import { UserCommentReplyNotificationBuilder } from './services/domain/builders/user/user.comment.reply.notification.builder';
 import { SpaceCommunityInvitationPlatformCreatedNotificationBuilder } from './services/domain/builders/user/space.community.invitation.platform.created.notification.builder';
 import { PlatformAdminGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform/platform.admin.global.role.change.notification.builder';
-import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
+import { VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder } from './services/domain/builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
 import { HealthController } from './health.controller';
 import { PlatformAdminSpaceCreatedNotificationBuilder } from './services/domain/builders/platform/platform.admin.space.created.notification.builder';
 import { PlatformAdminUserProfileCreatedNotificationBuilder } from './services/domain/builders/platform/platform.admin.user.profile.created.notification.builder';
@@ -69,7 +69,7 @@ import { NotificationTemplateBuilder } from './services/external/notifme/notific
     SpaceCommunicationUpdateNotificationBuilder,
     UserSpaceCommunityJoinedNotificationBuilder,
     SpaceAdminCommunityNewMemberNotificationBuilder,
-    SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
+    VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder,
     SpaceCollaborationCalloutCommentNotificationBuilder,
     SpaceCollaborationCalloutContributionNotificationBuilder,
     SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
