@@ -29,7 +29,10 @@ export class SpaceCollaborationCalloutNotificationBuilder {
       callout: {
         displayName: framing.displayName,
         url: framing.url,
-        type: framing.type,
+        type:
+          !framing.type || framing.type === 'none'.toLowerCase()
+            ? 'Post'
+            : framing.type,
       },
       space: {
         displayName: eventPayload.space.profile.displayName,

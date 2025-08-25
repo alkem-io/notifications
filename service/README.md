@@ -43,7 +43,7 @@ To add a template:
 
 ## Additional Information
 
-After the latest refactoring the the code follows the domain structure of the `server`.
+After the latest refactoring the code follows the domain structure of the `server`.
 Most notification payloads, categories, and related enums or types have been deleted, focusing the codebase solely on email/external notifications. Types are obtain with codegen.
 There's no additional service/sdk communication logic. The service receives all the required data - payload with recipients.
 There are no additional checks, just sending the matched template to the provided set of recipients.
