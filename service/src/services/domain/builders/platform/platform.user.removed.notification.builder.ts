@@ -11,7 +11,7 @@ export class PlatformUserRemovedNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.PLATFORM_USER_REMOVED_ADMIN;
+  emailTemplate = EmailTemplate.PLATFORM_ADMIN_USER_PROFILE_REMOVED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformUserRemoved,

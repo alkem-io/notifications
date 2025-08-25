@@ -19,7 +19,7 @@ export class SpaceCommunityInvitationPlatformCreatedNotificationBuilder
     )?.webclient_invitations_path;
   }
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNITY_INVITATION_PLATFORM_INVITEE;
+  emailTemplate = EmailTemplate.USER_SPACE_COMMUNITY_INVITATION_RECEIVED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,

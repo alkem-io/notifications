@@ -12,7 +12,7 @@ export class SpaceCommunicationMessageDirectRecipientNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNICATION_MESSAGE_DIRECT_RECIPIENT;
+  emailTemplate = EmailTemplate.SPACE_ADMIN_COMMUNICATION_MESSAGE_DIRECT;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,

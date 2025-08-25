@@ -11,7 +11,7 @@ export class PlatformUserRegisteredAdminNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.PLATFORM_USER_REGISTRATION_ADMIN;
+  emailTemplate = EmailTemplate.PLATFORM_ADMIN_USER_PROFILE_CREATED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformUserRegistration,

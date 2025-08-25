@@ -12,7 +12,7 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.SPACE_COLLABORATION_CALLOUT_PUBLISHED_MEMBER;
+  emailTemplate = EmailTemplate.SPACE_COLLABORATION_CALLOUT_PUBLISHED;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,

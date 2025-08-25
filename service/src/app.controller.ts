@@ -379,7 +379,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCollaborationWhiteboardCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutCommentNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCollaborationCalloutComment
@@ -397,7 +397,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCollaborationPostCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutContributionCreatedNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCollaborationCalloutContribution
@@ -415,7 +415,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCollaborationPostCommentCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutPostContributionCommentNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCollaborationCalloutPostContributionComment

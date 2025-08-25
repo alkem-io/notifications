@@ -20,7 +20,7 @@ import {
   SpaceCollaborationCalloutPublishedNotificationBuilder,
   PlatformUserRemovedNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
-  SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+  USERSpaceCommunityInvitationReceivedNotificationBuilder,
   UserCommentReplyNotificationBuilder,
   SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
   SpaceCommunicationUpdateMemberNotificationBuilder,
@@ -38,9 +38,9 @@ import {
   MockNotifmeProvider,
   MockWinstonProvider,
 } from '@test/mocks';
-import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/space.collaboration.whiteboard.created.notification.builder';
+import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/space.collaboration.callout.comment.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
-import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/space.community.invitation.virtual.contributor.created.notification.builder';
+import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
 import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
@@ -77,7 +77,7 @@ describe('NotificationService', () => {
         OrganizationMessageRecipientNotificationBuilder,
         OrganizationMessageSenderNotificationBuilder,
         OrganizationMentionNotificationBuilder,
-        SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+        USERSpaceCommunityInvitationReceivedNotificationBuilder,
         SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
         SpaceCommunityNewMemberNotificationBuilder,
         SpaceCommunityNewMemberAdminNotificationBuilder,

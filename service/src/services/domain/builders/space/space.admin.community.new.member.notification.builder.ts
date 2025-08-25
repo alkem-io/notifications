@@ -13,7 +13,7 @@ export class SpaceCommunityNewMemberAdminNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNITY_NEW_MEMBER_ADMIN;
+  emailTemplate = EmailTemplate.SPACE_ADMIN_COMMUNITY_NEW_MEMBER;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityContributor,

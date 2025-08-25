@@ -12,7 +12,7 @@ export class PlatformUserRegisteredNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.PLATFORM_USER_REGISTRATION_REGISTRANT;
+  emailTemplate = EmailTemplate.USER_SIGN_UP_WELCOME;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformUserRegistration,

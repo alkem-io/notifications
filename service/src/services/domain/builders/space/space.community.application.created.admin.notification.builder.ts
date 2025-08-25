@@ -12,7 +12,7 @@ export class SpaceCommunityApplicationCreatedAdminNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNITY_USER_APPLICATION_ADMIN;
+  emailTemplate = EmailTemplate.SPACE_ADMIN_COMMUNITY_USER_APPLICATION_RECEIVED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityApplication,

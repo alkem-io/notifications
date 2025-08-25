@@ -11,7 +11,7 @@ export class PlatformGlobalRoleChangeNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.PLATFORM_GLOBAL_ROLE_CHANGE_ADMIN;
+  emailTemplate = EmailTemplate.PLATFORM_ADMIN_USER_GLOBAL_ROLE_CHANGE;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformGlobalRole,

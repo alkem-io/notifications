@@ -1,27 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
-import { User } from '@core/models';
+import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
+import { CollaborationPostCommentEmailPayload } from '@common/email-template-payload';
 import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
-import { CollaborationPostCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
+import { User } from '@core/models';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
-import { LogContext } from '@src/common/enums';
-
+import { LogContext } from '@src/common/enums/logging.context';
 @Injectable()
-export class SpaceCollaborationPostCreatedAdminNotificationBuilder
+export class SpaceCollaborationPostCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.SPACE_COLLABORATION_POST_CREATED_ADMIN;
+  emailTemplate =
+    EmailTemplate.SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
-  ): CollaborationPostCreatedEmailPayload {
+  ): CollaborationPostCommentEmailPayload {
     const notificationPreferenceURL =
       createUserNotificationPreferencesURL(recipient);
+    const callout = eventPayload.callout;
 
     const contribution = eventPayload.callout.contribution;
     if (!contribution) {
@@ -31,13 +32,9 @@ export class SpaceCollaborationPostCreatedAdminNotificationBuilder
       );
     }
     return {
-      createdBy: {
-        firstName: eventPayload.triggeredBy.firstName,
-        email: eventPayload.triggeredBy.email,
-      },
       callout: {
-        displayName: eventPayload.callout.framing.displayName,
-        url: eventPayload.callout.framing.url,
+        displayName: callout.framing.displayName,
+        url: callout.framing.url,
       },
       post: {
         displayName: contribution.displayName,
@@ -47,6 +44,10 @@ export class SpaceCollaborationPostCreatedAdminNotificationBuilder
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
+      },
+      createdBy: {
+        firstName: eventPayload.triggeredBy.firstName,
+        email: eventPayload.triggeredBy.email,
       },
       space: {
         displayName: eventPayload.space.profile.displayName,

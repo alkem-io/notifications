@@ -3,33 +3,39 @@ import { INotificationBuilder } from '../notification.builder.interface';
 import { User } from '@core/models';
 import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
-import { CommunicationUpdateCreatedEmailPayload } from '@common/email-template-payload';
-import { NotificationEventPayloadSpaceCommunicationUpdate } from '@alkemio/notifications-lib';
-import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
+import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
+import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
 
 @Injectable()
-export class SpaceCommunicationUpdateAdminNotificationBuilder
+export class SpaceCollaborationCalloutNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNICATION_UPDATE_ADMIN;
+  emailTemplate = EmailTemplate.SPACE_COLLABORATION_CALLOUT_PUBLISHED;
 
   createEmailTemplatePayload(
-    eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
+    eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
-  ): CommunicationUpdateCreatedEmailPayload {
+  ): CollaborationCalloutPublishedEmailPayload {
     const notificationPreferenceURL =
       createUserNotificationPreferencesURL(recipient);
 
-    return {
-      sender: {
-        firstName: eventPayload.triggeredBy.firstName,
-      },
+    const framing = eventPayload.callout.framing;
+
+    const result: CollaborationCalloutPublishedEmailPayload = {
       recipient: {
         firstName: recipient.firstName,
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
+      },
+      publishedBy: {
+        firstName: eventPayload.triggeredBy.profile.displayName,
+      },
+      callout: {
+        displayName: framing.displayName,
+        url: framing.url,
+        type: framing.type,
       },
       space: {
         displayName: eventPayload.space.profile.displayName,
@@ -39,7 +45,7 @@ export class SpaceCommunicationUpdateAdminNotificationBuilder
       platform: {
         url: eventPayload.platform.url,
       },
-      message: convertMarkdownToHtml(eventPayload.message ?? ''),
     };
+    return result;
   }
 }

@@ -24,17 +24,16 @@ import {
   UserMessageSenderNotificationBuilder,
   OrganizationMessageSenderNotificationBuilder,
   SpaceCommunityApplicationApplicantNotificationBuilder,
-  SpaceCommunicationUpdateAdminNotificationBuilder,
   PlatformForumDiscussionCommentNotificationBuilder,
   SpaceCommunityNewMemberAdminNotificationBuilder,
 } from './services/domain/builders';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/space/space.collaboration.whiteboard.created.notification.builder';
-import { SpaceCommunityInvitationCreatedInviteeNotificationBuilder } from './services/domain/builders/space/space.community.invitation.created.notification.builder';
+import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from './services/domain/builders/space/space.collaboration.callout.comment.notification.builder';
+import { USERSpaceCommunityInvitationReceivedNotificationBuilder } from './services/domain/builders/user/user.space.community.invitation.received.notification.builder';
 import { UserCommentReplyNotificationBuilder } from './services/domain/builders/user/user.comment.reply.notification.builder';
 import { SpaceCommunityInvitationPlatformCreatedNotificationBuilder } from './services/domain/builders/space/space.community.invitation.platform.created.notification.builder';
 import { PlatformGlobalRoleChangeNotificationBuilder } from './services/domain/builders/platform/platform.global.role.change.notification.builder';
-import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/space/space.community.invitation.virtual.contributor.created.notification.builder';
+import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from './services/domain/builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
 import { HealthController } from './health.controller';
 import { PlatformSpaceCreatedNotificationBuilder } from './services/domain/builders/platform/platform.space.created.notification.builder';
 import { PlatformUserRegisteredAdminNotificationBuilder } from './services/domain/builders/platform/platform.user.registered.admin.notification.builder';
@@ -63,14 +62,13 @@ import { NotificationTemplateBuilder } from './services/external/notifme/notific
     NotificationService,
     SpaceCommunityApplicationCreatedAdminNotificationBuilder,
     SpaceCommunityApplicationApplicantNotificationBuilder,
-    SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+    USERSpaceCommunityInvitationReceivedNotificationBuilder,
     SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     SpaceCommunicationMessageDirectRecipientNotificationBuilder,
     SpaceCommunicationMessageDirectSenderNotificationBuilder,
     SpaceCommunicationUpdateMemberNotificationBuilder,
     SpaceCommunityNewMemberNotificationBuilder,
     SpaceCommunityNewMemberAdminNotificationBuilder,
-    SpaceCommunicationUpdateAdminNotificationBuilder,
     SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
     SpaceCollaborationWhiteboardCreatedNotificationBuilder,
     SpaceCollaborationPostCreatedMemberNotificationBuilder,

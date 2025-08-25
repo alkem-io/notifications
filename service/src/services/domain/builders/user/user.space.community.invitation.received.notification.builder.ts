@@ -9,7 +9,7 @@ import { ConfigurationTypes } from '@src/common/enums';
 import { NotificationEventPayloadSpaceCommunityInvitation } from '@alkemio/notifications-lib';
 
 @Injectable()
-export class SpaceCommunityInvitationCreatedInviteeNotificationBuilder
+export class USERSpaceCommunityInvitationReceivedNotificationBuilder
   implements INotificationBuilder
 {
   invitationsPath: string;
@@ -19,7 +19,7 @@ export class SpaceCommunityInvitationCreatedInviteeNotificationBuilder
     )?.webclient_invitations_path;
   }
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNITY_INVITATION_INVITEE;
+  emailTemplate = EmailTemplate.USER_SPACE_COMMUNITY_INVITATION_RECEIVED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityInvitation,

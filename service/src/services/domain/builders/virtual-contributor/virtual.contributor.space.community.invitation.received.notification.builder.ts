@@ -12,7 +12,7 @@ export class SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilde
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.SPACE_COMMUNITY_INVITATION_CREATED_VC_HOST;
+  emailTemplate = EmailTemplate.VIRTUAL_CONTRIBUTOR_INVITATION_RECEIVED;
 
   public createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,

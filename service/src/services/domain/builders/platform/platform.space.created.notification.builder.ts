@@ -12,7 +12,7 @@ export class PlatformSpaceCreatedNotificationBuilder
 {
   constructor() {}
 
-  emailTemplate = EmailTemplate.PLATFORM_SPACE_CREATED_ADMIN;
+  emailTemplate = EmailTemplate.PLATFORM_ADMIN_SPACE_CREATED;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformSpaceCreated,
