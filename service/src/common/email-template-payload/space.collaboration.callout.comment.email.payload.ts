@@ -9,5 +9,6 @@ export interface SpaceCollaborationCalloutCommentEmailPayload
   callout: {
     displayName: string;
     url: string;
+    type: string;
   };
 }

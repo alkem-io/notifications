@@ -4,6 +4,7 @@ import { User } from '@core/models';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { NotificationEventPayloadSpaceCollaborationCallout } from '@alkemio/notifications-lib';
 import { CollaborationCalloutPublishedEmailPayload } from '@common/email-template-payload';
+import { normalizeCalloutType } from '@src/utils/callout.util';
 
 @Injectable()
 export class SpaceCollaborationCalloutPublishedNotificationBuilder
@@ -32,10 +33,7 @@ export class SpaceCollaborationCalloutPublishedNotificationBuilder
       callout: {
         displayName: framing.displayName,
         url: framing.url,
-        type:
-          !framing.type || framing.type === 'none'.toLowerCase()
-            ? 'Post'
-            : framing.type,
+        type: normalizeCalloutType(framing.type),
       },
       space: {
         displayName: eventPayload.space.profile.displayName,
