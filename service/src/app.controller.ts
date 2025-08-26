@@ -345,7 +345,6 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    console.log('here');
     this.processSent(
       eventPayload,
       context,
