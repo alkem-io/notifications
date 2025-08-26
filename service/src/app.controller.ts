@@ -323,7 +323,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceAdminCommunicationMessage)
+  @EventPattern(NotificationEvent.SpaceLeadCommunicationMessage)
   async sendSpaceCommunicationMessageRecipientNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
@@ -335,7 +335,7 @@ export class AppController {
       this.notificationService.sendSpaceCommunicationMessageRecipientNotification(
         eventPayload
       ),
-      NotificationEvent.SpaceAdminCommunicationMessage
+      NotificationEvent.SpaceLeadCommunicationMessage
     );
   }
 

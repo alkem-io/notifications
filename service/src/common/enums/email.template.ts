@@ -1,7 +1,7 @@
 export enum EmailTemplate {
   SPACE_ADMIN_COMMUNITY_NEW_MEMBER = 'space.admin.community.new.member',
   SPACE_ADMIN_COMMUNITY_USER_APPLICATION_RECEIVED = 'space.admin.community.user.application.received',
-  SPACE_ADMIN_COMMUNICATION_MESSAGE_DIRECT = 'space.admin.communication.message.direct.receiver',
+  SPACE_LEAD_COMMUNICATION_MESSAGE_DIRECT = 'space.lead.communication.message.direct.receiver',
   SPACE_ADMIN_COLLABORATION_CALLOUT_CONTRIBUTION = 'space.admin.collaboration.callout.contribution',
   SPACE_COMMUNICATION_UPDATE_MEMBER = 'space.communication.update.member',
   SPACE_COMMUNICATION_MESSAGE_DIRECT_SENDER = 'space.communication.message.direct.sender',

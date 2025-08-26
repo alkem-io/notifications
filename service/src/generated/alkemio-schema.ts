@@ -4947,7 +4947,7 @@ export enum NotificationEvent {
   PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
   PlatformForumDiscussionCreated = 'PLATFORM_FORUM_DISCUSSION_CREATED',
   SpaceAdminCollaborationCalloutContribution = 'SPACE_ADMIN_COLLABORATION_CALLOUT_CONTRIBUTION',
-  SpaceAdminCommunicationMessage = 'SPACE_ADMIN_COMMUNICATION_MESSAGE',
+  SpaceLeadCommunicationMessage = 'SPACE_LEAD_COMMUNICATION_MESSAGE',
   SpaceAdminCommunityApplication = 'SPACE_ADMIN_COMMUNITY_APPLICATION',
   SpaceAdminCommunityNewMember = 'SPACE_ADMIN_COMMUNITY_NEW_MEMBER',
   SpaceCollaborationCalloutComment = 'SPACE_COLLABORATION_CALLOUT_COMMENT',

@@ -32,7 +32,7 @@ import {
   SpaceCollaborationCalloutPublishedNotificationBuilder,
   SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
   SpaceCollaborationCalloutContributionNotificationBuilder,
-  SpaceAdminCommunicationMessageDirectNotificationBuilder,
+  SpaceLeadCommunicationMessageDirectNotificationBuilder,
   OrganizationMentionNotificationBuilder,
   OrganizationMessageSenderNotificationBuilder,
   OrganizationMessageRecipientNotificationBuilder,
@@ -76,7 +76,7 @@ export class NotificationService {
     private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateNotificationBuilder,
     private spaceCommunicationMessageDirectSenderNotificationBuilder: SpaceCommunicationMessageDirectSenderNotificationBuilder,
     private spaceAdminCollaborationCalloutContributionNotificationBuilder: SpaceAdminCollaborationCalloutContributionNotificationBuilder,
-    private spaceAdminCommunicationMessageDirectNotificationBuilder: SpaceAdminCommunicationMessageDirectNotificationBuilder,
+    private spaceLeadCommunicationMessageDirectNotificationBuilder: SpaceLeadCommunicationMessageDirectNotificationBuilder,
     private spaceAdminCommunityApplicationReceivedNotificationBuilder: SpaceAdminCommunityApplicationReceivedNotificationBuilder,
     private spaceAdminCommunityNewMemberNotificationBuilder: SpaceAdminCommunityNewMemberNotificationBuilder,
     private spaceCollaborationCalloutCommentNotificationBuilder: SpaceCollaborationCalloutCommentNotificationBuilder,
@@ -315,8 +315,8 @@ export class NotificationService {
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
-      this.spaceAdminCommunicationMessageDirectNotificationBuilder,
-      EmailTemplate.SPACE_ADMIN_COMMUNICATION_MESSAGE_DIRECT
+      this.spaceLeadCommunicationMessageDirectNotificationBuilder,
+      EmailTemplate.SPACE_LEAD_COMMUNICATION_MESSAGE_DIRECT
     );
   }
 
