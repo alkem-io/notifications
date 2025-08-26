@@ -9,7 +9,7 @@
 export const normalizeCalloutType = (
   framingType: string | null | undefined
 ): string => {
-  return !framingType || framingType === 'none'.toLowerCase()
+  return !framingType || framingType.toLowerCase() === 'none'
     ? 'Post'
     : framingType;
 };

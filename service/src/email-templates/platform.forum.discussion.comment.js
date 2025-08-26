@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'platform-forum-discussion-comment',
+  name: 'platform.forum.discussion.comment',
   title: 'New comment on your discussion {{discussion.displayName}}',
   version: 1,
   channels: {

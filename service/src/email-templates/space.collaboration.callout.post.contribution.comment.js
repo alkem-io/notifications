@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'space-collaboration-callout-post-contribution-comment',
+  name: 'space.collaboration.callout.post.contribution.comment',
   title:
     '{{space.displayName}} - New comment received on your Post: "{{post.displayName}}"',
   version: 1,

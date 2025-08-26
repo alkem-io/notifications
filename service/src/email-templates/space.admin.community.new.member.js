@@ -2,7 +2,7 @@
 const templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'space-admin-community-new-member',
+  name: 'space.admin.community.new.member',
   title: '[{{member.type}}] {{member.name}} joined {{space.displayName}}',
   version: 1,
   channels: {
