@@ -10,8 +10,9 @@ export interface CollaborationPostCreatedEmailPayload
     displayName: string;
     url: string;
   };
-  post: {
+  contribution: {
     displayName: string;
     url: string;
+    type: string;
   };
 }

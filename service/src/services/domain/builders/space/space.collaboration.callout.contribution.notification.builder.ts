@@ -36,9 +36,10 @@ export class SpaceCollaborationCalloutContributionNotificationBuilder
         displayName: eventPayload.callout.framing.displayName,
         url: eventPayload.callout.framing.url,
       },
-      post: {
+      contribution: {
         displayName: contribution.displayName,
         url: contribution.url,
+        type: contribution.type,
       },
       recipient: {
         firstName: recipient.firstName,
