@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'platform-global-role-change-admin',
+  name: 'platform-admin-user-global-role-change',
   title: '[Alkemio] Global role change: {{user.name}} - {{type}} - {{role}}',
   version: 1,
   channels: {

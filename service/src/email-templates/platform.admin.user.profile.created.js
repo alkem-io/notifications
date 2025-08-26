@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'platform-user-registration-admin',
+  name: 'platform-admin-user-profile-created',
   title: '[Alkemio] New user registration: {{registrant.name}}',
   version: 1,
   channels: {

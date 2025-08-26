@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'community-user-application-admin',
+  name: 'space-admin-community-user-application-received',
   title: '[{{space.displayName}}] Application from {{applicant.firstName}}',
   version: 1,
   channels: {

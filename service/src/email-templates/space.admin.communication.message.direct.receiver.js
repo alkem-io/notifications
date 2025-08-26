@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'space.communication.message.direct.recipient',
+  name: 'space.admin.communication.message.direct.recipient',
   title: '{{messageSender.displayName}} sent a message to your community!',
   version: 1,
   channels: {

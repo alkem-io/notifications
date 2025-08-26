@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'platform-user-removed-admin',
+  name: 'platform-admin-user-profile-removed',
   title: '[Alkemio] User deleted: {{registrant.name}}',
   version: 1,
   channels: {

@@ -2,7 +2,8 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'comment-reply',
+  name: 'user-
+  comment-reply',
   title: 'You have a new reply on your comment',
   version: 1,
   channels: {

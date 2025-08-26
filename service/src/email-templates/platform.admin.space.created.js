@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'platform-space-created',
+  name: 'platform-admin-space-created',
   title: '',
   version: 1,
   channels: {
