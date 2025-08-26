@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { LoggerService } from '@nestjs/common';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
@@ -18,7 +19,6 @@ export class NotificationTemplateBuilder {
     templatePayload: BaseEmailPayload
   ): Promise<NotificationTemplateType | undefined> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const getRenderer = require('notifme-template');
       const render = getRenderer(renderString, './src/email-templates');
       const result = await render(template, templatePayload, 'en-US');
