@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'collaboration-whiteboard-created-member',
+  name: 'space-collaboration-callout-comment',
   title:
     '{{space.displayName}} - New Whiteboard created by {{createdBy.firstName}}, have a look!',
   version: 1,

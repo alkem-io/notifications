@@ -294,7 +294,7 @@ export class AppController {
   }
 
   @EventPattern(NotificationEvent.OrganizationAdminMessage)
-  async sendCommunicationOrganizationMessageNotifications(
+  async sendOrganizationMessageRecipientNotifications(
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
@@ -305,6 +305,21 @@ export class AppController {
         eventPayload
       ),
       NotificationEvent.OrganizationAdminMessage
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationMessageSender)
+  async sendOrganizationMessageSenderNotifications(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendOrganizationMessageSenderNotification(
+        eventPayload
+      ),
+      NotificationEvent.OrganizationMessageSender
     );
   }
 
@@ -330,6 +345,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
+    console.log('here');
     this.processSent(
       eventPayload,
       context,
@@ -390,17 +406,35 @@ export class AppController {
     NotificationEvent.SpaceCollaborationCalloutContribution,
     Transport.RMQ
   )
-  async sendPostCreatedNotifications(
+  async sendSpaceCollaborationCalloutContributionNotifications(
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCollaborationCalloutContributionCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutContributionNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCollaborationCalloutContribution
+    );
+  }
+
+  @EventPattern(
+    NotificationEvent.SpaceAdminCollaborationCalloutContribution,
+    Transport.RMQ
+  )
+  async sendSpaceAdminCollaborationCalloutContributionNotifications(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendSpaceAdminCollaborationCalloutContributionNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceAdminCollaborationCalloutContribution
     );
   }
 

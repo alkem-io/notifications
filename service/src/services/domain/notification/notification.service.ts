@@ -63,6 +63,7 @@ import { INotificationBuilder } from '../builders/notification.builder.interface
 import { PlatformAdminUserProfileCreatedNotificationBuilder } from '../builders/platform/platform.admin.user.profile.created.notification.builder';
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
 import { EmailTemplate } from '@src/common/enums/email.template';
+import { SpaceAdminCollaborationCalloutContributionNotificationBuilder } from '../builders/space/space.admin.collaboration.callout.contribution.notification.builder';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -74,6 +75,7 @@ export class NotificationService {
     private spaceCommunityPlatformInvitationCreatedNotificationBuilder: SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     private spaceCommunicationUpdateNotificationBuilder: SpaceCommunicationUpdateNotificationBuilder,
     private spaceCommunicationMessageDirectSenderNotificationBuilder: SpaceCommunicationMessageDirectSenderNotificationBuilder,
+    private spaceAdminCollaborationCalloutContributionNotificationBuilder: SpaceAdminCollaborationCalloutContributionNotificationBuilder,
     private spaceAdminCommunicationMessageDirectNotificationBuilder: SpaceAdminCommunicationMessageDirectNotificationBuilder,
     private spaceAdminCommunityApplicationReceivedNotificationBuilder: SpaceAdminCommunityApplicationReceivedNotificationBuilder,
     private spaceAdminCommunityNewMemberNotificationBuilder: SpaceAdminCommunityNewMemberNotificationBuilder,
@@ -288,6 +290,16 @@ export class NotificationService {
     );
   }
 
+  async sendOrganizationMessageSenderNotification(
+    payload: NotificationEventPayloadOrganizationMessageDirect
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.organizationMessageSenderNotificationBuilder,
+      EmailTemplate.ORGANIZATION_MESSAGE_SENDER
+    );
+  }
+
   async sendOrganizationMentionNotification(
     payload: NotificationEventPayloadOrganizationMessageRoom
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
@@ -318,13 +330,23 @@ export class NotificationService {
     );
   }
 
-  async sendSpaceCollaborationCalloutContributionCreatedNotification(
+  async sendSpaceCollaborationCalloutContributionNotification(
     payload: NotificationEventPayloadSpaceCollaborationCallout
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     return this.processNotificationEvent(
       payload,
       this.spaceCollaborationCalloutContributionNotificationBuilder,
       EmailTemplate.SPACE_COLLABORATION_CALLOUT_CONTRIBUTION
+    );
+  }
+
+  async sendSpaceAdminCollaborationCalloutContributionNotification(
+    payload: NotificationEventPayloadSpaceCollaborationCallout
+  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    return this.processNotificationEvent(
+      payload,
+      this.spaceAdminCollaborationCalloutContributionNotificationBuilder,
+      EmailTemplate.SPACE_ADMIN_COLLABORATION_CALLOUT_CONTRIBUTION
     );
   }
 

@@ -40,6 +40,7 @@ import { PlatformAdminUserProfileCreatedNotificationBuilder } from './services/d
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from './services/domain/builders/space/space.communication.message.direct.sender.notification.builder';
 import { NotifmeModule } from './services/external/notifme/notifme.module';
 import { NotificationTemplateBuilder } from './services/external/notifme/notification.templates.builder';
+import { SpaceAdminCollaborationCalloutContributionNotificationBuilder } from './services/domain/builders/space/space.admin.collaboration.callout.contribution.notification.builder';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { NotificationTemplateBuilder } from './services/external/notifme/notific
     UserSpaceCommunityInvitationReceivedNotificationBuilder,
     SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
     SpaceAdminCommunicationMessageDirectNotificationBuilder,
+    SpaceAdminCollaborationCalloutContributionNotificationBuilder,
     SpaceCommunicationMessageDirectSenderNotificationBuilder,
     SpaceCommunicationUpdateNotificationBuilder,
     UserSpaceCommunityJoinedNotificationBuilder,

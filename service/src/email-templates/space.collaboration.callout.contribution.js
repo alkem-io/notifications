@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'collaboration-post-created-member',
+  name: 'space-collaboration-callout-contribution',
   title:
     '{{space.displayName}} - New Post created by {{createdBy.firstName}}, have a look!',
   version: 1,
