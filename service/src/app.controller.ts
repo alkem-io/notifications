@@ -33,6 +33,7 @@ import {
 import { NotificationService } from './services/domain/notification/notification.service';
 import { LogContext } from './common/enums/logging.context';
 import { NotificationEvent } from './generated/alkemio-schema';
+import { EmailTemplate } from './common/enums/email.template';
 
 @Controller()
 export class AppController {
@@ -47,12 +48,14 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
+    const notifications = this.notificationService.processNotificationEvent(
+      eventPayload,
+      EmailTemplate.USER_SPACE_COMMUNITY_APPLICATION_SUBMITTED
+    );
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendUserSpaceCommunityApplicationNotifications(
-        eventPayload
-      ),
+      notifications,
       NotificationEvent.UserSpaceCommunityApplication
     );
   }

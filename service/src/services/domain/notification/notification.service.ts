@@ -68,6 +68,7 @@ import { User } from '@src/core/models';
 import { BaseEmailPayload } from '@src/common/email-template-payload/base.email.payload';
 import { NotificationEvent } from '@src/generated/alkemio-schema';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
+import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -110,24 +111,22 @@ export class NotificationService {
     private notificationEmailPayloadBuilderService: NotificationEmailPayloadBuilderService
   ) {}
 
-  private async processNotificationEvent(
+  public async processNotificationEvent(
     payload: BaseEventPayload,
-    builder: INotificationBuilder,
     emailTemplate: EmailTemplate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const emailResults = await this.buildAndSendEmailNotifications(
       payload,
-      builder,
       emailTemplate
     );
 
     return [...emailResults];
   }
 
-  async createEmailPayloadForEvent(
+  public createEmailPayloadForEvent(
     eventPayload: BaseEventPayload,
     recipient: User
-  ): Promise<BaseEmailPayload | undefined> {
+  ): BaseEmailPayload {
     // Each eventPayload has the event type
     switch (eventPayload.eventType) {
       case NotificationEvent.UserSpaceCommunityApplication:
@@ -275,9 +274,12 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadPlatformSpaceCreated,
           recipient
         );
-      // Add more cases for different event types as needed
+      default:
+        throw new EventPayloadNotProvidedException(
+          'Event payload not provided',
+          LogContext.NOTIFICATION_BUILDER
+        );
     }
-    return undefined;
   }
 
   async sendUserSpaceCommunityApplicationNotifications(
@@ -573,7 +575,6 @@ export class NotificationService {
 
   private async buildAndSendEmailNotifications(
     payload: BaseEventPayload,
-    builder: INotificationBuilder,
     emailTemplate: EmailTemplate
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const notificationTemplatesToSend: Promise<
@@ -589,14 +590,14 @@ export class NotificationService {
     }
 
     for (const recipient of payload.recipients) {
-      const templatePayload = builder.createEmailTemplatePayload(
+      const templatePayload2 = this.createEmailPayloadForEvent(
         payload,
         recipient
       );
       const emailNotificationTemplate =
         this.notificationTemplateBuilder.buildTemplate(
           emailTemplate,
-          templatePayload
+          templatePayload2
         );
 
       notificationTemplatesToSend.push(emailNotificationTemplate);

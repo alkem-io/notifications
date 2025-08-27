@@ -20,3 +20,5 @@ export * from './platform.user.registered.email.payload';
 export * from './platform.forum.discussion.comment.email.payload';
 export * from './platform.forum.discussion.created.email.payload';
 export * from './platform.space.created.email.payload';
+export * from './platform.global.role.change.email.payload';
+export * from './platform.user.removed.email.payload';
