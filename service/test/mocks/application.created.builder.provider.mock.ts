@@ -1,12 +1,12 @@
 import { ValueProvider } from '@nestjs/common';
+import { SpaceAdminCommunityApplicationReceivedNotificationBuilder } from '@src/services/domain/builders/space/space.admin.community.application.received.notification.builder';
 import { PublicPart } from '@test/utils';
-import { CommunityApplicationCreatedNotificationBuilder } from '@src/services';
 
 export const MockApplicationCreatedBuilderProvider: ValueProvider<
-  PublicPart<CommunityApplicationCreatedNotificationBuilder>
+  PublicPart<SpaceAdminCommunityApplicationReceivedNotificationBuilder>
 > = {
-  provide: CommunityApplicationCreatedNotificationBuilder,
+  provide: SpaceAdminCommunityApplicationReceivedNotificationBuilder,
   useValue: {
-    build: jest.fn(),
+    createEmailTemplatePayload: jest.fn(),
   },
 };

@@ -18,6 +18,9 @@ module.exports = {
   },
   coverageDirectory: '<rootDir>/coverage',
   testEnvironment: 'node',
+  transformIgnorePatterns: [
+    'node_modules/(?!(graphql-request)/)'
+  ],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.service.ts',
     '<rootDir>/src/**/utils.ts',

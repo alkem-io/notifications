@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 declare module 'notifme-sdk' {
   export type ChannelType = 'email' | 'sms' | 'push' | 'webpush' | 'slack';
   export type ProviderStrategyType = 'fallback' | 'roundrobin' | 'no-fallback';
@@ -41,7 +40,7 @@ declare module 'notifme-sdk' {
       };
     };
     errors?: { [channel in ChannelType]: Error };
-    info?: Object;
+    info?: object;
   };
 
   export type Channel<T> = {
@@ -103,7 +102,7 @@ declare module 'notifme-sdk' {
         authMethod?: string; // Defaults to 'PLAIN'
         // TLS options (Doc: https://nodemailer.com/smtp/#tls-options)
         secure?: boolean;
-        tls?: Object; // Doc: https://nodejs.org/api/tls.html#tls_class_tls_tlssocket
+        tls?: object; // Doc: https://nodejs.org/api/tls.html#tls_class_tls_tlssocket
         ignoreTLS?: boolean;
         requireTLS?: boolean;
         // Connection options (Doc: https://nodemailer.com/smtp/#connection-options)
@@ -327,7 +326,7 @@ declare module 'notifme-sdk' {
     registrationToken: string;
     title: string;
     body: string;
-    custom?: Object;
+    custom?: object;
     priority?: 'high' | 'normal'; // gcm, apn. Will be translated to 10 and 5 for apn. Defaults to 'high'
     collapseKey?: string; // gcm for android, used as collapseId in apn
     contentAvailable?: boolean; // gcm for android
@@ -346,7 +345,7 @@ declare module 'notifme-sdk' {
     encoding?: string; // apn
     badge?: number; // gcm for ios, apn
     sound?: string; // gcm, apn
-    alert?: string | Object; // apn, will take precedence over title and body
+    alert?: string | object; // apn, will take precedence over title and body
     launchImage?: string; // apn and gcm for ios
     action?: string; // apn and gcm for ios
     topic?: string; // apn and gcm for ios

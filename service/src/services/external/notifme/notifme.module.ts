@@ -16,7 +16,6 @@ import { notifmeSdkFactory } from './notifme.sdk.factory';
     {
       provide: TEMPLATE_PROVIDER,
       useClass: NotificationTemplateBuilder,
-      inject: [WINSTON_MODULE_NEST_PROVIDER],
     },
   ],
   exports: [NOTIFICATIONS_PROVIDER, TEMPLATE_PROVIDER],

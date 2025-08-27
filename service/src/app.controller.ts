@@ -9,89 +9,91 @@ import {
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
 import { NotificationStatus } from 'notifme-sdk';
-import { IFeatureFlagProvider } from '@core/contracts';
 import {
-  NotificationEventType,
-  PlatformUserRemovedEventPayload,
-  CommunityApplicationCreatedEventPayload,
-  CollaborationPostCommentEventPayload,
-  CollaborationPostCreatedEventPayload,
-  PlatformForumDiscussionCreatedEventPayload,
-  CommunicationUserMessageEventPayload,
-  CommunicationOrganizationMessageEventPayload,
-  CommunicationCommunityLeadsMessageEventPayload,
-  CommunicationUserMentionEventPayload,
-  CommunicationOrganizationMentionEventPayload,
-  CommunicationUpdateEventPayload,
-  CommunityNewMemberPayload,
-  PlatformGlobalRoleChangeEventPayload,
-  PlatformUserRegistrationEventPayload,
-  CollaborationCalloutPublishedEventPayload,
+  NotificationEventPayloadPlatformUserRemoved,
+  NotificationEventPayloadPlatformForumDiscussion,
+  NotificationEventPayloadPlatformGlobalRole,
+  NotificationEventPayloadPlatformUserRegistration,
+  NotificationEventPayloadPlatformSpaceCreated,
   BaseEventPayload,
-  CollaborationWhiteboardCreatedEventPayload,
-  CollaborationDiscussionCommentEventPayload,
-  PlatformForumDiscussionCommentEventPayload,
-  CommunityInvitationCreatedEventPayload,
-  CommentReplyEventPayload,
-  CommunityInvitationVirtualContributorCreatedEventPayload,
-  CommunityPlatformInvitationCreatedEventPayload,
-  SpaceCreatedEventPayload,
+  NotificationEventPayloadOrganizationMessageDirect,
+  NotificationEventPayloadOrganizationMessageRoom,
+  NotificationEventPayloadUserMessageDirect,
+  NotificationEventPayloadSpaceCommunityInvitation,
+  NotificationEventPayloadSpaceCommunicationMessageDirect,
+  NotificationEventPayloadSpaceCommunicationUpdate,
+  NotificationEventPayloadSpaceCollaborationCallout,
+  NotificationEventPayloadSpaceCommunityApplication,
+  NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+  NotificationEventPayloadSpaceCommunityInvitationPlatform,
+  NotificationEventPayloadSpaceCommunityContributor,
+  NotificationEventPayloadUserMessageRoomReply,
+  NotificationEventPayloadUserMessageRoom,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/domain/notification/notification.service';
-import { ALKEMIO_CLIENT_ADAPTER, LogContext } from './common/enums';
-import {
-  CommunityNewContributorEventSubject,
-  ContributorMentionedEventSubject,
-  CalloutPublishedEventSubject,
-} from './services/event-subjects';
+import { LogContext } from './common/enums/logging.context';
+import { NotificationEvent } from './generated/alkemio-schema';
 
 @Controller()
 export class AppController {
   constructor(
     private notificationService: NotificationService,
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
-    private readonly logger: LoggerService,
-    @Inject(ALKEMIO_CLIENT_ADAPTER)
-    private readonly featureFlagProvider: IFeatureFlagProvider,
-    private calloutPublishedEventSubject: CalloutPublishedEventSubject,
-    private contributorMentionedEventSubject: ContributorMentionedEventSubject,
-    private newContributorEventSubject: CommunityNewContributorEventSubject
+    private readonly logger: LoggerService
   ) {}
 
-  @EventPattern(NotificationEventType.COMMUNITY_APPLICATION_CREATED)
-  async sendApplicationNotification(
-    // todo is auto validation possible
-    @Payload() eventPayload: CommunityApplicationCreatedEventPayload,
+  @EventPattern(NotificationEvent.UserSpaceCommunityApplication)
+  async sendSpaceCommunityApplicationRecipientNotification(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendApplicationCreatedNotifications(
+      this.notificationService.sendUserSpaceCommunityApplicationNotifications(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_APPLICATION_CREATED
+      NotificationEvent.UserSpaceCommunityApplication
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_INVITATION_CREATED)
-  async sendInvitationNotification(
-    // todo is auto validation possible
-    @Payload() eventPayload: CommunityInvitationCreatedEventPayload,
+  @EventPattern(NotificationEvent.SpaceAdminCommunityApplication)
+  async sendSpaceCommunityApplicationAdminNotification(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendInvitationCreatedNotifications(eventPayload),
-      NotificationEventType.COMMUNITY_INVITATION_CREATED
+      this.notificationService.sendSpaceAdminCommunityApplicationReceivedNotifications(
+        eventPayload
+      ),
+      NotificationEvent.SpaceAdminCommunityApplication
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_INVITATION_CREATED_VC)
-  async sendVirtualContributorInvitationCreatedNotifications(
+  @EventPattern(NotificationEvent.UserSpaceCommunityInvitation)
+  async sendSpaceCommunityInvitationNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendUserSpaceCommunityInvitationNotifications(
+        eventPayload
+      ),
+      NotificationEvent.UserSpaceCommunityInvitation
+    );
+  }
+
+  @EventPattern(
+    NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation
+  )
+  async sendSpaceCommunityVirtualContributorInvitationCreatedNotifications(
     @Payload()
-    eventPayload: CommunityInvitationVirtualContributorCreatedEventPayload,
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -100,106 +102,142 @@ export class AppController {
       this.notificationService.sendVirtualContributorInvitationCreatedNotifications(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_INVITATION_CREATED_VC
+      NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_PLATFORM_INVITATION_CREATED)
+  @EventPattern(NotificationEvent.SpaceCommunityInvitationUserPlatform)
   async sendCommunityPlatformInvitationNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: CommunityPlatformInvitationCreatedEventPayload,
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunityPlatformInvitationCreatedNotifications(
+      this.notificationService.sendCommunityInvitationPlatformNotifications(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_PLATFORM_INVITATION_CREATED
+      NotificationEvent.SpaceCommunityInvitationUserPlatform
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNITY_NEW_MEMBER)
+  @EventPattern(NotificationEvent.UserSpaceCommunityJoined)
   async sendCommunityNewMemberNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: CommunityNewMemberPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunityNewMemberNotifications(
+      this.notificationService.sendUserSpaceCommunityJoinedNotifications(
         eventPayload
       ),
-      NotificationEventType.COMMUNITY_NEW_MEMBER
+      NotificationEvent.UserSpaceCommunityJoined
     );
-
-    this.newContributorEventSubject.notifyAll(eventPayload);
   }
 
-  @EventPattern(NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE)
-  async sendGlobalRoleChangeNotification(
+  @EventPattern(NotificationEvent.SpaceAdminCommunityNewMember)
+  async sendCommunityNewMemberAdminNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformGlobalRoleChangeEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendGlobalRoleChangeNotification(eventPayload),
-      NotificationEventType.PLATFORM_GLOBAL_ROLE_CHANGE
+      this.notificationService.sendCommunityNewMemberAdminNotifications(
+        eventPayload
+      ),
+      NotificationEvent.SpaceAdminCommunityNewMember
     );
   }
 
-  @EventPattern(NotificationEventType.PLATFORM_USER_REGISTERED)
-  async sendUserRegisteredNotification(
+  @EventPattern(NotificationEvent.PlatformAdminGlobalRoleChanged)
+  async sendPlatformGlobalRoleChangeNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformUserRegistrationEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformGlobalRole,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendUserRegisteredNotification(eventPayload),
-      NotificationEventType.PLATFORM_USER_REGISTERED
+      this.notificationService.sendPlatformGlobalRoleChangeNotification(
+        eventPayload
+      ),
+      NotificationEvent.PlatformAdminGlobalRoleChanged
     );
   }
 
-  @EventPattern(NotificationEventType.PLATFORM_USER_REMOVED)
+  @EventPattern(NotificationEvent.UserSignUpWelcome)
+  async sendUserSignUpWelcomeNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendUserSignUpWelcomeNotification(eventPayload),
+      NotificationEvent.UserSignUpWelcome
+    );
+  }
+
+  @EventPattern(NotificationEvent.PlatformAdminUserProfileCreated)
+  async sendPlatformUserRegisteredAdminNotification(
+    // todo is auto validation possible
+    @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendPlatformAdminUserProfileCreatedNotification(
+        eventPayload
+      ),
+      NotificationEvent.PlatformAdminUserProfileCreated
+    );
+  }
+
+  @EventPattern(NotificationEvent.PlatformAdminUserProfileRemoved)
   async sendUserRemovedNotification(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformUserRemovedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformUserRemoved,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendUserRemovedNotification(eventPayload),
-      NotificationEventType.PLATFORM_USER_REMOVED
-    );
-  }
-
-  @EventPattern(NotificationEventType.COMMUNICATION_UPDATE_SENT)
-  async sendCommunicationUpdatedNotifications(
-    // todo is auto validation possible
-    @Payload() eventPayload: CommunicationUpdateEventPayload,
-    @Ctx() context: RmqContext
-  ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendCommunicationUpdatedNotification(
+      this.notificationService.sendPlatformUserRemovedNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_UPDATE_SENT
+      NotificationEvent.PlatformAdminUserProfileRemoved
     );
   }
 
-  @EventPattern(NotificationEventType.PLATFORM_FORUM_DISCUSSION_CREATED)
+  @EventPattern(NotificationEvent.SpaceCommunicationUpdate)
+  async sendSpaceCommunicationUpdateNotifications(
+    // todo is auto validation possible
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendSpaceCommunicationUpdateNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCommunicationUpdate
+    );
+  }
+
+  @EventPattern(NotificationEvent.PlatformForumDiscussionCreated)
   async sendPlatformForumDiscussionCreatedNotifications(
     // todo is auto validation possible
-    @Payload() eventPayload: PlatformForumDiscussionCreatedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -208,13 +246,13 @@ export class AppController {
       this.notificationService.sendPlatformForumDiscussionCreatedNotification(
         eventPayload
       ),
-      NotificationEventType.PLATFORM_FORUM_DISCUSSION_CREATED
+      NotificationEvent.PlatformForumDiscussionCreated
     );
   }
 
-  @EventPattern(NotificationEventType.PLATFORM_FORUM_DISCUSSION_COMMENT)
+  @EventPattern(NotificationEvent.PlatformForumDiscussionComment)
   async sendPlatformForumDiscussionCommentNotifications(
-    @Payload() eventPayload: PlatformForumDiscussionCommentEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
@@ -223,191 +261,244 @@ export class AppController {
       this.notificationService.sendPlatformForumDiscussionCommentNotification(
         eventPayload
       ),
-      NotificationEventType.PLATFORM_FORUM_DISCUSSION_COMMENT
+      NotificationEvent.PlatformForumDiscussionComment
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_USER_MESSAGE)
-  async sendCommunicationUserMessageNotifications(
-    @Payload() eventPayload: CommunicationUserMessageEventPayload,
+  @EventPattern(NotificationEvent.UserMessage)
+  async sendUserMessageNotifications(
+    @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationUserMessageNotification(
+      this.notificationService.sendUserMessageRecipientNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_USER_MESSAGE
+      NotificationEvent.UserMessage
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE)
-  async sendCommunicationOrganizationMessageNotifications(
-    @Payload() eventPayload: CommunicationOrganizationMessageEventPayload,
+  @EventPattern(NotificationEvent.UserMessageSender)
+  async sendUserMessageSenderNotifications(
+    @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationOrganizationMessageNotification(
-        eventPayload
-      ),
-      NotificationEventType.COMMUNICATION_ORGANIZATION_MESSAGE
+      this.notificationService.sendUserMessageSenderNotification(eventPayload),
+      NotificationEvent.UserMessageSender
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE)
-  async sendCommunicationCommunityLeadsMessageNotifications(
-    @Payload() eventPayload: CommunicationCommunityLeadsMessageEventPayload,
+  @EventPattern(NotificationEvent.OrganizationAdminMessage)
+  async sendOrganizationMessageRecipientNotifications(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationCommunityLeadsMessageNotification(
+      this.notificationService.sendOrganizationMessageRecipientNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_COMMUNITY_MESSAGE
+      NotificationEvent.OrganizationAdminMessage
     );
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_USER_MENTION)
-  async sendCommunicationUserMentionNotifications(
-    @Payload() eventPayload: CommunicationUserMentionEventPayload,
+  @EventPattern(NotificationEvent.OrganizationMessageSender)
+  async sendOrganizationMessageSenderNotifications(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationUserMentionNotification(
+      this.notificationService.sendOrganizationMessageSenderNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_USER_MENTION
+      NotificationEvent.OrganizationMessageSender
     );
-
-    this.contributorMentionedEventSubject.notifyAll(eventPayload);
   }
 
-  @EventPattern(NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION)
-  async sendCommunicationOrganizationMentionNotifications(
-    @Payload() eventPayload: CommunicationOrganizationMentionEventPayload,
+  @EventPattern(NotificationEvent.SpaceLeadCommunicationMessage)
+  async sendSpaceCommunicationMessageRecipientNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCommunicationOrganizationMentionNotification(
+      this.notificationService.sendSpaceCommunicationMessageRecipientNotification(
         eventPayload
       ),
-      NotificationEventType.COMMUNICATION_ORGANIZATION_MENTION
+      NotificationEvent.SpaceLeadCommunicationMessage
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceCommunicationMessageSender)
+  async sendSpaceCommunicationMessageSenderNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendSpaceCommunicationMessageSenderNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCommunicationMessageSender
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserMentioned)
+  async sendUserMentionNotifications(
+    @Payload() eventPayload: NotificationEventPayloadUserMessageRoom,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendUserMentionNotification(eventPayload),
+      NotificationEvent.UserMentioned
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAdminMentioned)
+  async sendOrganizationMentionNotifications(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationMessageRoom,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendOrganizationMentionNotification(
+        eventPayload
+      ),
+      NotificationEvent.OrganizationAdminMentioned
     );
   }
 
   @EventPattern(
-    NotificationEventType.COLLABORATION_WHITEBOARD_CREATED,
+    NotificationEvent.SpaceCollaborationCalloutComment,
     Transport.RMQ
   )
-  async sendWhiteboardCreatedNotifications(
-    @Payload() eventPayload: CollaborationWhiteboardCreatedEventPayload,
+  async sendSpaceCollaborationCalloutCommentNotifications(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendWhiteboardCreatedNotification(eventPayload),
-      NotificationEventType.COLLABORATION_WHITEBOARD_CREATED
+      this.notificationService.sendSpaceCollaborationCalloutCommentNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCollaborationCalloutComment
     );
   }
 
-  @EventPattern(NotificationEventType.COLLABORATION_POST_CREATED, Transport.RMQ)
-  async sendPostCreatedNotifications(
-    @Payload() eventPayload: CollaborationPostCreatedEventPayload,
+  @EventPattern(
+    NotificationEvent.SpaceCollaborationCalloutContribution,
+    Transport.RMQ
+  )
+  async sendSpaceCollaborationCalloutContributionNotifications(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPostCreatedNotification(eventPayload),
-      NotificationEventType.COLLABORATION_POST_CREATED
+      this.notificationService.sendSpaceCollaborationCalloutContributionNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceCollaborationCalloutContribution
     );
   }
 
-  @EventPattern(NotificationEventType.COLLABORATION_POST_COMMENT, Transport.RMQ)
+  @EventPattern(
+    NotificationEvent.SpaceAdminCollaborationCalloutContribution,
+    Transport.RMQ
+  )
+  async sendSpaceAdminCollaborationCalloutContributionNotifications(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendSpaceAdminCollaborationCalloutContributionNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceAdminCollaborationCalloutContribution
+    );
+  }
+
+  @EventPattern(
+    NotificationEvent.SpaceCollaborationCalloutPostContributionComment,
+    Transport.RMQ
+  )
   async sendPostCommentCreatedNotifications(
-    @Payload() eventPayload: CollaborationPostCommentEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPostCommentCreatedNotification(eventPayload),
-      NotificationEventType.COLLABORATION_POST_COMMENT
-    );
-  }
-
-  @EventPattern(
-    NotificationEventType.COLLABORATION_DISCUSSION_COMMENT,
-    Transport.RMQ
-  )
-  async sendDiscussionCommentCreatedNotifications(
-    @Payload() eventPayload: CollaborationDiscussionCommentEventPayload,
-    @Ctx() context: RmqContext
-  ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendDiscussionCommentCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutPostContributionCommentNotification(
         eventPayload
       ),
-      NotificationEventType.COLLABORATION_DISCUSSION_COMMENT
+      NotificationEvent.SpaceCollaborationCalloutPostContributionComment
     );
   }
 
   @EventPattern(
-    NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED,
+    NotificationEvent.SpaceCollaborationCalloutPublished,
     Transport.RMQ
   )
   async sendCalloutPublishedNotifications(
-    @Payload() eventPayload: CollaborationCalloutPublishedEventPayload,
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendCalloutPublishedNotification(eventPayload),
-      NotificationEventType.COLLABORATION_CALLOUT_PUBLISHED
-    );
-
-    this.calloutPublishedEventSubject.notifyAll(eventPayload);
-  }
-
-  @EventPattern(NotificationEventType.COMMENT_REPLY, Transport.RMQ)
-  async sendCommentReplyNotifications(
-    @Payload() eventPayload: CommentReplyEventPayload,
-    @Ctx() context: RmqContext
-  ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendCommentReplyNotification(eventPayload),
-      NotificationEventType.COMMENT_REPLY
-    );
-  }
-
-  @EventPattern(NotificationEventType.SPACE_CREATED)
-  async sendSpaceCreatedNotifications(
-    @Payload()
-    eventPayload: SpaceCreatedEventPayload,
-    @Ctx() context: RmqContext
-  ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.buildAndSendSpaceCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutPublishedNotification(
         eventPayload
       ),
-      NotificationEventType.SPACE_CREATED
+      NotificationEvent.SpaceCollaborationCalloutPublished
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserCommentReply, Transport.RMQ)
+  async sendUserCommentReplyNotifications(
+    @Payload() eventPayload: NotificationEventPayloadUserMessageRoomReply,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendUserCommentReplyNotification(eventPayload),
+      NotificationEvent.UserCommentReply
+    );
+  }
+
+  @EventPattern(NotificationEvent.PlatformAdminSpaceCreated)
+  async sendPlatformSpaceCreatedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadPlatformSpaceCreated,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendPlatformAdminSpaceCreatedNotification(
+        eventPayload
+      ),
+      NotificationEvent.PlatformAdminSpaceCreated
     );
   }
 
@@ -425,47 +516,53 @@ export class AppController {
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
 
-    if (!(await this.featureFlagProvider.areNotificationsEnabled())) {
-      channel.ack(originalMsg);
-      return;
-    }
-
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
-    sentNotifications
-      .then(x => {
-        const nacked = x.filter(
-          (y: { status: string }) => y.status === 'rejected'
-        ) as PromiseRejectedResult[];
+    try {
+      const x = await sentNotifications;
+      if (x.length === 0) {
+        this.logger.verbose?.(
+          `[${eventPayload.eventType}] No messages to send!`,
+          LogContext.NOTIFICATIONS
+        );
+        channel.ack(originalMsg);
+        return;
+      }
+      const nacked = x.filter(
+        (y: { status: string }) => y.status === 'rejected'
+      ) as PromiseRejectedResult[];
 
-        if (nacked.length === 0) {
-          this.logger.verbose?.(`All ${x.length} messages successfully sent!`);
-          // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
-          // so only the message supplied is acknowledged.
-          channel.ack(originalMsg);
+      if (nacked.length === 0) {
+        this.logger.verbose?.(
+          `[${eventPayload.eventType}] ${x.length} messages successfully sent!`,
+          LogContext.NOTIFICATIONS
+        );
+        // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
+        // so only the message supplied is acknowledged.
+        channel.ack(originalMsg);
+      } else {
+        if (nacked.length === x.length) {
+          this.logger.verbose?.('All messages failed to be sent!');
+          // if all messages failed to be sent, we reject the message but we make sure the message is
+          // not discarded so we provide 'true' to requeue parameter
+          channel.reject(originalMsg, true);
         } else {
-          if (nacked.length === x.length) {
-            this.logger.verbose?.('All messages failed to be sent!');
-            // if all messages failed to be sent, we reject the message but we make sure the message is
-            // not discarded so we provide 'true' to requeue parameter
-            channel.reject(originalMsg, true);
-          } else {
-            this.logger.verbose?.(
-              `${nacked.length} messages out of total ${x.length} messages failed to be sent!`
-            );
-            // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
-            // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
-            channel.nack(originalMsg, false, false);
-          }
-          // print all rejected notifications
-          nacked.forEach(x => this.logger?.warn(x.reason));
+          this.logger.verbose?.(
+            `${nacked.length} messages out of total ${x.length} messages failed to be sent!`,
+            LogContext.NOTIFICATIONS
+          );
+          // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
+          // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
+          channel.nack(originalMsg, false, false);
         }
-      })
-      .catch(err => {
-        // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
-        // not discarded so we provide 'true' to requeue parameter
-        // channel.reject(originalMsg, true);
-        channel.nack(originalMsg, false, false);
-        this.logger.error(err);
-      });
+        // print all rejected notifications
+        nacked.forEach(x => this.logger?.warn(x.reason));
+      }
+    } catch (err) {
+      // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
+      // not discarded so we provide 'true' to requeue parameter
+      // channel.reject(originalMsg, true);
+      channel.nack(originalMsg, false, false);
+      this.logger.error(err);
+    }
   }
 }
