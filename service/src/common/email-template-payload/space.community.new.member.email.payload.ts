@@ -1,7 +1,6 @@
-import { BaseJourneyEmailPayload } from './base.journey.email.payload';
+import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
-export interface CommunityNewMemberEmailPayload
-  extends BaseJourneyEmailPayload {
+export interface CommunityNewMemberEmailPayload extends BaseSpaceEmailPayload {
   member: {
     name: string;
     profile: string;

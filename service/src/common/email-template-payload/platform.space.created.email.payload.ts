@@ -1,6 +1,6 @@
-import { BaseJourneyEmailPayload } from './base.journey.email.payload';
+import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
-export interface SpaceCreatedEmailPayload extends BaseJourneyEmailPayload {
+export interface SpaceCreatedEmailPayload extends BaseSpaceEmailPayload {
   dateCreated: string;
   sender: {
     name: string;

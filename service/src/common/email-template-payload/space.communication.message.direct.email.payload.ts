@@ -1,7 +1,7 @@
-import { BaseJourneyEmailPayload } from './base.journey.email.payload';
+import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
 export interface SpaceCommunicationMessageDirectEmailPayload
-  extends BaseJourneyEmailPayload {
+  extends BaseSpaceEmailPayload {
   messageSender: {
     displayName: string;
     firstName: string;

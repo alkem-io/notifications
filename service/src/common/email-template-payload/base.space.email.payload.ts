@@ -1,6 +1,6 @@
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface BaseJourneyEmailPayload extends BaseEmailPayload {
+export interface BaseSpaceEmailPayload extends BaseEmailPayload {
   space: {
     displayName: string;
     url: string;

@@ -1,7 +1,7 @@
-import { BaseJourneyEmailPayload } from './base.journey.email.payload';
+import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
 export interface CollaborationPostCreatedEmailPayload
-  extends BaseJourneyEmailPayload {
+  extends BaseSpaceEmailPayload {
   createdBy: {
     firstName: string;
     email: string;

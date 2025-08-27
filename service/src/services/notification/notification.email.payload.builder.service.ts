@@ -27,6 +27,8 @@ import {
   CommunityInvitationVirtualContributorCreatedEmailPayload,
   PlatformGlobalRoleChangeEmailPayload,
   PlatformUserRemovedEmailPayload,
+  BaseEmailPayload,
+  BaseSpaceEmailPayload,
 } from '@common/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -47,6 +49,8 @@ import {
   NotificationEventPayloadPlatformSpaceCreated,
   NotificationEventPayloadSpaceCommunityInvitationPlatform,
   NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+  BaseEventPayload,
+  NotificationEventPayloadSpace,
 } from '@alkemio/notifications-lib';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
@@ -67,12 +71,8 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     recipient: User
   ): CommunityApplicationCreatedEmailPayload {
-    const isLevel0Space = eventPayload.space.level === '0';
-    const spaceType = isLevel0Space ? 'space' : 'subspace';
-
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       applicant: {
         firstName: eventPayload.triggeredBy.firstName,
         name: eventPayload.triggeredBy.profile.displayName,
@@ -80,20 +80,6 @@ export class NotificationEmailPayloadBuilderService {
         profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-        type: spaceType,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
 
@@ -101,12 +87,8 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     recipient: User
   ): CommunityApplicationCreatedEmailPayload {
-    const isLevel0Space = eventPayload.space.level === '0';
-    const spaceType = isLevel0Space ? 'space' : 'subspace';
-
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       applicant: {
         firstName: eventPayload.triggeredBy.firstName,
         name: eventPayload.triggeredBy.profile.displayName,
@@ -114,20 +96,6 @@ export class NotificationEmailPayloadBuilderService {
         profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-        type: spaceType,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
 
@@ -135,13 +103,12 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
     recipient: User
   ): CommunityInvitationCreatedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
       this.invitationsPath
     }`;
 
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       inviter: {
         firstName: eventPayload.triggeredBy.firstName,
         name: eventPayload.triggeredBy.profile.displayName,
@@ -149,20 +116,7 @@ export class NotificationEmailPayloadBuilderService {
         profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       welcomeMessage: eventPayload.welcomeMessage,
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
       invitationsURL,
     };
   }
@@ -171,10 +125,8 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
     recipient: User
   ): CommunityInvitationVirtualContributorCreatedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       inviter: {
         firstName: eventPayload.triggeredBy.firstName,
         name: eventPayload.triggeredBy.profile.displayName,
@@ -182,20 +134,7 @@ export class NotificationEmailPayloadBuilderService {
         profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       welcomeMessage: eventPayload.welcomeMessage,
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
       virtualContributor: {
         name: eventPayload.host.profile.displayName,
         url: eventPayload.host.profile.url,
@@ -207,14 +146,12 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,
     recipient: User
   ): SpaceCommunityInvitationPlatformCreatedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
       this.invitationsPath
     }`;
 
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       inviter: {
         firstName: eventPayload.triggeredBy.firstName,
         name: eventPayload.triggeredBy.profile.displayName,
@@ -222,21 +159,8 @@ export class NotificationEmailPayloadBuilderService {
         profile: eventPayload.triggeredBy.profile.url,
       },
       spaceAdminURL: eventPayload.space.adminURL,
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       emails: recipient.email,
       welcomeMessage: eventPayload.welcomeMessage,
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
       invitationsURL,
     };
   }
@@ -245,9 +169,6 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     recipient: User
   ): CommunityNewMemberEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const newMember = eventPayload.contributor;
     const typeName =
       newMember.type === RoleSetContributorType.Virtual
@@ -255,23 +176,11 @@ export class NotificationEmailPayloadBuilderService {
         : newMember.type;
 
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       member: {
         name: newMember.profile.displayName,
         profile: newMember.profile.url,
         type: typeName,
-      },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -280,9 +189,6 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     recipient: User
   ): CommunityNewMemberEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const newMember = eventPayload.contributor;
     const typeName =
       newMember.type === RoleSetContributorType.Virtual
@@ -290,23 +196,11 @@ export class NotificationEmailPayloadBuilderService {
         : newMember.type;
 
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       member: {
         name: newMember.profile.displayName,
         profile: newMember.profile.url,
         type: typeName,
-      },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -316,9 +210,8 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadPlatformGlobalRole,
     recipient: User
   ): PlatformGlobalRoleChangeEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       user: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
@@ -329,16 +222,8 @@ export class NotificationEmailPayloadBuilderService {
         displayName: eventPayload.triggeredBy.profile.displayName,
         url: eventPayload.triggeredBy.profile.url,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       role: eventPayload.role,
       type: eventPayload.type,
-      platform: {
-        url: eventPayload.platform.url,
-      },
       triggeredBy: eventPayload.triggeredBy.id,
     };
   }
@@ -347,22 +232,13 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadPlatformUserRegistration,
     recipient: User
   ): PlatformUserRegisteredEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       registrant: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
         email: eventPayload.user.email,
         profile: eventPayload.user.profile.url,
-      },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -371,22 +247,13 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadPlatformUserRegistration,
     recipient: User
   ): PlatformUserRegisteredEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       registrant: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
         email: eventPayload.user.email,
         profile: eventPayload.user.profile.url,
-      },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -395,20 +262,11 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadPlatformUserRemoved,
     recipient: User
   ): PlatformUserRemovedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       registrant: {
         displayName: eventPayload.user.displayName,
         email: eventPayload.user.email,
-      },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -416,8 +274,6 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     recipient: User
   ): PlatformForumDiscussionCommentEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     const comment = eventPayload.comment;
     if (!comment) {
       throw new EventPayloadNotProvidedException(
@@ -426,6 +282,7 @@ export class NotificationEmailPayloadBuilderService {
       );
     }
     const result: PlatformForumDiscussionCommentEmailPayload = {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       comment: {
         createdBy: comment.createdBy.id,
         message: comment.message,
@@ -435,24 +292,16 @@ export class NotificationEmailPayloadBuilderService {
         createdBy: eventPayload.discussion.createdBy.id,
         url: eventPayload.discussion.url,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
     return result;
   }
+
   public createEmailTemplatePayloadPlatformForumDiscussionCreated(
     eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     recipient: User
   ): PlatformForumDiscussionCreatedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       createdBy: {
         firstName: eventPayload.triggeredBy.firstName,
       },
@@ -460,39 +309,16 @@ export class NotificationEmailPayloadBuilderService {
         displayName: eventPayload.discussion.displayName,
         url: eventPayload.discussion.url,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
   public createEmailTemplatePayloadSpaceCommunicationUpdate(
     eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
     recipient: User
   ): CommunicationUpdateCreatedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       sender: {
         firstName: eventPayload.triggeredBy.firstName,
-      },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
       message: convertMarkdownToHtml(eventPayload.message ?? ''),
     };
@@ -501,24 +327,14 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadUserMessageDirect,
     recipient: User
   ): CommunicationUserMessageEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       messageSender: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       message: eventPayload.message,
-      platform: {
-        url: eventPayload.platform.url,
-      },
       messageReceiver: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
@@ -529,10 +345,8 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadUserMessageDirect,
     recipient: User
   ): CommunicationUserMessageEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       messageReceiver: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
@@ -542,41 +356,23 @@ export class NotificationEmailPayloadBuilderService {
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       message: eventPayload.message,
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
   public createEmailTemplatePayloadOrganizationMessage(
     eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     recipient: User
   ): CommunicationOrganizationMessageEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       messageSender: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       message: eventPayload.message,
       organization: {
         displayName: eventPayload.organization.profile.displayName,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -584,26 +380,16 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     recipient: User
   ): CommunicationOrganizationMessageEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       messageSender: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       message: eventPayload.message,
       organization: {
         displayName: eventPayload.organization.profile.displayName,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -611,25 +397,15 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadOrganizationMessageRoom,
     recipient: User
   ): CommunicationOrganizationMentionEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const htmlComment: string = convertMarkdownToText(eventPayload.comment);
 
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       commentSender: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         firstName: eventPayload.triggeredBy.firstName,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       comment: htmlComment,
-      platform: {
-        url: eventPayload.platform.url,
-      },
       mentionedOrganization: {
         displayName: eventPayload.organization.profile.displayName,
       },
@@ -643,67 +419,34 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     recipient: User
   ): SpaceCommunicationMessageDirectEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       messageSender: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       message: eventPayload.message,
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
   public createEmailTemplatePayloadSpaceCommunicationMessageSender(
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     recipient: User
   ): SpaceCommunicationMessageDirectEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       messageSender: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       message: eventPayload.message,
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
   public createEmailTemplatePayloadSpaceCollaborationCalloutContribution(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): CollaborationPostCreatedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const contribution = eventPayload.callout.contribution;
     if (!contribution) {
       throw new EventPayloadNotProvidedException(
@@ -712,6 +455,7 @@ export class NotificationEmailPayloadBuilderService {
       );
     }
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       createdBy: {
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
@@ -724,19 +468,6 @@ export class NotificationEmailPayloadBuilderService {
         displayName: contribution.displayName,
         url: contribution.url,
         type: contribution.type,
-      },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -744,9 +475,6 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): CollaborationPostCreatedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const contribution = eventPayload.callout.contribution;
     if (!contribution) {
       throw new EventPayloadNotProvidedException(
@@ -755,6 +483,7 @@ export class NotificationEmailPayloadBuilderService {
       );
     }
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       createdBy: {
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
@@ -768,29 +497,14 @@ export class NotificationEmailPayloadBuilderService {
         url: contribution.url,
         type: contribution.type,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
   public createEmailTemplatePayloadSpaceCollaborationCalloutComment(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): SpaceCollaborationCalloutCommentEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       createdBy: {
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
@@ -800,27 +514,12 @@ export class NotificationEmailPayloadBuilderService {
         url: eventPayload.callout.framing.url,
         type: normalizeCalloutType(eventPayload.callout.framing.type),
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
   public createEmailTemplatePayloadSpaceCollaborationCalloutPostContributionComment(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): CollaborationPostCommentEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
     const callout = eventPayload.callout;
 
     const contribution = eventPayload.callout.contribution;
@@ -831,6 +530,7 @@ export class NotificationEmailPayloadBuilderService {
       );
     }
     return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       callout: {
         displayName: callout.framing.displayName,
         url: callout.framing.url,
@@ -839,22 +539,9 @@ export class NotificationEmailPayloadBuilderService {
         displayName: contribution.displayName,
         url: contribution.url,
       },
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
       createdBy: {
         firstName: eventPayload.triggeredBy.firstName,
         email: eventPayload.triggeredBy.email,
-      },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
       },
     };
   }
@@ -862,17 +549,10 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
   ): CollaborationCalloutPublishedEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const framing = eventPayload.callout.framing;
 
     const result: CollaborationCalloutPublishedEmailPayload = {
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       publishedBy: {
         firstName: eventPayload.triggeredBy.profile.displayName,
       },
@@ -881,64 +561,37 @@ export class NotificationEmailPayloadBuilderService {
         url: framing.url,
         type: normalizeCalloutType(framing.type),
       },
-      space: {
-        displayName: eventPayload.space.profile.displayName,
-        level: eventPayload.space.level,
-        url: eventPayload.space.profile.url,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
     return result;
   }
+
   public createEmailTemplatePayloadUserCommentReply(
     eventPayload: NotificationEventPayloadUserMessageRoomReply,
     recipient: User
   ): CommentReplyEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       reply: {
         message: eventPayload.reply,
         createdBy: eventPayload.triggeredBy.profile.displayName,
         createdByUrl: eventPayload.triggeredBy.profile.url,
       },
       comment: eventPayload.comment,
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
-      platform: {
-        url: eventPayload.platform.url,
-      },
     };
   }
   public createEmailTemplatePayloadUserMention(
     eventPayload: NotificationEventPayloadUserMessageRoom,
     recipient: User
   ): CommunicationUserMentionEmailPayload {
-    const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
-
     const htmlComment: string = convertMarkdownToText(eventPayload.comment);
 
     return {
-      recipient: {
-        firstName: recipient.firstName,
-        email: recipient.email,
-        notificationPreferences: notificationPreferenceURL,
-      },
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       commentSender: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         firstName: eventPayload.triggeredBy.firstName,
       },
       comment: htmlComment,
-      platform: {
-        url: eventPayload.platform.url,
-      },
       commentOrigin: {
         url: eventPayload.commentOrigin.url,
         displayName: eventPayload.commentOrigin.displayName,
@@ -949,6 +602,22 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadPlatformSpaceCreated,
     recipient: User
   ): SpaceCreatedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      sender: eventPayload.sender,
+      dateCreated: new Date(eventPayload.created).toLocaleString('en-GB', {
+        timeZone: 'UTC',
+      }),
+    };
+  }
+
+  /**
+   * Creates the base email payload with common properties: recipient and platform
+   */
+  private createBaseEmailPayload(
+    eventPayload: BaseEventPayload,
+    recipient: User
+  ): BaseEmailPayload {
     const notificationPreferenceURL =
       createUserNotificationPreferencesURL(recipient);
 
@@ -958,17 +627,25 @@ export class NotificationEmailPayloadBuilderService {
         email: recipient.email,
         notificationPreferences: notificationPreferenceURL,
       },
+      platform: {
+        url: eventPayload.platform.url,
+      },
+    };
+  }
+
+  private createSpaceBaseEmailPayload(
+    eventPayload: NotificationEventPayloadSpace,
+    recipient: User
+  ): BaseSpaceEmailPayload {
+    const isLevel0Space = eventPayload.space.level === '0';
+    const spaceType = isLevel0Space ? 'space' : 'subspace';
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
       space: {
         displayName: eventPayload.space.profile.displayName,
         level: eventPayload.space.level,
         url: eventPayload.space.profile.url,
-      },
-      sender: eventPayload.sender,
-      dateCreated: new Date(eventPayload.created).toLocaleString('en-GB', {
-        timeZone: 'UTC',
-      }),
-      platform: {
-        url: eventPayload.platform.url,
+        type: spaceType,
       },
     };
   }

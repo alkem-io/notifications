@@ -1,7 +1,7 @@
-import { BaseJourneyEmailPayload } from './base.journey.email.payload';
+import { BaseSpaceEmailPayload } from './base.space.email.payload';
 // @ts-
 export interface CollaborationPostCommentEmailPayload
-  extends BaseJourneyEmailPayload {
+  extends BaseSpaceEmailPayload {
   callout: {
     displayName: string;
     url: string;

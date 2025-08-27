@@ -1,5 +1,5 @@
 export * from './base.email.payload';
-export * from './base.journey.email.payload';
+export * from './base.space.email.payload';
 export * from './space.community.application.created.email.payload';
 export * from './space.community.invitation.created.email.payload';
 export * from './space.community.invitation.virtual.contributor.created.email.payload';
