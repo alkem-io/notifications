@@ -1,5 +1,4 @@
 import { BaseSpaceEmailPayload } from './base.space.email.payload';
-// @ts-
 export interface CollaborationPostCommentEmailPayload
   extends BaseSpaceEmailPayload {
   callout: {

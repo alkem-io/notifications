@@ -552,7 +552,7 @@ export class NotificationEmailPayloadBuilderService {
     const result: CollaborationCalloutPublishedEmailPayload = {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       publishedBy: {
-        firstName: eventPayload.triggeredBy.profile.displayName,
+        firstName: eventPayload.triggeredBy.firstName,
       },
       callout: {
         displayName: framing.displayName,

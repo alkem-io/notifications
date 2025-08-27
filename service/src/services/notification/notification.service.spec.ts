@@ -1,5 +1,4 @@
 import { Test } from '@nestjs/testing';
-import { NOTIFICATIONS_PROVIDER } from '@common/enums';
 import * as spaceAdminsL1Data from '@test/data/space.admins.l1.json';
 import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
 import * as spaceAdminsL0Data from '@test/data/space.admins.l0.json';
@@ -16,6 +15,7 @@ import {
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
+import { NOTIFICATIONS_PROVIDER } from '@src/common/enums/providers';
 
 const testData = {
   ...spaceAdminsL0Data,
