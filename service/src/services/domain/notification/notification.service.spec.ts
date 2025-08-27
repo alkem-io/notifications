@@ -9,43 +9,43 @@ import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ConfigService } from '@nestjs/config';
 import {
-  PlatformUserRegisteredNotificationBuilder,
-  PlatformForumDiscussionCreatedNotificationBuilder,
-  SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+  UserSignUpWelcomeNotificationBuilder,
   UserMentionNotificationBuilder,
-  OrganizationMentionNotificationBuilder,
-  SpaceCommunityNewMemberNotificationBuilder,
-  SpaceCollaborationPostCreatedMemberNotificationBuilder,
-  SpaceCollaborationPostCommentNotificationBuilder,
-  SpaceCollaborationCalloutPublishedNotificationBuilder,
-  PlatformUserRemovedNotificationBuilder,
-  PlatformForumDiscussionCommentNotificationBuilder,
-  SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
-  UserCommentReplyNotificationBuilder,
-  SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
-  SpaceCommunicationUpdateMemberNotificationBuilder,
-  OrganizationMessageRecipientNotificationBuilder,
+  UserSpaceCommunityJoinedNotificationBuilder,
   UserMessageRecipientNotificationBuilder,
-  SpaceCommunityApplicationApplicantNotificationBuilder,
-  SpaceCommunityApplicationCreatedAdminNotificationBuilder,
-  SpaceCommunicationUpdateAdminNotificationBuilder,
-  SpaceCommunityNewMemberAdminNotificationBuilder,
-  OrganizationMessageSenderNotificationBuilder,
   UserMessageSenderNotificationBuilder,
+  UserSpaceCommunityApplicationSubmittedNotificationBuilder,
+  UserSpaceCommunityInvitationReceivedNotificationBuilder,
+  UserCommentReplyNotificationBuilder,
+  SpaceCollaborationCalloutContributionNotificationBuilder,
+  SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
+  SpaceCollaborationCalloutPublishedNotificationBuilder,
+  PlatformForumDiscussionCreatedNotificationBuilder,
+  PlatformForumDiscussionCommentNotificationBuilder,
+  SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
+  SpaceCommunicationUpdateNotificationBuilder,
+  PlatformAdminUserProfileRemovedNotificationBuilder,
+  SpaceLeadCommunicationMessageDirectNotificationBuilder,
+  SpaceAdminCommunityApplicationReceivedNotificationBuilder,
+  SpaceAdminCommunityNewMemberNotificationBuilder,
+  OrganizationMentionNotificationBuilder,
+  OrganizationMessageSenderNotificationBuilder,
+  OrganizationMessageRecipientNotificationBuilder,
 } from '../builders';
 import {
   MockConfigServiceProvider,
   MockNotifmeProvider,
   MockWinstonProvider,
 } from '@test/mocks';
-import { SpaceCollaborationWhiteboardCreatedNotificationBuilder } from '../builders/space/space.collaboration.whiteboard.created.notification.builder';
-import { PlatformGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.global.role.change.notification.builder';
-import { SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder } from '../builders/space/space.community.invitation.virtual.contributor.created.notification.builder';
-import { PlatformSpaceCreatedNotificationBuilder } from '../builders/platform/platform.space.created.notification.builder';
+import { SpaceCollaborationCalloutCommentNotificationBuilder } from '../builders/space/space.collaboration.callout.comment.notification.builder';
+import { PlatformAdminGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.admin.global.role.change.notification.builder';
+import { VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder } from '../builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
+import { PlatformAdminSpaceCreatedNotificationBuilder } from '../builders/platform/platform.admin.space.created.notification.builder';
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
-import { PlatformUserRegisteredAdminNotificationBuilder } from '../builders/platform/platform.user.registered.admin.notification.builder';
+import { PlatformAdminUserProfileCreatedNotificationBuilder } from '../builders/platform/platform.admin.user.profile.created.notification.builder';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme';
+import { SpaceAdminCollaborationCalloutContributionNotificationBuilder } from '../builders/space/space.admin.collaboration.callout.contribution.notification.builder';
 
 const testData = {
   ...spaceAdminsL0Data,
@@ -67,32 +67,31 @@ describe('NotificationService', () => {
         MockNotifmeProvider,
         MockWinstonProvider,
         NotificationService,
-        PlatformUserRegisteredNotificationBuilder,
+        UserSignUpWelcomeNotificationBuilder,
         PlatformForumDiscussionCommentNotificationBuilder,
-        PlatformUserRegisteredAdminNotificationBuilder,
-        PlatformUserRemovedNotificationBuilder,
+        PlatformAdminUserProfileCreatedNotificationBuilder,
+        PlatformAdminUserProfileRemovedNotificationBuilder,
         PlatformForumDiscussionCreatedNotificationBuilder,
-        PlatformGlobalRoleChangeNotificationBuilder,
-        PlatformSpaceCreatedNotificationBuilder,
+        PlatformAdminGlobalRoleChangeNotificationBuilder,
+        PlatformAdminSpaceCreatedNotificationBuilder,
         OrganizationMessageRecipientNotificationBuilder,
         OrganizationMessageSenderNotificationBuilder,
         OrganizationMentionNotificationBuilder,
-        SpaceCommunityInvitationCreatedInviteeNotificationBuilder,
+        UserSpaceCommunityInvitationReceivedNotificationBuilder,
         SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
-        SpaceCommunityNewMemberNotificationBuilder,
-        SpaceCommunityNewMemberAdminNotificationBuilder,
-        SpaceCommunityApplicationApplicantNotificationBuilder,
-        SpaceCommunityApplicationCreatedAdminNotificationBuilder,
-        SpaceCommunicationUpdateMemberNotificationBuilder,
-        SpaceCommunicationMessageDirectRecipientNotificationBuilder,
+        UserSpaceCommunityJoinedNotificationBuilder,
+        SpaceAdminCommunityNewMemberNotificationBuilder,
+        UserSpaceCommunityApplicationSubmittedNotificationBuilder,
+        SpaceAdminCommunityApplicationReceivedNotificationBuilder,
+        SpaceCommunicationUpdateNotificationBuilder,
+        SpaceLeadCommunicationMessageDirectNotificationBuilder,
         SpaceCommunicationMessageDirectSenderNotificationBuilder,
-        SpaceCommunicationUpdateAdminNotificationBuilder,
-        SpaceCommunicationMessageDirectRecipientNotificationBuilder,
-        SpaceCollaborationWhiteboardCreatedNotificationBuilder,
-        SpaceCollaborationPostCreatedMemberNotificationBuilder,
-        SpaceCollaborationPostCommentNotificationBuilder,
+        SpaceAdminCollaborationCalloutContributionNotificationBuilder,
+        SpaceCollaborationCalloutCommentNotificationBuilder,
+        SpaceCollaborationCalloutContributionNotificationBuilder,
+        SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
         SpaceCollaborationCalloutPublishedNotificationBuilder,
-        SpaceCommunityInvitationVirtualContributorCreatedNotificationBuilder,
+        VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder,
         MockConfigServiceProvider,
         UserCommentReplyNotificationBuilder,
         UserMentionNotificationBuilder,

@@ -65,7 +65,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCommunityApplicationAdminNotifications(
+      this.notificationService.sendSpaceAdminCommunityApplicationReceivedNotifications(
         eventPayload
       ),
       NotificationEvent.SpaceAdminCommunityApplication
@@ -294,7 +294,7 @@ export class AppController {
   }
 
   @EventPattern(NotificationEvent.OrganizationAdminMessage)
-  async sendCommunicationOrganizationMessageNotifications(
+  async sendOrganizationMessageRecipientNotifications(
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
@@ -308,7 +308,22 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceAdminCommunicationMessage)
+  @EventPattern(NotificationEvent.OrganizationMessageSender)
+  async sendOrganizationMessageSenderNotifications(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendOrganizationMessageSenderNotification(
+        eventPayload
+      ),
+      NotificationEvent.OrganizationMessageSender
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceLeadCommunicationMessage)
   async sendSpaceCommunicationMessageRecipientNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
@@ -320,7 +335,7 @@ export class AppController {
       this.notificationService.sendSpaceCommunicationMessageRecipientNotification(
         eventPayload
       ),
-      NotificationEvent.SpaceAdminCommunicationMessage
+      NotificationEvent.SpaceLeadCommunicationMessage
     );
   }
 
@@ -379,7 +394,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCollaborationWhiteboardCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutCommentNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCollaborationCalloutComment
@@ -390,17 +405,35 @@ export class AppController {
     NotificationEvent.SpaceCollaborationCalloutContribution,
     Transport.RMQ
   )
-  async sendPostCreatedNotifications(
+  async sendSpaceCollaborationCalloutContributionNotifications(
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCollaborationPostCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutContributionNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCollaborationCalloutContribution
+    );
+  }
+
+  @EventPattern(
+    NotificationEvent.SpaceAdminCollaborationCalloutContribution,
+    Transport.RMQ
+  )
+  async sendSpaceAdminCollaborationCalloutContributionNotifications(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
+    @Ctx() context: RmqContext
+  ) {
+    this.processSent(
+      eventPayload,
+      context,
+      this.notificationService.sendSpaceAdminCollaborationCalloutContributionNotification(
+        eventPayload
+      ),
+      NotificationEvent.SpaceAdminCollaborationCalloutContribution
     );
   }
 
@@ -415,7 +448,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendSpaceCollaborationPostCommentCreatedNotification(
+      this.notificationService.sendSpaceCollaborationCalloutPostContributionCommentNotification(
         eventPayload
       ),
       NotificationEvent.SpaceCollaborationCalloutPostContributionComment
@@ -462,7 +495,7 @@ export class AppController {
     this.processSent(
       eventPayload,
       context,
-      this.notificationService.sendPlatformSpaceCreatedNotification(
+      this.notificationService.sendPlatformAdminSpaceCreatedNotification(
         eventPayload
       ),
       NotificationEvent.PlatformAdminSpaceCreated

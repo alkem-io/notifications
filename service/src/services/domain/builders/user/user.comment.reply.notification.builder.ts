@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { CommentReplyEmailPayload } from '@common/email-template-payload';
 import { NotificationEventPayloadUserMessageRoomReply } from '@alkemio/notifications-lib';
@@ -11,8 +10,6 @@ export class UserCommentReplyNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.USER_COMMENT_REPLY;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadUserMessageRoomReply,

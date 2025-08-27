@@ -2,7 +2,7 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'communication-update-member',
+  name: 'space.communication.update.member',
   title: '{{space.displayName}} - New update, have a look!',
   version: 1,
   channels: {

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { INotificationBuilder } from '../notification.builder.interface';
 import { PlatformUser, User } from '@core/models';
-import { EmailTemplate } from '@common/enums/email.template';
 import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
 import { NotificationEventPayloadPlatformForumDiscussion } from '@alkemio/notifications-lib';
 import { PlatformForumDiscussionCommentEmailPayload } from '@src/common/email-template-payload/platform.forum.discussion.comment.email.payload';
@@ -12,8 +11,6 @@ export class PlatformForumDiscussionCommentNotificationBuilder
   implements INotificationBuilder
 {
   constructor() {}
-
-  emailTemplate = EmailTemplate.PLATFORM_FORUM_DISCUSSION_COMMENT;
 
   createEmailTemplatePayload(
     eventPayload: NotificationEventPayloadPlatformForumDiscussion,
