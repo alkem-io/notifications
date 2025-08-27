@@ -135,6 +135,146 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCommunityApplication,
           recipient
         );
+      case NotificationEvent.SpaceAdminCommunityApplication:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceAdminCommunityApplication(
+          eventPayload as NotificationEventPayloadSpaceCommunityApplication,
+          recipient
+        );
+      case NotificationEvent.UserSpaceCommunityInvitation:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSpaceCommunityInvitation(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
+          recipient
+        );
+      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitation(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+          recipient
+        );
+      case NotificationEvent.SpaceCommunityInvitationUserPlatform:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityInvitationPlatform(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitationPlatform,
+          recipient
+        );
+      case NotificationEvent.UserSpaceCommunityJoined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSpaceCommunityJoined(
+          eventPayload as NotificationEventPayloadSpaceCommunityContributor,
+          recipient
+        );
+      case NotificationEvent.SpaceAdminCommunityNewMember:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceAdminCommunityNewMember(
+          eventPayload as NotificationEventPayloadSpaceCommunityContributor,
+          recipient
+        );
+      case NotificationEvent.PlatformAdminGlobalRoleChanged:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformGlobalRoleChange(
+          eventPayload as NotificationEventPayloadPlatformGlobalRole,
+          recipient
+        );
+      case NotificationEvent.UserSignUpWelcome:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSignUpWelcome(
+          eventPayload as NotificationEventPayloadPlatformUserRegistration,
+          recipient
+        );
+      case NotificationEvent.PlatformAdminUserProfileCreated:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformAdminUserProfileCreated(
+          eventPayload as NotificationEventPayloadPlatformUserRegistration,
+          recipient
+        );
+      case NotificationEvent.PlatformAdminUserProfileRemoved:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformUserRemoved(
+          eventPayload as NotificationEventPayloadPlatformUserRemoved,
+          recipient
+        );
+      case NotificationEvent.PlatformForumDiscussionComment:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformForumDiscussionComment(
+          eventPayload as NotificationEventPayloadPlatformForumDiscussion,
+          recipient
+        );
+      case NotificationEvent.PlatformForumDiscussionCreated:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformForumDiscussionCreated(
+          eventPayload as NotificationEventPayloadPlatformForumDiscussion,
+          recipient
+        );
+      case NotificationEvent.SpaceCommunicationUpdate:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunicationUpdate(
+          eventPayload as NotificationEventPayloadSpaceCommunicationUpdate,
+          recipient
+        );
+      case NotificationEvent.UserMessage:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserMessage(
+          eventPayload as NotificationEventPayloadUserMessageDirect,
+          recipient
+        );
+      case NotificationEvent.UserMessageSender:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserMessageSender(
+          eventPayload as NotificationEventPayloadUserMessageDirect,
+          recipient
+        );
+      case NotificationEvent.OrganizationAdminMessage:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationMessage(
+          eventPayload as NotificationEventPayloadOrganizationMessageDirect,
+          recipient
+        );
+      case NotificationEvent.OrganizationMessageSender:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationMessageSender(
+          eventPayload as NotificationEventPayloadOrganizationMessageDirect,
+          recipient
+        );
+      case NotificationEvent.OrganizationAdminMentioned:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationMention(
+          eventPayload as NotificationEventPayloadOrganizationMessageRoom,
+          recipient
+        );
+      case NotificationEvent.SpaceLeadCommunicationMessage:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunicationMessage(
+          eventPayload as NotificationEventPayloadSpaceCommunicationMessageDirect,
+          recipient
+        );
+      case NotificationEvent.SpaceCommunicationMessageSender:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunicationMessageSender(
+          eventPayload as NotificationEventPayloadSpaceCommunicationMessageDirect,
+          recipient
+        );
+      case NotificationEvent.SpaceCollaborationCalloutContribution:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCollaborationCalloutContribution(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCallout,
+          recipient
+        );
+      case NotificationEvent.SpaceAdminCollaborationCalloutContribution:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceAdminCollaborationCalloutContribution(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCallout,
+          recipient
+        );
+      case NotificationEvent.SpaceCollaborationCalloutComment:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCollaborationCalloutComment(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCallout,
+          recipient
+        );
+      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCollaborationCalloutPostContributionComment(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCallout,
+          recipient
+        );
+      case NotificationEvent.SpaceCollaborationCalloutPublished:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCollaborationCalloutPublished(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCallout,
+          recipient
+        );
+      case NotificationEvent.UserCommentReply:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserCommentReply(
+          eventPayload as NotificationEventPayloadUserMessageRoomReply,
+          recipient
+        );
+      case NotificationEvent.UserMentioned:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserMention(
+          eventPayload as NotificationEventPayloadUserMessageRoom,
+          recipient
+        );
+      case NotificationEvent.PlatformAdminSpaceCreated:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformAdminSpaceCreated(
+          eventPayload as NotificationEventPayloadPlatformSpaceCreated,
+          recipient
+        );
       // Add more cases for different event types as needed
     }
     return undefined;
