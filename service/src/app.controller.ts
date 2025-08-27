@@ -7,14 +7,12 @@ import {
   Transport,
 } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { Channel, Message } from 'amqplib';
 import {
   NotificationEventPayloadPlatformUserRemoved,
   NotificationEventPayloadPlatformForumDiscussion,
   NotificationEventPayloadPlatformGlobalRole,
   NotificationEventPayloadPlatformUserRegistration,
   NotificationEventPayloadPlatformSpaceCreated,
-  BaseEventPayload,
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadUserMessageDirect,
@@ -30,7 +28,6 @@ import {
   NotificationEventPayloadUserMessageRoom,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/notification/notification.service';
-import { LogContext } from './common/enums/logging.context';
 import { NotificationEvent } from './generated/alkemio-schema';
 
 @Controller()
@@ -48,7 +45,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceAdminCommunityApplication)
@@ -56,7 +53,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserSpaceCommunityInvitation)
@@ -64,7 +61,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -75,7 +72,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceCommunityInvitationUserPlatform)
@@ -84,7 +81,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserSpaceCommunityJoined)
@@ -92,7 +89,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceAdminCommunityNewMember)
@@ -100,7 +97,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminGlobalRoleChanged)
@@ -108,7 +105,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadPlatformGlobalRole,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserSignUpWelcome)
@@ -116,7 +113,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminUserProfileCreated)
@@ -124,7 +121,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminUserProfileRemoved)
@@ -132,7 +129,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadPlatformUserRemoved,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceCommunicationUpdate)
@@ -141,7 +138,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformForumDiscussionCreated)
@@ -149,7 +146,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformForumDiscussionComment)
@@ -157,7 +154,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserMessage)
@@ -165,7 +162,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserMessageSender)
@@ -173,7 +170,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.OrganizationAdminMessage)
@@ -181,7 +178,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.OrganizationMessageSender)
@@ -189,7 +186,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceLeadCommunicationMessage)
@@ -198,7 +195,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceCommunicationMessageSender)
@@ -207,7 +204,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserMentioned)
@@ -215,7 +212,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageRoom,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.OrganizationAdminMentioned)
@@ -223,7 +220,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageRoom,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -234,7 +231,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -245,7 +242,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -256,7 +253,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -267,7 +264,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -278,7 +275,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserCommentReply, Transport.RMQ)
@@ -286,7 +283,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageRoomReply,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
+    this.notificationService.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminSpaceCreated)
@@ -295,72 +292,6 @@ export class AppController {
     eventPayload: NotificationEventPayloadPlatformSpaceCreated,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(eventPayload, context);
-  }
-
-  private async processSent(
-    @Payload() eventPayload: BaseEventPayload,
-    @Ctx() context: RmqContext
-  ) {
-    const eventName = eventPayload.eventType;
-    this.logger.verbose?.(
-      `[Event received: ${eventName}]: ${JSON.stringify(eventPayload)}`,
-      LogContext.NOTIFICATIONS
-    );
-
-    const sentNotifications =
-      this.notificationService.processNotificationEvent(eventPayload);
-
-    const channel: Channel = context.getChannelRef();
-    const originalMsg = context.getMessage() as Message;
-
-    // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
-    try {
-      const x = await sentNotifications;
-      if (x.length === 0) {
-        this.logger.verbose?.(
-          `[${eventPayload.eventType}] No messages to send!`,
-          LogContext.NOTIFICATIONS
-        );
-        channel.ack(originalMsg);
-        return;
-      }
-      const nacked = x.filter(
-        (y: { status: string }) => y.status === 'rejected'
-      ) as PromiseRejectedResult[];
-
-      if (nacked.length === 0) {
-        this.logger.verbose?.(
-          `[${eventPayload.eventType}] ${x.length} messages successfully sent!`,
-          LogContext.NOTIFICATIONS
-        );
-        // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
-        // so only the message supplied is acknowledged.
-        channel.ack(originalMsg);
-      } else {
-        if (nacked.length === x.length) {
-          this.logger.verbose?.('All messages failed to be sent!');
-          // if all messages failed to be sent, we reject the message but we make sure the message is
-          // not discarded so we provide 'true' to requeue parameter
-          channel.reject(originalMsg, true);
-        } else {
-          this.logger.verbose?.(
-            `${nacked.length} messages out of total ${x.length} messages failed to be sent!`,
-            LogContext.NOTIFICATIONS
-          );
-          // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
-          // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
-          channel.nack(originalMsg, false, false);
-        }
-        // print all rejected notifications
-        nacked.forEach(x => this.logger?.warn(x.reason));
-      }
-    } catch (err) {
-      // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
-      // not discarded so we provide 'true' to requeue parameter
-      // channel.reject(originalMsg, true);
-      channel.nack(originalMsg, false, false);
-      this.logger.error(err);
-    }
+    this.notificationService.processSent(eventPayload, context);
   }
 }

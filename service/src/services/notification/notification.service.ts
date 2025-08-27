@@ -31,12 +31,13 @@ import { NotificationTemplateType } from '@src/types/notification.template.type'
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/notifme/notification.templates.builder';
-import { EmailTemplate } from '@src/common/enums/email.template';
 import { User } from '@src/core/models';
 import { BaseEmailPayload } from '@src/common/email-template-payload/base.email.payload';
 import { NotificationEvent } from '@src/generated/alkemio-schema';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
+import { Channel, Message } from 'amqplib';
+import { Ctx, Payload, RmqContext } from '@nestjs/microservices';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -50,7 +51,72 @@ export class NotificationService {
     private notificationEmailPayloadBuilderService: NotificationEmailPayloadBuilderService
   ) {}
 
-  public async processNotificationEvent(
+  public async processSent(
+    @Payload() eventPayload: BaseEventPayload,
+    @Ctx() context: RmqContext
+  ) {
+    const eventName = eventPayload.eventType;
+    this.logger.verbose?.(
+      `[Event received: ${eventName}]: ${JSON.stringify(eventPayload)}`,
+      LogContext.NOTIFICATIONS
+    );
+
+    const sentNotifications = this.processNotificationEvent(eventPayload);
+
+    const channel: Channel = context.getChannelRef();
+    const originalMsg = context.getMessage() as Message;
+
+    // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
+    try {
+      const x = await sentNotifications;
+      if (x.length === 0) {
+        this.logger.verbose?.(
+          `[${eventPayload.eventType}] No messages to send!`,
+          LogContext.NOTIFICATIONS
+        );
+        channel.ack(originalMsg);
+        return;
+      }
+      const nacked = x.filter(
+        (y: { status: string }) => y.status === 'rejected'
+      ) as PromiseRejectedResult[];
+
+      if (nacked.length === 0) {
+        this.logger.verbose?.(
+          `[${eventPayload.eventType}] ${x.length} messages successfully sent!`,
+          LogContext.NOTIFICATIONS
+        );
+        // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
+        // so only the message supplied is acknowledged.
+        channel.ack(originalMsg);
+      } else {
+        if (nacked.length === x.length) {
+          this.logger.verbose?.('All messages failed to be sent!');
+          // if all messages failed to be sent, we reject the message but we make sure the message is
+          // not discarded so we provide 'true' to requeue parameter
+          channel.reject(originalMsg, true);
+        } else {
+          this.logger.verbose?.(
+            `${nacked.length} messages out of total ${x.length} messages failed to be sent!`,
+            LogContext.NOTIFICATIONS
+          );
+          // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
+          // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
+          channel.nack(originalMsg, false, false);
+        }
+        // print all rejected notifications
+        nacked.forEach(x => this.logger?.warn(x.reason));
+      }
+    } catch (err) {
+      // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
+      // not discarded so we provide 'true' to requeue parameter
+      // channel.reject(originalMsg, true);
+      channel.nack(originalMsg, false, false);
+      this.logger.error(err);
+    }
+  }
+
+  private async processNotificationEvent(
     payload: BaseEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const emailTemplate = this.getEmailTemplateToUseForEvent(payload.eventType);
@@ -62,7 +128,7 @@ export class NotificationService {
     return [...emailResults];
   }
 
-  public createEmailPayloadForEvent(
+  private createEmailPayloadForEvent(
     eventPayload: BaseEventPayload,
     recipient: User
   ): BaseEmailPayload {
@@ -221,30 +287,66 @@ export class NotificationService {
     }
   }
 
-  public getEmailTemplateToUseForEvent(event: string): EmailTemplate {
+  public getEmailTemplateToUseForEvent(event: string): string {
     switch (event) {
       case NotificationEvent.UserSpaceCommunityApplication:
-        return EmailTemplate.USER_SPACE_COMMUNITY_APPLICATION_SUBMITTED;
+        return 'user.space.community.application.submitted';
       case NotificationEvent.SpaceAdminCommunityApplication:
-        return EmailTemplate.SPACE_ADMIN_COMMUNITY_USER_APPLICATION_RECEIVED;
+        return 'space.admin.community.user.application.received';
       case NotificationEvent.UserSpaceCommunityInvitation:
-        return EmailTemplate.USER_SPACE_COMMUNITY_INVITATION_RECEIVED;
+        return 'user.space.community.invitation.received';
       case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation:
-        return EmailTemplate.VIRTUAL_CONTRIBUTOR_INVITATION_RECEIVED;
+        return 'virtual.contributor.invitation.received';
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
-        return EmailTemplate.USER_SPACE_COMMUNITY_INVITATION_RECEIVED;
+        return 'user.space.community.invitation.received';
       case NotificationEvent.UserSpaceCommunityJoined:
-        return EmailTemplate.USER_SPACE_COMMUNITY_JOINED;
+        return 'user.space.community.joined';
       case NotificationEvent.SpaceAdminCommunityNewMember:
-        return EmailTemplate.SPACE_ADMIN_COMMUNITY_NEW_MEMBER;
+        return 'space.admin.community.new.member';
       case NotificationEvent.PlatformAdminGlobalRoleChanged:
-        return EmailTemplate.PLATFORM_ADMIN_USER_GLOBAL_ROLE_CHANGE;
+        return 'platform.admin.user.global.role.change';
       case NotificationEvent.UserSignUpWelcome:
-        return EmailTemplate.USER_SIGN_UP_WELCOME;
+        return 'user.sign.up.welcome';
       case NotificationEvent.PlatformAdminUserProfileCreated:
-        return EmailTemplate.PLATFORM_ADMIN_USER_PROFILE_CREATED;
+        return 'platform.admin.user.profile.created';
       case NotificationEvent.PlatformAdminUserProfileRemoved:
-        return EmailTemplate.PLATFORM_ADMIN_USER_PROFILE_REMOVED;
+        return 'platform.admin.user.profile.removed';
+      case NotificationEvent.SpaceCommunicationUpdate:
+        return 'space.communication.update.member';
+      case NotificationEvent.PlatformForumDiscussionCreated:
+        return 'platform.forum.discussion.created';
+      case NotificationEvent.PlatformForumDiscussionComment:
+        return 'platform.forum.discussion.comment';
+      case NotificationEvent.UserMessage:
+        return 'user.message.recipient';
+      case NotificationEvent.UserMessageSender:
+        return 'user.message.sender';
+      case NotificationEvent.OrganizationAdminMessage:
+        return 'organization.message.recipient';
+      case NotificationEvent.OrganizationMessageSender:
+        return 'organization.message.sender';
+      case NotificationEvent.SpaceLeadCommunicationMessage:
+        return 'space.lead.communication.message.direct.receiver';
+      case NotificationEvent.SpaceCommunicationMessageSender:
+        return 'space.communication.message.direct.sender';
+      case NotificationEvent.UserMentioned:
+        return 'user.mention';
+      case NotificationEvent.OrganizationAdminMentioned:
+        return 'organization.mention';
+      case NotificationEvent.SpaceCollaborationCalloutComment:
+        return 'space.collaboration.callout.comment';
+      case NotificationEvent.SpaceCollaborationCalloutContribution:
+        return 'space.collaboration.callout.contribution';
+      case NotificationEvent.SpaceAdminCollaborationCalloutContribution:
+        return 'space.admin.collaboration.callout.contribution';
+      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment:
+        return 'space.collaboration.callout.post.contribution.comment';
+      case NotificationEvent.SpaceCollaborationCalloutPublished:
+        return 'space.collaboration.callout.published';
+      case NotificationEvent.UserCommentReply:
+        return 'user.comment.reply';
+      case NotificationEvent.PlatformAdminSpaceCreated:
+        return 'platform.admin.space.created';
       default:
         throw new EventPayloadNotProvidedException(
           'Event payload not provided',
@@ -255,7 +357,7 @@ export class NotificationService {
 
   private async buildAndSendEmailNotifications(
     payload: BaseEventPayload,
-    emailTemplate: EmailTemplate
+    emailTemplate: string
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const notificationTemplatesToSend: Promise<
       NotificationTemplateType | undefined
@@ -270,14 +372,14 @@ export class NotificationService {
     }
 
     for (const recipient of payload.recipients) {
-      const templatePayload2 = this.createEmailPayloadForEvent(
+      const templatePayload = this.createEmailPayloadForEvent(
         payload,
         recipient
       );
       const emailNotificationTemplate =
         this.notificationTemplateBuilder.buildTemplate(
           emailTemplate,
-          templatePayload2
+          templatePayload
         );
 
       notificationTemplatesToSend.push(emailNotificationTemplate);
