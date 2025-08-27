@@ -116,7 +116,7 @@ export class NotificationService {
     }
   }
 
-  private async buildAndSendEmailNotifications(
+  public async buildAndSendEmailNotifications(
     payload: BaseEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
     const notificationTemplatesToSend: Promise<

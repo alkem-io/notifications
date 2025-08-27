@@ -73,7 +73,7 @@ describe('NotificationService', () => {
         .spyOn(notifmeService, 'send')
         .mockResolvedValue({ status: 'success' });
 
-      const res = await notificationService.buildNotificationsForSending(
+      const res = await notificationService.buildAndSendEmailNotifications(
         testData.data as NotificationEventPayloadSpaceCommunityApplication
       );
       for (const notificationStatus of res) {
@@ -91,7 +91,7 @@ describe('NotificationService', () => {
         .spyOn(notifmeService, 'send')
         .mockResolvedValue({ status: 'success' });
 
-      const res = await notificationService.buildNotificationsForSending(
+      const res = await notificationService.buildAndSendEmailNotifications(
         testData.data as NotificationEventPayloadSpaceCommunityApplication
       );
 
