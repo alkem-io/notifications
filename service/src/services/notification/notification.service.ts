@@ -32,7 +32,7 @@ import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
 import { NotificationTemplateBuilder } from '@src/services/notifme/notification.templates.builder';
 import { User } from '@src/core/models';
-import { BaseEmailPayload } from '@src/common/email-template-payload/base.email.payload';
+import { BaseEmailPayload } from '@src/services/notification/email-template-payload/base.email.payload';
 import { NotificationEvent } from '@src/generated/alkemio-schema';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';

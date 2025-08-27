@@ -6,7 +6,7 @@ import { LogContext } from '@common/enums';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { renderString } from 'nunjucks';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
-import { BaseEmailPayload } from '@common/email-template-payload';
+import { BaseEmailPayload } from '@src/services/notification/email-template-payload';
 
 @Injectable()
 export class NotificationTemplateBuilder {

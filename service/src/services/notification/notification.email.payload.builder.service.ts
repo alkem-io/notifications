@@ -27,7 +27,7 @@ import {
   PlatformUserRemovedEmailPayload,
   BaseEmailPayload,
   BaseSpaceEmailPayload,
-} from '@common/email-template-payload';
+} from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
   NotificationEventPayloadSpaceCommunityInvitation,
