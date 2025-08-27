@@ -1,7 +1,7 @@
 {
-  "pattern": "communityApplicationCreated",
+  "pattern": "USER_SPACE_COMMUNITY_APPLICATION",
   "data": {
-    "eventType": "spaceCommunityApplicationCreated",
+    "eventType": "USER_SPACE_COMMUNITY_APPLICATION",
     "triggeredBy": {
       "type": "user",
       "id": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
