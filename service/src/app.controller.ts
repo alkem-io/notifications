@@ -8,7 +8,6 @@ import {
 } from '@nestjs/microservices';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Channel, Message } from 'amqplib';
-import { NotificationStatus } from 'notifme-sdk';
 import {
   NotificationEventPayloadPlatformUserRemoved,
   NotificationEventPayloadPlatformForumDiscussion,
@@ -30,10 +29,9 @@ import {
   NotificationEventPayloadUserMessageRoomReply,
   NotificationEventPayloadUserMessageRoom,
 } from '@alkemio/notifications-lib';
-import { NotificationService } from './services/domain/notification/notification.service';
+import { NotificationService } from './services/notification/notification.service';
 import { LogContext } from './common/enums/logging.context';
 import { NotificationEvent } from './generated/alkemio-schema';
-import { EmailTemplate } from './common/enums/email.template';
 
 @Controller()
 export class AppController {
@@ -43,21 +41,14 @@ export class AppController {
     private readonly logger: LoggerService
   ) {}
 
+  // todo is auto validation of payloads possible/
+
   @EventPattern(NotificationEvent.UserSpaceCommunityApplication)
   async sendSpaceCommunityApplicationRecipientNotification(
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
-    const notifications = this.notificationService.processNotificationEvent(
-      eventPayload,
-      EmailTemplate.USER_SPACE_COMMUNITY_APPLICATION_SUBMITTED
-    );
-    this.processSent(
-      eventPayload,
-      context,
-      notifications,
-      NotificationEvent.UserSpaceCommunityApplication
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceAdminCommunityApplication)
@@ -65,30 +56,15 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceAdminCommunityApplicationReceivedNotifications(
-        eventPayload
-      ),
-      NotificationEvent.SpaceAdminCommunityApplication
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserSpaceCommunityInvitation)
   async sendSpaceCommunityInvitationNotification(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendUserSpaceCommunityInvitationNotifications(
-        eventPayload
-      ),
-      NotificationEvent.UserSpaceCommunityInvitation
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -99,158 +75,81 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendVirtualContributorInvitationCreatedNotifications(
-        eventPayload
-      ),
-      NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceCommunityInvitationUserPlatform)
   async sendCommunityPlatformInvitationNotification(
-    // todo is auto validation possible
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendCommunityInvitationPlatformNotifications(
-        eventPayload
-      ),
-      NotificationEvent.SpaceCommunityInvitationUserPlatform
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserSpaceCommunityJoined)
   async sendCommunityNewMemberNotification(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendUserSpaceCommunityJoinedNotifications(
-        eventPayload
-      ),
-      NotificationEvent.UserSpaceCommunityJoined
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceAdminCommunityNewMember)
   async sendCommunityNewMemberAdminNotification(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendCommunityNewMemberAdminNotifications(
-        eventPayload
-      ),
-      NotificationEvent.SpaceAdminCommunityNewMember
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminGlobalRoleChanged)
   async sendPlatformGlobalRoleChangeNotification(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadPlatformGlobalRole,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendPlatformGlobalRoleChangeNotification(
-        eventPayload
-      ),
-      NotificationEvent.PlatformAdminGlobalRoleChanged
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserSignUpWelcome)
   async sendUserSignUpWelcomeNotification(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendUserSignUpWelcomeNotification(eventPayload),
-      NotificationEvent.UserSignUpWelcome
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminUserProfileCreated)
   async sendPlatformUserRegisteredAdminNotification(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadPlatformUserRegistration,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendPlatformAdminUserProfileCreatedNotification(
-        eventPayload
-      ),
-      NotificationEvent.PlatformAdminUserProfileCreated
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminUserProfileRemoved)
   async sendUserRemovedNotification(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadPlatformUserRemoved,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendPlatformUserRemovedNotification(
-        eventPayload
-      ),
-      NotificationEvent.PlatformAdminUserProfileRemoved
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceCommunicationUpdate)
   async sendSpaceCommunicationUpdateNotifications(
-    // todo is auto validation possible
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunicationUpdate,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceCommunicationUpdateNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceCommunicationUpdate
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformForumDiscussionCreated)
   async sendPlatformForumDiscussionCreatedNotifications(
-    // todo is auto validation possible
     @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendPlatformForumDiscussionCreatedNotification(
-        eventPayload
-      ),
-      NotificationEvent.PlatformForumDiscussionCreated
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformForumDiscussionComment)
@@ -258,14 +157,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadPlatformForumDiscussion,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendPlatformForumDiscussionCommentNotification(
-        eventPayload
-      ),
-      NotificationEvent.PlatformForumDiscussionComment
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserMessage)
@@ -273,14 +165,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendUserMessageRecipientNotification(
-        eventPayload
-      ),
-      NotificationEvent.UserMessage
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserMessageSender)
@@ -288,12 +173,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendUserMessageSenderNotification(eventPayload),
-      NotificationEvent.UserMessageSender
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.OrganizationAdminMessage)
@@ -301,14 +181,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendOrganizationMessageRecipientNotification(
-        eventPayload
-      ),
-      NotificationEvent.OrganizationAdminMessage
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.OrganizationMessageSender)
@@ -316,14 +189,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendOrganizationMessageSenderNotification(
-        eventPayload
-      ),
-      NotificationEvent.OrganizationMessageSender
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceLeadCommunicationMessage)
@@ -332,14 +198,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceCommunicationMessageRecipientNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceLeadCommunicationMessage
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.SpaceCommunicationMessageSender)
@@ -348,14 +207,7 @@ export class AppController {
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceCommunicationMessageSenderNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceCommunicationMessageSender
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserMentioned)
@@ -363,12 +215,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageRoom,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendUserMentionNotification(eventPayload),
-      NotificationEvent.UserMentioned
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.OrganizationAdminMentioned)
@@ -376,14 +223,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadOrganizationMessageRoom,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendOrganizationMentionNotification(
-        eventPayload
-      ),
-      NotificationEvent.OrganizationAdminMentioned
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -394,14 +234,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceCollaborationCalloutCommentNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceCollaborationCalloutComment
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -412,14 +245,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceCollaborationCalloutContributionNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceCollaborationCalloutContribution
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -430,14 +256,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceAdminCollaborationCalloutContributionNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceAdminCollaborationCalloutContribution
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -448,14 +267,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceCollaborationCalloutPostContributionCommentNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceCollaborationCalloutPostContributionComment
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(
@@ -466,14 +278,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendSpaceCollaborationCalloutPublishedNotification(
-        eventPayload
-      ),
-      NotificationEvent.SpaceCollaborationCalloutPublished
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.UserCommentReply, Transport.RMQ)
@@ -481,12 +286,7 @@ export class AppController {
     @Payload() eventPayload: NotificationEventPayloadUserMessageRoomReply,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendUserCommentReplyNotification(eventPayload),
-      NotificationEvent.UserCommentReply
-    );
+    this.processSent(eventPayload, context);
   }
 
   @EventPattern(NotificationEvent.PlatformAdminSpaceCreated)
@@ -495,26 +295,21 @@ export class AppController {
     eventPayload: NotificationEventPayloadPlatformSpaceCreated,
     @Ctx() context: RmqContext
   ) {
-    this.processSent(
-      eventPayload,
-      context,
-      this.notificationService.sendPlatformAdminSpaceCreatedNotification(
-        eventPayload
-      ),
-      NotificationEvent.PlatformAdminSpaceCreated
-    );
+    this.processSent(eventPayload, context);
   }
 
   private async processSent(
     @Payload() eventPayload: BaseEventPayload,
-    @Ctx() context: RmqContext,
-    sentNotifications: Promise<PromiseSettledResult<NotificationStatus>[]>,
-    eventName: string
+    @Ctx() context: RmqContext
   ) {
+    const eventName = eventPayload.eventType;
     this.logger.verbose?.(
       `[Event received: ${eventName}]: ${JSON.stringify(eventPayload)}`,
       LogContext.NOTIFICATIONS
     );
+
+    const sentNotifications =
+      this.notificationService.processNotificationEvent(eventPayload);
 
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;

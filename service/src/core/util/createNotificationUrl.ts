@@ -3,7 +3,7 @@ import { PlatformUser, User } from '../models/user';
 export const isExistingAlkemioUser = (
   user: User | PlatformUser
 ): user is User => {
-  return (user as User).nameID !== undefined;
+  return (user as User).id !== undefined;
 };
 
 export const createUserNotificationPreferencesURL = (

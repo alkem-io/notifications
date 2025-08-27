@@ -1,9 +1,9 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Global, Module } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { NOTIFICATIONS_PROVIDER, TEMPLATE_PROVIDER } from '@common/enums';
 import { NotificationTemplateBuilder } from './notification.templates.builder';
 import { notifmeSdkFactory } from './notifme.sdk.factory';
+import { NOTIFICATIONS_PROVIDER } from '@src/common/enums/providers';
 @Global()
 @Module({
   imports: [ConfigModule],
@@ -13,11 +13,8 @@ import { notifmeSdkFactory } from './notifme.sdk.factory';
       useFactory: notifmeSdkFactory,
       inject: [WINSTON_MODULE_NEST_PROVIDER, ConfigService],
     },
-    {
-      provide: TEMPLATE_PROVIDER,
-      useClass: NotificationTemplateBuilder,
-    },
+    NotificationTemplateBuilder,
   ],
-  exports: [NOTIFICATIONS_PROVIDER, TEMPLATE_PROVIDER],
+  exports: [NotificationTemplateBuilder, NOTIFICATIONS_PROVIDER],
 })
 export class NotifmeModule {}
