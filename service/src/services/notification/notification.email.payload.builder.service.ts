@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@core/models';
-import { createUserNotificationPreferencesURL } from '@src/core/util/createNotificationUrl';
-import { normalizeCalloutType } from '@src/utils/callout.util';
-import { convertMarkdownToText } from '@src/utils/markdown-to-text.util';
-import { convertMarkdownToHtml } from '@src/utils/markdown-to-html.util';
+import { PlatformUser, User } from '@core/models';
+import { convertMarkdownToText } from '@src/services/notification/utils/markdown-to-text.util';
+import { convertMarkdownToHtml } from '@src/services/notification/utils/markdown-to-html.util';
 import {
   CommunityApplicationCreatedEmailPayload,
   CommunityInvitationCreatedEmailPayload,
@@ -512,7 +510,7 @@ export class NotificationEmailPayloadBuilderService {
       callout: {
         displayName: eventPayload.callout.framing.displayName,
         url: eventPayload.callout.framing.url,
-        type: normalizeCalloutType(eventPayload.callout.framing.type),
+        type: this.normalizeCalloutType(eventPayload.callout.framing.type),
       },
     };
   }
@@ -559,7 +557,7 @@ export class NotificationEmailPayloadBuilderService {
       callout: {
         displayName: framing.displayName,
         url: framing.url,
-        type: normalizeCalloutType(framing.type),
+        type: this.normalizeCalloutType(framing.type),
       },
     };
     return result;
@@ -619,7 +617,7 @@ export class NotificationEmailPayloadBuilderService {
     recipient: User
   ): BaseEmailPayload {
     const notificationPreferenceURL =
-      createUserNotificationPreferencesURL(recipient);
+      this.createUserNotificationPreferencesURL(recipient);
 
     return {
       recipient: {
@@ -648,5 +646,33 @@ export class NotificationEmailPayloadBuilderService {
         type: spaceType,
       },
     };
+  }
+
+  private isExistingAlkemioUser(user: User | PlatformUser): boolean {
+    return (user as User).id !== undefined;
+  }
+
+  private createUserNotificationPreferencesURL(
+    user: User | PlatformUser
+  ): string {
+    if (!this.isExistingAlkemioUser(user)) {
+      return '';
+    }
+    const userProfileURL = (user as User).profile.url;
+    return `${userProfileURL}/settings/notifications`;
+  }
+
+  /**
+   * Normalizes the callout framing type.
+   * If the type is null, undefined, or 'none', returns 'Post' as the default.
+   * Otherwise returns the original type.
+   *
+   * @param framingType - The callout framing type to normalize
+   * @returns The normalized callout type
+   */
+  private normalizeCalloutType(framingType: string | null | undefined): string {
+    return !framingType || framingType.toLowerCase() === 'none'
+      ? 'Post'
+      : framingType;
   }
 }
