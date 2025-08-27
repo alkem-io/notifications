@@ -287,7 +287,7 @@ export class NotificationService {
     }
   }
 
-  public getEmailTemplateToUseForEvent(event: string): string {
+  private getEmailTemplateToUseForEvent(event: string): string {
     switch (event) {
       case NotificationEvent.UserSpaceCommunityApplication:
         return 'user.space.community.application.submitted';
