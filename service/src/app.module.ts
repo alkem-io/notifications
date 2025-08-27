@@ -9,7 +9,7 @@ import { HttpExceptionsFilter } from './core';
 import { HealthController } from './health.controller';
 import { NotifmeModule } from './services/notifme/notifme.module';
 import { NotificationTemplateBuilder } from './services/notifme/notification.templates.builder';
-import { NotificationModule } from './services/notification/notifIcation.module';
+import { NotificationModule } from './services/notification/notification.module';
 
 @Module({
   imports: [

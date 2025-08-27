@@ -46,12 +46,11 @@ export class NotificationService {
     @Inject(NOTIFICATIONS_PROVIDER)
     private readonly notifmeService: NotifmeSdk,
     private readonly configService: ConfigService,
-
     private notificationTemplateBuilder: NotificationTemplateBuilder,
     private notificationEmailPayloadBuilderService: NotificationEmailPayloadBuilderService
   ) {}
 
-  public async processSent(
+  public async processNotificationEvent(
     @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext
   ) {
@@ -61,7 +60,8 @@ export class NotificationService {
       LogContext.NOTIFICATIONS
     );
 
-    const sentNotifications = this.processNotificationEvent(eventPayload);
+    const sentNotifications =
+      await this.buildAndSendEmailNotifications(eventPayload);
 
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
@@ -116,18 +116,122 @@ export class NotificationService {
     }
   }
 
-  public async processNotificationEvent(
+  private async buildAndSendEmailNotifications(
     payload: BaseEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
+    const notificationTemplatesToSend: Promise<
+      NotificationTemplateType | undefined
+    >[] = [];
+
+    if (!payload?.recipients || payload.recipients.length === 0) {
+      this.logger.verbose?.(
+        `[${payload.eventType}] - No recipients found, aborting notification sending.`,
+        LogContext.NOTIFICATIONS
+      );
+      return [];
+    }
+
     const emailTemplate = this.getEmailTemplateToUseForEvent(
       payload.eventType as NotificationEvent
     );
-    const emailResults = await this.buildAndSendEmailNotifications(
-      payload,
-      emailTemplate
+
+    for (const recipient of payload.recipients) {
+      const templatePayload = this.createEmailPayloadForEvent(
+        payload,
+        recipient
+      );
+      const emailNotificationTemplate =
+        this.notificationTemplateBuilder.buildTemplate(
+          emailTemplate,
+          templatePayload
+        );
+
+      notificationTemplatesToSend.push(emailNotificationTemplate);
+    }
+
+    this.logger.verbose?.(
+      ' ...building notifications - completed',
+      LogContext.NOTIFICATIONS
     );
 
-    return [...emailResults];
+    // filter all rejected notifications and log them
+    const notificationResults = await Promise.allSettled(
+      notificationTemplatesToSend
+    );
+    const notificationTemplateTypes: NotificationTemplateType[] = [];
+    notificationResults.forEach(notification => {
+      if (this.isPromiseFulfilledResult(notification)) {
+        const value = notification.value;
+        if (value) notificationTemplateTypes.push(value);
+      } else {
+        this.logger.warn(
+          `Filtering rejected notification content: ${notification.reason}`,
+          LogContext.NOTIFICATIONS
+        );
+      }
+    });
+    try {
+      return Promise.allSettled(
+        notificationTemplateTypes.map(x => this.sendNotification(x))
+      );
+    } catch (error: any) {
+      this.logger.error(error.message);
+    }
+    return [];
+  }
+
+  private async sendNotification(
+    notification: NotificationTemplateType
+  ): Promise<NotificationStatus> {
+    if (!Object.keys(notification.channels).length) {
+      throw new NotificationNoChannelsException(
+        `Notification (${notification.name}) - (${notification.title}) no channels provided`
+      );
+    }
+    // since this is the only channel we have; log an error if it's not provided
+    if (!notification.channels.email) {
+      this.logger.error?.(
+        `Notification (${notification.name}) - (${notification.title}) no email channel provided`,
+        LogContext.NOTIFICATIONS
+      );
+      return { status: 'error' };
+    }
+
+    const mailFrom = this.configService.get(
+      ConfigurationTypes.NOTIFICATION_PROVIDERS
+    )?.email?.from;
+    const mailFromName = this.configService.get(
+      ConfigurationTypes.NOTIFICATION_PROVIDERS
+    )?.email?.from_name;
+
+    if (!mailFrom) {
+      this.logger.error?.(
+        'Email from address not configured',
+        LogContext.NOTIFICATIONS
+      );
+      return { status: 'error' };
+    }
+
+    const mailFromNameConfigured = mailFromName
+      ? `${mailFromName} <${mailFrom}>`
+      : mailFrom;
+
+    notification.channels.email.from = mailFromNameConfigured;
+
+    try {
+      const res = await this.notifmeService.send(notification.channels);
+      this.logger.verbose?.(
+        `[${notification.name}] Notification sent from ${mailFromNameConfigured} - status: ${res.status}`,
+        LogContext.NOTIFICATIONS
+      );
+      return res;
+    } catch (reason) {
+      this.logger.warn?.(
+        `Notification rejected with reason: ${reason}`,
+        LogContext.NOTIFICATIONS
+      );
+      return { status: 'error' };
+    }
   }
 
   private createEmailPayloadForEvent(
@@ -354,121 +458,6 @@ export class NotificationService {
           `Email template: Unable to recognize event: ${event}`,
           LogContext.NOTIFICATION_BUILDER
         );
-    }
-  }
-
-  private async buildAndSendEmailNotifications(
-    payload: BaseEventPayload,
-    emailTemplate: string
-  ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    const notificationTemplatesToSend: Promise<
-      NotificationTemplateType | undefined
-    >[] = [];
-
-    if (!payload?.recipients || payload.recipients.length === 0) {
-      this.logger.verbose?.(
-        `[${payload.eventType}] - No recipients found, aborting notification sending.`,
-        LogContext.NOTIFICATIONS
-      );
-      return [];
-    }
-
-    for (const recipient of payload.recipients) {
-      const templatePayload = this.createEmailPayloadForEvent(
-        payload,
-        recipient
-      );
-      const emailNotificationTemplate =
-        this.notificationTemplateBuilder.buildTemplate(
-          emailTemplate,
-          templatePayload
-        );
-
-      notificationTemplatesToSend.push(emailNotificationTemplate);
-    }
-
-    this.logger.verbose?.(
-      ' ...building notifications - completed',
-      LogContext.NOTIFICATIONS
-    );
-
-    // filter all rejected notifications and log them
-    const notificationResults = await Promise.allSettled(
-      notificationTemplatesToSend
-    );
-    const notificationTemplateTypes: NotificationTemplateType[] = [];
-    notificationResults.forEach(notification => {
-      if (this.isPromiseFulfilledResult(notification)) {
-        const value = notification.value;
-        if (value) notificationTemplateTypes.push(value);
-      } else {
-        this.logger.warn(
-          `Filtering rejected notification content: ${notification.reason}`,
-          LogContext.NOTIFICATIONS
-        );
-      }
-    });
-    try {
-      return Promise.allSettled(
-        notificationTemplateTypes.map(x => this.sendNotification(x))
-      );
-    } catch (error: any) {
-      this.logger.error(error.message);
-    }
-    return [];
-  }
-
-  private async sendNotification(
-    notification: NotificationTemplateType
-  ): Promise<NotificationStatus> {
-    if (!Object.keys(notification.channels).length) {
-      throw new NotificationNoChannelsException(
-        `Notification (${notification.name}) - (${notification.title}) no channels provided`
-      );
-    }
-    // since this is the only channel we have; log an error if it's not provided
-    if (!notification.channels.email) {
-      this.logger.error?.(
-        `Notification (${notification.name}) - (${notification.title}) no email channel provided`,
-        LogContext.NOTIFICATIONS
-      );
-      return { status: 'error' };
-    }
-
-    const mailFrom = this.configService.get(
-      ConfigurationTypes.NOTIFICATION_PROVIDERS
-    )?.email?.from;
-    const mailFromName = this.configService.get(
-      ConfigurationTypes.NOTIFICATION_PROVIDERS
-    )?.email?.from_name;
-
-    if (!mailFrom) {
-      this.logger.error?.(
-        'Email from address not configured',
-        LogContext.NOTIFICATIONS
-      );
-      return { status: 'error' };
-    }
-
-    const mailFromNameConfigured = mailFromName
-      ? `${mailFromName} <${mailFrom}>`
-      : mailFrom;
-
-    notification.channels.email.from = mailFromNameConfigured;
-
-    try {
-      const res = await this.notifmeService.send(notification.channels);
-      this.logger.verbose?.(
-        `[${notification.name}] Notification sent from ${mailFromNameConfigured} - status: ${res.status}`,
-        LogContext.NOTIFICATIONS
-      );
-      return res;
-    } catch (reason) {
-      this.logger.warn?.(
-        `Notification rejected with reason: ${reason}`,
-        LogContext.NOTIFICATIONS
-      );
-      return { status: 'error' };
     }
   }
 
