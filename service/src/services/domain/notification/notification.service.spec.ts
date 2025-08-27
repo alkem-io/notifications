@@ -45,6 +45,7 @@ import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/noti
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
 import { PlatformAdminUserProfileCreatedNotificationBuilder } from '../builders/platform/platform.admin.user.profile.created.notification.builder';
 import { NotificationTemplateBuilder } from '@src/services/external/notifme';
+import { SpaceAdminCollaborationCalloutContributionNotificationBuilder } from '../builders/space/space.admin.collaboration.callout.contribution.notification.builder';
 
 const testData = {
   ...spaceAdminsL0Data,
@@ -85,6 +86,7 @@ describe('NotificationService', () => {
         SpaceCommunicationUpdateNotificationBuilder,
         SpaceLeadCommunicationMessageDirectNotificationBuilder,
         SpaceCommunicationMessageDirectSenderNotificationBuilder,
+        SpaceAdminCollaborationCalloutContributionNotificationBuilder,
         SpaceCollaborationCalloutCommentNotificationBuilder,
         SpaceCollaborationCalloutContributionNotificationBuilder,
         SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
