@@ -116,10 +116,12 @@ export class NotificationService {
     }
   }
 
-  private async processNotificationEvent(
+  public async processNotificationEvent(
     payload: BaseEventPayload
   ): Promise<PromiseSettledResult<NotificationStatus>[]> {
-    const emailTemplate = this.getEmailTemplateToUseForEvent(payload.eventType);
+    const emailTemplate = this.getEmailTemplateToUseForEvent(
+      payload.eventType as NotificationEvent
+    );
     const emailResults = await this.buildAndSendEmailNotifications(
       payload,
       emailTemplate
@@ -281,75 +283,75 @@ export class NotificationService {
         );
       default:
         throw new EventPayloadNotProvidedException(
-          'Event payload not provided',
+          `EmailPayload: Unable to recognize event:  ${eventPayload.eventType}`,
           LogContext.NOTIFICATION_BUILDER
         );
     }
   }
 
-  private getEmailTemplateToUseForEvent(event: string): string {
+  private getEmailTemplateToUseForEvent(event: NotificationEvent): string {
     switch (event) {
-      case NotificationEvent.UserSpaceCommunityApplication:
+      case NotificationEvent.UserSpaceCommunityApplication.valueOf():
         return 'user.space.community.application.submitted';
-      case NotificationEvent.SpaceAdminCommunityApplication:
+      case NotificationEvent.SpaceAdminCommunityApplication.valueOf():
         return 'space.admin.community.user.application.received';
-      case NotificationEvent.UserSpaceCommunityInvitation:
+      case NotificationEvent.UserSpaceCommunityInvitation.valueOf():
         return 'user.space.community.invitation.received';
-      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation:
+      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation.valueOf():
         return 'virtual.contributor.invitation.received';
-      case NotificationEvent.SpaceCommunityInvitationUserPlatform:
+      case NotificationEvent.SpaceCommunityInvitationUserPlatform.valueOf():
         return 'user.space.community.invitation.received';
-      case NotificationEvent.UserSpaceCommunityJoined:
+      case NotificationEvent.UserSpaceCommunityJoined.valueOf():
         return 'user.space.community.joined';
-      case NotificationEvent.SpaceAdminCommunityNewMember:
+      case NotificationEvent.SpaceAdminCommunityNewMember.valueOf():
         return 'space.admin.community.new.member';
-      case NotificationEvent.PlatformAdminGlobalRoleChanged:
+      case NotificationEvent.PlatformAdminGlobalRoleChanged.valueOf():
         return 'platform.admin.user.global.role.change';
-      case NotificationEvent.UserSignUpWelcome:
+      case NotificationEvent.UserSignUpWelcome.valueOf():
         return 'user.sign.up.welcome';
-      case NotificationEvent.PlatformAdminUserProfileCreated:
+      case NotificationEvent.PlatformAdminUserProfileCreated.valueOf():
         return 'platform.admin.user.profile.created';
-      case NotificationEvent.PlatformAdminUserProfileRemoved:
+      case NotificationEvent.PlatformAdminUserProfileRemoved.valueOf():
         return 'platform.admin.user.profile.removed';
-      case NotificationEvent.SpaceCommunicationUpdate:
+      case NotificationEvent.SpaceCommunicationUpdate.valueOf():
         return 'space.communication.update.member';
-      case NotificationEvent.PlatformForumDiscussionCreated:
+      case NotificationEvent.PlatformForumDiscussionCreated.valueOf():
         return 'platform.forum.discussion.created';
-      case NotificationEvent.PlatformForumDiscussionComment:
+      case NotificationEvent.PlatformForumDiscussionComment.valueOf():
         return 'platform.forum.discussion.comment';
-      case NotificationEvent.UserMessage:
+      case NotificationEvent.UserMessage.valueOf():
         return 'user.message.recipient';
-      case NotificationEvent.UserMessageSender:
+      case NotificationEvent.UserMessageSender.valueOf():
         return 'user.message.sender';
-      case NotificationEvent.OrganizationAdminMessage:
+      case NotificationEvent.OrganizationAdminMessage.valueOf():
         return 'organization.message.recipient';
-      case NotificationEvent.OrganizationMessageSender:
+      case NotificationEvent.OrganizationMessageSender.valueOf():
         return 'organization.message.sender';
-      case NotificationEvent.SpaceLeadCommunicationMessage:
+      case NotificationEvent.SpaceLeadCommunicationMessage.valueOf():
         return 'space.lead.communication.message.direct.receiver';
-      case NotificationEvent.SpaceCommunicationMessageSender:
+      case NotificationEvent.SpaceCommunicationMessageSender.valueOf():
         return 'space.communication.message.direct.sender';
-      case NotificationEvent.UserMentioned:
+      case NotificationEvent.UserMentioned.valueOf():
         return 'user.mention';
-      case NotificationEvent.OrganizationAdminMentioned:
+      case NotificationEvent.OrganizationAdminMentioned.valueOf():
         return 'organization.mention';
-      case NotificationEvent.SpaceCollaborationCalloutComment:
+      case NotificationEvent.SpaceCollaborationCalloutComment.valueOf():
         return 'space.collaboration.callout.comment';
-      case NotificationEvent.SpaceCollaborationCalloutContribution:
+      case NotificationEvent.SpaceCollaborationCalloutContribution.valueOf():
         return 'space.collaboration.callout.contribution';
-      case NotificationEvent.SpaceAdminCollaborationCalloutContribution:
+      case NotificationEvent.SpaceAdminCollaborationCalloutContribution.valueOf():
         return 'space.admin.collaboration.callout.contribution';
-      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment:
+      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment.valueOf():
         return 'space.collaboration.callout.post.contribution.comment';
-      case NotificationEvent.SpaceCollaborationCalloutPublished:
+      case NotificationEvent.SpaceCollaborationCalloutPublished.valueOf():
         return 'space.collaboration.callout.published';
-      case NotificationEvent.UserCommentReply:
+      case NotificationEvent.UserCommentReply.valueOf():
         return 'user.comment.reply';
-      case NotificationEvent.PlatformAdminSpaceCreated:
+      case NotificationEvent.PlatformAdminSpaceCreated.valueOf():
         return 'platform.admin.space.created';
       default:
         throw new EventPayloadNotProvidedException(
-          'Event payload not provided',
+          `Email template: Unable to recognize event: ${event}`,
           LogContext.NOTIFICATION_BUILDER
         );
     }

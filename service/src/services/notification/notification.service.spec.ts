@@ -9,43 +9,13 @@ import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
 import { NotificationService } from './notification.service';
 import { ConfigService } from '@nestjs/config';
 import {
-  UserSignUpWelcomeNotificationBuilder,
-  UserMentionNotificationBuilder,
-  UserSpaceCommunityJoinedNotificationBuilder,
-  UserMessageRecipientNotificationBuilder,
-  UserMessageSenderNotificationBuilder,
-  UserSpaceCommunityApplicationSubmittedNotificationBuilder,
-  UserSpaceCommunityInvitationReceivedNotificationBuilder,
-  UserCommentReplyNotificationBuilder,
-  SpaceCollaborationCalloutContributionNotificationBuilder,
-  SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
-  SpaceCollaborationCalloutPublishedNotificationBuilder,
-  PlatformForumDiscussionCreatedNotificationBuilder,
-  PlatformForumDiscussionCommentNotificationBuilder,
-  SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
-  SpaceCommunicationUpdateNotificationBuilder,
-  PlatformAdminUserProfileRemovedNotificationBuilder,
-  SpaceLeadCommunicationMessageDirectNotificationBuilder,
-  SpaceAdminCommunityApplicationReceivedNotificationBuilder,
-  SpaceAdminCommunityNewMemberNotificationBuilder,
-  OrganizationMentionNotificationBuilder,
-  OrganizationMessageSenderNotificationBuilder,
-  OrganizationMessageRecipientNotificationBuilder,
-} from '../builders';
-import {
   MockConfigServiceProvider,
   MockNotifmeProvider,
   MockWinstonProvider,
 } from '@test/mocks';
-import { SpaceCollaborationCalloutCommentNotificationBuilder } from '../builders/space/space.collaboration.callout.comment.notification.builder';
-import { PlatformAdminGlobalRoleChangeNotificationBuilder } from '../builders/platform/platform.admin.global.role.change.notification.builder';
-import { VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder } from '../builders/virtual-contributor/virtual.contributor.space.community.invitation.received.notification.builder';
-import { PlatformAdminSpaceCreatedNotificationBuilder } from '../builders/platform/platform.admin.space.created.notification.builder';
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
-import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
-import { PlatformAdminUserProfileCreatedNotificationBuilder } from '../builders/platform/platform.admin.user.profile.created.notification.builder';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
-import { SpaceAdminCollaborationCalloutContributionNotificationBuilder } from '../builders/space/space.admin.collaboration.callout.contribution.notification.builder';
+import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
 
 const testData = {
   ...spaceAdminsL0Data,
@@ -67,36 +37,8 @@ describe('NotificationService', () => {
         MockNotifmeProvider,
         MockWinstonProvider,
         NotificationService,
-        UserSignUpWelcomeNotificationBuilder,
-        PlatformForumDiscussionCommentNotificationBuilder,
-        PlatformAdminUserProfileCreatedNotificationBuilder,
-        PlatformAdminUserProfileRemovedNotificationBuilder,
-        PlatformForumDiscussionCreatedNotificationBuilder,
-        PlatformAdminGlobalRoleChangeNotificationBuilder,
-        PlatformAdminSpaceCreatedNotificationBuilder,
-        OrganizationMessageRecipientNotificationBuilder,
-        OrganizationMessageSenderNotificationBuilder,
-        OrganizationMentionNotificationBuilder,
-        UserSpaceCommunityInvitationReceivedNotificationBuilder,
-        SpaceCommunityInvitationPlatformCreatedNotificationBuilder,
-        UserSpaceCommunityJoinedNotificationBuilder,
-        SpaceAdminCommunityNewMemberNotificationBuilder,
-        UserSpaceCommunityApplicationSubmittedNotificationBuilder,
-        SpaceAdminCommunityApplicationReceivedNotificationBuilder,
-        SpaceCommunicationUpdateNotificationBuilder,
-        SpaceLeadCommunicationMessageDirectNotificationBuilder,
-        SpaceCommunicationMessageDirectSenderNotificationBuilder,
-        SpaceAdminCollaborationCalloutContributionNotificationBuilder,
-        SpaceCollaborationCalloutCommentNotificationBuilder,
-        SpaceCollaborationCalloutContributionNotificationBuilder,
-        SpaceCollaborationCalloutPostContributionCommentNotificationBuilder,
-        SpaceCollaborationCalloutPublishedNotificationBuilder,
-        VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder,
+        NotificationEmailPayloadBuilderService,
         MockConfigServiceProvider,
-        UserCommentReplyNotificationBuilder,
-        UserMentionNotificationBuilder,
-        UserMessageSenderNotificationBuilder,
-        UserMessageRecipientNotificationBuilder,
         NotificationTemplateBuilder,
       ],
     }).compile();
@@ -131,10 +73,9 @@ describe('NotificationService', () => {
         .spyOn(notifmeService, 'send')
         .mockResolvedValue({ status: 'success' });
 
-      const res =
-        await notificationService.sendUserSpaceCommunityApplicationNotifications(
-          testData.data as NotificationEventPayloadSpaceCommunityApplication
-        );
+      const res = await notificationService.processNotificationEvent(
+        testData.data as NotificationEventPayloadSpaceCommunityApplication
+      );
       for (const notificationStatus of res) {
         expect(
           (notificationStatus as PromiseFulfilledResult<NotificationStatus>)
@@ -150,10 +91,9 @@ describe('NotificationService', () => {
         .spyOn(notifmeService, 'send')
         .mockResolvedValue({ status: 'success' });
 
-      const res =
-        await notificationService.sendUserSpaceCommunityApplicationNotifications(
-          testData.data as NotificationEventPayloadSpaceCommunityApplication
-        );
+      const res = await notificationService.processNotificationEvent(
+        testData.data as NotificationEventPayloadSpaceCommunityApplication
+      );
 
       for (const notificationStatus of res) {
         expect(
