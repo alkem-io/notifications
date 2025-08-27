@@ -64,6 +64,10 @@ import { PlatformAdminUserProfileCreatedNotificationBuilder } from '../builders/
 import { SpaceCommunicationMessageDirectSenderNotificationBuilder } from '../builders/space/space.communication.message.direct.sender.notification.builder';
 import { EmailTemplate } from '@src/common/enums/email.template';
 import { SpaceAdminCollaborationCalloutContributionNotificationBuilder } from '../builders/space/space.admin.collaboration.callout.contribution.notification.builder';
+import { User } from '@src/core/models';
+import { BaseEmailPayload } from '@src/common/email-template-payload/base.email.payload';
+import { NotificationEvent } from '@src/generated/alkemio-schema';
+import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
 @Injectable()
 export class NotificationService {
   constructor(
@@ -102,7 +106,8 @@ export class NotificationService {
     private userMessageSenderNotificationBuilder: UserMessageSenderNotificationBuilder,
     private virtualContributorSpaceCommunityInvitationReceivedCreatedNotificationBuilder: VirtualContributorSpaceCommunityInvitationReceivedNotificationBuilder,
 
-    private notificationTemplateBuilder: NotificationTemplateBuilder
+    private notificationTemplateBuilder: NotificationTemplateBuilder,
+    private notificationEmailPayloadBuilderService: NotificationEmailPayloadBuilderService
   ) {}
 
   private async processNotificationEvent(
@@ -117,6 +122,22 @@ export class NotificationService {
     );
 
     return [...emailResults];
+  }
+
+  async createEmailPayloadForEvent(
+    eventPayload: BaseEventPayload,
+    recipient: User
+  ): Promise<BaseEmailPayload | undefined> {
+    // Each eventPayload has the event type
+    switch (eventPayload.eventType) {
+      case NotificationEvent.UserSpaceCommunityApplication:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityApplication(
+          eventPayload as NotificationEventPayloadSpaceCommunityApplication,
+          recipient
+        );
+      // Add more cases for different event types as needed
+    }
+    return undefined;
   }
 
   async sendUserSpaceCommunityApplicationNotifications(
