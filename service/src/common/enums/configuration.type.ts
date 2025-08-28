@@ -4,6 +4,4 @@ export enum ConfigurationTypes {
   HOSTING = 'hosting',
   NOTIFICATION_PROVIDERS = 'notification_providers',
   ALKEMIO = 'alkemio',
-  KRATOS = 'kratos',
-  NOTIFICATION_RECIPIENTS = 'recipients',
 }

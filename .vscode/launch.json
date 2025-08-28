@@ -5,9 +5,9 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug Alkemio Notifications",
       "type": "node",
       "request": "launch",
-      "name": "Debug Alkemio Notifications",
       "args": ["${workspaceFolder}/service/src/main.ts"],
       "runtimeArgs": [
         "--nolazy",
@@ -20,7 +20,9 @@
       "envFile": "${workspaceFolder}/service/.env",
       "cwd": "${workspaceRoot}/service",
       "console": "integratedTerminal",
-      "protocol": "inspector"
+      "env": {
+        "TS_NODE_PROJECT": "tsconfig.debug.json"
+      }
     },
     {
       "name": "Debug Jest CI Tests",
@@ -33,8 +35,12 @@
         "--config",
         "${workspaceRoot}/service/test/config/jest.config.ci.js"
       ],
+      "cwd": "${workspaceRoot}/service",
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "TS_NODE_PROJECT": "tsconfig.debug.json"
+      }
     }
   ]
 }

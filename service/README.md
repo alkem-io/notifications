@@ -30,25 +30,93 @@ npm run start:services
 7. Navigate to http://localhost:5051/mailcount. You will see mailCount > 0 (mailslurper will reset the count on each restart).
 8. Navigate to http://localhost:5051/mail. Search for YOUR_DATA. You will find it in the mail message.
 
-## Templates
+## Adding New Notifications
 
-To add a template:
+The notification architecture has been significantly simplified. Adding a new notification now requires fewer steps and no individual builder classes.
 
-1. Create a new file in the appropriate domain directory (e.g., `lib/src/dto/space/notification.event.payload.space.mynewtype.ts`);
-2. Define your interface, extending the relevant base payload (e.g., `NotificationEventPayloadSpace`)
-3. Create or update the email payload TypeScript file under `service/src/common/email-template-payload/`, using the new naming convention (e.g., `space.mynewtype.email.payload.ts`).
-4. Implement a notification builder class in `service/src/services/domain/builders/space/`.
-5. Register your builder in `app.module.ts` providers.
-6. Add or update the email template in `service/src/email-templates/`
+### 1. Define the Event Payload Interface (lib)
+
+Create a new notification event payload in the appropriate domain directory.
+
+**Reference**: `lib/src/dto/space/notification.event.payload.space.communication.message.direct.ts`
+
+- Extend the relevant base payload (e.g., `NotificationEventPayloadSpace`)
+- Define event-specific properties (triggeredBy, message, etc.)
+- Export it in the respective index file (`lib/src/dto/space/index.ts`)
+
+### 2. Create the Email Template Payload Interface (service)
+
+Define the email template payload interface.
+
+**Reference**: `service/src/services/notification/email-template-payload/space.communication.message.direct.email.payload.ts`
+
+- Extend `BaseSpaceEmailPayload` (or `BaseEmailPayload` for non-space notifications)
+- Define email-specific data structure (messageSender, message, etc.)
+- Export it in the email template payload index file
+
+### 3. Add Method to Email Payload Builder Service
+
+Add a new method to the consolidated builder service.
+
+**Reference**: `service/src/services/notification/notification.email.payload.builder.service.ts`
+
+- Create a method that transforms event payload to email template payload
+- Follow naming convention: `createEmailTemplatePayload[NotificationType]`
+- Use helper methods like `createSpaceBaseEmailPayload()` when applicable
+
+### 4. Create the Email Template
+
+Create the email template file using Nunjucks templating.
+
+**Reference**: `service/src/email-templates/space.lead.communication.message.direct.receiver.js`
+
+- Use `module.exports = () => ({ ... })` format
+- Include name, title, version, and channels
+- Define email properties: to, replyTo, subject, html
+- Use template variables from email payload (e.g., `{{messageSender.displayName}}`)
+- Extend the base layout: `{% extends "src/email-templates/_layouts/email-transactional.html" %}`
+- Include footer block: `${templates.footerBlock}`
+
+### 5. Add Event Case to Notification Service
+
+Add cases to both switch statements in the notification service.
+
+**Reference**: `service/src/services/notification/notification.service.ts`
+
+- In `createEmailPayloadForEvent()`: Add new case for your `NotificationEvent` enum value to call the corresponding method from `notificationEmailPayloadBuilderService`
+- In `getEmailTemplateToUseForEvent()`: Add new case to map your event to the email template filename
+- Cast the eventPayload to your specific payload type
+
+**Note**: Template mapping is now handled directly in the `getEmailTemplateToUseForEvent` method rather than through a separate enum.
+
+### Simplified Architecture Benefits
+
+- **No individual builder classes** - All logic consolidated in one service
+- **No dependency injection complexity** - Single service handles all transformations
+- **No app.module registration** - Builder service is automatically available
+- **Centralized template mapping** - Email template mapping handled directly in service method
+- **Fewer files to maintain** - Consolidated approach reduces code duplication
 
 ## Additional Information
 
-After the latest refactoring the code follows the domain structure of the `server`.
-Most notification payloads, categories, and related enums or types have been deleted, focusing the codebase solely on email/external notifications. Types are obtain with codegen.
-There's no additional service/sdk communication logic. The service receives all the required data - payload with recipients.
-There are no additional checks, just sending the matched template to the provided set of recipients.
+After the latest architectural simplification, the notification system has been streamlined significantly:
 
-### New DTO Structure:
+### Current Architecture:
 
-- Notification payloads now use more specific interfaces, grouped under folders like `space/`, `platform/`, `organization/`, and `user/`.
-- DTOs now use `UserPayload` and `ContributorPayload` types for strong typing of `users/recipients`.
+The notification service now follows a simplified pattern:
+
+1. **Event Payloads** (`lib/src/dto/`): Define incoming notification event data structure
+2. **Email Template Payloads** (`service/src/services/notification/email-template-payload/`): Define email template data structure
+3. **Consolidated Builder Service** (`service/src/services/notification/notification.email.payload.builder.service.ts`): Single service that transforms all event payloads to email payloads
+4. **Email Templates** (`service/src/email-templates/`): Define email content and formatting
+5. **Notification Service** (`service/src/services/notification/notification.service.ts`): Orchestrates notification sending using a switch statement for event types
+
+### Domain Structure:
+
+- `space/`: Space and subspace-related notifications
+- `platform/`: Platform-wide notifications (admin actions, global events)
+- `organization/`: Organization-specific notifications
+- `user/`: User-specific notifications (profile, direct messages)
+- `virtual-contributor/`: Virtual contributor-related notifications
+
+This simplified architecture makes adding new notifications much more straightforward while maintaining the domain-driven design principles.
