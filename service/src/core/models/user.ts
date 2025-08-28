@@ -6,7 +6,6 @@ export type User = Contributor & {
 
 export type Contributor = {
   id: string;
-  nameID: string;
   profile: {
     displayName: string;
     url: string;

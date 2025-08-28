@@ -1,4 +1,4 @@
-import { convertMarkdownToHtml } from '../../src/utils/markdown-to-html.util';
+import { convertMarkdownToHtml } from '../../src/services/notification/utils/markdown-to-html.util';
 
 describe('Markdown to HTML Converter', () => {
   it('should convert basic markdown to HTML', () => {
