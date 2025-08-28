@@ -1,4 +1,4 @@
-FROM node:16.15.0-alpine
+FROM node:22.16.0-alpine
 
 
 # Create app directory
@@ -12,8 +12,7 @@ ARG ENV_ARG=production
 # where available (npm@5+)
 COPY ./service/package*.json ./
 
-RUN npm i -g npm@8.5.5
-RUN npm install
+RUN npm i -g npm@10.9.3 && npm install
 
 ## Add the wait script to the image
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
