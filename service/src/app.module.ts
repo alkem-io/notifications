@@ -8,8 +8,7 @@ import configuration from './config/configuration';
 import { HttpExceptionsFilter } from './core';
 import { HealthController } from './health.controller';
 import { NotifmeModule } from './services/notifme/notifme.module';
-import { NotificationTemplateBuilder } from './services/notifme/notification.templates.builder';
-import { NotificationModule } from './services/notification/notification.module';
+import { NotificationModule } from './services/notification/notifIcation.module';
 
 @Module({
   imports: [
@@ -29,7 +28,6 @@ import { NotificationModule } from './services/notification/notification.module'
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
     },
-    NotificationTemplateBuilder,
   ],
   controllers: [AppController, HealthController],
 })

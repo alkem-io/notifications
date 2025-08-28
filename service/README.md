@@ -79,28 +79,22 @@ Create the email template file using Nunjucks templating.
 
 ### 5. Add Event Case to Notification Service
 
-Add a case to the switch statement in the notification service.
+Add cases to both switch statements in the notification service.
 
-**Reference**: `service/src/services/notification/notification.service.ts` (method: `createEmailPayloadForEvent`)
+**Reference**: `service/src/services/notification/notification.service.ts`
 
-- Add new case for your `NotificationEvent` enum value
-- Call the corresponding method from `notificationEmailPayloadBuilderService`
+- In `createEmailPayloadForEvent()`: Add new case for your `NotificationEvent` enum value to call the corresponding method from `notificationEmailPayloadBuilderService`
+- In `getEmailTemplateToUseForEvent()`: Add new case to map your event to the email template filename
 - Cast the eventPayload to your specific payload type
 
-### 6. Add Email Template Enum
-
-Add the template name to the EmailTemplate enum.
-
-**Reference**: `service/src/common/enums/email.template.ts`
-
-- Add new entry matching the email template filename
-- Use descriptive naming following existing patterns
+**Note**: Template mapping is now handled directly in the `getEmailTemplateToUseForEvent` method rather than through a separate enum.
 
 ### Simplified Architecture Benefits
 
 - **No individual builder classes** - All logic consolidated in one service
 - **No dependency injection complexity** - Single service handles all transformations
 - **No app.module registration** - Builder service is automatically available
+- **Centralized template mapping** - Email template mapping handled directly in service method
 - **Fewer files to maintain** - Consolidated approach reduces code duplication
 
 ## Additional Information
