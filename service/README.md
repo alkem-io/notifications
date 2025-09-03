@@ -30,80 +30,93 @@ npm run start:services
 7. Navigate to http://localhost:5051/mailcount. You will see mailCount > 0 (mailslurper will reset the count on each restart).
 8. Navigate to http://localhost:5051/mail. Search for YOUR_DATA. You will find it in the mail message.
 
-## Templates
+## Adding New Notifications
 
-To add a template:
+The notification architecture has been significantly simplified. Adding a new notification now requires fewer steps and no individual builder classes.
 
-1. Create a file under src/templates.
-2. Copy welcome.js
-3. Change the template name
-4. Define your channels. You can use [this](https://github.com/notifme/notifme-template/tree/master/example) as an example.
-5. In the file you want to use the template, import nunjucks and notifme-template.
-6. Render your template
+### 1. Define the Event Payload Interface (lib)
 
-```typescript
-const notification = await render('template_name', payload, 'en-US');
-```
+Create a new notification event payload in the appropriate domain directory.
 
-7. Send notification
+**Reference**: `lib/src/dto/space/notification.event.payload.space.communication.message.direct.ts`
 
-```typescript
-await notifmeSdk.send(notification.channels).then(console.log);
-```
+- Extend the relevant base payload (e.g., `NotificationEventPayloadSpace`)
+- Define event-specific properties (triggeredBy, message, etc.)
+- Export it in the respective index file (`lib/src/dto/space/index.ts`)
 
-To test the welcome (sample) template, you can use the following payload in RabbitMQ Management UI
+### 2. Create the Email Template Payload Interface (service)
 
-```json
-{
-  "pattern": "communityApplicationCreated",
-  "data": {
-    "applicantionCreatorID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
-    "applicantID": "f0a47bad-eca5-4942-84ac-4dc9f085b7b8",
-    "community": {
-      "name": "02 Zero Hunger",
-      "type": "challenge"
-    },
-    "space": {
-      "id": "32818605-ef2f-4395-bb49-1dc2835c23de",
-      "challenge": {
-        "id": "7b86f954-d8c3-4fac-a652-b922c80e5c20",
-        "opportunity": {
-          "id": "636be60f-b64a-4742-8b50-69e608601935"
-        }
-      }
-    }
-  }
-}
-```
+Define the email template payload interface.
 
-Note: replace applicantionCreatorID, applicantID, and space + challenge + opportunity IDs with IDs you have in your database. You can run the following gql queries to find them:
+**Reference**: `service/src/services/notification/email-template-payload/space.communication.message.direct.email.payload.ts`
 
-```gql
-query {
-  spaces {
-    id
-    displayName
-    challenges {
-      id
-      displayName
-      nameID
-      community {
-        id
-        displayName
-      }
-      opportunities {
-        displayName
-        id
-      }
-    }
-  }
-}
-```
+- Extend `BaseSpaceEmailPayload` (or `BaseEmailPayload` for non-space notifications)
+- Define email-specific data structure (messageSender, message, etc.)
+- Export it in the email template payload index file
 
-```gql
-query {
-  me {
-    id
-  }
-}
-```
+### 3. Add Method to Email Payload Builder Service
+
+Add a new method to the consolidated builder service.
+
+**Reference**: `service/src/services/notification/notification.email.payload.builder.service.ts`
+
+- Create a method that transforms event payload to email template payload
+- Follow naming convention: `createEmailTemplatePayload[NotificationType]`
+- Use helper methods like `createSpaceBaseEmailPayload()` when applicable
+
+### 4. Create the Email Template
+
+Create the email template file using Nunjucks templating.
+
+**Reference**: `service/src/email-templates/space.lead.communication.message.direct.receiver.js`
+
+- Use `module.exports = () => ({ ... })` format
+- Include name, title, version, and channels
+- Define email properties: to, replyTo, subject, html
+- Use template variables from email payload (e.g., `{{messageSender.displayName}}`)
+- Extend the base layout: `{% extends "src/email-templates/_layouts/email-transactional.html" %}`
+- Include footer block: `${templates.footerBlock}`
+
+### 5. Add Event Case to Notification Service
+
+Add cases to both switch statements in the notification service.
+
+**Reference**: `service/src/services/notification/notification.service.ts`
+
+- In `createEmailPayloadForEvent()`: Add new case for your `NotificationEvent` enum value to call the corresponding method from `notificationEmailPayloadBuilderService`
+- In `getEmailTemplateToUseForEvent()`: Add new case to map your event to the email template filename
+- Cast the eventPayload to your specific payload type
+
+**Note**: Template mapping is now handled directly in the `getEmailTemplateToUseForEvent` method rather than through a separate enum.
+
+### Simplified Architecture Benefits
+
+- **No individual builder classes** - All logic consolidated in one service
+- **No dependency injection complexity** - Single service handles all transformations
+- **No app.module registration** - Builder service is automatically available
+- **Centralized template mapping** - Email template mapping handled directly in service method
+- **Fewer files to maintain** - Consolidated approach reduces code duplication
+
+## Additional Information
+
+After the latest architectural simplification, the notification system has been streamlined significantly:
+
+### Current Architecture:
+
+The notification service now follows a simplified pattern:
+
+1. **Event Payloads** (`lib/src/dto/`): Define incoming notification event data structure
+2. **Email Template Payloads** (`service/src/services/notification/email-template-payload/`): Define email template data structure
+3. **Consolidated Builder Service** (`service/src/services/notification/notification.email.payload.builder.service.ts`): Single service that transforms all event payloads to email payloads
+4. **Email Templates** (`service/src/email-templates/`): Define email content and formatting
+5. **Notification Service** (`service/src/services/notification/notification.service.ts`): Orchestrates notification sending using a switch statement for event types
+
+### Domain Structure:
+
+- `space/`: Space and subspace-related notifications
+- `platform/`: Platform-wide notifications (admin actions, global events)
+- `organization/`: Organization-specific notifications
+- `user/`: User-specific notifications (profile, direct messages)
+- `virtual-contributor/`: Virtual contributor-related notifications
+
+This simplified architecture makes adding new notifications much more straightforward while maintaining the domain-driven design principles.
