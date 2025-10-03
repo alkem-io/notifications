@@ -240,11 +240,6 @@ export class NotificationService {
   ): BaseEmailPayload {
     // Each eventPayload has the event type
     switch (eventPayload.eventType) {
-      case NotificationEvent.UserSpaceCommunityApplication:
-        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityApplication(
-          eventPayload as NotificationEventPayloadSpaceCommunityApplication,
-          recipient
-        );
       case NotificationEvent.SpaceAdminCommunityApplication:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceAdminCommunityApplication(
           eventPayload as NotificationEventPayloadSpaceCommunityApplication,
@@ -395,8 +390,6 @@ export class NotificationService {
 
   private getEmailTemplateToUseForEvent(event: NotificationEvent): string {
     switch (event) {
-      case NotificationEvent.UserSpaceCommunityApplication.valueOf():
-        return 'user.space.community.application.submitted';
       case NotificationEvent.SpaceAdminCommunityApplication.valueOf():
         return 'space.admin.community.user.application.received';
       case NotificationEvent.UserSpaceCommunityInvitation.valueOf():
