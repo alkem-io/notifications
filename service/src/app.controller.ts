@@ -244,18 +244,6 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.SpaceCommunicationMessageSender)
-  async sendSpaceCommunicationMessageSenderNotifications(
-    @Payload()
-    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
-    @Ctx() context: RmqContext
-  ) {
-    return this.notificationService.processNotificationEvent(
-      eventPayload,
-      context
-    );
-  }
-
   @EventPattern(NotificationEvent.UserMentioned)
   async sendUserMentionNotifications(
     @Payload() eventPayload: NotificationEventPayloadUserMessageRoom,

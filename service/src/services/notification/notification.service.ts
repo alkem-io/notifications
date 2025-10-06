@@ -335,11 +335,6 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCommunicationMessageDirect,
           recipient
         );
-      case NotificationEvent.SpaceCommunicationMessageSender:
-        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunicationMessageSender(
-          eventPayload as NotificationEventPayloadSpaceCommunicationMessageDirect,
-          recipient
-        );
       case NotificationEvent.SpaceCollaborationCalloutContribution:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCollaborationCalloutContribution(
           eventPayload as NotificationEventPayloadSpaceCollaborationCallout,
@@ -426,8 +421,6 @@ export class NotificationService {
         return 'organization.message.sender';
       case NotificationEvent.SpaceLeadCommunicationMessage.valueOf():
         return 'space.lead.communication.message.direct.receiver';
-      case NotificationEvent.SpaceCommunicationMessageSender.valueOf():
-        return 'space.communication.message.direct.sender';
       case NotificationEvent.UserMentioned.valueOf():
         return 'user.mention';
       case NotificationEvent.OrganizationAdminMentioned.valueOf():
