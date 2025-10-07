@@ -40,17 +40,6 @@ export class AppController {
 
   // todo is auto validation of payloads possible/
 
-  @EventPattern(NotificationEvent.UserSpaceCommunityApplication)
-  async sendSpaceCommunityApplicationRecipientNotification(
-    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
-    @Ctx() context: RmqContext
-  ) {
-    return this.notificationService.processNotificationEvent(
-      eventPayload,
-      context
-    );
-  }
-
   @EventPattern(NotificationEvent.SpaceAdminCommunityApplication)
   async sendSpaceCommunityApplicationAdminNotification(
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
@@ -245,18 +234,6 @@ export class AppController {
 
   @EventPattern(NotificationEvent.SpaceLeadCommunicationMessage)
   async sendSpaceCommunicationMessageRecipientNotifications(
-    @Payload()
-    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
-    @Ctx() context: RmqContext
-  ) {
-    return this.notificationService.processNotificationEvent(
-      eventPayload,
-      context
-    );
-  }
-
-  @EventPattern(NotificationEvent.SpaceCommunicationMessageSender)
-  async sendSpaceCommunicationMessageSenderNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
     @Ctx() context: RmqContext

@@ -427,20 +427,6 @@ export class NotificationEmailPayloadBuilderService {
       message: eventPayload.message,
     };
   }
-  public createEmailTemplatePayloadSpaceCommunicationMessageSender(
-    eventPayload: NotificationEventPayloadSpaceCommunicationMessageDirect,
-    recipient: User
-  ): SpaceCommunicationMessageDirectEmailPayload {
-    return {
-      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
-      messageSender: {
-        displayName: eventPayload.triggeredBy.profile.displayName,
-        firstName: eventPayload.triggeredBy.firstName,
-        email: eventPayload.triggeredBy.email,
-      },
-      message: eventPayload.message,
-    };
-  }
   public createEmailTemplatePayloadSpaceCollaborationCalloutContribution(
     eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
     recipient: User
