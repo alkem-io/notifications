@@ -4,6 +4,7 @@ import { convertMarkdownToText } from '@src/services/notification/utils/markdown
 import { convertMarkdownToHtml } from '@src/services/notification/utils/markdown-to-html.util';
 import {
   CommunityApplicationCreatedEmailPayload,
+  CommunityApplicationDeclinedEmailPayload,
   CommunityInvitationCreatedEmailPayload,
   CommunityNewMemberEmailPayload,
   CommunicationUpdateCreatedEmailPayload,
@@ -116,6 +117,22 @@ export class NotificationEmailPayloadBuilderService {
       spaceAdminURL: eventPayload.space.adminURL,
       welcomeMessage: eventPayload.welcomeMessage,
       invitationsURL,
+    };
+  }
+
+  public createEmailTemplatePayloadUserSpaceCommunityApplicationDeclined(
+    eventPayload: NotificationEventPayloadSpaceCommunityApplication,
+    recipient: User
+  ): CommunityApplicationDeclinedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      decliner: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      spaceURL: eventPayload.space.profile.url,
     };
   }
 
