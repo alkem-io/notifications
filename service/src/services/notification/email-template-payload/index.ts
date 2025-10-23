@@ -1,6 +1,7 @@
 export * from './base.email.payload';
 export * from './base.space.email.payload';
 export * from './space.community.application.created.email.payload';
+export * from './space.community.application.declined.email.payload';
 export * from './space.community.invitation.created.email.payload';
 export * from './space.community.invitation.virtual.contributor.created.email.payload';
 export * from './space.community.invitation.platform.created.email.payload';
