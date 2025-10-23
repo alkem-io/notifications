@@ -87,6 +87,20 @@ export class AppController {
     );
   }
 
+  @EventPattern(
+    NotificationEvent.VirtualContributorAdminSpaceCommunityInvitationDeclined
+  )
+  async sendSpaceCommunityVirtualContributorInvitationDeclinedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
   @EventPattern(NotificationEvent.SpaceCommunityInvitationUserPlatform)
   async sendCommunityPlatformInvitationNotification(
     @Payload()

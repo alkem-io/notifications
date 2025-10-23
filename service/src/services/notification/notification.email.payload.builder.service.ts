@@ -24,6 +24,7 @@ import {
   SpaceCreatedEmailPayload,
   SpaceCommunityInvitationPlatformCreatedEmailPayload,
   CommunityInvitationVirtualContributorCreatedEmailPayload,
+  CommunityInvitationVirtualContributorDeclinedEmailPayload,
   PlatformGlobalRoleChangeEmailPayload,
   PlatformUserRemovedEmailPayload,
   BaseEmailPayload,
@@ -151,9 +152,29 @@ export class NotificationEmailPayloadBuilderService {
       spaceAdminURL: eventPayload.space.adminURL,
       welcomeMessage: eventPayload.welcomeMessage,
       virtualContributor: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadVirtualContributorInvitationDeclined(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+    recipient: User
+  ): CommunityInvitationVirtualContributorDeclinedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      decliner: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      virtualContributor: {
         name: eventPayload.host.profile.displayName,
         url: eventPayload.host.profile.url,
       },
+      spaceURL: eventPayload.space.profile.url,
     };
   }
 

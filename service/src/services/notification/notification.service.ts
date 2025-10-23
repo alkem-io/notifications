@@ -260,6 +260,11 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
           recipient
         );
+      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitationDeclined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitationDeclined(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+          recipient
+        );
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityInvitationPlatform(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationPlatform,
@@ -398,6 +403,8 @@ export class NotificationService {
         return 'user.space.community.application.declined';
       case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation.valueOf():
         return 'virtual.contributor.invitation.received';
+      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitationDeclined.valueOf():
+        return 'virtual.contributor.invitation.declined';
       case NotificationEvent.SpaceCommunityInvitationUserPlatform.valueOf():
         return 'user.space.community.invitation.received';
       case NotificationEvent.UserSpaceCommunityJoined.valueOf():
