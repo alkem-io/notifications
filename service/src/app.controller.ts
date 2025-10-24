@@ -88,7 +88,7 @@ export class AppController {
   }
 
   @EventPattern(
-    NotificationEvent.VirtualContributorAdminSpaceCommunityInvitationDeclined
+    NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined
   )
   async sendSpaceCommunityVirtualContributorInvitationDeclinedNotifications(
     @Payload()
