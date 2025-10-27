@@ -207,8 +207,9 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type === RoleSetContributorType.Virtual
-        ? 'virtual contributor'
+      newMember.type.toLowerCase() ===
+      RoleSetContributorType.Virtual.toLowerCase()
+        ? 'Virtual Contributor'
         : newMember.type;
 
     return {
@@ -227,8 +228,9 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type === RoleSetContributorType.Virtual
-        ? 'virtual contributor'
+      newMember.type.toLowerCase() ===
+      RoleSetContributorType.Virtual.toLowerCase()
+        ? 'Virtual Contributor'
         : newMember.type;
 
     return {
