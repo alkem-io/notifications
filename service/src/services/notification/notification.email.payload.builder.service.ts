@@ -50,6 +50,7 @@ import {
   NotificationEventPayloadPlatformSpaceCreated,
   NotificationEventPayloadSpaceCommunityInvitationPlatform,
   NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+  NotificationEventPayloadSpaceCalendarEvent,
   BaseEventPayload,
   NotificationEventPayloadSpace,
 } from '@alkemio/notifications-lib';
@@ -245,13 +246,9 @@ export class NotificationEmailPayloadBuilderService {
   }
 
   public createEmailTemplatePayloadSpaceCommunityCalendarEventCreated(
-    eventPayload: NotificationEventPayloadSpace,
+    eventPayload: NotificationEventPayloadSpaceCalendarEvent,
     recipient: User
   ): SpaceCommunityCalendarEventCreatedEmailPayload {
-    if (!eventPayload.calendarEvent) {
-      throw new Error('Calendar event is required for this notification type');
-    }
-
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       creator: {
