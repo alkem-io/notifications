@@ -861,7 +861,6 @@ export enum AuthorizationPrivilege {
   ReadUserSettings = 'READ_USER_SETTINGS',
   ReceiveNotifications = 'RECEIVE_NOTIFICATIONS',
   ReceiveNotificationsAdmin = 'RECEIVE_NOTIFICATIONS_ADMIN',
-  ReceiveNotificationsInApp = 'RECEIVE_NOTIFICATIONS_IN_APP',
   ReceiveNotificationsOrganizationAdmin = 'RECEIVE_NOTIFICATIONS_ORGANIZATION_ADMIN',
   ReceiveNotificationsSpaceAdmin = 'RECEIVE_NOTIFICATIONS_SPACE_ADMIN',
   ReceiveNotificationsSpaceLead = 'RECEIVE_NOTIFICATIONS_SPACE_LEAD',
@@ -955,6 +954,8 @@ export type Callout = {
   contributionDefaults: CalloutContributionDefaults;
   /** The Contributions that have been made to this Callout. */
   contributions: Array<CalloutContribution>;
+  /** The Contributions that have been made to this Callout. */
+  contributionsCount: CalloutContributionsCountOutput;
   /** The user that created this Callout */
   createdBy?: Maybe<User>;
   /** The date at which the entity was created. */
@@ -982,8 +983,8 @@ export type Callout = {
 };
 
 export type CalloutContributionsArgs = {
-  IDs?: InputMaybe<Array<Scalars['UUID']['input']>>;
-  limit?: InputMaybe<Scalars['Float']['input']>;
+  filter?: InputMaybe<ContributionsFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
   shuffle?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
@@ -1031,9 +1032,21 @@ export type CalloutContributionDefaults = {
 
 export enum CalloutContributionType {
   Link = 'LINK',
+  Memo = 'MEMO',
   Post = 'POST',
   Whiteboard = 'WHITEBOARD',
 }
+
+export type CalloutContributionsCountOutput = {
+  /** The number of contributions of type Link in this callout */
+  link: Scalars['Float']['output'];
+  /** The number of contributions of type Memo in this callout */
+  memo: Scalars['Float']['output'];
+  /** The number of contributions of type Post in this callout */
+  post: Scalars['Float']['output'];
+  /** The number of contributions of type Whiteboard in this callout */
+  whiteboard: Scalars['Float']['output'];
+};
 
 export type CalloutFraming = {
   /** The authorization rules for the entity */
@@ -1260,15 +1273,6 @@ export type CommunicationAdminUpdateRoomStateInput = {
   roomID: Scalars['String']['input'];
 };
 
-export type CommunicationRoom = {
-  /** The display name of the room */
-  displayName: Scalars['String']['output'];
-  /** The identifier of the room */
-  id: Scalars['String']['output'];
-  /** The messages that have been sent to the Room. */
-  messages: Array<Message>;
-};
-
 export type CommunicationSendMessageToCommunityLeadsInput = {
   /** The Community the message is being sent to */
   communityId: Scalars['UUID']['input'];
@@ -1283,7 +1287,7 @@ export type CommunicationSendMessageToOrganizationInput = {
   organizationId: Scalars['UUID']['input'];
 };
 
-export type CommunicationSendMessageToUserInput = {
+export type CommunicationSendMessageToUsersInput = {
   /** The message being sent */
   message: Scalars['String']['input'];
   /** All Users the message is being sent to */
@@ -1441,6 +1445,13 @@ export enum ContentUpdatePolicy {
   Owner = 'OWNER',
 }
 
+export type ContributionsFilterInput = {
+  /** The IDs of the Contributions to return. If omitted return all. */
+  IDs?: InputMaybe<Array<Scalars['UUID']['input']>>;
+  /** The contributions types to return. If omitted return all. */
+  types?: InputMaybe<Array<CalloutContributionType>>;
+};
+
 export type Contributor = {
   /** The Agent for the Contributor. */
   agent: Agent;
@@ -1541,9 +1552,11 @@ export type CreateCalendarEventOnCalendarInput = {
 
 export type CreateCalloutContributionData = {
   link?: Maybe<CreateLinkData>;
+  memo?: Maybe<CreateMemoData>;
   post?: Maybe<CreatePostData>;
   /** The sort order to assign to this Contribution. */
   sortOrder?: Maybe<Scalars['Float']['output']>;
+  type: CalloutContributionType;
   whiteboard?: Maybe<CreateWhiteboardData>;
 };
 
@@ -1565,9 +1578,11 @@ export type CreateCalloutContributionDefaultsInput = {
 
 export type CreateCalloutContributionInput = {
   link?: InputMaybe<CreateLinkInput>;
+  memo?: InputMaybe<CreateMemoInput>;
   post?: InputMaybe<CreatePostInput>;
   /** The sort order to assign to this Contribution. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
+  type: CalloutContributionType;
   whiteboard?: InputMaybe<CreateWhiteboardInput>;
 };
 
@@ -1737,9 +1752,11 @@ export type CreateCommunityGuidelinesInput = {
 export type CreateContributionOnCalloutInput = {
   calloutID: Scalars['UUID']['input'];
   link?: InputMaybe<CreateLinkInput>;
+  memo?: InputMaybe<CreateMemoInput>;
   post?: InputMaybe<CreatePostInput>;
   /** The sort order to assign to this Contribution. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
+  type: CalloutContributionType;
   whiteboard?: InputMaybe<CreateWhiteboardInput>;
 };
 
@@ -2256,6 +2273,10 @@ export type DeleteCalendarEventInput = {
 };
 
 export type DeleteCalloutInput = {
+  ID: Scalars['UUID']['input'];
+};
+
+export type DeleteContributionInput = {
   ID: Scalars['UUID']['input'];
 };
 
@@ -3546,6 +3567,8 @@ export type LookupQueryResults = {
   community?: Maybe<Community>;
   /** Lookup the specified Community guidelines */
   communityGuidelines?: Maybe<CommunityGuidelines>;
+  /** Lookup the specified CalloutContribution */
+  contribution?: Maybe<CalloutContribution>;
   /** Lookup the specified Document */
   document?: Maybe<Document>;
   /** Lookup the specified InnovationFlow */
@@ -3644,6 +3667,10 @@ export type LookupQueryResultsCommunityArgs = {
 };
 
 export type LookupQueryResultsCommunityGuidelinesArgs = {
+  ID: Scalars['UUID']['input'];
+};
+
+export type LookupQueryResultsContributionArgs = {
   ID: Scalars['UUID']['input'];
 };
 
@@ -3756,7 +3783,7 @@ export type MeQueryResults = {
   mySpaces: Array<MySpaceResults>;
   /** Get all notifications for the logged in user. */
   notifications: PaginatedInAppNotifications;
-  /** The number of unread notifications for the current authenticated user. */
+  /** The total number of unread notifications for the current authenticated user across all notification types. */
   notificationsUnreadCount: Scalars['Float']['output'];
   /** The Spaces the current user is a member of as a flat list. */
   spaceMembershipsFlat: Array<CommunityMembershipResult>;
@@ -3788,10 +3815,6 @@ export type MeQueryResultsNotificationsArgs = {
   filter?: InputMaybe<NotificationEventsFilterInput>;
   first?: InputMaybe<Scalars['Int']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
-};
-
-export type MeQueryResultsNotificationsUnreadCountArgs = {
-  filter?: InputMaybe<NotificationEventsFilterInput>;
 };
 
 export type MeQueryResultsSpaceMembershipsHierarchicalArgs = {
@@ -4143,12 +4166,10 @@ export type Mutation = {
   joinRoleSet: RoleSet;
   /** Reset the License with Entitlements on the specified Account. */
   licenseResetOnAccount: Account;
-  /** Mark multiple notifications as read. If no IDs are provided, marks all user notifications as read. */
+  /** Mark notifications as read. If no filter is provided, marks all user notifications as read. If filter with types is provided, marks only those notification types as read. */
   markNotificationsAsRead: Scalars['Boolean']['output'];
-  /** Mark multiple notifications as unread. If no IDs are provided, marks all user notifications as unread. */
+  /** Mark notifications as unread. If no filter is provided, marks all user notifications as unread. If filter with types is provided, marks only those notification types as unread. */
   markNotificationsAsUnread: Scalars['Boolean']['output'];
-  /** Sends a message on the specified User`s behalf and returns the room id */
-  messageUser: Scalars['String']['output'];
   /** Moves the specified Contribution to another Callout. */
   moveContributionToCallout: CalloutContribution;
   /** Refresh the Bodies of Knowledge on All VCs */
@@ -4193,8 +4214,10 @@ export type Mutation = {
   sendMessageToOrganization: Scalars['Boolean']['output'];
   /** Sends an comment message. Returns the id of the new Update message. */
   sendMessageToRoom: Message;
-  /** Send message to a User. */
-  sendMessageToUser: Scalars['Boolean']['output'];
+  /** Sends a message on the specified User`s behalf and returns the room id */
+  sendMessageToUserDirect: Scalars['String']['output'];
+  /** Send message to multiple Users. */
+  sendMessageToUsers: Scalars['Boolean']['output'];
   /** Transfer the specified Callout from its current CalloutsSet to the target CalloutsSet. Note: this is experimental, and only for GlobalAdmins. The user that executes the transfer becomes the creator of the Callout. */
   transferCallout: Callout;
   /** Transfer the specified InnovationHub to another Account. */
@@ -4539,7 +4562,7 @@ export type MutationDeleteCalloutArgs = {
 };
 
 export type MutationDeleteContributionArgs = {
-  contributionID: Scalars['String']['input'];
+  deleteData: DeleteContributionInput;
 };
 
 export type MutationDeleteDiscussionArgs = {
@@ -4659,15 +4682,11 @@ export type MutationLicenseResetOnAccountArgs = {
 };
 
 export type MutationMarkNotificationsAsReadArgs = {
-  notificationIds: Array<Scalars['String']['input']>;
+  filter?: InputMaybe<NotificationEventsFilterInput>;
 };
 
 export type MutationMarkNotificationsAsUnreadArgs = {
-  notificationIds: Array<Scalars['String']['input']>;
-};
-
-export type MutationMessageUserArgs = {
-  messageData: UserSendMessageInput;
+  filter?: InputMaybe<NotificationEventsFilterInput>;
 };
 
 export type MutationMoveContributionToCalloutArgs = {
@@ -4746,8 +4765,12 @@ export type MutationSendMessageToRoomArgs = {
   messageData: RoomSendMessageInput;
 };
 
-export type MutationSendMessageToUserArgs = {
-  messageData: CommunicationSendMessageToUserInput;
+export type MutationSendMessageToUserDirectArgs = {
+  messageData: UserSendMessageInput;
+};
+
+export type MutationSendMessageToUsersArgs = {
+  messageData: CommunicationSendMessageToUsersInput;
 };
 
 export type MutationTransferCalloutArgs = {
@@ -5013,6 +5036,7 @@ export enum NotificationEvent {
   SpaceAdminCollaborationCalloutContribution = 'SPACE_ADMIN_COLLABORATION_CALLOUT_CONTRIBUTION',
   SpaceAdminCommunityApplication = 'SPACE_ADMIN_COMMUNITY_APPLICATION',
   SpaceAdminCommunityNewMember = 'SPACE_ADMIN_COMMUNITY_NEW_MEMBER',
+  SpaceAdminVirtualContributorCommunityInvitationDeclined = 'SPACE_ADMIN_VIRTUAL_CONTRIBUTOR_COMMUNITY_INVITATION_DECLINED',
   SpaceCollaborationCalloutComment = 'SPACE_COLLABORATION_CALLOUT_COMMENT',
   SpaceCollaborationCalloutContribution = 'SPACE_COLLABORATION_CALLOUT_CONTRIBUTION',
   SpaceCollaborationCalloutPostContributionComment = 'SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT',
@@ -5025,6 +5049,7 @@ export enum NotificationEvent {
   UserMessage = 'USER_MESSAGE',
   UserMessageSender = 'USER_MESSAGE_SENDER',
   UserSignUpWelcome = 'USER_SIGN_UP_WELCOME',
+  UserSpaceCommunityApplicationDeclined = 'USER_SPACE_COMMUNITY_APPLICATION_DECLINED',
   UserSpaceCommunityInvitation = 'USER_SPACE_COMMUNITY_INVITATION',
   UserSpaceCommunityJoined = 'USER_SPACE_COMMUNITY_JOINED',
   VirtualContributorAdminSpaceCommunityInvitation = 'VIRTUAL_CONTRIBUTOR_ADMIN_SPACE_COMMUNITY_INVITATION',
@@ -5680,6 +5705,7 @@ export type PromptGraphDefinitionNode = {
   name: Scalars['String']['output'];
   output?: Maybe<PromptGraphDefinitionDataStruct>;
   prompt?: Maybe<Scalars['String']['output']>;
+  system: Scalars['Boolean']['output'];
 };
 
 export type PromptGraphEdge = {
@@ -5705,6 +5731,7 @@ export type PromptGraphNode = {
   name: Scalars['String']['output'];
   output?: Maybe<PromptGraphDataStruct>;
   prompt?: Maybe<Scalars['String']['output']>;
+  system: Scalars['Boolean']['output'];
 };
 
 export type PromptGraphNodeInput = {
@@ -5712,6 +5739,7 @@ export type PromptGraphNodeInput = {
   name: Scalars['String']['input'];
   output?: InputMaybe<PromptGraphDataStructInput>;
   prompt?: InputMaybe<Scalars['String']['input']>;
+  system: Scalars['Boolean']['input'];
 };
 
 export type PruneInAppNotificationAdminResult = {
@@ -7851,7 +7879,7 @@ export type UpdateUserSettingsNotificationUserInput = {
 export type UpdateUserSettingsNotificationUserMembershipInput = {
   /** Receive a notification for community invitation */
   spaceCommunityInvitationReceived?: InputMaybe<NotificationSettingInput>;
-  /** Receive a notification when I join a new community */
+  /** Receive a notification when I join a new community or when my application is declined */
   spaceCommunityJoined?: InputMaybe<NotificationSettingInput>;
 };
 
@@ -8013,8 +8041,6 @@ export type User = Contributor & {
   authentication?: Maybe<UserAuthenticationResult>;
   /** The authorization rules for the Contributor */
   authorization?: Maybe<Authorization>;
-  /** The Community rooms this user is a member of */
-  communityRooms?: Maybe<Array<CommunicationRoom>>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
   /** The direct rooms this user is a member of */
@@ -8197,7 +8223,7 @@ export type UserSettingsNotificationUser = {
 export type UserSettingsNotificationUserMembership = {
   /** Receive a notification when I am invited to join a Space community */
   spaceCommunityInvitationReceived: UserSettingsNotificationChannels;
-  /** Receive a notification when I join a Space */
+  /** Receive a notification when I join a Space or when my application is declined */
   spaceCommunityJoined: UserSettingsNotificationChannels;
 };
 
@@ -8682,16 +8708,8 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
           profile: _RefType['Profile'];
           roleSet: _RefType['RoleSet'];
         })
-      | (Omit<
-          User,
-          | 'account'
-          | 'communityRooms'
-          | 'directRooms'
-          | 'guidanceRoom'
-          | 'profile'
-        > & {
+      | (Omit<User, 'account' | 'directRooms' | 'guidanceRoom' | 'profile'> & {
           account?: Maybe<_RefType['Account']>;
-          communityRooms?: Maybe<Array<_RefType['CommunicationRoom']>>;
           directRooms?: Maybe<Array<_RefType['DirectRoom']>>;
           guidanceRoom?: Maybe<_RefType['Room']>;
           profile: _RefType['Profile'];
@@ -9082,6 +9100,7 @@ export type ResolversTypes = {
   >;
   CalloutContributionDefaults: ResolverTypeWrapper<CalloutContributionDefaults>;
   CalloutContributionType: CalloutContributionType;
+  CalloutContributionsCountOutput: ResolverTypeWrapper<CalloutContributionsCountOutput>;
   CalloutFraming: ResolverTypeWrapper<
     Omit<CalloutFraming, 'link' | 'memo' | 'profile' | 'whiteboard'> & {
       link?: Maybe<ResolversTypes['Link']>;
@@ -9125,14 +9144,9 @@ export type ResolversTypes = {
   CommunicationAdminRoomMembershipResult: ResolverTypeWrapper<CommunicationAdminRoomMembershipResult>;
   CommunicationAdminRoomResult: ResolverTypeWrapper<CommunicationAdminRoomResult>;
   CommunicationAdminUpdateRoomStateInput: CommunicationAdminUpdateRoomStateInput;
-  CommunicationRoom: ResolverTypeWrapper<
-    Omit<CommunicationRoom, 'messages'> & {
-      messages: Array<ResolversTypes['Message']>;
-    }
-  >;
   CommunicationSendMessageToCommunityLeadsInput: CommunicationSendMessageToCommunityLeadsInput;
   CommunicationSendMessageToOrganizationInput: CommunicationSendMessageToOrganizationInput;
-  CommunicationSendMessageToUserInput: CommunicationSendMessageToUserInput;
+  CommunicationSendMessageToUsersInput: CommunicationSendMessageToUsersInput;
   Community: ResolverTypeWrapper<
     Omit<Community, 'communication' | 'group' | 'groups' | 'roleSet'> & {
       communication: ResolversTypes['Communication'];
@@ -9180,6 +9194,7 @@ export type ResolversTypes = {
     }
   >;
   ContentUpdatePolicy: ContentUpdatePolicy;
+  ContributionsFilterInput: ContributionsFilterInput;
   Contributor: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>['Contributor']
   >;
@@ -9275,6 +9290,7 @@ export type ResolversTypes = {
   DeleteApplicationInput: DeleteApplicationInput;
   DeleteCalendarEventInput: DeleteCalendarEventInput;
   DeleteCalloutInput: DeleteCalloutInput;
+  DeleteContributionInput: DeleteContributionInput;
   DeleteDiscussionInput: DeleteDiscussionInput;
   DeleteDocumentInput: DeleteDocumentInput;
   DeleteInnovationHubInput: DeleteInnovationHubInput;
@@ -9581,6 +9597,7 @@ export type ResolversTypes = {
       | 'collaboration'
       | 'community'
       | 'communityGuidelines'
+      | 'contribution'
       | 'document'
       | 'innovationFlow'
       | 'innovationHub'
@@ -9614,6 +9631,7 @@ export type ResolversTypes = {
       collaboration?: Maybe<ResolversTypes['Collaboration']>;
       community?: Maybe<ResolversTypes['Community']>;
       communityGuidelines?: Maybe<ResolversTypes['CommunityGuidelines']>;
+      contribution?: Maybe<ResolversTypes['CalloutContribution']>;
       document?: Maybe<ResolversTypes['Document']>;
       innovationFlow?: Maybe<ResolversTypes['InnovationFlow']>;
       innovationHub?: Maybe<ResolversTypes['InnovationHub']>;
@@ -10270,12 +10288,8 @@ export type ResolversTypes = {
   UrlResolverQueryResults: ResolverTypeWrapper<UrlResolverQueryResults>;
   UrlType: UrlType;
   User: ResolverTypeWrapper<
-    Omit<
-      User,
-      'account' | 'communityRooms' | 'directRooms' | 'guidanceRoom' | 'profile'
-    > & {
+    Omit<User, 'account' | 'directRooms' | 'guidanceRoom' | 'profile'> & {
       account?: Maybe<ResolversTypes['Account']>;
-      communityRooms?: Maybe<Array<ResolversTypes['CommunicationRoom']>>;
       directRooms?: Maybe<Array<ResolversTypes['DirectRoom']>>;
       guidanceRoom?: Maybe<ResolversTypes['Room']>;
       profile: ResolversTypes['Profile'];
@@ -10562,6 +10576,7 @@ export type ResolversParentTypes = {
     whiteboard?: Maybe<ResolversParentTypes['Whiteboard']>;
   };
   CalloutContributionDefaults: CalloutContributionDefaults;
+  CalloutContributionsCountOutput: CalloutContributionsCountOutput;
   CalloutFraming: Omit<
     CalloutFraming,
     'link' | 'memo' | 'profile' | 'whiteboard'
@@ -10602,12 +10617,9 @@ export type ResolversParentTypes = {
   CommunicationAdminRoomMembershipResult: CommunicationAdminRoomMembershipResult;
   CommunicationAdminRoomResult: CommunicationAdminRoomResult;
   CommunicationAdminUpdateRoomStateInput: CommunicationAdminUpdateRoomStateInput;
-  CommunicationRoom: Omit<CommunicationRoom, 'messages'> & {
-    messages: Array<ResolversParentTypes['Message']>;
-  };
   CommunicationSendMessageToCommunityLeadsInput: CommunicationSendMessageToCommunityLeadsInput;
   CommunicationSendMessageToOrganizationInput: CommunicationSendMessageToOrganizationInput;
-  CommunicationSendMessageToUserInput: CommunicationSendMessageToUserInput;
+  CommunicationSendMessageToUsersInput: CommunicationSendMessageToUsersInput;
   Community: Omit<
     Community,
     'communication' | 'group' | 'groups' | 'roleSet'
@@ -10646,6 +10658,7 @@ export type ResolversParentTypes = {
   Config: Omit<Config, 'authentication'> & {
     authentication: ResolversParentTypes['AuthenticationConfig'];
   };
+  ContributionsFilterInput: ContributionsFilterInput;
   Contributor: ResolversInterfaceTypes<ResolversParentTypes>['Contributor'];
   ContributorFilterInput: ContributorFilterInput;
   ContributorRolePolicy: ContributorRolePolicy;
@@ -10738,6 +10751,7 @@ export type ResolversParentTypes = {
   DeleteApplicationInput: DeleteApplicationInput;
   DeleteCalendarEventInput: DeleteCalendarEventInput;
   DeleteCalloutInput: DeleteCalloutInput;
+  DeleteContributionInput: DeleteContributionInput;
   DeleteDiscussionInput: DeleteDiscussionInput;
   DeleteDocumentInput: DeleteDocumentInput;
   DeleteInnovationHubInput: DeleteInnovationHubInput;
@@ -10983,6 +10997,7 @@ export type ResolversParentTypes = {
     | 'collaboration'
     | 'community'
     | 'communityGuidelines'
+    | 'contribution'
     | 'document'
     | 'innovationFlow'
     | 'innovationHub'
@@ -11016,6 +11031,7 @@ export type ResolversParentTypes = {
     collaboration?: Maybe<ResolversParentTypes['Collaboration']>;
     community?: Maybe<ResolversParentTypes['Community']>;
     communityGuidelines?: Maybe<ResolversParentTypes['CommunityGuidelines']>;
+    contribution?: Maybe<ResolversParentTypes['CalloutContribution']>;
     document?: Maybe<ResolversParentTypes['Document']>;
     innovationFlow?: Maybe<ResolversParentTypes['InnovationFlow']>;
     innovationHub?: Maybe<ResolversParentTypes['InnovationHub']>;
@@ -11598,12 +11614,8 @@ export type ResolversParentTypes = {
   UrlResolverQueryResultTemplatesSet: UrlResolverQueryResultTemplatesSet;
   UrlResolverQueryResultVirtualContributor: UrlResolverQueryResultVirtualContributor;
   UrlResolverQueryResults: UrlResolverQueryResults;
-  User: Omit<
-    User,
-    'account' | 'communityRooms' | 'directRooms' | 'guidanceRoom' | 'profile'
-  > & {
+  User: Omit<User, 'account' | 'directRooms' | 'guidanceRoom' | 'profile'> & {
     account?: Maybe<ResolversParentTypes['Account']>;
-    communityRooms?: Maybe<Array<ResolversParentTypes['CommunicationRoom']>>;
     directRooms?: Maybe<Array<ResolversParentTypes['DirectRoom']>>;
     guidanceRoom?: Maybe<ResolversParentTypes['Room']>;
     profile: ResolversParentTypes['Profile'];
@@ -12490,6 +12502,11 @@ export type CalloutResolvers<
     ContextType,
     Partial<CalloutContributionsArgs>
   >;
+  contributionsCount?: Resolver<
+    ResolversTypes['CalloutContributionsCountOutput'],
+    ParentType,
+    ContextType
+  >;
   createdBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   framing?: Resolver<ResolversTypes['CalloutFraming'], ParentType, ContextType>;
@@ -12569,6 +12586,18 @@ export type CalloutContributionDefaultsResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CalloutContributionsCountOutputResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['CalloutContributionsCountOutput'] = ResolversParentTypes['CalloutContributionsCountOutput'],
+> = {
+  link?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  memo?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  post?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  whiteboard?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -12836,21 +12865,6 @@ export type CommunicationAdminRoomResultResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CommunicationRoomResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunicationRoom'] = ResolversParentTypes['CommunicationRoom'],
-> = {
-  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  messages?: Resolver<
-    Array<ResolversTypes['Message']>,
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type CommunityResolvers<
   ContextType = any,
   ParentType extends
@@ -13101,12 +13115,22 @@ export type CreateCalloutContributionDataResolvers<
     ParentType,
     ContextType
   >;
+  memo?: Resolver<
+    Maybe<ResolversTypes['CreateMemoData']>,
+    ParentType,
+    ContextType
+  >;
   post?: Resolver<
     Maybe<ResolversTypes['CreatePostData']>,
     ParentType,
     ContextType
   >;
   sortOrder?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['CalloutContributionType'],
+    ParentType,
+    ContextType
+  >;
   whiteboard?: Resolver<
     Maybe<ResolversTypes['CreateWhiteboardData']>,
     ParentType,
@@ -15221,6 +15245,12 @@ export type LookupQueryResultsResolvers<
     ContextType,
     RequireFields<LookupQueryResultsCommunityGuidelinesArgs, 'ID'>
   >;
+  contribution?: Resolver<
+    Maybe<ResolversTypes['CalloutContribution']>,
+    ParentType,
+    ContextType,
+    RequireFields<LookupQueryResultsContributionArgs, 'ID'>
+  >;
   document?: Resolver<
     Maybe<ResolversTypes['Document']>,
     ParentType,
@@ -15417,8 +15447,7 @@ export type MeQueryResultsResolvers<
   notificationsUnreadCount?: Resolver<
     ResolversTypes['Float'],
     ParentType,
-    ContextType,
-    Partial<MeQueryResultsNotificationsUnreadCountArgs>
+    ContextType
   >;
   spaceMembershipsFlat?: Resolver<
     Array<ResolversTypes['CommunityMembershipResult']>,
@@ -16074,7 +16103,7 @@ export type MutationResolvers<
     ResolversTypes['CalloutContribution'],
     ParentType,
     ContextType,
-    RequireFields<MutationDeleteContributionArgs, 'contributionID'>
+    RequireFields<MutationDeleteContributionArgs, 'deleteData'>
   >;
   deleteDiscussion?: Resolver<
     ResolversTypes['Discussion'],
@@ -16257,19 +16286,13 @@ export type MutationResolvers<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType,
-    RequireFields<MutationMarkNotificationsAsReadArgs, 'notificationIds'>
+    Partial<MutationMarkNotificationsAsReadArgs>
   >;
   markNotificationsAsUnread?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType,
-    RequireFields<MutationMarkNotificationsAsUnreadArgs, 'notificationIds'>
-  >;
-  messageUser?: Resolver<
-    ResolversTypes['String'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationMessageUserArgs, 'messageData'>
+    Partial<MutationMarkNotificationsAsUnreadArgs>
   >;
   moveContributionToCallout?: Resolver<
     ResolversTypes['CalloutContribution'],
@@ -16409,11 +16432,17 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationSendMessageToRoomArgs, 'messageData'>
   >;
-  sendMessageToUser?: Resolver<
+  sendMessageToUserDirect?: Resolver<
+    ResolversTypes['String'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationSendMessageToUserDirectArgs, 'messageData'>
+  >;
+  sendMessageToUsers?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType,
-    RequireFields<MutationSendMessageToUserArgs, 'messageData'>
+    RequireFields<MutationSendMessageToUsersArgs, 'messageData'>
   >;
   transferCallout?: Resolver<
     ResolversTypes['Callout'],
@@ -17624,6 +17653,7 @@ export type PromptGraphDefinitionNodeResolvers<
     ContextType
   >;
   prompt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  system?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -17654,6 +17684,7 @@ export type PromptGraphNodeResolvers<
     ContextType
   >;
   prompt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  system?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -19454,11 +19485,6 @@ export type UserResolvers<
     ParentType,
     ContextType
   >;
-  communityRooms?: Resolver<
-    Maybe<Array<ResolversTypes['CommunicationRoom']>>,
-    ParentType,
-    ContextType
-  >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   directRooms?: Resolver<
     Maybe<Array<ResolversTypes['DirectRoom']>>,
@@ -20190,6 +20216,7 @@ export type Resolvers<ContextType = any> = {
   Callout?: CalloutResolvers<ContextType>;
   CalloutContribution?: CalloutContributionResolvers<ContextType>;
   CalloutContributionDefaults?: CalloutContributionDefaultsResolvers<ContextType>;
+  CalloutContributionsCountOutput?: CalloutContributionsCountOutputResolvers<ContextType>;
   CalloutFraming?: CalloutFramingResolvers<ContextType>;
   CalloutPostCreated?: CalloutPostCreatedResolvers<ContextType>;
   CalloutSettings?: CalloutSettingsResolvers<ContextType>;
@@ -20203,7 +20230,6 @@ export type Resolvers<ContextType = any> = {
   CommunicationAdminOrphanedUsageResult?: CommunicationAdminOrphanedUsageResultResolvers<ContextType>;
   CommunicationAdminRoomMembershipResult?: CommunicationAdminRoomMembershipResultResolvers<ContextType>;
   CommunicationAdminRoomResult?: CommunicationAdminRoomResultResolvers<ContextType>;
-  CommunicationRoom?: CommunicationRoomResolvers<ContextType>;
   Community?: CommunityResolvers<ContextType>;
   CommunityApplicationForRoleResult?: CommunityApplicationForRoleResultResolvers<ContextType>;
   CommunityApplicationResult?: CommunityApplicationResultResolvers<ContextType>;
