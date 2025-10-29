@@ -25,6 +25,7 @@ import {
   SpaceCommunityInvitationPlatformCreatedEmailPayload,
   CommunityInvitationVirtualContributorCreatedEmailPayload,
   CommunityInvitationVirtualContributorDeclinedEmailPayload,
+  SpaceCommunityCalendarEventCreatedEmailPayload,
   PlatformGlobalRoleChangeEmailPayload,
   PlatformUserRemovedEmailPayload,
   BaseEmailPayload,
@@ -239,6 +240,28 @@ export class NotificationEmailPayloadBuilderService {
         name: newMember.profile.displayName,
         profile: newMember.profile.url,
         type: typeName,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadSpaceCommunityCalendarEventCreated(
+    eventPayload: NotificationEventPayloadSpace,
+    recipient: User
+  ): SpaceCommunityCalendarEventCreatedEmailPayload {
+    if (!eventPayload.calendarEvent) {
+      throw new Error('Calendar event is required for this notification type');
+    }
+
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      creator: {
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      calendarEvent: {
+        title: eventPayload.calendarEvent.title,
+        type: eventPayload.calendarEvent.type,
+        url: eventPayload.calendarEvent.url,
       },
     };
   }

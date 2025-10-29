@@ -26,6 +26,7 @@ import {
   NotificationEventPayloadSpaceCommunityContributor,
   NotificationEventPayloadUserMessageRoomReply,
   NotificationEventPayloadUserMessageRoom,
+  NotificationEventPayloadSpace,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -280,6 +281,11 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCommunityContributor,
           recipient
         );
+      case NotificationEvent.SpaceCommunityCalendarEventCreated:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityCalendarEventCreated(
+          eventPayload as NotificationEventPayloadSpace,
+          recipient
+        );
       case NotificationEvent.PlatformAdminGlobalRoleChanged:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformGlobalRoleChange(
           eventPayload as NotificationEventPayloadPlatformGlobalRole,
@@ -411,6 +417,8 @@ export class NotificationService {
         return 'user.space.community.joined';
       case NotificationEvent.SpaceAdminCommunityNewMember.valueOf():
         return 'space.admin.community.new.member';
+      case NotificationEvent.SpaceCommunityCalendarEventCreated.valueOf():
+        return 'space.community.calendar.event.created';
       case NotificationEvent.PlatformAdminGlobalRoleChanged.valueOf():
         return 'platform.admin.user.global.role.change';
       case NotificationEvent.UserSignUpWelcome.valueOf():

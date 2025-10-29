@@ -9,5 +9,6 @@ export interface NotificationEventPayloadSpace
     title: string;
     type: string;
     createdBy: string;
+    url: string;
   };
 }
