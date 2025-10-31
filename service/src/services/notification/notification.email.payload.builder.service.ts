@@ -25,6 +25,7 @@ import {
   SpaceCommunityInvitationPlatformCreatedEmailPayload,
   CommunityInvitationVirtualContributorCreatedEmailPayload,
   CommunityInvitationVirtualContributorDeclinedEmailPayload,
+  SpaceCommunityCalendarEventCreatedEmailPayload,
   PlatformGlobalRoleChangeEmailPayload,
   PlatformUserRemovedEmailPayload,
   BaseEmailPayload,
@@ -49,6 +50,7 @@ import {
   NotificationEventPayloadPlatformSpaceCreated,
   NotificationEventPayloadSpaceCommunityInvitationPlatform,
   NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+  NotificationEventPayloadSpaceCalendarEvent,
   BaseEventPayload,
   NotificationEventPayloadSpace,
 } from '@alkemio/notifications-lib';
@@ -239,6 +241,24 @@ export class NotificationEmailPayloadBuilderService {
         name: newMember.profile.displayName,
         profile: newMember.profile.url,
         type: typeName,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadSpaceCommunityCalendarEventCreated(
+    eventPayload: NotificationEventPayloadSpaceCalendarEvent,
+    recipient: User
+  ): SpaceCommunityCalendarEventCreatedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      creator: {
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      calendarEvent: {
+        title: eventPayload.calendarEvent.title,
+        type: eventPayload.calendarEvent.type,
+        url: eventPayload.calendarEvent.url,
       },
     };
   }

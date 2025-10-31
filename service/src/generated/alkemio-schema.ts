@@ -2797,6 +2797,24 @@ export type InAppNotificationPayloadSpaceCommunityApplication =
     type: NotificationEventPayload;
   };
 
+export type InAppNotificationPayloadSpaceCommunityCalendarEvent =
+  InAppNotificationPayload & {
+    /** The CalendarEvent that was created. */
+    calendarEvent?: Maybe<CalendarEvent>;
+    /** ID of the calendar event. */
+    calendarEventID: Scalars['UUID']['output'];
+    /** Display title of the calendar event. */
+    calendarEventTitle: Scalars['String']['output'];
+    /** Type of the calendar event. */
+    calendarEventType: CalendarEventType;
+    /** ID of the user who created the event. */
+    createdBy: Scalars['UUID']['output'];
+    /** The space details. */
+    space?: Maybe<Space>;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
 export type InAppNotificationPayloadSpaceCommunityContributor =
   InAppNotificationPayload & {
     /** The Contributor that joined. */
@@ -5042,6 +5060,7 @@ export enum NotificationEvent {
   SpaceCollaborationCalloutPostContributionComment = 'SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT',
   SpaceCollaborationCalloutPublished = 'SPACE_COLLABORATION_CALLOUT_PUBLISHED',
   SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
+  SpaceCommunityCalendarEventCreated = 'SPACE_COMMUNITY_CALENDAR_EVENT_CREATED',
   SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
   SpaceLeadCommunicationMessage = 'SPACE_LEAD_COMMUNICATION_MESSAGE',
   UserCommentReply = 'USER_COMMENT_REPLY',
@@ -5085,6 +5104,7 @@ export enum NotificationEventPayload {
   SpaceCommunicationMessageDirect = 'SPACE_COMMUNICATION_MESSAGE_DIRECT',
   SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
   SpaceCommunityApplication = 'SPACE_COMMUNITY_APPLICATION',
+  SpaceCommunityCalendarEvent = 'SPACE_COMMUNITY_CALENDAR_EVENT',
   SpaceCommunityContributor = 'SPACE_COMMUNITY_CONTRIBUTOR',
   SpaceCommunityInvitation = 'SPACE_COMMUNITY_INVITATION',
   SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
@@ -7863,6 +7883,8 @@ export type UpdateUserSettingsNotificationSpaceInput = {
   collaborationCalloutPublished?: InputMaybe<NotificationSettingInput>;
   /** Receive a notification for community updates */
   communicationUpdates?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when a calendar event is created */
+  communityCalendarEvents?: InputMaybe<NotificationSettingInput>;
 };
 
 export type UpdateUserSettingsNotificationUserInput = {
@@ -7938,8 +7960,34 @@ export type UpdateWhiteboardEntityInput = {
   contentUpdatePolicy?: InputMaybe<ContentUpdatePolicy>;
   /** A display identifier, unique within the containing scope. Note: updating the nameID will affect URL on the client. */
   nameID?: InputMaybe<Scalars['NameID']['input']>;
+  /** The preview settings for the Whiteboard. */
+  previewSettings?: InputMaybe<UpdateWhiteboardPreviewSettingsInput>;
   /** The Profile of this entity. */
   profile?: InputMaybe<UpdateProfileInput>;
+};
+
+export type UpdateWhiteboardPreviewCoordinatesInput = {
+  /** The height. */
+  height: Scalars['Float']['input'];
+  /** The width. */
+  width: Scalars['Float']['input'];
+  /** The x coordinate. */
+  x: Scalars['Float']['input'];
+  /** The y coordinate. */
+  y: Scalars['Float']['input'];
+};
+
+export type UpdateWhiteboardPreviewSettingsInput = {
+  /** The coordinates for the preview. */
+  coordinates?: InputMaybe<UpdateWhiteboardPreviewCoordinatesInput>;
+  /**
+   * The preview mode.
+   *       AUTO: Generate Whiteboard preview automatically when closing the dialog
+   *       CUSTOM: Generate Whiteboard preview based on user-defined coordinates when closing the dialog
+   *       FIXED: Use a fixed Whiteboard preview that does not change when closing the dialog
+   *
+   */
+  mode?: InputMaybe<WhiteboardPreviewMode>;
 };
 
 export type UrlResolverQueryResultCalendar = {
@@ -8196,6 +8244,8 @@ export type UserSettingsNotificationSpace = {
   collaborationCalloutPublished: UserSettingsNotificationChannels;
   /** Receive a notification for community updates */
   communicationUpdates: UserSettingsNotificationChannels;
+  /** Receive a notification when a calendar event is created */
+  communityCalendarEvents: UserSettingsNotificationChannels;
 };
 
 export type UserSettingsNotificationSpaceAdmin = {
@@ -8458,6 +8508,7 @@ export enum VisualType {
   Banner = 'BANNER',
   BannerWide = 'BANNER_WIDE',
   Card = 'CARD',
+  WhiteboardPreview = 'WHITEBOARD_PREVIEW',
 }
 
 export type VisualUploadImageInput = {
@@ -8482,10 +8533,42 @@ export type Whiteboard = {
   isMultiUser: Scalars['Boolean']['output'];
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
+  /** The preview settings for the Whiteboard. */
+  previewSettings: WhiteboardPreviewSettings;
   /** The Profile for this Whiteboard. */
   profile: Profile;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
+};
+
+export type WhiteboardPreviewCoordinates = {
+  /** The height. */
+  height: Scalars['Float']['output'];
+  /** The width. */
+  width: Scalars['Float']['output'];
+  /** The x coordinate. */
+  x: Scalars['Float']['output'];
+  /** The y coordinate. */
+  y: Scalars['Float']['output'];
+};
+
+export enum WhiteboardPreviewMode {
+  Auto = 'AUTO',
+  Custom = 'CUSTOM',
+  Fixed = 'FIXED',
+}
+
+export type WhiteboardPreviewSettings = {
+  /** The coordinates for the preview. */
+  coordinates?: Maybe<WhiteboardPreviewCoordinates>;
+  /**
+   * The preview mode.
+   *       AUTO: Generate Whiteboard preview automatically when closing the dialog
+   *       CUSTOM: Generate Whiteboard preview based on user-defined coordinates when closing the dialog
+   *       FIXED: Use a fixed Whiteboard preview that does not change when closing the dialog
+   *
+   */
+  mode: WhiteboardPreviewMode;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -8807,6 +8890,13 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
           'application' | 'space'
         > & {
           application?: Maybe<_RefType['Application']>;
+          space?: Maybe<_RefType['Space']>;
+        })
+      | (Omit<
+          InAppNotificationPayloadSpaceCommunityCalendarEvent,
+          'calendarEvent' | 'space'
+        > & {
+          calendarEvent?: Maybe<_RefType['CalendarEvent']>;
           space?: Maybe<_RefType['Space']>;
         })
       | (Omit<
@@ -9462,6 +9552,15 @@ export type ResolversTypes = {
       'application' | 'space'
     > & {
       application?: Maybe<ResolversTypes['Application']>;
+      space?: Maybe<ResolversTypes['Space']>;
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunityCalendarEvent: ResolverTypeWrapper<
+    Omit<
+      InAppNotificationPayloadSpaceCommunityCalendarEvent,
+      'calendarEvent' | 'space'
+    > & {
+      calendarEvent?: Maybe<ResolversTypes['CalendarEvent']>;
       space?: Maybe<ResolversTypes['Space']>;
     }
   >;
@@ -10277,6 +10376,8 @@ export type ResolversTypes = {
   UpdateVirtualContributorSettingsPrivacyInput: UpdateVirtualContributorSettingsPrivacyInput;
   UpdateVisualInput: UpdateVisualInput;
   UpdateWhiteboardEntityInput: UpdateWhiteboardEntityInput;
+  UpdateWhiteboardPreviewCoordinatesInput: UpdateWhiteboardPreviewCoordinatesInput;
+  UpdateWhiteboardPreviewSettingsInput: UpdateWhiteboardPreviewSettingsInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
   UrlResolverQueryResultCalendar: ResolverTypeWrapper<UrlResolverQueryResultCalendar>;
   UrlResolverQueryResultCalloutsSet: ResolverTypeWrapper<UrlResolverQueryResultCalloutsSet>;
@@ -10375,6 +10476,9 @@ export type ResolversTypes = {
   WhiteboardContent: ResolverTypeWrapper<
     Scalars['WhiteboardContent']['output']
   >;
+  WhiteboardPreviewCoordinates: ResolverTypeWrapper<WhiteboardPreviewCoordinates>;
+  WhiteboardPreviewMode: WhiteboardPreviewMode;
+  WhiteboardPreviewSettings: ResolverTypeWrapper<WhiteboardPreviewSettings>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -10891,6 +10995,13 @@ export type ResolversParentTypes = {
     'application' | 'space'
   > & {
     application?: Maybe<ResolversParentTypes['Application']>;
+    space?: Maybe<ResolversParentTypes['Space']>;
+  };
+  InAppNotificationPayloadSpaceCommunityCalendarEvent: Omit<
+    InAppNotificationPayloadSpaceCommunityCalendarEvent,
+    'calendarEvent' | 'space'
+  > & {
+    calendarEvent?: Maybe<ResolversParentTypes['CalendarEvent']>;
     space?: Maybe<ResolversParentTypes['Space']>;
   };
   InAppNotificationPayloadSpaceCommunityContributor: Omit<
@@ -11605,6 +11716,8 @@ export type ResolversParentTypes = {
   UpdateVirtualContributorSettingsPrivacyInput: UpdateVirtualContributorSettingsPrivacyInput;
   UpdateVisualInput: UpdateVisualInput;
   UpdateWhiteboardEntityInput: UpdateWhiteboardEntityInput;
+  UpdateWhiteboardPreviewCoordinatesInput: UpdateWhiteboardPreviewCoordinatesInput;
+  UpdateWhiteboardPreviewSettingsInput: UpdateWhiteboardPreviewSettingsInput;
   Upload: Scalars['Upload']['output'];
   UrlResolverQueryResultCalendar: UrlResolverQueryResultCalendar;
   UrlResolverQueryResultCalloutsSet: UrlResolverQueryResultCalloutsSet;
@@ -11683,6 +11796,8 @@ export type ResolversParentTypes = {
     profile: ResolversParentTypes['Profile'];
   };
   WhiteboardContent: Scalars['WhiteboardContent']['output'];
+  WhiteboardPreviewCoordinates: WhiteboardPreviewCoordinates;
+  WhiteboardPreviewSettings: WhiteboardPreviewSettings;
 };
 
 export type OneOfDirectiveArgs = {};
@@ -13962,6 +14077,7 @@ export type InAppNotificationPayloadResolvers<
     | 'InAppNotificationPayloadSpaceCommunicationMessageDirect'
     | 'InAppNotificationPayloadSpaceCommunicationUpdate'
     | 'InAppNotificationPayloadSpaceCommunityApplication'
+    | 'InAppNotificationPayloadSpaceCommunityCalendarEvent'
     | 'InAppNotificationPayloadSpaceCommunityContributor'
     | 'InAppNotificationPayloadSpaceCommunityInvitation'
     | 'InAppNotificationPayloadSpaceCommunityInvitationPlatform'
@@ -14240,6 +14356,37 @@ export type InAppNotificationPayloadSpaceCommunityApplicationResolvers<
     ParentType,
     ContextType
   >;
+  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunityCalendarEventResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEvent'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEvent'],
+> = {
+  calendarEvent?: Resolver<
+    Maybe<ResolversTypes['CalendarEvent']>,
+    ParentType,
+    ContextType
+  >;
+  calendarEventID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  calendarEventTitle?: Resolver<
+    ResolversTypes['String'],
+    ParentType,
+    ContextType
+  >;
+  calendarEventType?: Resolver<
+    ResolversTypes['CalendarEventType'],
+    ParentType,
+    ContextType
+  >;
+  createdBy?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
@@ -19755,6 +19902,11 @@ export type UserSettingsNotificationSpaceResolvers<
     ParentType,
     ContextType
   >;
+  communityCalendarEvents?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -20169,6 +20321,11 @@ export type WhiteboardResolvers<
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   isMultiUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  previewSettings?: Resolver<
+    ResolversTypes['WhiteboardPreviewSettings'],
+    ParentType,
+    ContextType
+  >;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -20178,6 +20335,36 @@ export interface WhiteboardContentScalarConfig
   extends GraphQLScalarTypeConfig<ResolversTypes['WhiteboardContent'], any> {
   name: 'WhiteboardContent';
 }
+
+export type WhiteboardPreviewCoordinatesResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['WhiteboardPreviewCoordinates'] = ResolversParentTypes['WhiteboardPreviewCoordinates'],
+> = {
+  height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  x?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  y?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type WhiteboardPreviewSettingsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['WhiteboardPreviewSettings'] = ResolversParentTypes['WhiteboardPreviewSettings'],
+> = {
+  coordinates?: Resolver<
+    Maybe<ResolversTypes['WhiteboardPreviewCoordinates']>,
+    ParentType,
+    ContextType
+  >;
+  mode?: Resolver<
+    ResolversTypes['WhiteboardPreviewMode'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type Resolvers<ContextType = any> = {
   APM?: ApmResolvers<ContextType>;
@@ -20302,6 +20489,7 @@ export type Resolvers<ContextType = any> = {
   InAppNotificationPayloadSpaceCommunicationMessageDirect?: InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunicationUpdate?: InAppNotificationPayloadSpaceCommunicationUpdateResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityApplication?: InAppNotificationPayloadSpaceCommunityApplicationResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunityCalendarEvent?: InAppNotificationPayloadSpaceCommunityCalendarEventResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityContributor?: InAppNotificationPayloadSpaceCommunityContributorResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityInvitation?: InAppNotificationPayloadSpaceCommunityInvitationResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityInvitationPlatform?: InAppNotificationPayloadSpaceCommunityInvitationPlatformResolvers<ContextType>;
@@ -20484,6 +20672,8 @@ export type Resolvers<ContextType = any> = {
   VisualConstraints?: VisualConstraintsResolvers<ContextType>;
   Whiteboard?: WhiteboardResolvers<ContextType>;
   WhiteboardContent?: GraphQLScalarType;
+  WhiteboardPreviewCoordinates?: WhiteboardPreviewCoordinatesResolvers<ContextType>;
+  WhiteboardPreviewSettings?: WhiteboardPreviewSettingsResolvers<ContextType>;
 };
 
 export type DirectiveResolvers<ContextType = any> = {
