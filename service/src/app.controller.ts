@@ -62,10 +62,35 @@ export class AppController {
     );
   }
 
+  @EventPattern(NotificationEvent.UserSpaceCommunityApplicationDeclined)
+  async sendSpaceCommunityApplicationDeclinedNotification(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCommunityApplication,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
   @EventPattern(
     NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation
   )
   async sendSpaceCommunityVirtualContributorInvitationCreatedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(
+    NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined
+  )
+  async sendSpaceCommunityVirtualContributorInvitationDeclinedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
     @Ctx() context: RmqContext

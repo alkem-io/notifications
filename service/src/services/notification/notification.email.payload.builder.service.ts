@@ -4,6 +4,7 @@ import { convertMarkdownToText } from '@src/services/notification/utils/markdown
 import { convertMarkdownToHtml } from '@src/services/notification/utils/markdown-to-html.util';
 import {
   CommunityApplicationCreatedEmailPayload,
+  CommunityApplicationDeclinedEmailPayload,
   CommunityInvitationCreatedEmailPayload,
   CommunityNewMemberEmailPayload,
   CommunicationUpdateCreatedEmailPayload,
@@ -23,6 +24,7 @@ import {
   SpaceCreatedEmailPayload,
   SpaceCommunityInvitationPlatformCreatedEmailPayload,
   CommunityInvitationVirtualContributorCreatedEmailPayload,
+  CommunityInvitationVirtualContributorDeclinedEmailPayload,
   PlatformGlobalRoleChangeEmailPayload,
   PlatformUserRemovedEmailPayload,
   BaseEmailPayload,
@@ -119,6 +121,22 @@ export class NotificationEmailPayloadBuilderService {
     };
   }
 
+  public createEmailTemplatePayloadUserSpaceCommunityApplicationDeclined(
+    eventPayload: NotificationEventPayloadSpaceCommunityApplication,
+    recipient: User
+  ): CommunityApplicationDeclinedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      decliner: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      spaceURL: eventPayload.space.profile.url,
+    };
+  }
+
   public createEmailTemplatePayloadVirtualContributorInvitation(
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
     recipient: User
@@ -134,9 +152,29 @@ export class NotificationEmailPayloadBuilderService {
       spaceAdminURL: eventPayload.space.adminURL,
       welcomeMessage: eventPayload.welcomeMessage,
       virtualContributor: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadVirtualContributorInvitationDeclined(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+    recipient: User
+  ): CommunityInvitationVirtualContributorDeclinedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      decliner: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      virtualContributor: {
         name: eventPayload.host.profile.displayName,
         url: eventPayload.host.profile.url,
       },
+      spaceURL: eventPayload.space.profile.url,
     };
   }
 
@@ -169,8 +207,9 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type === RoleSetContributorType.Virtual
-        ? 'virtual contributor'
+      newMember.type.toLowerCase() ===
+      RoleSetContributorType.Virtual.toLowerCase()
+        ? 'Virtual Contributor'
         : newMember.type;
 
     return {
@@ -189,8 +228,9 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type === RoleSetContributorType.Virtual
-        ? 'virtual contributor'
+      newMember.type.toLowerCase() ===
+      RoleSetContributorType.Virtual.toLowerCase()
+        ? 'Virtual Contributor'
         : newMember.type;
 
     return {
