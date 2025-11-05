@@ -147,6 +147,17 @@ export class AppController {
     );
   }
 
+  @EventPattern(NotificationEvent.SpaceCommunityCalendarEventComment)
+  async sendSpaceCommunityCalendarEventCommentNotification(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCalendarEvent,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
   @EventPattern(NotificationEvent.PlatformAdminGlobalRoleChanged)
   async sendPlatformGlobalRoleChangeNotification(
     @Payload() eventPayload: NotificationEventPayloadPlatformGlobalRole,

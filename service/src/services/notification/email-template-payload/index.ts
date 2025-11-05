@@ -8,6 +8,7 @@ export * from './space.community.invitation.virtual.contributor.declined.email.p
 export * from './space.community.invitation.platform.created.email.payload';
 export * from './space.community.new.member.email.payload';
 export * from './space.community.calendar.event.created.email.payload';
+export * from './space.community.calendar.event.comment.email.payload';
 export * from './space.collaboration.callout.comment.email.payload';
 export * from './space.collaboration.callout.post.contribution.comment.email.payload';
 export * from './space.collaboration.callout.contribution.email.payload';

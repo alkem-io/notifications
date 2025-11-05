@@ -26,6 +26,7 @@ import {
   CommunityInvitationVirtualContributorCreatedEmailPayload,
   CommunityInvitationVirtualContributorDeclinedEmailPayload,
   SpaceCommunityCalendarEventCreatedEmailPayload,
+  SpaceCommunityCalendarEventCommentEmailPayload,
   PlatformGlobalRoleChangeEmailPayload,
   PlatformUserRemovedEmailPayload,
   BaseEmailPayload,
@@ -252,6 +253,24 @@ export class NotificationEmailPayloadBuilderService {
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       creator: {
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      calendarEvent: {
+        title: eventPayload.calendarEvent.title,
+        type: eventPayload.calendarEvent.type,
+        url: eventPayload.calendarEvent.url,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadSpaceCommunityCalendarEventComment(
+    eventPayload: NotificationEventPayloadSpaceCalendarEvent,
+    recipient: User
+  ): SpaceCommunityCalendarEventCommentEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      commentor: {
         name: eventPayload.triggeredBy.profile.displayName,
         profile: eventPayload.triggeredBy.profile.url,
       },
