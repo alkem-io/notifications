@@ -286,6 +286,11 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCalendarEvent,
           recipient
         );
+      case NotificationEvent.SpaceCommunityCalendarEventComment:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityCalendarEventComment(
+          eventPayload as NotificationEventPayloadSpaceCalendarEvent,
+          recipient
+        );
       case NotificationEvent.PlatformAdminGlobalRoleChanged:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformGlobalRoleChange(
           eventPayload as NotificationEventPayloadPlatformGlobalRole,
@@ -419,6 +424,8 @@ export class NotificationService {
         return 'space.admin.community.new.member';
       case NotificationEvent.SpaceCommunityCalendarEventCreated.valueOf():
         return 'space.community.calendar.event.created';
+      case NotificationEvent.SpaceCommunityCalendarEventComment.valueOf():
+        return 'space.community.calendar.event.comment';
       case NotificationEvent.PlatformAdminGlobalRoleChanged.valueOf():
         return 'platform.admin.user.global.role.change';
       case NotificationEvent.UserSignUpWelcome.valueOf():
