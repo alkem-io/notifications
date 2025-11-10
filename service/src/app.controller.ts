@@ -26,6 +26,7 @@ import {
   NotificationEventPayloadSpaceCommunityContributor,
   NotificationEventPayloadUserMessageRoomReply,
   NotificationEventPayloadUserMessageRoom,
+  NotificationEventPayloadSpaceCalendarEvent,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
@@ -127,6 +128,28 @@ export class AppController {
   @EventPattern(NotificationEvent.SpaceAdminCommunityNewMember)
   async sendCommunityNewMemberAdminNotification(
     @Payload() eventPayload: NotificationEventPayloadSpaceCommunityContributor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceCommunityCalendarEventCreated)
+  async sendSpaceCommunityCalendarEventCreatedNotification(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCalendarEvent,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceCommunityCalendarEventComment)
+  async sendSpaceCommunityCalendarEventCommentNotification(
+    @Payload() eventPayload: NotificationEventPayloadSpaceCalendarEvent,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
