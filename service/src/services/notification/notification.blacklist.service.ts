@@ -25,9 +25,11 @@ export class NotificationBlacklistService {
       ConfigurationTypes.NOTIFICATION_PROVIDERS
     )?.email;
 
-    const blacklistConfig = emailConfig?.blacklist;
+    const normalizedEntries = this.normalizeBlacklistEntries(
+      emailConfig?.blacklist
+    );
 
-    if (!blacklistConfig || blacklistConfig.trim() === '') {
+    if (normalizedEntries.length === 0) {
       this.logger.verbose?.(
         'Email blacklist is empty or not configured. All recipients will be allowed.',
         LogContext.NOTIFICATIONS
@@ -36,8 +38,7 @@ export class NotificationBlacklistService {
     }
 
     // Parse comma-separated list
-    const entries = blacklistConfig
-      .split(',')
+    const entries = normalizedEntries
       .map((email: string) => email.trim())
       .filter((email: string) => email.length > 0);
 
@@ -59,6 +60,33 @@ export class NotificationBlacklistService {
         LogContext.NOTIFICATIONS
       );
     }
+  }
+
+  /**
+   * Normalize blacklist configuration values into a flat list of strings.
+   * Supports comma-separated strings or arrays of strings.
+   */
+  private normalizeBlacklistEntries(rawValue: unknown): string[] {
+    if (rawValue == null) {
+      return [];
+    }
+
+    if (typeof rawValue === 'string') {
+      return rawValue.split(',');
+    }
+
+    if (Array.isArray(rawValue)) {
+      return rawValue
+        .filter((entry): entry is string => typeof entry === 'string')
+        .flatMap((entry: string) => entry.split(','));
+    }
+
+    this.logger.warn?.(
+      `Unsupported type for email blacklist configuration: ${typeof rawValue}. Expected string or string[].`,
+      LogContext.NOTIFICATIONS
+    );
+
+    return [];
   }
 
   /**
