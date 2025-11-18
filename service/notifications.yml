@@ -59,6 +59,10 @@ notification_providers:
     multi_provider_strategy: ${EMAIL_MULTI_PROVIDER_STRATEGY}:fallback
     from: ${EMAIL_FROM}:notifications@alkem.io
     from_name: ${EMAIL_FROM_NAME}:Alkemio
+    # Comma-separated list of exact email addresses that should never receive notifications
+    # Example: blocked1@example.org,blocked2@example.org
+    # Empty value or missing variable means no blacklist (all emails allowed)
+    blacklist: ${NOTIFICATIONS_EMAIL_BLACKLIST}:
     smtp:
       host: ${EMAIL_SMTP_HOST}:localhost
       port: ${EMAIL_SMTP_PORT}:1025
