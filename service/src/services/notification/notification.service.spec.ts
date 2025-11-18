@@ -15,6 +15,7 @@ import {
 import { NotificationEventPayloadSpaceCommunityApplication } from '@alkemio/notifications-lib';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
+import { NotificationBlacklistService } from './notification.blacklist.service';
 import { NOTIFICATIONS_PROVIDER } from '@src/common/enums/providers';
 
 const testData = {
@@ -38,6 +39,7 @@ describe('NotificationService', () => {
         MockWinstonProvider,
         NotificationService,
         NotificationEmailPayloadBuilderService,
+        NotificationBlacklistService,
         MockConfigServiceProvider,
         NotificationTemplateBuilder,
       ],
@@ -58,6 +60,7 @@ describe('NotificationService', () => {
           email: {
             from: 'test@example.com',
             from_name: 'Test Notifications',
+            blacklist: '', // Empty blacklist for default tests
           },
         };
       }

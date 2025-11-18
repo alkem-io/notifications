@@ -36,6 +36,7 @@ import { User } from '@src/core/models';
 import { BaseEmailPayload } from '@src/services/notification/email-template-payload/base.email.payload';
 import { NotificationEvent } from '@src/generated/alkemio-schema';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
+import { NotificationBlacklistService } from './notification.blacklist.service';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { Channel, Message } from 'amqplib';
 import { Ctx, Payload, RmqContext } from '@nestjs/microservices';
@@ -48,7 +49,8 @@ export class NotificationService {
     private readonly notifmeService: NotifmeSdk,
     private readonly configService: ConfigService,
     private notificationTemplateBuilder: NotificationTemplateBuilder,
-    private notificationEmailPayloadBuilderService: NotificationEmailPayloadBuilderService
+    private notificationEmailPayloadBuilderService: NotificationEmailPayloadBuilderService,
+    private notificationBlacklistService: NotificationBlacklistService
   ) {}
 
   public async processNotificationEvent(
@@ -132,11 +134,24 @@ export class NotificationService {
       return [];
     }
 
+    // Apply blacklist filtering to recipients
+    const filteredRecipients =
+      this.notificationBlacklistService.filterRecipients(payload.recipients);
+
+    // Handle edge case: all recipients were blacklisted
+    if (filteredRecipients.length === 0) {
+      this.logger.verbose?.(
+        `[${payload.eventType}] - All recipients were filtered by blacklist. No notifications will be sent.`,
+        LogContext.NOTIFICATIONS
+      );
+      return [];
+    }
+
     const emailTemplate = this.getEmailTemplateToUseForEvent(
       payload.eventType as NotificationEvent
     );
 
-    for (const recipient of payload.recipients) {
+    for (const recipient of filteredRecipients) {
       const templatePayload = this.createEmailPayloadForEvent(
         payload,
         recipient

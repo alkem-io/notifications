@@ -99,6 +99,45 @@ Add cases to both switch statements in the notification service.
 
 ## Additional Information
 
+### Email Blacklist Feature
+
+The notifications service supports a configurable email blacklist to prevent notifications from being sent to specific email addresses. This is useful for blocking test accounts, legal hold addresses, or other emails that should never receive notifications.
+
+#### Configuration
+
+Configure the blacklist using the `NOTIFICATIONS_EMAIL_BLACKLIST` environment variable:
+
+```bash
+# Single address
+NOTIFICATIONS_EMAIL_BLACKLIST="blocked@example.org"
+
+# Multiple addresses (comma-separated)
+NOTIFICATIONS_EMAIL_BLACKLIST="test1@test.com,test2@test.com,blocked@example.org"
+```
+
+#### Behavior
+
+- **Exact matching only**: Email addresses must match exactly (case-insensitive)
+- **Applied globally**: Blacklist applies to all notification types
+- **Fail-safe**: Invalid email formats are logged as warnings and ignored
+- **Automatic deduplication**: Duplicate entries in configuration are handled automatically
+- **Restart required**: Changes to the blacklist require a service restart
+
+#### Logging
+
+When a recipient is filtered by the blacklist, structured log entries are emitted:
+
+```json
+{
+  "event": "notification_blacklist_block",
+  "recipient_email": "blocked@example.org",
+  "reason": "blacklisted",
+  "user_id": "user-123"
+}
+```
+
+For more details, see `specs/001-create-configurable-black/quickstart.md`.
+
 After the latest architectural simplification, the notification system has been streamlined significantly:
 
 ### Current Architecture:
