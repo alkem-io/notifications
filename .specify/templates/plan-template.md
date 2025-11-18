@@ -31,7 +31,18 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Confirm this feature aligns with the Alkemio Notifications Constitution:
+
+- Client–server–notifications integration is explicitly modeled via `lib/`
+  DTOs and corresponding service/template changes.
+- Implementation follows existing structure and tooling in `service/` and
+  `lib/` (no ad-hoc scripts or parallel frameworks without justification).
+- Rapid feedback and validation loops are defined (how to trigger the
+  notification end-to-end, which tests/commands to run).
+- Contract changes are captured in DTOs and, if breaking, include a
+  migration/rollout plan.
+- Observability and simplicity are considered (logging, error handling,
+  operational impact).
 
 ## Project Structure
 

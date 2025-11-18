@@ -84,16 +84,26 @@
 
 ### Functional Requirements
 
-- **FR-001**: System MUST [specific capability, e.g., "allow users to create accounts"]
-- **FR-002**: System MUST [specific capability, e.g., "validate email addresses"]  
-- **FR-003**: Users MUST be able to [key interaction, e.g., "reset their password"]
-- **FR-004**: System MUST [data requirement, e.g., "persist user preferences"]
-- **FR-005**: System MUST [behavior, e.g., "log all security events"]
+- **FR-001**: System MUST define how client, backend, and notifications
+  service interact for this feature (including which DTOs in `lib/` are
+  used or added).
+- **FR-002**: Notifications MUST be delivered via the existing
+  `service/`-based flow (payload builders + templates), unless explicitly
+  justified otherwise.
+- **FR-003**: There MUST be at least one independently testable
+  end-to-end scenario from triggering event to rendered email (or
+  equivalent notification output).
+- **FR-004**: Any new or changed DTOs MUST be captured in `lib/src/dto/**`
+  and referenced in the spec.
+- **FR-005**: Logging and error handling MUST make the notification flow
+  observable for this feature (how to trace events and failures).
 
 *Example of marking unclear requirements:*
 
-- **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-006**: Notification triggering conditions via [NEEDS CLARIFICATION:
+  which events or states should produce a notification?]
+- **FR-007**: Recipient rules via [NEEDS CLARIFICATION: who exactly should
+  receive which notification variants?]
 
 ### Key Entities *(include if feature involves data)*
 
