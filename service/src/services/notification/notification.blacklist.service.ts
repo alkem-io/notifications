@@ -1,26 +1,28 @@
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, Optional } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
 import { ConfigurationTypes, LogContext } from '@common/enums';
 import { User } from '@src/core/models';
+import { BlacklistSyncService } from './blacklist-sync.service';
 
 @Injectable()
 export class NotificationBlacklistService {
-  private blacklistedEmails: Set<string> = new Set();
+  private staticBlacklistedEmails: Set<string> = new Set();
 
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    @Optional() private readonly blacklistSyncService?: BlacklistSyncService
   ) {
-    this.loadBlacklist();
+    this.loadStaticBlacklist();
   }
 
   /**
-   * Load and parse the blacklist from configuration.
+   * Load and parse the static blacklist from configuration.
    * Validates email addresses and warns about invalid entries.
    */
-  private loadBlacklist(): void {
+  private loadStaticBlacklist(): void {
     const emailConfig = this.configService.get(
       ConfigurationTypes.NOTIFICATION_PROVIDERS
     )?.email;
@@ -45,7 +47,7 @@ export class NotificationBlacklistService {
     // Validate and add to set (deduplicates automatically)
     entries.forEach((email: string) => {
       if (this.isValidEmail(email)) {
-        this.blacklistedEmails.add(email.toLowerCase());
+        this.staticBlacklistedEmails.add(email.toLowerCase());
       } else {
         this.logger.warn?.(
           `Invalid email format in blacklist configuration: "${email}". Entry will be ignored.`,
@@ -54,9 +56,9 @@ export class NotificationBlacklistService {
       }
     });
 
-    if (this.blacklistedEmails.size > 0) {
+    if (this.staticBlacklistedEmails.size > 0) {
       this.logger.verbose?.(
-        `Email blacklist loaded with ${this.blacklistedEmails.size} address(es).`,
+        `Static email blacklist loaded with ${this.staticBlacklistedEmails.size} address(es).`,
         LogContext.NOTIFICATIONS
       );
     }
@@ -99,14 +101,35 @@ export class NotificationBlacklistService {
   }
 
   /**
+   * Get the effective blacklist (GraphQL if available and enabled, otherwise static)
+   */
+  private getEffectiveBlacklist(): Set<string> {
+    // If GraphQL sync is enabled and has a snapshot, use it
+    if (this.blacklistSyncService?.isSyncEnabled()) {
+      const snapshot = this.blacklistSyncService.getCurrentSnapshot();
+      if (snapshot) {
+        return snapshot.emails;
+      }
+      // If GraphQL sync is enabled but no snapshot yet, use empty set (fail-open)
+      return new Set<string>();
+    }
+
+    // Fall back to static blacklist
+    return this.staticBlacklistedEmails;
+  }
+
+  /**
    * Filter recipients to remove blacklisted email addresses.
    * Returns a new array with only allowed recipients.
+   * Uses GraphQL blacklist if available, otherwise falls back to static configuration.
    *
    * @param recipients - Array of User objects to filter
    * @returns Filtered array of User objects (non-blacklisted only)
    */
   public filterRecipients(recipients: User[]): User[] {
-    if (this.blacklistedEmails.size === 0) {
+    const blacklist = this.getEffectiveBlacklist();
+
+    if (blacklist.size === 0) {
       // No blacklist configured, return all recipients
       return recipients;
     }
@@ -123,7 +146,7 @@ export class NotificationBlacklistService {
 
       const normalizedEmail = recipient.email.toLowerCase();
 
-      if (this.blacklistedEmails.has(normalizedEmail)) {
+      if (blacklist.has(normalizedEmail)) {
         blockedRecipients.push(recipient);
       } else {
         allowedRecipients.push(recipient);
@@ -132,6 +155,12 @@ export class NotificationBlacklistService {
 
     // Log blocked recipients
     if (blockedRecipients.length > 0) {
+      const snapshot = this.blacklistSyncService?.getCurrentSnapshot();
+      const blacklistSource = this.blacklistSyncService?.isSyncEnabled()
+        ? 'graphql'
+        : 'static';
+
+      // TODO: Add metric - notifications_blacklist_blocks_total (counter by source)
       blockedRecipients.forEach(recipient => {
         this.logger.verbose?.(
           JSON.stringify({
@@ -139,13 +168,15 @@ export class NotificationBlacklistService {
             recipient_email: recipient.email,
             reason: 'blacklisted',
             user_id: recipient.id || 'unknown',
+            blacklist_source: blacklistSource,
+            snapshot_fetched_at: snapshot?.fetchedAt.toISOString(),
           }),
           LogContext.NOTIFICATIONS
         );
       });
 
       this.logger.verbose?.(
-        `Filtered ${blockedRecipients.length} blacklisted recipient(s) out of ${recipients.length} total recipient(s).`,
+        `Filtered ${blockedRecipients.length} blacklisted recipient(s) out of ${recipients.length} total recipient(s). Source: ${blacklistSource}`,
         LogContext.NOTIFICATIONS
       );
     }
@@ -160,17 +191,36 @@ export class NotificationBlacklistService {
    * @returns true if the email is blacklisted, false otherwise
    */
   public isBlacklisted(email: string): boolean {
-    if (!email || this.blacklistedEmails.size === 0) {
+    if (!email) {
       return false;
     }
-    return this.blacklistedEmails.has(email.toLowerCase());
+
+    const blacklist = this.getEffectiveBlacklist();
+    if (blacklist.size === 0) {
+      return false;
+    }
+
+    return blacklist.has(email.toLowerCase());
   }
 
   /**
-   * Get the current size of the blacklist.
+   * Get the current size of the effective blacklist.
    * Useful for testing and monitoring.
    */
   public getBlacklistSize(): number {
-    return this.blacklistedEmails.size;
+    return this.getEffectiveBlacklist().size;
+  }
+
+  /**
+   * Get the source of the current blacklist
+   */
+  public getBlacklistSource(): 'graphql' | 'static' {
+    if (
+      this.blacklistSyncService?.isSyncEnabled() &&
+      this.blacklistSyncService?.getCurrentSnapshot()
+    ) {
+      return 'graphql';
+    }
+    return 'static';
   }
 }
