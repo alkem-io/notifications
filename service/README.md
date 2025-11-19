@@ -101,29 +101,72 @@ Add cases to both switch statements in the notification service.
 
 ### Email Blacklist Feature
 
-The notifications service supports a configurable email blacklist to prevent notifications from being sent to specific email addresses. This is useful for blocking test accounts, legal hold addresses, or other emails that should never receive notifications.
+The notifications service supports both static and dynamic (GraphQL-sourced) email blacklists to prevent notifications from being sent to specific email addresses. This is useful for blocking test accounts, legal hold addresses, or other emails that should never receive notifications.
 
-#### Configuration
+#### GraphQL Blacklist (Default)
 
-Configure the blacklist using the `NOTIFICATIONS_EMAIL_BLACKLIST` environment variable:
+By default, the service fetches the blacklist dynamically from the Alkemio GraphQL API. The blacklist is sourced from `platform.settings.integration.notificationEmailBlacklist` and is synchronized periodically.
+
+**Configuration**:
 
 ```bash
-# Single address
-NOTIFICATIONS_EMAIL_BLACKLIST="blocked@example.org"
+# Enable/disable GraphQL blacklist sync (default: true)
+ALKEMIO_BLACKLIST_SYNC_ENABLED=true
 
-# Multiple addresses (comma-separated)
+# Refresh interval in milliseconds (default: 300000 = 5 minutes)
+ALKEMIO_BLACKLIST_SYNC_INTERVAL_MS=300000
+
+# Initial backoff for retries in milliseconds (default: 250)
+ALKEMIO_BLACKLIST_SYNC_INITIAL_BACKOFF_MS=250
+
+# Maximum backoff for retries in milliseconds (default: 30000 = 30 seconds)
+ALKEMIO_BLACKLIST_SYNC_MAX_BACKOFF_MS=30000
+```
+
+**Behavior**:
+
+- **Automatic updates**: Changes made via GraphQL mutations (`addNotificationEmailToBlacklist`/`removeNotificationEmailFromBlacklist`) propagate within the configured sync interval (default 5 minutes)
+- **No restart required**: Blacklist updates are applied automatically during the next sync
+- **Fail-open on startup**: If GraphQL is unavailable at startup, the service starts with an empty blacklist and logs errors
+- **Last-good snapshot retention**: On refresh failures, the service keeps using the most recent successful snapshot
+- **Exponential backoff**: Failed sync attempts use exponential backoff to avoid overwhelming the API
+
+**Logging**:
+
+Sync operations emit structured logs:
+
+```json
+{
+  "event": "blacklist_sync_success",
+  "snapshot_size": 5,
+  "fetched_at": "2025-11-19T16:30:00.000Z",
+  "platform_id": "platform-uuid"
+}
+```
+
+For more details, see `specs/002-graphql-blacklist/quickstart.md`.
+
+#### Static Blacklist (Fallback)
+
+For environments without GraphQL access, disable GraphQL sync and use static configuration:
+
+```bash
+# Disable GraphQL sync
+ALKEMIO_BLACKLIST_SYNC_ENABLED=false
+
+# Configure static blacklist (comma-separated)
 NOTIFICATIONS_EMAIL_BLACKLIST="test1@test.com,test2@test.com,blocked@example.org"
 ```
 
-#### Behavior
+**Behavior**:
 
 - **Exact matching only**: Email addresses must match exactly (case-insensitive)
 - **Applied globally**: Blacklist applies to all notification types
 - **Fail-safe**: Invalid email formats are logged as warnings and ignored
-- **Automatic deduplication**: Duplicate entries in configuration are handled automatically
-- **Restart required**: Changes to the blacklist require a service restart
+- **Automatic deduplication**: Duplicate entries are handled automatically
+- **Restart required**: Changes to the static blacklist require a service restart
 
-#### Logging
+#### Blacklist Filtering Logs
 
 When a recipient is filtered by the blacklist, structured log entries are emitted:
 
@@ -132,11 +175,11 @@ When a recipient is filtered by the blacklist, structured log entries are emitte
   "event": "notification_blacklist_block",
   "recipient_email": "blocked@example.org",
   "reason": "blacklisted",
-  "user_id": "user-123"
+  "user_id": "user-123",
+  "blacklist_source": "graphql",
+  "snapshot_fetched_at": "2025-11-19T16:30:00.000Z"
 }
 ```
-
-For more details, see `specs/001-create-configurable-black/quickstart.md`.
 
 After the latest architectural simplification, the notification system has been streamlined significantly:
 
