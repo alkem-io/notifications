@@ -167,6 +167,8 @@ export class BlacklistSyncService implements OnModuleInit {
       this.lastErrorAt = null;
 
       // Log success
+      // TODO: Add metric - notifications_blacklist_snapshot_age_seconds
+      // TODO: Add metric - notifications_blacklist_size (gauge)
       this.logger.log?.(
         JSON.stringify({
           event: 'blacklist_sync_success',
@@ -196,6 +198,8 @@ export class BlacklistSyncService implements OnModuleInit {
     const isAuthError = error?.response?.status === 401;
     const errorType = isAuthError ? 'authentication_error' : 'sync_error';
 
+    // TODO: Add metric - notifications_blacklist_sync_failures_total (counter)
+    // TODO: Add metric - notifications_blacklist_snapshot_age_seconds (gauge)
     this.logger.error?.(
       JSON.stringify({
         event: 'blacklist_sync_failure',

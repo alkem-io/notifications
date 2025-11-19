@@ -160,6 +160,7 @@ export class NotificationBlacklistService {
         ? 'graphql'
         : 'static';
 
+      // TODO: Add metric - notifications_blacklist_blocks_total (counter by source)
       blockedRecipients.forEach(recipient => {
         this.logger.verbose?.(
           JSON.stringify({
