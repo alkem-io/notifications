@@ -59,6 +59,10 @@ notification_providers:
     multi_provider_strategy: ${EMAIL_MULTI_PROVIDER_STRATEGY}:fallback
     from: ${EMAIL_FROM}:notifications@alkem.io
     from_name: ${EMAIL_FROM_NAME}:Alkemio
+    # Comma-separated list of exact email addresses that should never receive notifications
+    # Example: blocked1@example.org,blocked2@example.org
+    # Empty value or missing variable means no blacklist (all emails allowed)
+    blacklist: ${NOTIFICATIONS_EMAIL_BLACKLIST}
     smtp:
       host: ${EMAIL_SMTP_HOST}:localhost
       port: ${EMAIL_SMTP_PORT}:1025
@@ -88,6 +92,19 @@ alkemio:
   endpoint: ${ALKEMIO_SERVER_ENDPOINT}:http://localhost:3000/api/private/non-interactive/graphql
   webclient_endpoint: ${ALKEMIO_WEBCLIENT_ENDPOINT}:http://localhost:3000
   webclient_invitations_path: /home?dialog=invitations
+  # GraphQL blacklist sync configuration
+  blacklist_sync:
+    # Enable/disable GraphQL-based blacklist synchronization
+    enabled: ${ALKEMIO_BLACKLIST_SYNC_ENABLED}:true
+    # Interval for refreshing the blacklist from GraphQL (in milliseconds)
+    # Default: 300000 (5 minutes)
+    interval_ms: ${ALKEMIO_BLACKLIST_SYNC_INTERVAL_MS}:300000
+    # Initial delay before starting exponential backoff (in milliseconds)
+    # Default: 250
+    initial_backoff_ms: ${ALKEMIO_BLACKLIST_SYNC_INITIAL_BACKOFF_MS}:250
+    # Maximum delay for exponential backoff (in milliseconds)
+    # Default: 30000 (30 seconds)
+    max_backoff_ms: ${ALKEMIO_BLACKLIST_SYNC_MAX_BACKOFF_MS}:30000
 
 kratos:
   public_endpoint: ${KRATOS_API_PUBLIC_ENDPOINT}:http://localhost:3000/ory/kratos/public
