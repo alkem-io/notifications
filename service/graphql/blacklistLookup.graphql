@@ -1,0 +1,10 @@
+query BlacklistLookup {
+  platform {
+    id
+    settings {
+      integration {
+        notificationEmailBlacklist
+      }
+    }
+  }
+}
