@@ -7,7 +7,7 @@ This quickstart explains how to validate that the notifications service respects
 - Alkemio platform instance running with PR #5622 (or equivalent) deployed.
 - Notifications service built and running against that platform (e.g., via `docker-run: release` or `npm run start:dev` in `service/`).
 - Service configuration updated to:
-  - Point to the correct GraphQL endpoint (e.g., `ALKEMIO_GRAPHQL_ENDPOINT`).
+  - Point to the correct GraphQL endpoint (e.g., `ALKEMIO_SERVER_ENDPOINT`).
   - Provide a valid machine-to-machine token for GraphQL access.
   - Enable GraphQL blacklist sync and set the refresh interval (default 5 minutes).
 
