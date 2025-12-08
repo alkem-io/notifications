@@ -1,36 +1,43 @@
-FROM node:22.16.0-alpine
+# =============================================================================
+# Stage 1: Build
+# =============================================================================
+FROM node:22.16.0-alpine AS builder
 
-
-# Create app directory
 WORKDIR /usr/src/app
 
-# Define graphql server port
-ARG ENV_ARG=production
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
+# Copy package files first for better layer caching
 COPY ./service/package*.json ./
 
-RUN npm i -g npm@10.9.3 && npm install
+# Install all dependencies (devDependencies needed for build)
+RUN npm ci
 
-## Add the wait script to the image
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
-RUN chmod +x /wait
-
-# If you are building your code for production
-# RUN npm ci --only=production
-
-# Bundle app source & config files for TypeORM & TypeScript
+# Copy source files needed for build
 COPY ./service/src ./src
 COPY ./service/tsconfig.json .
 COPY ./service/tsconfig.build.json .
-COPY ./service/notifications.yml .
+COPY ./service/nest-cli.json .
 
-RUN npm run build
+ENV NODE_ENV=production
 
-ENV NODE_ENV=${ENV_ARG}
+# Build the application, then prune devDependencies
+RUN npm run build \
+    && npm prune --omit=dev \
+    && npm cache clean --force
+
+# =============================================================================
+# Stage 2: Production
+# =============================================================================
+FROM gcr.io/distroless/nodejs22-debian12:nonroot
+
+WORKDIR /usr/src/app
+
+# Copy only necessary artifacts from builder
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/package.json ./package.json
+COPY ./service/notifications.yml ./notifications.yml
 
 EXPOSE 4004
 
-CMD ["/bin/sh", "-c", "npm run start:prod"]
+# Distroless uses the nodejs binary directly, not shell
+CMD ["dist/main.js"]
