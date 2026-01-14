@@ -1,43 +1,43 @@
-# =============================================================================
-# Stage 1: Build
-# =============================================================================
-FROM node:22.16.0-alpine AS builder
+# ======================
+# Builder stage (with dev deps)
+# ======================
+FROM node:22.16.0-bookworm AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package files first for better layer caching
-COPY ./service/package*.json ./
-
-# Install all dependencies (devDependencies needed for build)
+COPY service/package*.json ./
 RUN npm ci
 
-# Copy source files needed for build
-COPY ./service/src ./src
-COPY ./service/tsconfig.json .
-COPY ./service/tsconfig.build.json .
-COPY ./service/nest-cli.json .
+COPY service/tsconfig*.json ./
+COPY service/src ./src
+COPY service/notifications.yml .
 
+RUN npm run build
+
+
+# ======================
+# Prod deps stage (NO dev deps)
+# ======================
+FROM node:22.16.0-bookworm AS prod-deps
+
+WORKDIR /app
+
+COPY service/package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+
+# ======================
+# Runtime stage (distroless)
+# ======================
+FROM gcr.io/distroless/nodejs22-debian12
+
+WORKDIR /app
 ENV NODE_ENV=production
 
-# Build the application, then prune devDependencies
-RUN npm run build \
-    && npm prune --omit=dev \
-    && npm cache clean --force
-
-# =============================================================================
-# Stage 2: Production
-# =============================================================================
-FROM gcr.io/distroless/nodejs22-debian12:nonroot
-
-WORKDIR /usr/src/app
-
-# Copy only necessary artifacts from builder
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package.json ./package.json
-COPY ./service/notifications.yml ./notifications.yml
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=builder  /app/dist ./dist
+COPY --from=builder  /app/notifications.yml ./notifications.yml
+COPY --from=builder  /app/package.json ./package.json
 
 EXPOSE 4004
-
-# Distroless uses the nodejs binary directly, not shell
 CMD ["dist/main.js"]
