@@ -29,15 +29,15 @@ RUN npm ci --omit=dev && npm cache clean --force
 # ======================
 # Runtime stage (distroless)
 # ======================
-FROM gcr.io/distroless/nodejs22-debian12
+FROM gcr.io/distroless/nodejs22-debian12:nonroot
 
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY --from=prod-deps /app/node_modules ./node_modules
-COPY --from=builder  /app/dist ./dist
-COPY --from=builder  /app/notifications.yml ./notifications.yml
-COPY --from=builder  /app/package.json ./package.json
+COPY --from=prod-deps --chown=65532:65532 /app/node_modules ./node_modules
+COPY --from=builder --chown=65532:65532 /app/dist ./dist
+COPY --from=builder --chown=65532:65532 /app/notifications.yml ./notifications.yml
+COPY --from=builder --chown=65532:65532 /app/package.json ./package.json
 
 EXPOSE 4004
 CMD ["dist/main.js"]
