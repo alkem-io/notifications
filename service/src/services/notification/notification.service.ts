@@ -311,11 +311,6 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadPlatformGlobalRole,
           recipient
         );
-      case NotificationEvent.UserSignUpWelcome:
-        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSignUpWelcome(
-          eventPayload as NotificationEventPayloadPlatformUserRegistration,
-          recipient
-        );
       case NotificationEvent.PlatformAdminUserProfileCreated:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformAdminUserProfileCreated(
           eventPayload as NotificationEventPayloadPlatformUserRegistration,
@@ -443,8 +438,6 @@ export class NotificationService {
         return 'space.community.calendar.event.comment';
       case NotificationEvent.PlatformAdminGlobalRoleChanged.valueOf():
         return 'platform.admin.user.global.role.change';
-      case NotificationEvent.UserSignUpWelcome.valueOf():
-        return 'user.sign.up.welcome';
       case NotificationEvent.PlatformAdminUserProfileCreated.valueOf():
         return 'platform.admin.user.profile.created';
       case NotificationEvent.PlatformAdminUserProfileRemoved.valueOf():

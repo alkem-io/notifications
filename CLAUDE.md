@@ -80,3 +80,6 @@ Both `lib/src/dto/` (event payloads) and `service/src/services/notification/emai
 1. `npm run start:services` (starts mailslurper)
 2. Publish test message to RabbitMQ at http://localhost:15672/#/queues/%2F/alkemio-notifications
 3. Check emails at http://localhost:5051/mail
+
+## Recent Changes
+- 003-remove-registration-notification: Removed USER_SIGN_UP_WELCOME notification (user welcome email). PLATFORM_ADMIN_USER_PROFILE_CREATED notification remains unchanged.

@@ -282,7 +282,6 @@ export class NotificationEmailPayloadBuilderService {
     };
   }
 
-  // Placeholder methods for the remaining notification types - these need to be implemented
   public createEmailTemplatePayloadPlatformGlobalRoleChange(
     eventPayload: NotificationEventPayloadPlatformGlobalRole,
     recipient: User
@@ -302,21 +301,6 @@ export class NotificationEmailPayloadBuilderService {
       role: eventPayload.role,
       type: eventPayload.type,
       triggeredBy: eventPayload.triggeredBy.id,
-    };
-  }
-
-  public createEmailTemplatePayloadUserSignUpWelcome(
-    eventPayload: NotificationEventPayloadPlatformUserRegistration,
-    recipient: User
-  ): PlatformUserRegisteredEmailPayload {
-    return {
-      ...this.createBaseEmailPayload(eventPayload, recipient),
-      registrant: {
-        displayName: eventPayload.user.profile.displayName,
-        firstName: eventPayload.user.firstName,
-        email: eventPayload.user.email,
-        profile: eventPayload.user.profile.url,
-      },
     };
   }
 
