@@ -94,7 +94,7 @@ The following variables are used in the current notification. Map these to Krato
 | Current Variable | Description | Kratos Equivalent |
 |------------------|-------------|-------------------|
 | `{{firstName}}` | User's first name | `{{ .Identity.traits.name.first }}` (verify trait path) |
-| `{{profileUrl}}` | URL to user's profile page | Construct from base URL + identity ID or use verification URL |
+| `{{profileUrl}}` | URL to user's profile page | Use static URL `https://alkem.io/user/me` (redirects to logged-in user's profile) |
 
 **Note**: Kratos templates use Go template syntax. Adjust variables according to your Kratos identity schema.
 
@@ -143,7 +143,7 @@ courier:
 
   <p><a href="https://alkem.io/welcome-space"><b>Explore the possibilities</b></a>: Take a peek at our Welcome Space - it's an open Space for you to explore the platform's structure and functionality.</p>
 
-  <p><a href="{{ .VerificationURL }}"><b>Personalize Your Profile</b></a>: Add a friendly photo to your profile so fellow users can put a face to your name.</p>
+  <p><a href="https://alkem.io/user/me"><b>Personalize Your Profile</b></a>: Add a friendly photo to your profile so fellow users can put a face to your name.</p>
 
   <p><a href="mailto:community@alkem.io"><b>Need Assistance?</b></a>: Whether you're keen on starting your own Space or require support, our Community team is here for you. Reach out anytime at <b>community@alkem.io</b>.</p>
 

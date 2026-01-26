@@ -16,7 +16,7 @@ Remove the "Registration successful!" notification from the Alkemio notification
 **Target Platform**: Linux server (Docker container)
 **Project Type**: NestJS microservice
 **Performance Goals**: N/A (removal only)
-**Constraints**: Backward compatibility during deployment - stray events fail silently
+**Constraints**: Backward compatibility during deployment - stray events throw EventPayloadNotProvidedException (fail-early behavior preserved)
 **Scale/Scope**: Affects 2 notification types, ~8 files modified/deleted
 
 ## Constitution Check

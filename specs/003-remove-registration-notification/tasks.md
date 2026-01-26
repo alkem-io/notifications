@@ -73,6 +73,8 @@
 
 ## Phase 4: User Story 2 - Infrastructure Template Updates (Priority: P1)
 
+**Requirements**: FR-003, FR-004, FR-005, FR-006
+
 **Goal**: Ensure cross-repo specification document is complete for infrastructure teams
 
 **Independent Test**: Infrastructure team can review `cross-repo-spec.md` and confirm it contains all information needed to update Kratos templates.
@@ -193,5 +195,5 @@ This removes the registration notification with graceful handling of stray event
 
 - Keep `lib/src/dto/platform/notification.event.payload.platform.user.registration.ts` to avoid breaking change
 - No existing unit tests for registration notifications - manual testing per research.md
-- Stray events during deployment transition will be logged and silently dropped (no error, no email)
+- Stray events during deployment transition will throw EventPayloadNotProvidedException (fail-early behavior preserved per spec clarification)
 - Commit after each logical task group for easy rollback
