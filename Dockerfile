@@ -36,6 +36,7 @@ ENV NODE_ENV=production
 
 COPY --from=prod-deps --chown=65532:65532 /app/node_modules ./node_modules
 COPY --from=builder --chown=65532:65532 /app/dist ./dist
+COPY --from=builder --chown=65532:65532 /app/src/email-templates ./src/email-templates
 COPY --from=builder --chown=65532:65532 /app/notifications.yml ./notifications.yml
 COPY --from=builder --chown=65532:65532 /app/package.json ./package.json
 
