@@ -1,4 +1,4 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationBlacklistService } from './notification.blacklist.service';
 import { ConfigService } from '@nestjs/config';
 import { MockConfigServiceProvider, MockWinstonProvider } from '@test/mocks';
@@ -6,6 +6,7 @@ import { User } from '@src/core/models';
 
 describe('NotificationBlacklistService', () => {
   let service: NotificationBlacklistService;
+  const moduleRefs: TestingModule[] = [];
 
   // Helper function to create mock users
   const createUser = (email: string, id?: string): User => ({
@@ -36,6 +37,7 @@ describe('NotificationBlacklistService', () => {
       ],
     }).compile();
 
+    moduleRefs.push(moduleRef);
     return moduleRef.get<NotificationBlacklistService>(
       NotificationBlacklistService
     );
@@ -50,9 +52,18 @@ describe('NotificationBlacklistService', () => {
       ],
     }).compile();
 
+    moduleRefs.push(moduleRef);
     service = moduleRef.get<NotificationBlacklistService>(
       NotificationBlacklistService
     );
+  });
+
+  afterEach(async () => {
+    // Close all test modules to prevent resource leaks
+    for (const ref of moduleRefs) {
+      await ref.close();
+    }
+    moduleRefs.length = 0;
   });
 
   describe('Empty blacklist configuration', () => {
