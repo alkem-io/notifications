@@ -25,6 +25,7 @@ export class BlacklistSyncService implements OnModuleInit {
   private lastErrorAt: Date | null = null;
   private consecutiveFailures = 0;
   private syncIntervalHandle: NodeJS.Timeout | null = null;
+  private retryTimeoutHandle: NodeJS.Timeout | null = null;
   private config: BlacklistSyncConfig;
 
   // GraphQL query for fetching the blacklist
@@ -232,7 +233,14 @@ export class BlacklistSyncService implements OnModuleInit {
     // Schedule retry with backoff
     if (this.consecutiveFailures === 1) {
       // Only schedule immediate retry on first failure, then rely on periodic sync
-      setTimeout(() => this.performSync(), backoffDelay);
+      // Clear any existing retry timeout before scheduling a new one
+      if (this.retryTimeoutHandle) {
+        clearTimeout(this.retryTimeoutHandle);
+      }
+      this.retryTimeoutHandle = setTimeout(() => {
+        this.retryTimeoutHandle = null;
+        this.performSync();
+      }, backoffDelay);
     }
   }
 
@@ -341,6 +349,10 @@ export class BlacklistSyncService implements OnModuleInit {
     if (this.syncIntervalHandle) {
       clearInterval(this.syncIntervalHandle);
       this.syncIntervalHandle = null;
+    }
+    if (this.retryTimeoutHandle) {
+      clearTimeout(this.retryTimeoutHandle);
+      this.retryTimeoutHandle = null;
     }
   }
 }
