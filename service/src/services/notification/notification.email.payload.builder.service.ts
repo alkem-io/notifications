@@ -250,6 +250,27 @@ export class NotificationEmailPayloadBuilderService {
     eventPayload: NotificationEventPayloadSpaceCalendarEvent,
     recipient: User
   ): SpaceCommunityCalendarEventCreatedEmailPayload {
+    const dateFormatOptions: Intl.DateTimeFormatOptions = {
+      timeZone: 'UTC',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      ...(eventPayload.calendarEvent.wholeDay
+        ? {}
+        : { hour: 'numeric', minute: '2-digit' }),
+    };
+
+    const formattedStartDate = new Date(
+      eventPayload.calendarEvent.startDate
+    ).toLocaleString('en-GB', dateFormatOptions);
+    const tempFormattedEndDate = new Date(
+      eventPayload.calendarEvent.endDate
+    ).toLocaleString('en-GB', dateFormatOptions);
+
+    // Set to null if the formatted dates are the same
+    const formattedEndDate =
+      tempFormattedEndDate === formattedStartDate ? null : tempFormattedEndDate;
+
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       creator: {
@@ -258,8 +279,19 @@ export class NotificationEmailPayloadBuilderService {
       },
       calendarEvent: {
         title: eventPayload.calendarEvent.title,
+        description: eventPayload.calendarEvent.description,
+        location: eventPayload.calendarEvent.location,
+        startDate: eventPayload.calendarEvent.startDate,
+        endDate: eventPayload.calendarEvent.endDate,
+        wholeDay: eventPayload.calendarEvent.wholeDay,
+        formattedStartDate,
+        formattedEndDate,
         type: eventPayload.calendarEvent.type,
         url: eventPayload.calendarEvent.url,
+        appleCalendarUrl: eventPayload.calendarEvent.appleCalendarUrl,
+        icsDownloadUrl: eventPayload.calendarEvent.icsDownloadUrl,
+        googleCalendarUrl: eventPayload.calendarEvent.googleCalendarUrl,
+        outlookCalendarUrl: eventPayload.calendarEvent.outlookCalendarUrl,
       },
     };
   }

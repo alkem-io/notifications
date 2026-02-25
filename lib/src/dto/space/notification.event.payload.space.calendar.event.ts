@@ -11,6 +11,7 @@ export interface NotificationEventPayloadSpaceCalendarEvent
     url: string;
     startDate: string; // ISO 8601 format
     endDate: string; // ISO 8601 format
+    wholeDay: boolean;
     description?: string;
     location?: string;
     googleCalendarUrl: string;

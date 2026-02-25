@@ -15,36 +15,23 @@ module.exports = () => ({
           <br><br>
           <b>{{calendarEvent.title}}</b>
           <br><br>
+          {% if calendarEvent.description %}
+            <i>{{calendarEvent.description}}</i>
+            <br><br>
+          {% endif %}
+          <b>When:</b> {{calendarEvent.formattedStartDate}}
+          {{% if calendarEvent.formattedEndDate}} - {{calendarEvent.formattedEndDate}}{% endif %}
+
+          {% if calendarEvent.location %}<b>Where:</b> {{calendarEvent.location}}<br>{% endif %}
           <a class="action-button" href="{{calendarEvent.url}}">Have a look</a><br><br>
 
-          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
-            <p style="margin: 0 0 10px 0; font-size: 14px; color: #666;">Add to your calendar:</p>
-            <table cellpadding="0" cellspacing="0" border="0" style="width: 100%; max-width: 500px;">
-              <tr>
-                <td style="padding: 5px; text-align: center; width: 50%;">
-                  <a href="{{calendarEvent.googleCalendarUrl}}" style="display: inline-block; background-color: #4285F4; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
-                    Google Calendar
-                  </a>
-                </td>
-                <td style="padding: 5px; text-align: center; width: 50%;">
-                  <a href="{{calendarEvent.outlookCalendarUrl}}" style="display: inline-block; background-color: #0078D4; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
-                    Outlook
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding: 5px; text-align: center; width: 50%;">
-                  <a href="{{calendarEvent.appleCalendarUrl}}" style="display: inline-block; background-color: #555555; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
-                    Apple Calendar
-                  </a>
-                </td>
-                <td style="padding: 5px; text-align: center; width: 50%;">
-                  <a href="{{calendarEvent.icsDownloadUrl}}" style="display: inline-block; background-color: #FF9800; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 500;">
-                    iCal File
-                  </a>
-                </td>
-              </tr>
-            </table>
+          <div style="border-top: 1px solid #ddd;">
+            <p style="display: flex; flex-direction: row; align-items: flex-start; flex-wrap: nowrap; white-space: nowrap; gap: 10px;">Add to your calendar:
+              <b><a href="{{calendarEvent.icsDownloadUrl}}">iCal File</a></b> |
+              <b><a href="{{calendarEvent.appleCalendarUrl}}">Apple Calendar</a></b> |
+              <b><a href="{{calendarEvent.googleCalendarUrl}}">Google Calendar</a></b> |
+              <b><a href="{{calendarEvent.outlookCalendarUrl}}">Outlook</a></b>
+            </p>
           </div>
         {% endblock %}
         ${templates.footerBlock}`,
