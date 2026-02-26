@@ -15,10 +15,6 @@ module.exports = () => ({
           <br><br>
           <b>{{calendarEvent.title}}</b>
           <br><br>
-          {% if calendarEvent.description %}
-            <i>{{calendarEvent.description}}</i>
-            <br><br>
-          {% endif %}
           <b>When:</b> {{calendarEvent.formattedStartDate}}
           {% if calendarEvent.formattedEndDate %} - {{calendarEvent.formattedEndDate}}{% endif %}
 
@@ -26,11 +22,11 @@ module.exports = () => ({
           <a class="action-button" href="{{calendarEvent.url}}">Have a look</a><br><br>
 
           <div style="border-top: 1px solid #ddd;">
-            <p style="display: flex; flex-direction: row; align-items: flex-start; flex-wrap: nowrap; white-space: nowrap; gap: 10px;">Add to your calendar:
-              <b><a href="{{calendarEvent.icsDownloadUrl}}">iCal File</a></b> |
-              <b><a href="{{calendarEvent.appleCalendarUrl}}">Apple Calendar</a></b> |
-              <b><a href="{{calendarEvent.googleCalendarUrl}}">Google Calendar</a></b> |
-              <b><a href="{{calendarEvent.outlookCalendarUrl}}">Outlook</a></b>
+            <p style="white-space: normal;">Add to your calendar:
+              <b style="margin-right: 10px;"><a href="{{calendarEvent.icsDownloadUrl}}">iCal File</a></b> |
+              <b style="margin: 0 10px;"><a href="{{calendarEvent.appleCalendarUrl}}">Apple Calendar</a></b> |
+              <b style="margin: 0 10px;"><a href="{{calendarEvent.googleCalendarUrl}}">Google Calendar</a></b> |
+              <b style="margin-left: 10px;"><a href="{{calendarEvent.outlookCalendarUrl}}">Outlook</a></b>
             </p>
           </div>
         {% endblock %}
