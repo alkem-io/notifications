@@ -15,8 +15,7 @@ module.exports = () => ({
           <br><br>
           <b>{{calendarEvent.title}}</b>
           <br><br>
-          <b>When:</b> {{calendarEvent.formattedStartDate}}
-          {% if calendarEvent.formattedEndDate %} - {{calendarEvent.formattedEndDate}}{% endif %}
+          <b>When:</b> {{calendarEvent.formattedStartDate}}{% if calendarEvent.formattedEndDate %} - {{calendarEvent.formattedEndDate}}{% endif %}<br>
 
           {% if calendarEvent.location %}<b>Where:</b> {{calendarEvent.location}}<br>{% endif %}
           <a class="action-button" href="{{calendarEvent.url}}">Have a look</a><br><br>
