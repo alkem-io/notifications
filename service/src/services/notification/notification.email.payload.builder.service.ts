@@ -260,17 +260,17 @@ export class NotificationEmailPayloadBuilderService {
         : { hour: 'numeric', minute: '2-digit' }),
     };
 
-    const formattedStartDate = new Date(
-      eventPayload.calendarEvent.startDate
-    ).toLocaleString('en-GB', dateFormatOptions);
-    const tempFormattedEndDate = new Date(
-      eventPayload.calendarEvent.endDate
-    ).toLocaleString('en-GB', dateFormatOptions);
+    const startDate = new Date(eventPayload.calendarEvent.startDate);
+    const endDate = new Date(eventPayload.calendarEvent.endDate);
 
-    // Set to null if the formatted dates are the same
+    const formattedStartDate = startDate.toLocaleString(
+      'en-GB',
+      dateFormatOptions
+    );
     const formattedEndDate =
-      tempFormattedEndDate === formattedStartDate ? null : tempFormattedEndDate;
-
+      startDate.getTime() === endDate.getTime()
+        ? null
+        : endDate.toLocaleString('en-GB', dateFormatOptions);
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       creator: {
