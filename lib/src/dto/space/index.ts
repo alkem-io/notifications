@@ -9,4 +9,8 @@ export * from './notification.event.payload.space.community.invitation.platform'
 export * from './notification.event.payload.space.collaboration.callout';
 export * from './notification.event.payload.space.community.invitation.virtual.contributor';
 export * from './notification.event.payload.space.calendar.event';
-
+export * from './poll.payload';
+export * from './notification.event.payload.space.poll.vote.cast.on.own.poll';
+export * from './notification.event.payload.space.poll.vote.cast.on.poll.i.voted.on';
+export * from './notification.event.payload.space.poll.modified.on.poll.i.voted.on';
+export * from './notification.event.payload.space.poll.vote.affected.by.option.change';

@@ -26,3 +26,5 @@ export * from './platform.forum.discussion.created.email.payload';
 export * from './platform.space.created.email.payload';
 export * from './platform.global.role.change.email.payload';
 export * from './platform.user.removed.email.payload';
+export * from './space.poll.vote.cast.email.payload';
+export * from './space.poll.modified.email.payload';
