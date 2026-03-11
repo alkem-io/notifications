@@ -294,7 +294,6 @@ export class NotificationEmailPayloadBuilderService {
         formattedEndDate,
         type: eventPayload.calendarEvent.type,
         url: eventPayload.calendarEvent.url,
-        appleCalendarUrl: eventPayload.calendarEvent.appleCalendarUrl,
         icsDownloadUrl: eventPayload.calendarEvent.icsDownloadUrl,
         googleCalendarUrl: eventPayload.calendarEvent.googleCalendarUrl,
         outlookCalendarUrl: eventPayload.calendarEvent.outlookCalendarUrl,

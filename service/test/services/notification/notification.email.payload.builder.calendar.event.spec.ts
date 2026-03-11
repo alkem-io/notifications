@@ -82,7 +82,6 @@ describe('NotificationEmailPayloadBuilderService', () => {
       location: 'Room 5',
       googleCalendarUrl: 'https://calendar.google.com/event?eid=event-1',
       outlookCalendarUrl: 'https://outlook.live.com/calendar/event-1',
-      appleCalendarUrl: 'https://calendar.apple.com/event-1',
       icsDownloadUrl: 'https://alkemio.dev/calendar/event-1.ics',
     },
   };
@@ -124,9 +123,6 @@ describe('NotificationEmailPayloadBuilderService', () => {
       expect(result.calendarEvent.formattedStartDate).toContain('10:15');
       expect(result.calendarEvent.formattedEndDate).toContain('11:45');
       expect(result.calendarEvent.location).toBe('Room 5');
-      expect(result.calendarEvent.appleCalendarUrl).toBe(
-        'https://calendar.apple.com/event-1'
-      );
       expect(result.calendarEvent.googleCalendarUrl).toBe(
         'https://calendar.google.com/event?eid=event-1'
       );
