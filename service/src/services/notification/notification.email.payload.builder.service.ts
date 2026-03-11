@@ -718,8 +718,8 @@ export class NotificationEmailPayloadBuilderService {
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       poll: {
-        title: eventPayload.poll.title,
-        url: eventPayload.poll.url,
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
       },
       voter: {
         name: eventPayload.triggeredBy.profile.displayName,
@@ -734,8 +734,8 @@ export class NotificationEmailPayloadBuilderService {
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       poll: {
-        title: eventPayload.poll.title,
-        url: eventPayload.poll.url,
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
       },
       voter: {
         name: eventPayload.triggeredBy.profile.displayName,
@@ -750,8 +750,8 @@ export class NotificationEmailPayloadBuilderService {
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       poll: {
-        title: eventPayload.poll.title,
-        url: eventPayload.poll.url,
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
       },
     };
   }
@@ -763,8 +763,8 @@ export class NotificationEmailPayloadBuilderService {
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       poll: {
-        title: eventPayload.poll.title,
-        url: eventPayload.poll.url,
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
       },
     };
   }

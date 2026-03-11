@@ -11,9 +11,9 @@ module.exports = () => ({
       subject: '{{space.displayName}}: A poll you voted on was updated',
       html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
-          The poll <b>"{{poll.title}}"</b> in <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a> has been updated. You may want to review the changes.
+          The poll <b>"{{poll.calloutTitle}}"</b> in <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a> has been updated. You may want to review the changes.
           <br><br>
-          <a class="action-button" href="{{poll.url}}">Review poll</a>
+          <a class="action-button" href="{{poll.calloutUrl}}">Review poll</a>
         {% endblock %}
         ${templates.footerBlock}`,
     },

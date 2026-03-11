@@ -2,8 +2,8 @@ import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
 export interface PollVoteCastEmailPayload extends BaseSpaceEmailPayload {
   poll: {
-    title: string;
-    url: string;
+    calloutTitle: string;
+    calloutUrl: string;
   };
   voter: {
     name: string;

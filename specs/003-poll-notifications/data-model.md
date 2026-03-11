@@ -63,8 +63,8 @@ Extends `BaseSpaceEmailPayload`
 
 | Field              | Type   | Description                    |
 |--------------------|--------|--------------------------------|
-| poll.title         | string | Poll title                     |
-| poll.url           | string | Direct link to poll            |
+| poll.calloutTitle  | string | Callout title                  |
+| poll.calloutUrl    | string | Direct link to poll            |
 | voter.name         | string | Display name of the voter      |
 
 **Used by**: vote-cast-on-own-poll, vote-cast-on-poll-i-voted-on
@@ -75,8 +75,8 @@ Extends `BaseSpaceEmailPayload`
 
 | Field              | Type   | Description                    |
 |--------------------|--------|--------------------------------|
-| poll.title         | string | Poll title                     |
-| poll.url           | string | Direct link to poll            |
+| poll.calloutTitle  | string | Callout title                  |
+| poll.calloutUrl    | string | Direct link to poll            |
 
 **Used by**: poll-modified-on-poll-i-voted-on, vote-affected-by-option-change
 

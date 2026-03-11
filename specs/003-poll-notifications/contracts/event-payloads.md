@@ -28,13 +28,13 @@ interface NotificationEventPayloadSpacePollVoteCastOnOwnPoll
 }
 ```
 
-| Field         | Source        | Used in email?       |
-|---------------|---------------|----------------------|
-| triggeredBy   | Voter         | Yes — voter name     |
-| recipients[]  | Poll creator  | Yes — email target   |
-| space         | Poll's space  | Yes — space name/URL |
-| poll.title    | Poll          | Yes                  |
-| poll.url      | Poll          | Yes — CTA link       |
+| Field              | Source        | Used in email?       |
+|--------------------|---------------|----------------------|
+| triggeredBy        | Voter         | Yes — voter name     |
+| recipients[]       | Poll creator  | Yes — email target   |
+| space              | Poll's space  | Yes — space name/URL |
+| poll.calloutTitle  | Poll          | Yes                  |
+| poll.calloutUrl    | Poll          | Yes — CTA link       |
 
 ### SPACE_COLLABORATION_POLL_VOTE_CAST_ON_POLL_I_VOTED_ON
 
@@ -47,13 +47,13 @@ interface NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn
 }
 ```
 
-| Field         | Source         | Used in email?       |
-|---------------|----------------|----------------------|
-| triggeredBy   | Voter          | Yes — voter name     |
-| recipients[]  | Prior voters   | Yes — email targets  |
-| space         | Poll's space   | Yes — space name/URL |
-| poll.title    | Poll           | Yes                  |
-| poll.url      | Poll           | Yes — CTA link       |
+| Field              | Source         | Used in email?       |
+|--------------------|----------------|----------------------|
+| triggeredBy        | Voter          | Yes — voter name     |
+| recipients[]       | Prior voters   | Yes — email targets  |
+| space              | Poll's space   | Yes — space name/URL |
+| poll.calloutTitle  | Poll           | Yes                  |
+| poll.calloutUrl    | Poll           | Yes — CTA link       |
 
 ### SPACE_COLLABORATION_POLL_MODIFIED_ON_POLL_I_VOTED_ON
 
@@ -66,13 +66,13 @@ interface NotificationEventPayloadSpacePollModifiedOnPollIVotedOn
 }
 ```
 
-| Field         | Source           | Used in email?         |
-|---------------|------------------|------------------------|
-| triggeredBy   | Modifier         | No — impersonal email  |
-| recipients[]  | Unaffected voters| Yes — email targets    |
-| space         | Poll's space     | Yes — space name/URL   |
-| poll.title    | Poll             | Yes                    |
-| poll.url      | Poll             | Yes — CTA link         |
+| Field              | Source           | Used in email?         |
+|--------------------|------------------|------------------------|
+| triggeredBy        | Modifier         | No — impersonal email  |
+| recipients[]       | Unaffected voters| Yes — email targets    |
+| space              | Poll's space     | Yes — space name/URL   |
+| poll.calloutTitle  | Poll             | Yes                    |
+| poll.calloutUrl    | Poll             | Yes — CTA link         |
 
 ### SPACE_COLLABORATION_POLL_VOTE_AFFECTED_BY_OPTION_CHANGE
 
@@ -85,13 +85,13 @@ interface NotificationEventPayloadSpacePollVoteAffectedByOptionChange
 }
 ```
 
-| Field         | Source          | Used in email?         |
-|---------------|-----------------|------------------------|
-| triggeredBy   | Modifier        | No — impersonal email  |
-| recipients[]  | Affected voters | Yes — email targets    |
-| space         | Poll's space    | Yes — space name/URL   |
-| poll.title    | Poll            | Yes                    |
-| poll.url      | Poll            | Yes — CTA link         |
+| Field              | Source          | Used in email?         |
+|--------------------|-----------------|------------------------|
+| triggeredBy        | Modifier        | No — impersonal email  |
+| recipients[]       | Affected voters | Yes — email targets    |
+| space              | Poll's space    | Yes — space name/URL   |
+| poll.calloutTitle  | Poll            | Yes                    |
+| poll.calloutUrl    | Poll            | Yes — CTA link         |
 
 ## Email Template Payloads
 
