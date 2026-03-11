@@ -57,8 +57,6 @@ If the server schema is updated:
 cd service && npm run codegen
 ```
 
-If not yet available, use string literals matching the expected enum values.
-
 ## Testing
 
 ```bash
