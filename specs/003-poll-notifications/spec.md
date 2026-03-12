@@ -73,10 +73,10 @@ A member who voted on a poll receives an email notification when their specific 
 ### Edge Cases
 
 - What happens when multiple votes are cast on the same poll in rapid succession? Each event is processed independently; the poll creator and prior voters may receive multiple emails. No batching or deduplication is applied in this iteration.
-- What happens when the notification event references a poll or space that no longer exists? The email builder should handle missing data gracefully and log a warning without crashing.
+- What happens when the notification event references a poll or space that no longer exists? The email builder accesses required fields directly (e.g., `eventPayload.poll.calloutTitle`), so missing data causes a runtime error. This is by design — malformed payloads should fail loudly rather than silently producing incomplete emails. The error propagates to the NestJS message-handler level and is logged there.
 - What happens when a recipient's email address is blacklisted? The existing blacklist service filters them out before email generation, as with all other notification types.
-- What happens when the event payload is malformed or missing required fields? The service should log the error and skip the notification without affecting other queued events.
-- What happens when the poll URL is null or empty in the event payload? The poll URL is a required field provided by the server. If absent, the payload is considered malformed and the existing error handling logs and skips the notification.
+- What happens when the event payload is malformed or missing required fields? The email builder throws a runtime error. This is intentional — a malformed payload indicates a contract violation by the publishing service and should surface as a visible error, not a silently dropped notification. The error is logged at the NestJS message-handler level. Note: because `buildAndSendEmailNotifications()` is awaited outside the RabbitMQ ack/nack try/catch in `processNotificationEvent()`, the message is neither acked nor nacked by the handler's own logic; NestJS-level error handling applies.
+- What happens when the poll URL is null or empty in the event payload? The poll URL is a required field provided by the server. If absent, the payload is considered malformed and the builder throws a runtime error (same fail-loud behavior as other missing required fields above).
 
 ## Requirements *(mandatory)*
 
@@ -123,7 +123,7 @@ A member who voted on a poll receives an email notification when their specific 
 - **SC-001**: All four poll notification event types are processed end-to-end, from message queue receipt to email delivery, without errors for valid payloads.
 - **SC-002**: Poll notification emails render correctly with all required content (poll title, space name, link, action-specific details) matching the established email template design.
 - **SC-003**: Recipients who have disabled a specific poll notification preference do not receive emails for that event type.
-- **SC-004**: Malformed or incomplete event payloads are logged and skipped without affecting the processing of other queued events.
+- **SC-004**: Malformed or incomplete event payloads cause a visible runtime error that is logged at the NestJS message-handler level, ensuring contract violations by the publishing service are not silently swallowed.
 - **SC-005**: The four new notification types integrate seamlessly with the existing blacklist, recipient filtering, and delivery infrastructure — no regressions in existing notification types.
 
 ## Clarifications

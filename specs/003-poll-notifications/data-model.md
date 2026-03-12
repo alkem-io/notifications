@@ -6,10 +6,13 @@
 
 ### PollPayload (new shared type)
 
-| Field   | Type   | Description                        |
-|---------|--------|------------------------------------|
-| title   | string | Display title of the poll          |
-| url     | string | Direct URL to the poll in the space |
+| Field        | Type   | Description                                  |
+|--------------|--------|----------------------------------------------|
+| id           | string | Unique identifier of the poll                |
+| title        | string | Display title of the poll                    |
+| calloutId    | string | Identifier of the parent callout             |
+| calloutTitle | string | Display title of the parent callout          |
+| calloutUrl   | string | Direct URL to the callout containing the poll |
 
 **Location**: `lib/src/dto/space/poll.payload.ts`
 
@@ -104,7 +107,7 @@ N/A — These are stateless notification events. Each event is processed indepen
 
 ## Validation Rules
 
-- All four event payloads require: `eventType`, `triggeredBy`, `recipients` (≥1), `platform.url`, `space` (with `id`, `profile.displayName`, `profile.url`), `poll` (with `title`, `url`).
+- All four event payloads require: `eventType`, `triggeredBy`, `recipients` (≥1), `platform.url`, `space` (with `id`, `profile.displayName`, `profile.url`), `poll` (with `id`, `title`, `calloutId`, `calloutTitle`, `calloutUrl`).
 - Vote-cast events: `triggeredBy` represents the voter; must have valid `profile.displayName`.
 - Modification events: `triggeredBy` is present but not rendered in email templates.
-- Malformed payloads are logged and skipped (existing error handling in notification service).
+- Malformed payloads cause a runtime error that surfaces at the NestJS message-handler level (see spec edge cases for rationale).

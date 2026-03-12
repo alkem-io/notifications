@@ -8,8 +8,11 @@
 
 ```typescript
 export type PollPayload = {
-  title: string;  // Display title of the poll
-  url: string;    // Direct URL to the poll
+  id: string;           // Unique identifier of the poll
+  title: string;        // Display title of the poll
+  calloutId: string;    // Identifier of the parent callout
+  calloutTitle: string; // Display title of the parent callout
+  calloutUrl: string;   // Direct URL to the callout containing the poll
 };
 ```
 
@@ -102,8 +105,8 @@ Used by both vote-cast templates.
 ```typescript
 interface PollVoteCastEmailPayload extends BaseSpaceEmailPayload {
   poll: {
-    title: string;
-    url: string;
+    calloutTitle: string;
+    calloutUrl: string;
   };
   voter: {
     name: string;
@@ -118,8 +121,8 @@ Used by both modification/affected templates.
 ```typescript
 interface PollModifiedEmailPayload extends BaseSpaceEmailPayload {
   poll: {
-    title: string;
-    url: string;
+    calloutTitle: string;
+    calloutUrl: string;
   };
 }
 ```

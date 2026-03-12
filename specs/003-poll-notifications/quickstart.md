@@ -98,8 +98,11 @@ Example payload for `SPACE_COLLABORATION_POLL_VOTE_CAST_ON_OWN_POLL`:
     "adminURL": "https://app.alkemio.io/space/climate-action/settings"
   },
   "poll": {
+    "id": "poll-123",
     "title": "What should our next initiative focus on?",
-    "url": "https://app.alkemio.io/space/climate-action/collaboration/polls/poll-123"
+    "calloutId": "callout-456",
+    "calloutTitle": "Community Polls",
+    "calloutUrl": "https://app.alkemio.io/space/climate-action/collaboration/polls/poll-123"
   }
 }
 ```
