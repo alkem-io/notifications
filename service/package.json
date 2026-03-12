@@ -1,6 +1,6 @@
 {
   "name": "alkemio-notifications",
-  "version": "0.28.0",
+  "version": "0.30.0",
   "description": "Alkemio notifications service",
   "author": "Alkemio Foundation",
   "private": false,
@@ -36,7 +36,7 @@
     "validate-connection": "ts-node src/utils/validate-connection.ts"
   },
   "dependencies": {
-    "@alkemio/notifications-lib": "0.12.2",
+    "@alkemio/notifications-lib": "0.13.0",
     "@nestjs/cli": "^11.0.7",
     "@nestjs/common": "^11.1.6",
     "@nestjs/config": "^4.0.2",
@@ -66,7 +66,7 @@
     "@graphql-codegen/cli": "^5.0.3",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-operations": "4.6.1",
-    "@graphql-codegen/typescript-resolvers": "4.5.1",
+    "@graphql-codegen/typescript-resolvers": "4.5.2",
     "@nestjs/cli": "^11.0.10",
     "@nestjs/testing": "^11.1.6",
     "@types/amqplib": "^0.8.2",

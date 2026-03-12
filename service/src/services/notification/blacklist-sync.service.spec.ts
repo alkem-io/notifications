@@ -10,6 +10,7 @@ jest.mock('graphql-request');
 describe('BlacklistSyncService', () => {
   let service: BlacklistSyncService;
   let mockGraphQLClient: jest.Mocked<GraphQLClient>;
+  const servicesToCleanup: BlacklistSyncService[] = [];
 
   const mockSuccessResponse = {
     platform: {
@@ -43,8 +44,18 @@ describe('BlacklistSyncService', () => {
       ],
     }).compile();
 
-    return moduleRef.get<BlacklistSyncService>(BlacklistSyncService);
+    const svc = moduleRef.get<BlacklistSyncService>(BlacklistSyncService);
+    servicesToCleanup.push(svc);
+    return svc;
   };
+
+  afterEach(() => {
+    // Clean up all services to prevent timer leaks
+    for (const svc of servicesToCleanup) {
+      svc.onModuleDestroy();
+    }
+    servicesToCleanup.length = 0;
+  });
 
   beforeEach(() => {
     jest.clearAllMocks();

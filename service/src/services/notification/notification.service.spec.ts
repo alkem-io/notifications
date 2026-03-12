@@ -1,4 +1,4 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import * as spaceAdminsL1Data from '@test/data/space.admins.l1.json';
 import * as spaceAdminsL2Data from '@test/data/space.admins.l2.json';
 import * as spaceAdminsL0Data from '@test/data/space.admins.l0.json';
@@ -30,9 +30,10 @@ describe('NotificationService', () => {
   let notificationService: NotificationService;
   let notifmeService: NotifmeSdk;
   let configService: any;
+  let moduleRef: TestingModule;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       providers: [
         MockConfigServiceProvider,
         MockNotifmeProvider,
@@ -50,6 +51,10 @@ describe('NotificationService', () => {
 
     notifmeService = moduleRef.get(NOTIFICATIONS_PROVIDER);
     configService = moduleRef.get(ConfigService);
+  });
+
+  afterAll(async () => {
+    await moduleRef.close();
   });
 
   beforeEach(() => {
