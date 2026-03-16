@@ -27,6 +27,10 @@ import {
   NotificationEventPayloadUserMessageRoomReply,
   NotificationEventPayloadUserMessageRoom,
   NotificationEventPayloadSpaceCalendarEvent,
+  NotificationEventPayloadSpacePollVoteCastOnOwnPoll,
+  NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
+  NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
+  NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -411,6 +415,26 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadPlatformSpaceCreated,
           recipient
         );
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnOwnPoll:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpacePollVoteCastOnOwnPoll(
+          eventPayload as NotificationEventPayloadSpacePollVoteCastOnOwnPoll,
+          recipient
+        );
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnPollIVotedOn:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpacePollVoteCastOnPollIVotedOn(
+          eventPayload as NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
+          recipient
+        );
+      case NotificationEvent.SpaceCollaborationPollModifiedOnPollIVotedOn:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpacePollModifiedOnPollIVotedOn(
+          eventPayload as NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
+          recipient
+        );
+      case NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpacePollVoteAffectedByOptionChange(
+          eventPayload as NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
+          recipient
+        );
       default:
         throw new EventPayloadNotProvidedException(
           `EmailPayload: Unable to recognize event:  ${eventPayload.eventType}`,
@@ -483,6 +507,14 @@ export class NotificationService {
         return 'user.comment.reply';
       case NotificationEvent.PlatformAdminSpaceCreated.valueOf():
         return 'platform.admin.space.created';
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnOwnPoll.valueOf():
+        return 'space.collaboration.poll.vote.cast.on.own.poll';
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnPollIVotedOn.valueOf():
+        return 'space.collaboration.poll.vote.cast.on.poll.i.voted.on';
+      case NotificationEvent.SpaceCollaborationPollModifiedOnPollIVotedOn.valueOf():
+        return 'space.collaboration.poll.modified.on.poll.i.voted.on';
+      case NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange.valueOf():
+        return 'space.collaboration.poll.vote.affected.by.option.change';
       default:
         throw new EventPayloadNotProvidedException(
           `Email template: Unable to recognize event: ${event}`,

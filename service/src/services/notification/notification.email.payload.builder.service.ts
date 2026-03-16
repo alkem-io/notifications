@@ -31,6 +31,8 @@ import {
   PlatformUserRemovedEmailPayload,
   BaseEmailPayload,
   BaseSpaceEmailPayload,
+  PollVoteCastEmailPayload,
+  PollModifiedEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -52,6 +54,10 @@ import {
   NotificationEventPayloadSpaceCommunityInvitationPlatform,
   NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
   NotificationEventPayloadSpaceCalendarEvent,
+  NotificationEventPayloadSpacePollVoteCastOnOwnPoll,
+  NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
+  NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
+  NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
   BaseEventPayload,
   NotificationEventPayloadSpace,
 } from '@alkemio/notifications-lib';
@@ -288,7 +294,6 @@ export class NotificationEmailPayloadBuilderService {
         formattedEndDate,
         type: eventPayload.calendarEvent.type,
         url: eventPayload.calendarEvent.url,
-        appleCalendarUrl: eventPayload.calendarEvent.appleCalendarUrl,
         icsDownloadUrl: eventPayload.calendarEvent.icsDownloadUrl,
         googleCalendarUrl: eventPayload.calendarEvent.googleCalendarUrl,
         outlookCalendarUrl: eventPayload.calendarEvent.outlookCalendarUrl,
@@ -703,6 +708,64 @@ export class NotificationEmailPayloadBuilderService {
       dateCreated: new Date(eventPayload.created).toLocaleString('en-GB', {
         timeZone: 'UTC',
       }),
+    };
+  }
+
+  public createEmailTemplatePayloadSpacePollVoteCastOnOwnPoll(
+    eventPayload: NotificationEventPayloadSpacePollVoteCastOnOwnPoll,
+    recipient: User
+  ): PollVoteCastEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      poll: {
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
+      },
+      voter: {
+        name: eventPayload.triggeredBy.profile.displayName,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadSpacePollVoteCastOnPollIVotedOn(
+    eventPayload: NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
+    recipient: User
+  ): PollVoteCastEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      poll: {
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
+      },
+      voter: {
+        name: eventPayload.triggeredBy.profile.displayName,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadSpacePollModifiedOnPollIVotedOn(
+    eventPayload: NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
+    recipient: User
+  ): PollModifiedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      poll: {
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadSpacePollVoteAffectedByOptionChange(
+    eventPayload: NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
+    recipient: User
+  ): PollModifiedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      poll: {
+        calloutTitle: eventPayload.poll.calloutTitle,
+        calloutUrl: eventPayload.poll.calloutUrl,
+      },
     };
   }
 

@@ -16,7 +16,6 @@ export interface NotificationEventPayloadSpaceCalendarEvent
     location?: string;
     googleCalendarUrl: string;
     outlookCalendarUrl: string;
-    appleCalendarUrl: string;
     icsDownloadUrl: string;
   };
 }

@@ -1,7 +1,6 @@
 import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
-export interface SpaceCommunityCalendarEventCreatedEmailPayload
-  extends BaseSpaceEmailPayload {
+export interface SpaceCommunityCalendarEventCreatedEmailPayload extends BaseSpaceEmailPayload {
   creator: {
     name: string;
     profile: string;
@@ -17,7 +16,6 @@ export interface SpaceCommunityCalendarEventCreatedEmailPayload
     wholeDay: boolean;
     formattedStartDate: string;
     formattedEndDate: string | null;
-    appleCalendarUrl: string;
     outlookCalendarUrl: string;
     googleCalendarUrl: string;
     icsDownloadUrl: string;

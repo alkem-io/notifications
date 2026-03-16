@@ -5097,6 +5097,10 @@ export enum NotificationEvent {
   SpaceCollaborationCalloutContribution = 'SPACE_COLLABORATION_CALLOUT_CONTRIBUTION',
   SpaceCollaborationCalloutPostContributionComment = 'SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT',
   SpaceCollaborationCalloutPublished = 'SPACE_COLLABORATION_CALLOUT_PUBLISHED',
+  SpaceCollaborationPollModifiedOnPollIVotedOn = 'SPACE_COLLABORATION_POLL_MODIFIED_ON_POLL_I_VOTED_ON',
+  SpaceCollaborationPollVoteAffectedByOptionChange = 'SPACE_COLLABORATION_POLL_VOTE_AFFECTED_BY_OPTION_CHANGE',
+  SpaceCollaborationPollVoteCastOnOwnPoll = 'SPACE_COLLABORATION_POLL_VOTE_CAST_ON_OWN_POLL',
+  SpaceCollaborationPollVoteCastOnPollIVotedOn = 'SPACE_COLLABORATION_POLL_VOTE_CAST_ON_POLL_I_VOTED_ON',
   SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
   SpaceCommunityCalendarEventComment = 'SPACE_COMMUNITY_CALENDAR_EVENT_COMMENT',
   SpaceCommunityCalendarEventCreated = 'SPACE_COMMUNITY_CALENDAR_EVENT_CREATED',
@@ -11905,8 +11909,8 @@ export type ApmResolvers<
 
 export type AccountResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Account'] = ResolversParentTypes['Account'],
+  ParentType extends ResolversParentTypes['Account'] =
+    ResolversParentTypes['Account'],
 > = {
   agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
   authorization?: Resolver<
@@ -11969,8 +11973,8 @@ export type AccountResolvers<
 
 export type AccountLicensePlanResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AccountLicensePlan'] = ResolversParentTypes['AccountLicensePlan'],
+  ParentType extends ResolversParentTypes['AccountLicensePlan'] =
+    ResolversParentTypes['AccountLicensePlan'],
 > = {
   innovationPacks?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   spaceFree?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -11983,8 +11987,8 @@ export type AccountLicensePlanResolvers<
 
 export type AccountSubscriptionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AccountSubscription'] = ResolversParentTypes['AccountSubscription'],
+  ParentType extends ResolversParentTypes['AccountSubscription'] =
+    ResolversParentTypes['AccountSubscription'],
 > = {
   expires?: Resolver<
     Maybe<ResolversTypes['DateTime']>,
@@ -12001,8 +12005,8 @@ export type AccountSubscriptionResolvers<
 
 export type ActivityCreatedSubscriptionResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ActivityCreatedSubscriptionResult'] = ResolversParentTypes['ActivityCreatedSubscriptionResult'],
+  ParentType extends ResolversParentTypes['ActivityCreatedSubscriptionResult'] =
+    ResolversParentTypes['ActivityCreatedSubscriptionResult'],
 > = {
   activity?: Resolver<
     ResolversTypes['ActivityLogEntry'],
@@ -12014,8 +12018,8 @@ export type ActivityCreatedSubscriptionResultResolvers<
 
 export type ActivityFeedResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ActivityFeed'] = ResolversParentTypes['ActivityFeed'],
+  ParentType extends ResolversParentTypes['ActivityFeed'] =
+    ResolversParentTypes['ActivityFeed'],
 > = {
   activityFeed?: Resolver<
     Array<ResolversTypes['ActivityLogEntry']>,
@@ -12029,8 +12033,8 @@ export type ActivityFeedResolvers<
 
 export type ActivityLogEntryResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ActivityLogEntry'] = ResolversParentTypes['ActivityLogEntry'],
+  ParentType extends ResolversParentTypes['ActivityLogEntry'] =
+    ResolversParentTypes['ActivityLogEntry'],
 > = {
   __resolveType: TypeResolveFn<
     | 'ActivityLogEntryCalendarEventCreated'
@@ -12065,7 +12069,8 @@ export type ActivityLogEntryResolvers<
 export type ActivityLogEntryCalendarEventCreatedResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalendarEventCreated'] = ResolversParentTypes['ActivityLogEntryCalendarEventCreated'],
+    ResolversParentTypes['ActivityLogEntryCalendarEventCreated'] =
+    ResolversParentTypes['ActivityLogEntryCalendarEventCreated'],
 > = {
   calendar?: Resolver<ResolversTypes['Calendar'], ParentType, ContextType>;
   calendarEvent?: Resolver<
@@ -12092,7 +12097,8 @@ export type ActivityLogEntryCalendarEventCreatedResolvers<
 export type ActivityLogEntryCalloutDiscussionCommentResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalloutDiscussionComment'] = ResolversParentTypes['ActivityLogEntryCalloutDiscussionComment'],
+    ResolversParentTypes['ActivityLogEntryCalloutDiscussionComment'] =
+    ResolversParentTypes['ActivityLogEntryCalloutDiscussionComment'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -12114,7 +12120,8 @@ export type ActivityLogEntryCalloutDiscussionCommentResolvers<
 export type ActivityLogEntryCalloutLinkCreatedResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalloutLinkCreated'] = ResolversParentTypes['ActivityLogEntryCalloutLinkCreated'],
+    ResolversParentTypes['ActivityLogEntryCalloutLinkCreated'] =
+    ResolversParentTypes['ActivityLogEntryCalloutLinkCreated'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -12137,7 +12144,8 @@ export type ActivityLogEntryCalloutLinkCreatedResolvers<
 export type ActivityLogEntryCalloutPostCommentResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalloutPostComment'] = ResolversParentTypes['ActivityLogEntryCalloutPostComment'],
+    ResolversParentTypes['ActivityLogEntryCalloutPostComment'] =
+    ResolversParentTypes['ActivityLogEntryCalloutPostComment'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -12160,7 +12168,8 @@ export type ActivityLogEntryCalloutPostCommentResolvers<
 export type ActivityLogEntryCalloutPostCreatedResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalloutPostCreated'] = ResolversParentTypes['ActivityLogEntryCalloutPostCreated'],
+    ResolversParentTypes['ActivityLogEntryCalloutPostCreated'] =
+    ResolversParentTypes['ActivityLogEntryCalloutPostCreated'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -12182,8 +12191,8 @@ export type ActivityLogEntryCalloutPostCreatedResolvers<
 
 export type ActivityLogEntryCalloutPublishedResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalloutPublished'] = ResolversParentTypes['ActivityLogEntryCalloutPublished'],
+  ParentType extends ResolversParentTypes['ActivityLogEntryCalloutPublished'] =
+    ResolversParentTypes['ActivityLogEntryCalloutPublished'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -12205,7 +12214,8 @@ export type ActivityLogEntryCalloutPublishedResolvers<
 export type ActivityLogEntryCalloutWhiteboardContentModifiedResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalloutWhiteboardContentModified'] = ResolversParentTypes['ActivityLogEntryCalloutWhiteboardContentModified'],
+    ResolversParentTypes['ActivityLogEntryCalloutWhiteboardContentModified'] =
+    ResolversParentTypes['ActivityLogEntryCalloutWhiteboardContentModified'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -12228,7 +12238,8 @@ export type ActivityLogEntryCalloutWhiteboardContentModifiedResolvers<
 export type ActivityLogEntryCalloutWhiteboardCreatedResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['ActivityLogEntryCalloutWhiteboardCreated'] = ResolversParentTypes['ActivityLogEntryCalloutWhiteboardCreated'],
+    ResolversParentTypes['ActivityLogEntryCalloutWhiteboardCreated'] =
+    ResolversParentTypes['ActivityLogEntryCalloutWhiteboardCreated'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -12250,8 +12261,8 @@ export type ActivityLogEntryCalloutWhiteboardCreatedResolvers<
 
 export type ActivityLogEntryMemberJoinedResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ActivityLogEntryMemberJoined'] = ResolversParentTypes['ActivityLogEntryMemberJoined'],
+  ParentType extends ResolversParentTypes['ActivityLogEntryMemberJoined'] =
+    ResolversParentTypes['ActivityLogEntryMemberJoined'],
 > = {
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   collaborationID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -12282,8 +12293,8 @@ export type ActivityLogEntryMemberJoinedResolvers<
 
 export type ActivityLogEntrySubspaceCreatedResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ActivityLogEntrySubspaceCreated'] = ResolversParentTypes['ActivityLogEntrySubspaceCreated'],
+  ParentType extends ResolversParentTypes['ActivityLogEntrySubspaceCreated'] =
+    ResolversParentTypes['ActivityLogEntrySubspaceCreated'],
 > = {
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   collaborationID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -12304,8 +12315,8 @@ export type ActivityLogEntrySubspaceCreatedResolvers<
 
 export type ActivityLogEntryUpdateSentResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ActivityLogEntryUpdateSent'] = ResolversParentTypes['ActivityLogEntryUpdateSent'],
+  ParentType extends ResolversParentTypes['ActivityLogEntryUpdateSent'] =
+    ResolversParentTypes['ActivityLogEntryUpdateSent'],
 > = {
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   collaborationID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -12328,8 +12339,8 @@ export type ActivityLogEntryUpdateSentResolvers<
 
 export type AgentResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Agent'] = ResolversParentTypes['Agent'],
+  ParentType extends ResolversParentTypes['Agent'] =
+    ResolversParentTypes['Agent'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12357,7 +12368,8 @@ export type AgentResolvers<
 export type AgentBeginVerifiedCredentialOfferOutputResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['AgentBeginVerifiedCredentialOfferOutput'] = ResolversParentTypes['AgentBeginVerifiedCredentialOfferOutput'],
+    ResolversParentTypes['AgentBeginVerifiedCredentialOfferOutput'] =
+    ResolversParentTypes['AgentBeginVerifiedCredentialOfferOutput'],
 > = {
   jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   qrCodeImg?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -12367,7 +12379,8 @@ export type AgentBeginVerifiedCredentialOfferOutputResolvers<
 export type AgentBeginVerifiedCredentialRequestOutputResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['AgentBeginVerifiedCredentialRequestOutput'] = ResolversParentTypes['AgentBeginVerifiedCredentialRequestOutput'],
+    ResolversParentTypes['AgentBeginVerifiedCredentialRequestOutput'] =
+    ResolversParentTypes['AgentBeginVerifiedCredentialRequestOutput'],
 > = {
   jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   qrCodeImg?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -12376,8 +12389,8 @@ export type AgentBeginVerifiedCredentialRequestOutputResolvers<
 
 export type AiPersonaResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AiPersona'] = ResolversParentTypes['AiPersona'],
+  ParentType extends ResolversParentTypes['AiPersona'] =
+    ResolversParentTypes['AiPersona'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12409,8 +12422,8 @@ export type AiPersonaResolvers<
 
 export type AiServerResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AiServer'] = ResolversParentTypes['AiServer'],
+  ParentType extends ResolversParentTypes['AiServer'] =
+    ResolversParentTypes['AiServer'],
 > = {
   aiPersona?: Resolver<
     ResolversTypes['AiPersona'],
@@ -12441,8 +12454,8 @@ export type AiServerResolvers<
 
 export type ApplicationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Application'] = ResolversParentTypes['Application'],
+  ParentType extends ResolversParentTypes['Application'] =
+    ResolversParentTypes['Application'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12475,8 +12488,8 @@ export type ApplicationResolvers<
 
 export type AuthenticationConfigResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AuthenticationConfig'] = ResolversParentTypes['AuthenticationConfig'],
+  ParentType extends ResolversParentTypes['AuthenticationConfig'] =
+    ResolversParentTypes['AuthenticationConfig'],
 > = {
   providers?: Resolver<
     Array<ResolversTypes['AuthenticationProviderConfig']>,
@@ -12488,8 +12501,8 @@ export type AuthenticationConfigResolvers<
 
 export type AuthenticationProviderConfigResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AuthenticationProviderConfig'] = ResolversParentTypes['AuthenticationProviderConfig'],
+  ParentType extends ResolversParentTypes['AuthenticationProviderConfig'] =
+    ResolversParentTypes['AuthenticationProviderConfig'],
 > = {
   config?: Resolver<
     ResolversTypes['AuthenticationProviderConfigUnion'],
@@ -12505,16 +12518,16 @@ export type AuthenticationProviderConfigResolvers<
 
 export type AuthenticationProviderConfigUnionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AuthenticationProviderConfigUnion'] = ResolversParentTypes['AuthenticationProviderConfigUnion'],
+  ParentType extends ResolversParentTypes['AuthenticationProviderConfigUnion'] =
+    ResolversParentTypes['AuthenticationProviderConfigUnion'],
 > = {
   __resolveType: TypeResolveFn<'OryConfig', ParentType, ContextType>;
 };
 
 export type AuthorizationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Authorization'] = ResolversParentTypes['Authorization'],
+  ParentType extends ResolversParentTypes['Authorization'] =
+    ResolversParentTypes['Authorization'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   credentialRules?: Resolver<
@@ -12555,8 +12568,8 @@ export type AuthorizationResolvers<
 
 export type AuthorizationPolicyRuleCredentialResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AuthorizationPolicyRuleCredential'] = ResolversParentTypes['AuthorizationPolicyRuleCredential'],
+  ParentType extends ResolversParentTypes['AuthorizationPolicyRuleCredential'] =
+    ResolversParentTypes['AuthorizationPolicyRuleCredential'],
 > = {
   cascade?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   criterias?: Resolver<
@@ -12575,8 +12588,8 @@ export type AuthorizationPolicyRuleCredentialResolvers<
 
 export type AuthorizationPolicyRulePrivilegeResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AuthorizationPolicyRulePrivilege'] = ResolversParentTypes['AuthorizationPolicyRulePrivilege'],
+  ParentType extends ResolversParentTypes['AuthorizationPolicyRulePrivilege'] =
+    ResolversParentTypes['AuthorizationPolicyRulePrivilege'],
 > = {
   grantedPrivileges?: Resolver<
     Array<ResolversTypes['AuthorizationPrivilege']>,
@@ -12595,7 +12608,8 @@ export type AuthorizationPolicyRulePrivilegeResolvers<
 export type AuthorizationPolicyRuleVerifiedCredentialResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['AuthorizationPolicyRuleVerifiedCredential'] = ResolversParentTypes['AuthorizationPolicyRuleVerifiedCredential'],
+    ResolversParentTypes['AuthorizationPolicyRuleVerifiedCredential'] =
+    ResolversParentTypes['AuthorizationPolicyRuleVerifiedCredential'],
 > = {
   claimRule?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   credentialName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -12609,8 +12623,8 @@ export type AuthorizationPolicyRuleVerifiedCredentialResolvers<
 
 export type CalendarResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Calendar'] = ResolversParentTypes['Calendar'],
+  ParentType extends ResolversParentTypes['Calendar'] =
+    ResolversParentTypes['Calendar'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12636,8 +12650,8 @@ export type CalendarResolvers<
 
 export type CalendarEventResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalendarEvent'] = ResolversParentTypes['CalendarEvent'],
+  ParentType extends ResolversParentTypes['CalendarEvent'] =
+    ResolversParentTypes['CalendarEvent'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12676,8 +12690,8 @@ export type CalendarEventResolvers<
 
 export type CalloutResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Callout'] = ResolversParentTypes['Callout'],
+  ParentType extends ResolversParentTypes['Callout'] =
+    ResolversParentTypes['Callout'],
 > = {
   activity?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   authorization?: Resolver<
@@ -12740,8 +12754,8 @@ export type CalloutResolvers<
 
 export type CalloutContributionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutContribution'] = ResolversParentTypes['CalloutContribution'],
+  ParentType extends ResolversParentTypes['CalloutContribution'] =
+    ResolversParentTypes['CalloutContribution'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12765,8 +12779,8 @@ export type CalloutContributionResolvers<
 
 export type CalloutContributionDefaultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutContributionDefaults'] = ResolversParentTypes['CalloutContributionDefaults'],
+  ParentType extends ResolversParentTypes['CalloutContributionDefaults'] =
+    ResolversParentTypes['CalloutContributionDefaults'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   defaultDisplayName?: Resolver<
@@ -12791,8 +12805,8 @@ export type CalloutContributionDefaultsResolvers<
 
 export type CalloutContributionsCountOutputResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutContributionsCountOutput'] = ResolversParentTypes['CalloutContributionsCountOutput'],
+  ParentType extends ResolversParentTypes['CalloutContributionsCountOutput'] =
+    ResolversParentTypes['CalloutContributionsCountOutput'],
 > = {
   link?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   memo?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -12803,8 +12817,8 @@ export type CalloutContributionsCountOutputResolvers<
 
 export type CalloutFramingResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutFraming'] = ResolversParentTypes['CalloutFraming'],
+  ParentType extends ResolversParentTypes['CalloutFraming'] =
+    ResolversParentTypes['CalloutFraming'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12832,8 +12846,8 @@ export type CalloutFramingResolvers<
 
 export type CalloutPostCreatedResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutPostCreated'] = ResolversParentTypes['CalloutPostCreated'],
+  ParentType extends ResolversParentTypes['CalloutPostCreated'] =
+    ResolversParentTypes['CalloutPostCreated'],
 > = {
   calloutID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   contributionID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -12844,8 +12858,8 @@ export type CalloutPostCreatedResolvers<
 
 export type CalloutSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutSettings'] = ResolversParentTypes['CalloutSettings'],
+  ParentType extends ResolversParentTypes['CalloutSettings'] =
+    ResolversParentTypes['CalloutSettings'],
 > = {
   contribution?: Resolver<
     ResolversTypes['CalloutSettingsContribution'],
@@ -12867,8 +12881,8 @@ export type CalloutSettingsResolvers<
 
 export type CalloutSettingsContributionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutSettingsContribution'] = ResolversParentTypes['CalloutSettingsContribution'],
+  ParentType extends ResolversParentTypes['CalloutSettingsContribution'] =
+    ResolversParentTypes['CalloutSettingsContribution'],
 > = {
   allowedTypes?: Resolver<
     Array<ResolversTypes['CalloutContributionType']>,
@@ -12891,8 +12905,8 @@ export type CalloutSettingsContributionResolvers<
 
 export type CalloutSettingsFramingResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutSettingsFraming'] = ResolversParentTypes['CalloutSettingsFraming'],
+  ParentType extends ResolversParentTypes['CalloutSettingsFraming'] =
+    ResolversParentTypes['CalloutSettingsFraming'],
 > = {
   commentsEnabled?: Resolver<
     ResolversTypes['Boolean'],
@@ -12904,8 +12918,8 @@ export type CalloutSettingsFramingResolvers<
 
 export type CalloutsSetResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CalloutsSet'] = ResolversParentTypes['CalloutsSet'],
+  ParentType extends ResolversParentTypes['CalloutsSet'] =
+    ResolversParentTypes['CalloutsSet'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12932,8 +12946,8 @@ export type CalloutsSetResolvers<
 
 export type ClassificationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Classification'] = ResolversParentTypes['Classification'],
+  ParentType extends ResolversParentTypes['Classification'] =
+    ResolversParentTypes['Classification'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12959,8 +12973,8 @@ export type ClassificationResolvers<
 
 export type CollaborationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Collaboration'] = ResolversParentTypes['Collaboration'],
+  ParentType extends ResolversParentTypes['Collaboration'] =
+    ResolversParentTypes['Collaboration'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12988,8 +13002,8 @@ export type CollaborationResolvers<
 
 export type CommunicationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Communication'] = ResolversParentTypes['Communication'],
+  ParentType extends ResolversParentTypes['Communication'] =
+    ResolversParentTypes['Communication'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -13006,7 +13020,8 @@ export type CommunicationResolvers<
 export type CommunicationAdminMembershipResultResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['CommunicationAdminMembershipResult'] = ResolversParentTypes['CommunicationAdminMembershipResult'],
+    ResolversParentTypes['CommunicationAdminMembershipResult'] =
+    ResolversParentTypes['CommunicationAdminMembershipResult'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -13021,7 +13036,8 @@ export type CommunicationAdminMembershipResultResolvers<
 export type CommunicationAdminOrphanedUsageResultResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['CommunicationAdminOrphanedUsageResult'] = ResolversParentTypes['CommunicationAdminOrphanedUsageResult'],
+    ResolversParentTypes['CommunicationAdminOrphanedUsageResult'] =
+    ResolversParentTypes['CommunicationAdminOrphanedUsageResult'],
 > = {
   rooms?: Resolver<
     Array<ResolversTypes['CommunicationAdminRoomResult']>,
@@ -13034,7 +13050,8 @@ export type CommunicationAdminOrphanedUsageResultResolvers<
 export type CommunicationAdminRoomMembershipResultResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['CommunicationAdminRoomMembershipResult'] = ResolversParentTypes['CommunicationAdminRoomMembershipResult'],
+    ResolversParentTypes['CommunicationAdminRoomMembershipResult'] =
+    ResolversParentTypes['CommunicationAdminRoomMembershipResult'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   extraMembers?: Resolver<
@@ -13056,8 +13073,8 @@ export type CommunicationAdminRoomMembershipResultResolvers<
 
 export type CommunicationAdminRoomResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunicationAdminRoomResult'] = ResolversParentTypes['CommunicationAdminRoomResult'],
+  ParentType extends ResolversParentTypes['CommunicationAdminRoomResult'] =
+    ResolversParentTypes['CommunicationAdminRoomResult'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -13067,8 +13084,8 @@ export type CommunicationAdminRoomResultResolvers<
 
 export type CommunityResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Community'] = ResolversParentTypes['Community'],
+  ParentType extends ResolversParentTypes['Community'] =
+    ResolversParentTypes['Community'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -13100,8 +13117,8 @@ export type CommunityResolvers<
 
 export type CommunityApplicationForRoleResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunityApplicationForRoleResult'] = ResolversParentTypes['CommunityApplicationForRoleResult'],
+  ParentType extends ResolversParentTypes['CommunityApplicationForRoleResult'] =
+    ResolversParentTypes['CommunityApplicationForRoleResult'],
 > = {
   communityID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -13116,8 +13133,8 @@ export type CommunityApplicationForRoleResultResolvers<
 
 export type CommunityApplicationResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunityApplicationResult'] = ResolversParentTypes['CommunityApplicationResult'],
+  ParentType extends ResolversParentTypes['CommunityApplicationResult'] =
+    ResolversParentTypes['CommunityApplicationResult'],
 > = {
   application?: Resolver<
     ResolversTypes['Application'],
@@ -13135,8 +13152,8 @@ export type CommunityApplicationResultResolvers<
 
 export type CommunityGuidelinesResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunityGuidelines'] = ResolversParentTypes['CommunityGuidelines'],
+  ParentType extends ResolversParentTypes['CommunityGuidelines'] =
+    ResolversParentTypes['CommunityGuidelines'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -13152,8 +13169,8 @@ export type CommunityGuidelinesResolvers<
 
 export type CommunityInvitationForRoleResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunityInvitationForRoleResult'] = ResolversParentTypes['CommunityInvitationForRoleResult'],
+  ParentType extends ResolversParentTypes['CommunityInvitationForRoleResult'] =
+    ResolversParentTypes['CommunityInvitationForRoleResult'],
 > = {
   communityID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   contributorID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -13180,8 +13197,8 @@ export type CommunityInvitationForRoleResultResolvers<
 
 export type CommunityInvitationResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunityInvitationResult'] = ResolversParentTypes['CommunityInvitationResult'],
+  ParentType extends ResolversParentTypes['CommunityInvitationResult'] =
+    ResolversParentTypes['CommunityInvitationResult'],
 > = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   invitation?: Resolver<ResolversTypes['Invitation'], ParentType, ContextType>;
@@ -13195,8 +13212,8 @@ export type CommunityInvitationResultResolvers<
 
 export type CommunityMembershipResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CommunityMembershipResult'] = ResolversParentTypes['CommunityMembershipResult'],
+  ParentType extends ResolversParentTypes['CommunityMembershipResult'] =
+    ResolversParentTypes['CommunityMembershipResult'],
 > = {
   childMemberships?: Resolver<
     Array<ResolversTypes['CommunityMembershipResult']>,
@@ -13210,8 +13227,8 @@ export type CommunityMembershipResultResolvers<
 
 export type ConfigResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Config'] = ResolversParentTypes['Config'],
+  ParentType extends ResolversParentTypes['Config'] =
+    ResolversParentTypes['Config'],
 > = {
   apm?: Resolver<ResolversTypes['APM'], ParentType, ContextType>;
   authentication?: Resolver<
@@ -13243,8 +13260,8 @@ export type ConfigResolvers<
 
 export type ContributorResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Contributor'] = ResolversParentTypes['Contributor'],
+  ParentType extends ResolversParentTypes['Contributor'] =
+    ResolversParentTypes['Contributor'],
 > = {
   __resolveType: TypeResolveFn<
     'Organization' | 'User' | 'VirtualContributor',
@@ -13266,8 +13283,8 @@ export type ContributorResolvers<
 
 export type ContributorRolePolicyResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ContributorRolePolicy'] = ResolversParentTypes['ContributorRolePolicy'],
+  ParentType extends ResolversParentTypes['ContributorRolePolicy'] =
+    ResolversParentTypes['ContributorRolePolicy'],
 > = {
   maximum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   minimum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -13276,8 +13293,8 @@ export type ContributorRolePolicyResolvers<
 
 export type ContributorRolesResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ContributorRoles'] = ResolversParentTypes['ContributorRoles'],
+  ParentType extends ResolversParentTypes['ContributorRoles'] =
+    ResolversParentTypes['ContributorRoles'],
 > = {
   applications?: Resolver<
     Array<ResolversTypes['CommunityApplicationForRoleResult']>,
@@ -13307,8 +13324,8 @@ export type ContributorRolesResolvers<
 
 export type CreateCalloutContributionDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCalloutContributionData'] = ResolversParentTypes['CreateCalloutContributionData'],
+  ParentType extends ResolversParentTypes['CreateCalloutContributionData'] =
+    ResolversParentTypes['CreateCalloutContributionData'],
 > = {
   link?: Resolver<
     Maybe<ResolversTypes['CreateLinkData']>,
@@ -13342,7 +13359,8 @@ export type CreateCalloutContributionDataResolvers<
 export type CreateCalloutContributionDefaultsDataResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['CreateCalloutContributionDefaultsData'] = ResolversParentTypes['CreateCalloutContributionDefaultsData'],
+    ResolversParentTypes['CreateCalloutContributionDefaultsData'] =
+    ResolversParentTypes['CreateCalloutContributionDefaultsData'],
 > = {
   defaultDisplayName?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -13364,8 +13382,8 @@ export type CreateCalloutContributionDefaultsDataResolvers<
 
 export type CreateCalloutDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCalloutData'] = ResolversParentTypes['CreateCalloutData'],
+  ParentType extends ResolversParentTypes['CreateCalloutData'] =
+    ResolversParentTypes['CreateCalloutData'],
 > = {
   classification?: Resolver<
     Maybe<ResolversTypes['CreateClassificationData']>,
@@ -13404,8 +13422,8 @@ export type CreateCalloutDataResolvers<
 
 export type CreateCalloutFramingDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCalloutFramingData'] = ResolversParentTypes['CreateCalloutFramingData'],
+  ParentType extends ResolversParentTypes['CreateCalloutFramingData'] =
+    ResolversParentTypes['CreateCalloutFramingData'],
 > = {
   link?: Resolver<
     Maybe<ResolversTypes['CreateLinkData']>,
@@ -13443,7 +13461,8 @@ export type CreateCalloutFramingDataResolvers<
 export type CreateCalloutSettingsContributionDataResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['CreateCalloutSettingsContributionData'] = ResolversParentTypes['CreateCalloutSettingsContributionData'],
+    ResolversParentTypes['CreateCalloutSettingsContributionData'] =
+    ResolversParentTypes['CreateCalloutSettingsContributionData'],
 > = {
   allowedTypes?: Resolver<
     Maybe<Array<ResolversTypes['CalloutContributionType']>>,
@@ -13466,8 +13485,8 @@ export type CreateCalloutSettingsContributionDataResolvers<
 
 export type CreateCalloutSettingsDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCalloutSettingsData'] = ResolversParentTypes['CreateCalloutSettingsData'],
+  ParentType extends ResolversParentTypes['CreateCalloutSettingsData'] =
+    ResolversParentTypes['CreateCalloutSettingsData'],
 > = {
   contribution?: Resolver<
     Maybe<ResolversTypes['CreateCalloutSettingsContributionData']>,
@@ -13489,8 +13508,8 @@ export type CreateCalloutSettingsDataResolvers<
 
 export type CreateCalloutSettingsFramingDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCalloutSettingsFramingData'] = ResolversParentTypes['CreateCalloutSettingsFramingData'],
+  ParentType extends ResolversParentTypes['CreateCalloutSettingsFramingData'] =
+    ResolversParentTypes['CreateCalloutSettingsFramingData'],
 > = {
   commentsEnabled?: Resolver<
     Maybe<ResolversTypes['Boolean']>,
@@ -13502,8 +13521,8 @@ export type CreateCalloutSettingsFramingDataResolvers<
 
 export type CreateCalloutsSetDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCalloutsSetData'] = ResolversParentTypes['CreateCalloutsSetData'],
+  ParentType extends ResolversParentTypes['CreateCalloutsSetData'] =
+    ResolversParentTypes['CreateCalloutsSetData'],
 > = {
   calloutsData?: Resolver<
     Maybe<Array<ResolversTypes['CreateCalloutData']>>,
@@ -13515,8 +13534,8 @@ export type CreateCalloutsSetDataResolvers<
 
 export type CreateClassificationDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateClassificationData'] = ResolversParentTypes['CreateClassificationData'],
+  ParentType extends ResolversParentTypes['CreateClassificationData'] =
+    ResolversParentTypes['CreateClassificationData'],
 > = {
   tagsets?: Resolver<
     Array<ResolversTypes['CreateTagsetData']>,
@@ -13528,8 +13547,8 @@ export type CreateClassificationDataResolvers<
 
 export type CreateCollaborationDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCollaborationData'] = ResolversParentTypes['CreateCollaborationData'],
+  ParentType extends ResolversParentTypes['CreateCollaborationData'] =
+    ResolversParentTypes['CreateCollaborationData'],
 > = {
   calloutsSetData?: Resolver<
     ResolversTypes['CreateCalloutsSetData'],
@@ -13546,8 +13565,8 @@ export type CreateCollaborationDataResolvers<
 
 export type CreateCommunityGuidelinesDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateCommunityGuidelinesData'] = ResolversParentTypes['CreateCommunityGuidelinesData'],
+  ParentType extends ResolversParentTypes['CreateCommunityGuidelinesData'] =
+    ResolversParentTypes['CreateCommunityGuidelinesData'],
 > = {
   profile?: Resolver<
     ResolversTypes['CreateProfileData'],
@@ -13559,8 +13578,8 @@ export type CreateCommunityGuidelinesDataResolvers<
 
 export type CreateInnovationFlowDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateInnovationFlowData'] = ResolversParentTypes['CreateInnovationFlowData'],
+  ParentType extends ResolversParentTypes['CreateInnovationFlowData'] =
+    ResolversParentTypes['CreateInnovationFlowData'],
 > = {
   profile?: Resolver<
     ResolversTypes['CreateProfileData'],
@@ -13577,8 +13596,8 @@ export type CreateInnovationFlowDataResolvers<
 
 export type CreateInnovationFlowStateDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateInnovationFlowStateData'] = ResolversParentTypes['CreateInnovationFlowStateData'],
+  ParentType extends ResolversParentTypes['CreateInnovationFlowStateData'] =
+    ResolversParentTypes['CreateInnovationFlowStateData'],
 > = {
   description?: Resolver<
     Maybe<ResolversTypes['Markdown']>,
@@ -13598,7 +13617,8 @@ export type CreateInnovationFlowStateDataResolvers<
 export type CreateInnovationFlowStateSettingsDataResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['CreateInnovationFlowStateSettingsData'] = ResolversParentTypes['CreateInnovationFlowStateSettingsData'],
+    ResolversParentTypes['CreateInnovationFlowStateSettingsData'] =
+    ResolversParentTypes['CreateInnovationFlowStateSettingsData'],
 > = {
   allowNewCallouts?: Resolver<
     ResolversTypes['Boolean'],
@@ -13610,8 +13630,8 @@ export type CreateInnovationFlowStateSettingsDataResolvers<
 
 export type CreateLinkDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateLinkData'] = ResolversParentTypes['CreateLinkData'],
+  ParentType extends ResolversParentTypes['CreateLinkData'] =
+    ResolversParentTypes['CreateLinkData'],
 > = {
   profile?: Resolver<
     ResolversTypes['CreateProfileData'],
@@ -13624,8 +13644,8 @@ export type CreateLinkDataResolvers<
 
 export type CreateLocationDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateLocationData'] = ResolversParentTypes['CreateLocationData'],
+  ParentType extends ResolversParentTypes['CreateLocationData'] =
+    ResolversParentTypes['CreateLocationData'],
 > = {
   addressLine1?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -13654,8 +13674,8 @@ export type CreateLocationDataResolvers<
 
 export type CreateMemoDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateMemoData'] = ResolversParentTypes['CreateMemoData'],
+  ParentType extends ResolversParentTypes['CreateMemoData'] =
+    ResolversParentTypes['CreateMemoData'],
 > = {
   markdown?: Resolver<
     Maybe<ResolversTypes['Markdown']>,
@@ -13672,8 +13692,8 @@ export type CreateMemoDataResolvers<
 
 export type CreatePostDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreatePostData'] = ResolversParentTypes['CreatePostData'],
+  ParentType extends ResolversParentTypes['CreatePostData'] =
+    ResolversParentTypes['CreatePostData'],
 > = {
   tags?: Resolver<
     Maybe<Array<ResolversTypes['String']>>,
@@ -13685,8 +13705,8 @@ export type CreatePostDataResolvers<
 
 export type CreateProfileDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateProfileData'] = ResolversParentTypes['CreateProfileData'],
+  ParentType extends ResolversParentTypes['CreateProfileData'] =
+    ResolversParentTypes['CreateProfileData'],
 > = {
   description?: Resolver<
     Maybe<ResolversTypes['Markdown']>,
@@ -13725,8 +13745,8 @@ export type CreateProfileDataResolvers<
 
 export type CreateReferenceDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateReferenceData'] = ResolversParentTypes['CreateReferenceData'],
+  ParentType extends ResolversParentTypes['CreateReferenceData'] =
+    ResolversParentTypes['CreateReferenceData'],
 > = {
   description?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -13740,8 +13760,8 @@ export type CreateReferenceDataResolvers<
 
 export type CreateTagsetDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateTagsetData'] = ResolversParentTypes['CreateTagsetData'],
+  ParentType extends ResolversParentTypes['CreateTagsetData'] =
+    ResolversParentTypes['CreateTagsetData'],
 > = {
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   tags?: Resolver<
@@ -13755,8 +13775,8 @@ export type CreateTagsetDataResolvers<
 
 export type CreateVisualOnProfileDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateVisualOnProfileData'] = ResolversParentTypes['CreateVisualOnProfileData'],
+  ParentType extends ResolversParentTypes['CreateVisualOnProfileData'] =
+    ResolversParentTypes['CreateVisualOnProfileData'],
 > = {
   name?: Resolver<ResolversTypes['VisualType'], ParentType, ContextType>;
   uri?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -13765,8 +13785,8 @@ export type CreateVisualOnProfileDataResolvers<
 
 export type CreateWhiteboardDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CreateWhiteboardData'] = ResolversParentTypes['CreateWhiteboardData'],
+  ParentType extends ResolversParentTypes['CreateWhiteboardData'] =
+    ResolversParentTypes['CreateWhiteboardData'],
 > = {
   content?: Resolver<
     Maybe<ResolversTypes['WhiteboardContent']>,
@@ -13790,7 +13810,8 @@ export type CreateWhiteboardDataResolvers<
 export type CreateWhiteboardPreviewSettingsDataResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['CreateWhiteboardPreviewSettingsData'] = ResolversParentTypes['CreateWhiteboardPreviewSettingsData'],
+    ResolversParentTypes['CreateWhiteboardPreviewSettingsData'] =
+    ResolversParentTypes['CreateWhiteboardPreviewSettingsData'],
 > = {
   coordinates?: Resolver<
     Maybe<ResolversTypes['WhiteboardPreviewCoordinatesData']>,
@@ -13807,8 +13828,8 @@ export type CreateWhiteboardPreviewSettingsDataResolvers<
 
 export type CredentialResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Credential'] = ResolversParentTypes['Credential'],
+  ParentType extends ResolversParentTypes['Credential'] =
+    ResolversParentTypes['Credential'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   expires?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -13822,8 +13843,8 @@ export type CredentialResolvers<
 
 export type CredentialDefinitionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CredentialDefinition'] = ResolversParentTypes['CredentialDefinition'],
+  ParentType extends ResolversParentTypes['CredentialDefinition'] =
+    ResolversParentTypes['CredentialDefinition'],
 > = {
   resourceID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -13832,8 +13853,8 @@ export type CredentialDefinitionResolvers<
 
 export type CredentialMetadataOutputResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['CredentialMetadataOutput'] = ResolversParentTypes['CredentialMetadataOutput'],
+  ParentType extends ResolversParentTypes['CredentialMetadataOutput'] =
+    ResolversParentTypes['CredentialMetadataOutput'],
 > = {
   context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -13844,20 +13865,24 @@ export type CredentialMetadataOutputResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface DidScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['DID'], any> {
+export interface DidScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['DID'],
+  any
+> {
   name: 'DID';
 }
 
-export interface DateTimeScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['DateTime'],
+  any
+> {
   name: 'DateTime';
 }
 
 export type DirectRoomResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['DirectRoom'] = ResolversParentTypes['DirectRoom'],
+  ParentType extends ResolversParentTypes['DirectRoom'] =
+    ResolversParentTypes['DirectRoom'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -13876,8 +13901,8 @@ export type DirectRoomResolvers<
 
 export type DiscussionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Discussion'] = ResolversParentTypes['Discussion'],
+  ParentType extends ResolversParentTypes['Discussion'] =
+    ResolversParentTypes['Discussion'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -13907,8 +13932,8 @@ export type DiscussionResolvers<
 
 export type DiscussionDetailsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['DiscussionDetails'] = ResolversParentTypes['DiscussionDetails'],
+  ParentType extends ResolversParentTypes['DiscussionDetails'] =
+    ResolversParentTypes['DiscussionDetails'],
 > = {
   category?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<
@@ -13924,8 +13949,8 @@ export type DiscussionDetailsResolvers<
 
 export type DocumentResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Document'] = ResolversParentTypes['Document'],
+  ParentType extends ResolversParentTypes['Document'] =
+    ResolversParentTypes['Document'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -13950,15 +13975,17 @@ export type DocumentResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface EmojiScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['Emoji'], any> {
+export interface EmojiScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['Emoji'],
+  any
+> {
   name: 'Emoji';
 }
 
 export type ExternalConfigResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ExternalConfig'] = ResolversParentTypes['ExternalConfig'],
+  ParentType extends ResolversParentTypes['ExternalConfig'] =
+    ResolversParentTypes['ExternalConfig'],
 > = {
   apiKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   assistantId?: Resolver<
@@ -13972,8 +13999,8 @@ export type ExternalConfigResolvers<
 
 export type FileStorageConfigResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['FileStorageConfig'] = ResolversParentTypes['FileStorageConfig'],
+  ParentType extends ResolversParentTypes['FileStorageConfig'] =
+    ResolversParentTypes['FileStorageConfig'],
 > = {
   maxFileSize?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -13981,8 +14008,8 @@ export type FileStorageConfigResolvers<
 
 export type FormResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Form'] = ResolversParentTypes['Form'],
+  ParentType extends ResolversParentTypes['Form'] =
+    ResolversParentTypes['Form'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<
@@ -14002,8 +14029,8 @@ export type FormResolvers<
 
 export type FormQuestionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['FormQuestion'] = ResolversParentTypes['FormQuestion'],
+  ParentType extends ResolversParentTypes['FormQuestion'] =
+    ResolversParentTypes['FormQuestion'],
 > = {
   explanation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   maxLength?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -14015,8 +14042,8 @@ export type FormQuestionResolvers<
 
 export type ForumResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Forum'] = ResolversParentTypes['Forum'],
+  ParentType extends ResolversParentTypes['Forum'] =
+    ResolversParentTypes['Forum'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14057,8 +14084,8 @@ export type GeoResolvers<
 
 export type GeoLocationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['GeoLocation'] = ResolversParentTypes['GeoLocation'],
+  ParentType extends ResolversParentTypes['GeoLocation'] =
+    ResolversParentTypes['GeoLocation'],
 > = {
   latitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   longitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -14067,8 +14094,8 @@ export type GeoLocationResolvers<
 
 export type GroupableResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Groupable'] = ResolversParentTypes['Groupable'],
+  ParentType extends ResolversParentTypes['Groupable'] =
+    ResolversParentTypes['Groupable'],
 > = {
   __resolveType: TypeResolveFn<
     'Community' | 'Organization',
@@ -14084,8 +14111,8 @@ export type GroupableResolvers<
 
 export type ISearchCategoryResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ISearchCategoryResult'] = ResolversParentTypes['ISearchCategoryResult'],
+  ParentType extends ResolversParentTypes['ISearchCategoryResult'] =
+    ResolversParentTypes['ISearchCategoryResult'],
 > = {
   cursor?: Resolver<
     Maybe<ResolversTypes['SearchCursor']>,
@@ -14103,8 +14130,8 @@ export type ISearchCategoryResultResolvers<
 
 export type ISearchResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ISearchResults'] = ResolversParentTypes['ISearchResults'],
+  ParentType extends ResolversParentTypes['ISearchResults'] =
+    ResolversParentTypes['ISearchResults'],
 > = {
   calloutResults?: Resolver<
     ResolversTypes['ISearchCategoryResult'],
@@ -14131,8 +14158,8 @@ export type ISearchResultsResolvers<
 
 export type InAppNotificationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotification'] = ResolversParentTypes['InAppNotification'],
+  ParentType extends ResolversParentTypes['InAppNotification'] =
+    ResolversParentTypes['InAppNotification'],
 > = {
   category?: Resolver<
     ResolversTypes['NotificationEventCategory'],
@@ -14165,8 +14192,8 @@ export type InAppNotificationResolvers<
 
 export type InAppNotificationPayloadResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayload'] = ResolversParentTypes['InAppNotificationPayload'],
+  ParentType extends ResolversParentTypes['InAppNotificationPayload'] =
+    ResolversParentTypes['InAppNotificationPayload'],
 > = {
   __resolveType: TypeResolveFn<
     | 'InAppNotificationPayloadOrganization'
@@ -14205,7 +14232,8 @@ export type InAppNotificationPayloadResolvers<
 export type InAppNotificationPayloadOrganizationResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadOrganization'] = ResolversParentTypes['InAppNotificationPayloadOrganization'],
+    ResolversParentTypes['InAppNotificationPayloadOrganization'] =
+    ResolversParentTypes['InAppNotificationPayloadOrganization'],
 > = {
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
@@ -14218,7 +14246,8 @@ export type InAppNotificationPayloadOrganizationResolvers<
 export type InAppNotificationPayloadOrganizationMessageDirectResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageDirect'] = ResolversParentTypes['InAppNotificationPayloadOrganizationMessageDirect'],
+    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageDirect'] =
+    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageDirect'],
 > = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<
@@ -14237,7 +14266,8 @@ export type InAppNotificationPayloadOrganizationMessageDirectResolvers<
 export type InAppNotificationPayloadOrganizationMessageRoomResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageRoom'] = ResolversParentTypes['InAppNotificationPayloadOrganizationMessageRoom'],
+    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageRoom'] =
+    ResolversParentTypes['InAppNotificationPayloadOrganizationMessageRoom'],
 > = {
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   organization?: Resolver<
@@ -14256,8 +14286,8 @@ export type InAppNotificationPayloadOrganizationMessageRoomResolvers<
 
 export type InAppNotificationPayloadPlatformResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadPlatform'] = ResolversParentTypes['InAppNotificationPayloadPlatform'],
+  ParentType extends ResolversParentTypes['InAppNotificationPayloadPlatform'] =
+    ResolversParentTypes['InAppNotificationPayloadPlatform'],
 > = {
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
@@ -14270,7 +14300,8 @@ export type InAppNotificationPayloadPlatformResolvers<
 export type InAppNotificationPayloadPlatformForumDiscussionResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadPlatformForumDiscussion'] = ResolversParentTypes['InAppNotificationPayloadPlatformForumDiscussion'],
+    ResolversParentTypes['InAppNotificationPayloadPlatformForumDiscussion'] =
+    ResolversParentTypes['InAppNotificationPayloadPlatformForumDiscussion'],
 > = {
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   discussion?: Resolver<
@@ -14289,7 +14320,8 @@ export type InAppNotificationPayloadPlatformForumDiscussionResolvers<
 export type InAppNotificationPayloadPlatformGlobalRoleChangeResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'] = ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'],
+    ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'] =
+    ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'],
 > = {
   role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<
@@ -14304,7 +14336,8 @@ export type InAppNotificationPayloadPlatformGlobalRoleChangeResolvers<
 export type InAppNotificationPayloadPlatformUserResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadPlatformUser'] = ResolversParentTypes['InAppNotificationPayloadPlatformUser'],
+    ResolversParentTypes['InAppNotificationPayloadPlatformUser'] =
+    ResolversParentTypes['InAppNotificationPayloadPlatformUser'],
 > = {
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
@@ -14317,7 +14350,8 @@ export type InAppNotificationPayloadPlatformUserResolvers<
 export type InAppNotificationPayloadPlatformUserMessageRoomResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadPlatformUserMessageRoom'] = ResolversParentTypes['InAppNotificationPayloadPlatformUserMessageRoom'],
+    ResolversParentTypes['InAppNotificationPayloadPlatformUserMessageRoom'] =
+    ResolversParentTypes['InAppNotificationPayloadPlatformUserMessageRoom'],
 > = {
   messageDetails?: Resolver<
     Maybe<ResolversTypes['MessageDetails']>,
@@ -14336,7 +14370,8 @@ export type InAppNotificationPayloadPlatformUserMessageRoomResolvers<
 export type InAppNotificationPayloadPlatformUserProfileRemovedResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadPlatformUserProfileRemoved'] = ResolversParentTypes['InAppNotificationPayloadPlatformUserProfileRemoved'],
+    ResolversParentTypes['InAppNotificationPayloadPlatformUserProfileRemoved'] =
+    ResolversParentTypes['InAppNotificationPayloadPlatformUserProfileRemoved'],
 > = {
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
@@ -14358,8 +14393,8 @@ export type InAppNotificationPayloadPlatformUserProfileRemovedResolvers<
 
 export type InAppNotificationPayloadSpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpace'] = ResolversParentTypes['InAppNotificationPayloadSpace'],
+  ParentType extends ResolversParentTypes['InAppNotificationPayloadSpace'] =
+    ResolversParentTypes['InAppNotificationPayloadSpace'],
 > = {
   space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
   type?: Resolver<
@@ -14373,7 +14408,8 @@ export type InAppNotificationPayloadSpaceResolvers<
 export type InAppNotificationPayloadSpaceCollaborationCalloutResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'],
 > = {
   callout?: Resolver<Maybe<ResolversTypes['Callout']>, ParentType, ContextType>;
   space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
@@ -14388,7 +14424,8 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutResolvers<
 export type InAppNotificationPayloadSpaceCollaborationCalloutCommentResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutComment'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutComment'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutComment'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutComment'],
 > = {
   callout?: Resolver<Maybe<ResolversTypes['Callout']>, ParentType, ContextType>;
   messageDetails?: Resolver<
@@ -14408,7 +14445,8 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutCommentResolvers<
 export type InAppNotificationPayloadSpaceCollaborationCalloutPostCommentResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutPostComment'] = ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutPostComment'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutPostComment'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutPostComment'],
 > = {
   callout?: Resolver<Maybe<ResolversTypes['Callout']>, ParentType, ContextType>;
   messageDetails?: Resolver<
@@ -14428,7 +14466,8 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutPostCommentResolver
 export type InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationMessageDirect'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationMessageDirect'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationMessageDirect'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationMessageDirect'],
 > = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
@@ -14443,7 +14482,8 @@ export type InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<
 export type InAppNotificationPayloadSpaceCommunicationUpdateResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'],
 > = {
   space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
   type?: Resolver<
@@ -14458,7 +14498,8 @@ export type InAppNotificationPayloadSpaceCommunicationUpdateResolvers<
 export type InAppNotificationPayloadSpaceCommunityApplicationResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityApplication'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityApplication'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityApplication'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityApplication'],
 > = {
   application?: Resolver<
     Maybe<ResolversTypes['Application']>,
@@ -14477,7 +14518,8 @@ export type InAppNotificationPayloadSpaceCommunityApplicationResolvers<
 export type InAppNotificationPayloadSpaceCommunityCalendarEventResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEvent'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEvent'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEvent'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEvent'],
 > = {
   calendarEvent?: Resolver<
     Maybe<ResolversTypes['CalendarEvent']>,
@@ -14497,7 +14539,8 @@ export type InAppNotificationPayloadSpaceCommunityCalendarEventResolvers<
 export type InAppNotificationPayloadSpaceCommunityCalendarEventCommentResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEventComment'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEventComment'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEventComment'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEventComment'],
 > = {
   calendarEvent?: Resolver<
     Maybe<ResolversTypes['CalendarEvent']>,
@@ -14518,7 +14561,8 @@ export type InAppNotificationPayloadSpaceCommunityCalendarEventCommentResolvers<
 export type InAppNotificationPayloadSpaceCommunityContributorResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'],
 > = {
   contributor?: Resolver<
     Maybe<ResolversTypes['Contributor']>,
@@ -14537,7 +14581,8 @@ export type InAppNotificationPayloadSpaceCommunityContributorResolvers<
 export type InAppNotificationPayloadSpaceCommunityInvitationResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'],
 > = {
   space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
   type?: Resolver<
@@ -14551,7 +14596,8 @@ export type InAppNotificationPayloadSpaceCommunityInvitationResolvers<
 export type InAppNotificationPayloadSpaceCommunityInvitationPlatformResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'] = ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'],
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'],
 > = {
   space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
   type?: Resolver<
@@ -14565,7 +14611,8 @@ export type InAppNotificationPayloadSpaceCommunityInvitationPlatformResolvers<
 export type InAppNotificationPayloadUserMessageDirectResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'] = ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'],
+    ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'] =
+    ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'],
 > = {
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   type?: Resolver<
@@ -14580,7 +14627,8 @@ export type InAppNotificationPayloadUserMessageDirectResolvers<
 export type InAppNotificationPayloadVirtualContributorResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadVirtualContributor'] = ResolversParentTypes['InAppNotificationPayloadVirtualContributor'],
+    ResolversParentTypes['InAppNotificationPayloadVirtualContributor'] =
+    ResolversParentTypes['InAppNotificationPayloadVirtualContributor'],
 > = {
   contributor?: Resolver<
     Maybe<ResolversTypes['VirtualContributor']>,
@@ -14603,8 +14651,8 @@ export type InAppNotificationPayloadVirtualContributorResolvers<
 
 export type InnovationFlowResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InnovationFlow'] = ResolversParentTypes['InnovationFlow'],
+  ParentType extends ResolversParentTypes['InnovationFlow'] =
+    ResolversParentTypes['InnovationFlow'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14635,8 +14683,8 @@ export type InnovationFlowResolvers<
 
 export type InnovationFlowSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InnovationFlowSettings'] = ResolversParentTypes['InnovationFlowSettings'],
+  ParentType extends ResolversParentTypes['InnovationFlowSettings'] =
+    ResolversParentTypes['InnovationFlowSettings'],
 > = {
   maximumNumberOfStates?: Resolver<
     ResolversTypes['Float'],
@@ -14653,8 +14701,8 @@ export type InnovationFlowSettingsResolvers<
 
 export type InnovationFlowStateResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InnovationFlowState'] = ResolversParentTypes['InnovationFlowState'],
+  ParentType extends ResolversParentTypes['InnovationFlowState'] =
+    ResolversParentTypes['InnovationFlowState'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14681,8 +14729,8 @@ export type InnovationFlowStateResolvers<
 
 export type InnovationFlowStateSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InnovationFlowStateSettings'] = ResolversParentTypes['InnovationFlowStateSettings'],
+  ParentType extends ResolversParentTypes['InnovationFlowStateSettings'] =
+    ResolversParentTypes['InnovationFlowStateSettings'],
 > = {
   allowNewCallouts?: Resolver<
     ResolversTypes['Boolean'],
@@ -14694,8 +14742,8 @@ export type InnovationFlowStateSettingsResolvers<
 
 export type InnovationHubResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InnovationHub'] = ResolversParentTypes['InnovationHub'],
+  ParentType extends ResolversParentTypes['InnovationHub'] =
+    ResolversParentTypes['InnovationHub'],
 > = {
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
   authorization?: Resolver<
@@ -14732,8 +14780,8 @@ export type InnovationHubResolvers<
 
 export type InnovationPackResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InnovationPack'] = ResolversParentTypes['InnovationPack'],
+  ParentType extends ResolversParentTypes['InnovationPack'] =
+    ResolversParentTypes['InnovationPack'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14762,8 +14810,8 @@ export type InnovationPackResolvers<
 
 export type InputCreatorQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InputCreatorQueryResults'] = ResolversParentTypes['InputCreatorQueryResults'],
+  ParentType extends ResolversParentTypes['InputCreatorQueryResults'] =
+    ResolversParentTypes['InputCreatorQueryResults'],
 > = {
   callout?: Resolver<
     Maybe<ResolversTypes['CreateCalloutData']>,
@@ -14800,8 +14848,8 @@ export type InputCreatorQueryResultsResolvers<
 
 export type InvitationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Invitation'] = ResolversParentTypes['Invitation'],
+  ParentType extends ResolversParentTypes['Invitation'] =
+    ResolversParentTypes['Invitation'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14848,15 +14896,17 @@ export type InvitationResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface JsonScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['JSON'], any> {
+export interface JsonScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['JSON'],
+  any
+> {
   name: 'JSON';
 }
 
 export type KnowledgeBaseResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['KnowledgeBase'] = ResolversParentTypes['KnowledgeBase'],
+  ParentType extends ResolversParentTypes['KnowledgeBase'] =
+    ResolversParentTypes['KnowledgeBase'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14877,8 +14927,8 @@ export type KnowledgeBaseResolvers<
 
 export type KratosIdentityResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['KratosIdentity'] = ResolversParentTypes['KratosIdentity'],
+  ParentType extends ResolversParentTypes['KratosIdentity'] =
+    ResolversParentTypes['KratosIdentity'],
 > = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -14900,8 +14950,8 @@ export type KratosIdentityResolvers<
 
 export type LatestReleaseDiscussionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LatestReleaseDiscussion'] = ResolversParentTypes['LatestReleaseDiscussion'],
+  ParentType extends ResolversParentTypes['LatestReleaseDiscussion'] =
+    ResolversParentTypes['LatestReleaseDiscussion'],
 > = {
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -14910,8 +14960,8 @@ export type LatestReleaseDiscussionResolvers<
 
 export type LibraryResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Library'] = ResolversParentTypes['Library'],
+  ParentType extends ResolversParentTypes['Library'] =
+    ResolversParentTypes['Library'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14948,8 +14998,8 @@ export type LibraryResolvers<
 
 export type LicenseResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['License'] = ResolversParentTypes['License'],
+  ParentType extends ResolversParentTypes['License'] =
+    ResolversParentTypes['License'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -14979,8 +15029,8 @@ export type LicenseResolvers<
 
 export type LicenseEntitlementResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LicenseEntitlement'] = ResolversParentTypes['LicenseEntitlement'],
+  ParentType extends ResolversParentTypes['LicenseEntitlement'] =
+    ResolversParentTypes['LicenseEntitlement'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   dataType?: Resolver<
@@ -15004,8 +15054,8 @@ export type LicenseEntitlementResolvers<
 
 export type LicensePlanResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LicensePlan'] = ResolversParentTypes['LicensePlan'],
+  ParentType extends ResolversParentTypes['LicensePlan'] =
+    ResolversParentTypes['LicensePlan'],
 > = {
   assignToNewOrganizationAccounts?: Resolver<
     ResolversTypes['Boolean'],
@@ -15055,8 +15105,8 @@ export type LicensePlanResolvers<
 
 export type LicensePolicyResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LicensePolicy'] = ResolversParentTypes['LicensePolicy'],
+  ParentType extends ResolversParentTypes['LicensePolicy'] =
+    ResolversParentTypes['LicensePolicy'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -15076,8 +15126,8 @@ export type LicensePolicyResolvers<
 
 export type LicensingResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Licensing'] = ResolversParentTypes['Licensing'],
+  ParentType extends ResolversParentTypes['Licensing'] =
+    ResolversParentTypes['Licensing'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -15099,7 +15149,8 @@ export type LicensingResolvers<
 export type LicensingCredentialBasedPolicyCredentialRuleResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['LicensingCredentialBasedPolicyCredentialRule'] = ResolversParentTypes['LicensingCredentialBasedPolicyCredentialRule'],
+    ResolversParentTypes['LicensingCredentialBasedPolicyCredentialRule'] =
+    ResolversParentTypes['LicensingCredentialBasedPolicyCredentialRule'],
 > = {
   credentialType?: Resolver<
     ResolversTypes['LicensingCredentialBasedCredentialType'],
@@ -15118,8 +15169,8 @@ export type LicensingCredentialBasedPolicyCredentialRuleResolvers<
 
 export type LicensingGrantedEntitlementResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LicensingGrantedEntitlement'] = ResolversParentTypes['LicensingGrantedEntitlement'],
+  ParentType extends ResolversParentTypes['LicensingGrantedEntitlement'] =
+    ResolversParentTypes['LicensingGrantedEntitlement'],
 > = {
   limit?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   type?: Resolver<
@@ -15132,8 +15183,8 @@ export type LicensingGrantedEntitlementResolvers<
 
 export type LifecycleResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Lifecycle'] = ResolversParentTypes['Lifecycle'],
+  ParentType extends ResolversParentTypes['Lifecycle'] =
+    ResolversParentTypes['Lifecycle'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -15141,15 +15192,17 @@ export type LifecycleResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface LifecycleDefinitionScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['LifecycleDefinition'], any> {
+export interface LifecycleDefinitionScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['LifecycleDefinition'],
+  any
+> {
   name: 'LifecycleDefinition';
 }
 
 export type LinkResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Link'] = ResolversParentTypes['Link'],
+  ParentType extends ResolversParentTypes['Link'] =
+    ResolversParentTypes['Link'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -15166,8 +15219,8 @@ export type LinkResolvers<
 
 export type LocationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Location'] = ResolversParentTypes['Location'],
+  ParentType extends ResolversParentTypes['Location'] =
+    ResolversParentTypes['Location'],
 > = {
   addressLine1?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -15204,8 +15257,8 @@ export type LocationResolvers<
 
 export type LookupByNameQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LookupByNameQueryResults'] = ResolversParentTypes['LookupByNameQueryResults'],
+  ParentType extends ResolversParentTypes['LookupByNameQueryResults'] =
+    ResolversParentTypes['LookupByNameQueryResults'],
 > = {
   innovationHub?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -15257,8 +15310,8 @@ export type LookupByNameQueryResultsResolvers<
 
 export type LookupMyPrivilegesQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LookupMyPrivilegesQueryResults'] = ResolversParentTypes['LookupMyPrivilegesQueryResults'],
+  ParentType extends ResolversParentTypes['LookupMyPrivilegesQueryResults'] =
+    ResolversParentTypes['LookupMyPrivilegesQueryResults'],
 > = {
   account?: Resolver<
     Maybe<Array<ResolversTypes['AuthorizationPrivilege']>>,
@@ -15433,8 +15486,8 @@ export type LookupMyPrivilegesQueryResultsResolvers<
 
 export type LookupQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['LookupQueryResults'] = ResolversParentTypes['LookupQueryResults'],
+  ParentType extends ResolversParentTypes['LookupQueryResults'] =
+    ResolversParentTypes['LookupQueryResults'],
 > = {
   about?: Resolver<
     Maybe<ResolversTypes['SpaceAbout']>,
@@ -15669,15 +15722,17 @@ export type LookupQueryResultsResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface MarkdownScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['Markdown'], any> {
+export interface MarkdownScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['Markdown'],
+  any
+> {
   name: 'Markdown';
 }
 
 export type MeQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MeQueryResults'] = ResolversParentTypes['MeQueryResults'],
+  ParentType extends ResolversParentTypes['MeQueryResults'] =
+    ResolversParentTypes['MeQueryResults'],
 > = {
   communityApplications?: Resolver<
     Array<ResolversTypes['CommunityApplicationResult']>,
@@ -15732,8 +15787,8 @@ export type MeQueryResultsResolvers<
 
 export type MemoResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Memo'] = ResolversParentTypes['Memo'],
+  ParentType extends ResolversParentTypes['Memo'] =
+    ResolversParentTypes['Memo'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -15763,8 +15818,8 @@ export type MemoResolvers<
 
 export type MessageResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Message'] = ResolversParentTypes['Message'],
+  ParentType extends ResolversParentTypes['Message'] =
+    ResolversParentTypes['Message'],
 > = {
   id?: Resolver<ResolversTypes['MessageID'], ParentType, ContextType>;
   message?: Resolver<ResolversTypes['Markdown'], ParentType, ContextType>;
@@ -15785,8 +15840,8 @@ export type MessageResolvers<
 
 export type MessageAnswerQuestionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MessageAnswerQuestion'] = ResolversParentTypes['MessageAnswerQuestion'],
+  ParentType extends ResolversParentTypes['MessageAnswerQuestion'] =
+    ResolversParentTypes['MessageAnswerQuestion'],
 > = {
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -15797,8 +15852,8 @@ export type MessageAnswerQuestionResolvers<
 
 export type MessageDetailsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MessageDetails'] = ResolversParentTypes['MessageDetails'],
+  ParentType extends ResolversParentTypes['MessageDetails'] =
+    ResolversParentTypes['MessageDetails'],
 > = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   parent?: Resolver<ResolversTypes['MessageParent'], ParentType, ContextType>;
@@ -15806,15 +15861,17 @@ export type MessageDetailsResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface MessageIdScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['MessageID'], any> {
+export interface MessageIdScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['MessageID'],
+  any
+> {
   name: 'MessageID';
 }
 
 export type MessageParentResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MessageParent'] = ResolversParentTypes['MessageParent'],
+  ParentType extends ResolversParentTypes['MessageParent'] =
+    ResolversParentTypes['MessageParent'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -15824,8 +15881,8 @@ export type MessageParentResolvers<
 
 export type MetadataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Metadata'] = ResolversParentTypes['Metadata'],
+  ParentType extends ResolversParentTypes['Metadata'] =
+    ResolversParentTypes['Metadata'],
 > = {
   services?: Resolver<
     Array<ResolversTypes['ServiceMetadata']>,
@@ -15837,8 +15894,8 @@ export type MetadataResolvers<
 
 export type MigrateEmbeddingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MigrateEmbeddings'] = ResolversParentTypes['MigrateEmbeddings'],
+  ParentType extends ResolversParentTypes['MigrateEmbeddings'] =
+    ResolversParentTypes['MigrateEmbeddings'],
 > = {
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -15846,8 +15903,8 @@ export type MigrateEmbeddingsResolvers<
 
 export type ModelCardAiEngineResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ModelCardAiEngineResult'] = ResolversParentTypes['ModelCardAiEngineResult'],
+  ParentType extends ResolversParentTypes['ModelCardAiEngineResult'] =
+    ResolversParentTypes['ModelCardAiEngineResult'],
 > = {
   additionalTechnicalDetails?: Resolver<
     ResolversTypes['String'],
@@ -15881,8 +15938,8 @@ export type ModelCardAiEngineResultResolvers<
 
 export type ModelCardMonitoringResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ModelCardMonitoringResult'] = ResolversParentTypes['ModelCardMonitoringResult'],
+  ParentType extends ResolversParentTypes['ModelCardMonitoringResult'] =
+    ResolversParentTypes['ModelCardMonitoringResult'],
 > = {
   isUsageMonitoredByAlkemio?: Resolver<
     ResolversTypes['Boolean'],
@@ -15894,8 +15951,8 @@ export type ModelCardMonitoringResultResolvers<
 
 export type ModelCardSpaceUsageResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ModelCardSpaceUsageResult'] = ResolversParentTypes['ModelCardSpaceUsageResult'],
+  ParentType extends ResolversParentTypes['ModelCardSpaceUsageResult'] =
+    ResolversParentTypes['ModelCardSpaceUsageResult'],
 > = {
   flags?: Resolver<
     Array<ResolversTypes['VirtualContributorModelCardFlag']>,
@@ -15912,8 +15969,8 @@ export type ModelCardSpaceUsageResultResolvers<
 
 export type MutationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation'],
+  ParentType extends ResolversParentTypes['Mutation'] =
+    ResolversParentTypes['Mutation'],
 > = {
   addIframeAllowedURL?: Resolver<
     Array<ResolversTypes['String']>,
@@ -17077,8 +17134,8 @@ export type MutationResolvers<
 
 export type MySpaceResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['MySpaceResults'] = ResolversParentTypes['MySpaceResults'],
+  ParentType extends ResolversParentTypes['MySpaceResults'] =
+    ResolversParentTypes['MySpaceResults'],
 > = {
   latestActivity?: Resolver<
     Maybe<ResolversTypes['ActivityLogEntry']>,
@@ -17101,15 +17158,17 @@ export type NvpResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface NameIdScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['NameID'], any> {
+export interface NameIdScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['NameID'],
+  any
+> {
   name: 'NameID';
 }
 
 export type NotificationRecipientResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['NotificationRecipientResult'] = ResolversParentTypes['NotificationRecipientResult'],
+  ParentType extends ResolversParentTypes['NotificationRecipientResult'] =
+    ResolversParentTypes['NotificationRecipientResult'],
 > = {
   emailRecipients?: Resolver<
     Array<ResolversTypes['User']>,
@@ -17131,8 +17190,8 @@ export type NotificationRecipientResultResolvers<
 
 export type OrganizationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Organization'] = ResolversParentTypes['Organization'],
+  ParentType extends ResolversParentTypes['Organization'] =
+    ResolversParentTypes['Organization'],
 > = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
   agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
@@ -17195,8 +17254,8 @@ export type OrganizationResolvers<
 
 export type OrganizationSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['OrganizationSettings'] = ResolversParentTypes['OrganizationSettings'],
+  ParentType extends ResolversParentTypes['OrganizationSettings'] =
+    ResolversParentTypes['OrganizationSettings'],
 > = {
   membership?: Resolver<
     ResolversTypes['OrganizationSettingsMembership'],
@@ -17213,8 +17272,8 @@ export type OrganizationSettingsResolvers<
 
 export type OrganizationSettingsMembershipResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['OrganizationSettingsMembership'] = ResolversParentTypes['OrganizationSettingsMembership'],
+  ParentType extends ResolversParentTypes['OrganizationSettingsMembership'] =
+    ResolversParentTypes['OrganizationSettingsMembership'],
 > = {
   allowUsersMatchingDomainToJoin?: Resolver<
     ResolversTypes['Boolean'],
@@ -17226,8 +17285,8 @@ export type OrganizationSettingsMembershipResolvers<
 
 export type OrganizationSettingsPrivacyResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['OrganizationSettingsPrivacy'] = ResolversParentTypes['OrganizationSettingsPrivacy'],
+  ParentType extends ResolversParentTypes['OrganizationSettingsPrivacy'] =
+    ResolversParentTypes['OrganizationSettingsPrivacy'],
 > = {
   contributionRolesPubliclyVisible?: Resolver<
     ResolversTypes['Boolean'],
@@ -17239,8 +17298,8 @@ export type OrganizationSettingsPrivacyResolvers<
 
 export type OrganizationVerificationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['OrganizationVerification'] = ResolversParentTypes['OrganizationVerification'],
+  ParentType extends ResolversParentTypes['OrganizationVerification'] =
+    ResolversParentTypes['OrganizationVerification'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -17268,8 +17327,8 @@ export type OrganizationVerificationResolvers<
 
 export type OrganizationsInRolesResponseResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['OrganizationsInRolesResponse'] = ResolversParentTypes['OrganizationsInRolesResponse'],
+  ParentType extends ResolversParentTypes['OrganizationsInRolesResponse'] =
+    ResolversParentTypes['OrganizationsInRolesResponse'],
 > = {
   organizations?: Resolver<
     Array<ResolversTypes['Organization']>,
@@ -17282,8 +17341,8 @@ export type OrganizationsInRolesResponseResolvers<
 
 export type OryConfigResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['OryConfig'] = ResolversParentTypes['OryConfig'],
+  ParentType extends ResolversParentTypes['OryConfig'] =
+    ResolversParentTypes['OryConfig'],
 > = {
   issuer?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   kratosPublicBaseURL?: Resolver<
@@ -17296,8 +17355,8 @@ export type OryConfigResolvers<
 
 export type PageInfoResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PageInfo'] = ResolversParentTypes['PageInfo'],
+  ParentType extends ResolversParentTypes['PageInfo'] =
+    ResolversParentTypes['PageInfo'],
 > = {
   endCursor?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -17320,8 +17379,8 @@ export type PageInfoResolvers<
 
 export type PaginatedInAppNotificationsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PaginatedInAppNotifications'] = ResolversParentTypes['PaginatedInAppNotifications'],
+  ParentType extends ResolversParentTypes['PaginatedInAppNotifications'] =
+    ResolversParentTypes['PaginatedInAppNotifications'],
 > = {
   inAppNotifications?: Resolver<
     Array<ResolversTypes['InAppNotification']>,
@@ -17335,8 +17394,8 @@ export type PaginatedInAppNotificationsResolvers<
 
 export type PaginatedOrganizationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PaginatedOrganization'] = ResolversParentTypes['PaginatedOrganization'],
+  ParentType extends ResolversParentTypes['PaginatedOrganization'] =
+    ResolversParentTypes['PaginatedOrganization'],
 > = {
   organization?: Resolver<
     Array<ResolversTypes['Organization']>,
@@ -17350,8 +17409,8 @@ export type PaginatedOrganizationResolvers<
 
 export type PaginatedSpacesResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PaginatedSpaces'] = ResolversParentTypes['PaginatedSpaces'],
+  ParentType extends ResolversParentTypes['PaginatedSpaces'] =
+    ResolversParentTypes['PaginatedSpaces'],
 > = {
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   spaces?: Resolver<Array<ResolversTypes['Space']>, ParentType, ContextType>;
@@ -17361,8 +17420,8 @@ export type PaginatedSpacesResolvers<
 
 export type PaginatedUsersResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PaginatedUsers'] = ResolversParentTypes['PaginatedUsers'],
+  ParentType extends ResolversParentTypes['PaginatedUsers'] =
+    ResolversParentTypes['PaginatedUsers'],
 > = {
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -17372,8 +17431,8 @@ export type PaginatedUsersResolvers<
 
 export type PaginatedVirtualContributorResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PaginatedVirtualContributor'] = ResolversParentTypes['PaginatedVirtualContributor'],
+  ParentType extends ResolversParentTypes['PaginatedVirtualContributor'] =
+    ResolversParentTypes['PaginatedVirtualContributor'],
 > = {
   pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -17387,8 +17446,8 @@ export type PaginatedVirtualContributorResolvers<
 
 export type PlatformResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Platform'] = ResolversParentTypes['Platform'],
+  ParentType extends ResolversParentTypes['Platform'] =
+    ResolversParentTypes['Platform'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -17444,8 +17503,8 @@ export type PlatformResolvers<
 
 export type PlatformAccessRoleResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformAccessRole'] = ResolversParentTypes['PlatformAccessRole'],
+  ParentType extends ResolversParentTypes['PlatformAccessRole'] =
+    ResolversParentTypes['PlatformAccessRole'],
 > = {
   grantedPrivileges?: Resolver<
     Array<ResolversTypes['AuthorizationPrivilege']>,
@@ -17459,7 +17518,8 @@ export type PlatformAccessRoleResolvers<
 export type PlatformAdminCommunicationQueryResultsResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['PlatformAdminCommunicationQueryResults'] = ResolversParentTypes['PlatformAdminCommunicationQueryResults'],
+    ResolversParentTypes['PlatformAdminCommunicationQueryResults'] =
+    ResolversParentTypes['PlatformAdminCommunicationQueryResults'],
 > = {
   adminCommunicationMembership?: Resolver<
     ResolversTypes['CommunicationAdminMembershipResult'],
@@ -17480,8 +17540,8 @@ export type PlatformAdminCommunicationQueryResultsResolvers<
 
 export type PlatformAdminIdentityQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformAdminIdentityQueryResults'] = ResolversParentTypes['PlatformAdminIdentityQueryResults'],
+  ParentType extends ResolversParentTypes['PlatformAdminIdentityQueryResults'] =
+    ResolversParentTypes['PlatformAdminIdentityQueryResults'],
 > = {
   identities?: Resolver<
     Array<ResolversTypes['KratosIdentity']>,
@@ -17494,8 +17554,8 @@ export type PlatformAdminIdentityQueryResultsResolvers<
 
 export type PlatformAdminQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformAdminQueryResults'] = ResolversParentTypes['PlatformAdminQueryResults'],
+  ParentType extends ResolversParentTypes['PlatformAdminQueryResults'] =
+    ResolversParentTypes['PlatformAdminQueryResults'],
 > = {
   communication?: Resolver<
     ResolversTypes['PlatformAdminCommunicationQueryResults'],
@@ -17547,8 +17607,8 @@ export type PlatformAdminQueryResultsResolvers<
 
 export type PlatformFeatureFlagResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformFeatureFlag'] = ResolversParentTypes['PlatformFeatureFlag'],
+  ParentType extends ResolversParentTypes['PlatformFeatureFlag'] =
+    ResolversParentTypes['PlatformFeatureFlag'],
 > = {
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name?: Resolver<
@@ -17561,8 +17621,8 @@ export type PlatformFeatureFlagResolvers<
 
 export type PlatformIntegrationSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformIntegrationSettings'] = ResolversParentTypes['PlatformIntegrationSettings'],
+  ParentType extends ResolversParentTypes['PlatformIntegrationSettings'] =
+    ResolversParentTypes['PlatformIntegrationSettings'],
 > = {
   iframeAllowedUrls?: Resolver<
     Array<ResolversTypes['String']>,
@@ -17574,8 +17634,8 @@ export type PlatformIntegrationSettingsResolvers<
 
 export type PlatformInvitationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformInvitation'] = ResolversParentTypes['PlatformInvitation'],
+  ParentType extends ResolversParentTypes['PlatformInvitation'] =
+    ResolversParentTypes['PlatformInvitation'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -17619,8 +17679,8 @@ export type PlatformInvitationResolvers<
 
 export type PlatformLocationsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformLocations'] = ResolversParentTypes['PlatformLocations'],
+  ParentType extends ResolversParentTypes['PlatformLocations'] =
+    ResolversParentTypes['PlatformLocations'],
 > = {
   about?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   aup?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -17656,8 +17716,8 @@ export type PlatformLocationsResolvers<
 
 export type PlatformRolesAccessResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformRolesAccess'] = ResolversParentTypes['PlatformRolesAccess'],
+  ParentType extends ResolversParentTypes['PlatformRolesAccess'] =
+    ResolversParentTypes['PlatformRolesAccess'],
 > = {
   roles?: Resolver<
     Array<ResolversTypes['PlatformAccessRole']>,
@@ -17669,8 +17729,8 @@ export type PlatformRolesAccessResolvers<
 
 export type PlatformSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PlatformSettings'] = ResolversParentTypes['PlatformSettings'],
+  ParentType extends ResolversParentTypes['PlatformSettings'] =
+    ResolversParentTypes['PlatformSettings'],
 > = {
   integration?: Resolver<
     ResolversTypes['PlatformIntegrationSettings'],
@@ -17682,8 +17742,8 @@ export type PlatformSettingsResolvers<
 
 export type PostResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Post'] = ResolversParentTypes['Post'],
+  ParentType extends ResolversParentTypes['Post'] =
+    ResolversParentTypes['Post'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -17702,8 +17762,8 @@ export type PostResolvers<
 
 export type ProfileResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Profile'] = ResolversParentTypes['Profile'],
+  ParentType extends ResolversParentTypes['Profile'] =
+    ResolversParentTypes['Profile'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -17764,8 +17824,8 @@ export type ProfileResolvers<
 
 export type ProfileCredentialVerifiedResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ProfileCredentialVerified'] = ResolversParentTypes['ProfileCredentialVerified'],
+  ParentType extends ResolversParentTypes['ProfileCredentialVerified'] =
+    ResolversParentTypes['ProfileCredentialVerified'],
 > = {
   userEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   vc?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -17774,8 +17834,8 @@ export type ProfileCredentialVerifiedResolvers<
 
 export type PromptGraphResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraph'] = ResolversParentTypes['PromptGraph'],
+  ParentType extends ResolversParentTypes['PromptGraph'] =
+    ResolversParentTypes['PromptGraph'],
 > = {
   edges?: Resolver<
     Maybe<Array<ResolversTypes['PromptGraphEdge']>>,
@@ -17799,8 +17859,8 @@ export type PromptGraphResolvers<
 
 export type PromptGraphDataPointResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphDataPoint'] = ResolversParentTypes['PromptGraphDataPoint'],
+  ParentType extends ResolversParentTypes['PromptGraphDataPoint'] =
+    ResolversParentTypes['PromptGraphDataPoint'],
 > = {
   description?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -17824,8 +17884,8 @@ export type PromptGraphDataPointResolvers<
 
 export type PromptGraphDataStructResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphDataStruct'] = ResolversParentTypes['PromptGraphDataStruct'],
+  ParentType extends ResolversParentTypes['PromptGraphDataStruct'] =
+    ResolversParentTypes['PromptGraphDataStruct'],
 > = {
   properties?: Resolver<
     Maybe<Array<ResolversTypes['PromptGraphDataPoint']>>,
@@ -17839,8 +17899,8 @@ export type PromptGraphDataStructResolvers<
 
 export type PromptGraphDefinitionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphDefinition'] = ResolversParentTypes['PromptGraphDefinition'],
+  ParentType extends ResolversParentTypes['PromptGraphDefinition'] =
+    ResolversParentTypes['PromptGraphDefinition'],
 > = {
   edges?: Resolver<
     Maybe<Array<ResolversTypes['PromptGraphDefinitionEdge']>>,
@@ -17864,8 +17924,8 @@ export type PromptGraphDefinitionResolvers<
 
 export type PromptGraphDefinitionDataPointResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphDefinitionDataPoint'] = ResolversParentTypes['PromptGraphDefinitionDataPoint'],
+  ParentType extends ResolversParentTypes['PromptGraphDefinitionDataPoint'] =
+    ResolversParentTypes['PromptGraphDefinitionDataPoint'],
 > = {
   description?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -17884,8 +17944,8 @@ export type PromptGraphDefinitionDataPointResolvers<
 
 export type PromptGraphDefinitionDataStructResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphDefinitionDataStruct'] = ResolversParentTypes['PromptGraphDefinitionDataStruct'],
+  ParentType extends ResolversParentTypes['PromptGraphDefinitionDataStruct'] =
+    ResolversParentTypes['PromptGraphDefinitionDataStruct'],
 > = {
   properties?: Resolver<
     Maybe<Array<ResolversTypes['PromptGraphDefinitionDataPoint']>>,
@@ -17899,8 +17959,8 @@ export type PromptGraphDefinitionDataStructResolvers<
 
 export type PromptGraphDefinitionEdgeResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphDefinitionEdge'] = ResolversParentTypes['PromptGraphDefinitionEdge'],
+  ParentType extends ResolversParentTypes['PromptGraphDefinitionEdge'] =
+    ResolversParentTypes['PromptGraphDefinitionEdge'],
 > = {
   from?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   to?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -17909,8 +17969,8 @@ export type PromptGraphDefinitionEdgeResolvers<
 
 export type PromptGraphDefinitionNodeResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphDefinitionNode'] = ResolversParentTypes['PromptGraphDefinitionNode'],
+  ParentType extends ResolversParentTypes['PromptGraphDefinitionNode'] =
+    ResolversParentTypes['PromptGraphDefinitionNode'],
 > = {
   input_variables?: Resolver<
     Maybe<Array<ResolversTypes['String']>>,
@@ -17930,8 +17990,8 @@ export type PromptGraphDefinitionNodeResolvers<
 
 export type PromptGraphEdgeResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphEdge'] = ResolversParentTypes['PromptGraphEdge'],
+  ParentType extends ResolversParentTypes['PromptGraphEdge'] =
+    ResolversParentTypes['PromptGraphEdge'],
 > = {
   from?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   to?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -17940,8 +18000,8 @@ export type PromptGraphEdgeResolvers<
 
 export type PromptGraphNodeResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PromptGraphNode'] = ResolversParentTypes['PromptGraphNode'],
+  ParentType extends ResolversParentTypes['PromptGraphNode'] =
+    ResolversParentTypes['PromptGraphNode'],
 > = {
   input_variables?: Resolver<
     Maybe<Array<ResolversTypes['String']>>,
@@ -17961,8 +18021,8 @@ export type PromptGraphNodeResolvers<
 
 export type PruneInAppNotificationAdminResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['PruneInAppNotificationAdminResult'] = ResolversParentTypes['PruneInAppNotificationAdminResult'],
+  ParentType extends ResolversParentTypes['PruneInAppNotificationAdminResult'] =
+    ResolversParentTypes['PruneInAppNotificationAdminResult'],
 > = {
   removedCountExceedingUserLimit?: Resolver<
     ResolversTypes['Int'],
@@ -17979,8 +18039,8 @@ export type PruneInAppNotificationAdminResultResolvers<
 
 export type QueryResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
+  ParentType extends ResolversParentTypes['Query'] =
+    ResolversParentTypes['Query'],
 > = {
   accounts?: Resolver<
     Array<ResolversTypes['Account']>,
@@ -18170,8 +18230,8 @@ export type QueryResolvers<
 
 export type QuestionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Question'] = ResolversParentTypes['Question'],
+  ParentType extends ResolversParentTypes['Question'] =
+    ResolversParentTypes['Question'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -18183,8 +18243,8 @@ export type QuestionResolvers<
 
 export type ReactionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Reaction'] = ResolversParentTypes['Reaction'],
+  ParentType extends ResolversParentTypes['Reaction'] =
+    ResolversParentTypes['Reaction'],
 > = {
   emoji?: Resolver<ResolversTypes['Emoji'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['MessageID'], ParentType, ContextType>;
@@ -18195,8 +18255,8 @@ export type ReactionResolvers<
 
 export type ReferenceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Reference'] = ResolversParentTypes['Reference'],
+  ParentType extends ResolversParentTypes['Reference'] =
+    ResolversParentTypes['Reference'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -18218,8 +18278,8 @@ export type ReferenceResolvers<
 
 export type RelayPaginatedSpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RelayPaginatedSpace'] = ResolversParentTypes['RelayPaginatedSpace'],
+  ParentType extends ResolversParentTypes['RelayPaginatedSpace'] =
+    ResolversParentTypes['RelayPaginatedSpace'],
 > = {
   about?: Resolver<ResolversTypes['SpaceAbout'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
@@ -18294,8 +18354,8 @@ export type RelayPaginatedSpaceResolvers<
 
 export type RelayPaginatedSpaceEdgeResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RelayPaginatedSpaceEdge'] = ResolversParentTypes['RelayPaginatedSpaceEdge'],
+  ParentType extends ResolversParentTypes['RelayPaginatedSpaceEdge'] =
+    ResolversParentTypes['RelayPaginatedSpaceEdge'],
 > = {
   node?: Resolver<
     ResolversTypes['RelayPaginatedSpace'],
@@ -18307,8 +18367,8 @@ export type RelayPaginatedSpaceEdgeResolvers<
 
 export type RelayPaginatedSpacePageInfoResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RelayPaginatedSpacePageInfo'] = ResolversParentTypes['RelayPaginatedSpacePageInfo'],
+  ParentType extends ResolversParentTypes['RelayPaginatedSpacePageInfo'] =
+    ResolversParentTypes['RelayPaginatedSpacePageInfo'],
 > = {
   endCursor?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -18331,8 +18391,8 @@ export type RelayPaginatedSpacePageInfoResolvers<
 
 export type RoleResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Role'] = ResolversParentTypes['Role'],
+  ParentType extends ResolversParentTypes['Role'] =
+    ResolversParentTypes['Role'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   credential?: Resolver<
@@ -18378,8 +18438,8 @@ export type RoleResolvers<
 
 export type RoleSetResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RoleSet'] = ResolversParentTypes['RoleSet'],
+  ParentType extends ResolversParentTypes['RoleSet'] =
+    ResolversParentTypes['RoleSet'],
 > = {
   applicationForm?: Resolver<ResolversTypes['Form'], ParentType, ContextType>;
   applications?: Resolver<
@@ -18509,8 +18569,8 @@ export type RoleSetResolvers<
 
 export type RoleSetInvitationResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RoleSetInvitationResult'] = ResolversParentTypes['RoleSetInvitationResult'],
+  ParentType extends ResolversParentTypes['RoleSetInvitationResult'] =
+    ResolversParentTypes['RoleSetInvitationResult'],
 > = {
   invitation?: Resolver<
     Maybe<ResolversTypes['Invitation']>,
@@ -18532,8 +18592,8 @@ export type RoleSetInvitationResultResolvers<
 
 export type RolesResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RolesResult'] = ResolversParentTypes['RolesResult'],
+  ParentType extends ResolversParentTypes['RolesResult'] =
+    ResolversParentTypes['RolesResult'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -18544,8 +18604,8 @@ export type RolesResultResolvers<
 
 export type RolesResultCommunityResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RolesResultCommunity'] = ResolversParentTypes['RolesResultCommunity'],
+  ParentType extends ResolversParentTypes['RolesResultCommunity'] =
+    ResolversParentTypes['RolesResultCommunity'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -18557,8 +18617,8 @@ export type RolesResultCommunityResolvers<
 
 export type RolesResultOrganizationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RolesResultOrganization'] = ResolversParentTypes['RolesResultOrganization'],
+  ParentType extends ResolversParentTypes['RolesResultOrganization'] =
+    ResolversParentTypes['RolesResultOrganization'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -18575,8 +18635,8 @@ export type RolesResultOrganizationResolvers<
 
 export type RolesResultSpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RolesResultSpace'] = ResolversParentTypes['RolesResultSpace'],
+  ParentType extends ResolversParentTypes['RolesResultSpace'] =
+    ResolversParentTypes['RolesResultSpace'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -18599,8 +18659,8 @@ export type RolesResultSpaceResolvers<
 
 export type RoomResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Room'] = ResolversParentTypes['Room'],
+  ParentType extends ResolversParentTypes['Room'] =
+    ResolversParentTypes['Room'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -18626,8 +18686,8 @@ export type RoomResolvers<
 
 export type RoomEventSubscriptionResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['RoomEventSubscriptionResult'] = ResolversParentTypes['RoomEventSubscriptionResult'],
+  ParentType extends ResolversParentTypes['RoomEventSubscriptionResult'] =
+    ResolversParentTypes['RoomEventSubscriptionResult'],
 > = {
   message?: Resolver<
     Maybe<ResolversTypes['RoomMessageEventSubscriptionResult']>,
@@ -18647,7 +18707,8 @@ export type RoomEventSubscriptionResultResolvers<
 export type RoomMessageEventSubscriptionResultResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['RoomMessageEventSubscriptionResult'] = ResolversParentTypes['RoomMessageEventSubscriptionResult'],
+    ResolversParentTypes['RoomMessageEventSubscriptionResult'] =
+    ResolversParentTypes['RoomMessageEventSubscriptionResult'],
 > = {
   data?: Resolver<ResolversTypes['Message'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['MutationType'], ParentType, ContextType>;
@@ -18657,7 +18718,8 @@ export type RoomMessageEventSubscriptionResultResolvers<
 export type RoomMessageReactionEventSubscriptionResultResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['RoomMessageReactionEventSubscriptionResult'] = ResolversParentTypes['RoomMessageReactionEventSubscriptionResult'],
+    ResolversParentTypes['RoomMessageReactionEventSubscriptionResult'] =
+    ResolversParentTypes['RoomMessageReactionEventSubscriptionResult'],
 > = {
   data?: Resolver<ResolversTypes['Reaction'], ParentType, ContextType>;
   messageID?: Resolver<
@@ -18669,15 +18731,17 @@ export type RoomMessageReactionEventSubscriptionResultResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface SearchCursorScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['SearchCursor'], any> {
+export interface SearchCursorScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['SearchCursor'],
+  any
+> {
   name: 'SearchCursor';
 }
 
 export type SearchResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SearchResult'] = ResolversParentTypes['SearchResult'],
+  ParentType extends ResolversParentTypes['SearchResult'] =
+    ResolversParentTypes['SearchResult'],
 > = {
   __resolveType: TypeResolveFn<
     | 'SearchResultCallout'
@@ -18696,8 +18760,8 @@ export type SearchResultResolvers<
 
 export type SearchResultCalloutResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SearchResultCallout'] = ResolversParentTypes['SearchResultCallout'],
+  ParentType extends ResolversParentTypes['SearchResultCallout'] =
+    ResolversParentTypes['SearchResultCallout'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -18710,8 +18774,8 @@ export type SearchResultCalloutResolvers<
 
 export type SearchResultOrganizationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SearchResultOrganization'] = ResolversParentTypes['SearchResultOrganization'],
+  ParentType extends ResolversParentTypes['SearchResultOrganization'] =
+    ResolversParentTypes['SearchResultOrganization'],
 > = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   organization?: Resolver<
@@ -18727,8 +18791,8 @@ export type SearchResultOrganizationResolvers<
 
 export type SearchResultPostResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SearchResultPost'] = ResolversParentTypes['SearchResultPost'],
+  ParentType extends ResolversParentTypes['SearchResultPost'] =
+    ResolversParentTypes['SearchResultPost'],
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -18742,8 +18806,8 @@ export type SearchResultPostResolvers<
 
 export type SearchResultSpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SearchResultSpace'] = ResolversParentTypes['SearchResultSpace'],
+  ParentType extends ResolversParentTypes['SearchResultSpace'] =
+    ResolversParentTypes['SearchResultSpace'],
 > = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   parentSpace?: Resolver<
@@ -18760,8 +18824,8 @@ export type SearchResultSpaceResolvers<
 
 export type SearchResultUserResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SearchResultUser'] = ResolversParentTypes['SearchResultUser'],
+  ParentType extends ResolversParentTypes['SearchResultUser'] =
+    ResolversParentTypes['SearchResultUser'],
 > = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -18773,8 +18837,8 @@ export type SearchResultUserResolvers<
 
 export type SentryResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Sentry'] = ResolversParentTypes['Sentry'],
+  ParentType extends ResolversParentTypes['Sentry'] =
+    ResolversParentTypes['Sentry'],
 > = {
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   endpoint?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -18785,8 +18849,8 @@ export type SentryResolvers<
 
 export type ServiceMetadataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['ServiceMetadata'] = ResolversParentTypes['ServiceMetadata'],
+  ParentType extends ResolversParentTypes['ServiceMetadata'] =
+    ResolversParentTypes['ServiceMetadata'],
 > = {
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   version?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -18795,8 +18859,8 @@ export type ServiceMetadataResolvers<
 
 export type SpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Space'] = ResolversParentTypes['Space'],
+  ParentType extends ResolversParentTypes['Space'] =
+    ResolversParentTypes['Space'],
 > = {
   about?: Resolver<ResolversTypes['SpaceAbout'], ParentType, ContextType>;
   account?: Resolver<ResolversTypes['Account'], ParentType, ContextType>;
@@ -18871,8 +18935,8 @@ export type SpaceResolvers<
 
 export type SpaceAboutResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpaceAbout'] = ResolversParentTypes['SpaceAbout'],
+  ParentType extends ResolversParentTypes['SpaceAbout'] =
+    ResolversParentTypes['SpaceAbout'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -18911,8 +18975,8 @@ export type SpaceAboutResolvers<
 
 export type SpaceAboutMembershipResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpaceAboutMembership'] = ResolversParentTypes['SpaceAboutMembership'],
+  ParentType extends ResolversParentTypes['SpaceAboutMembership'] =
+    ResolversParentTypes['SpaceAboutMembership'],
 > = {
   applicationForm?: Resolver<ResolversTypes['Form'], ParentType, ContextType>;
   communityID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -18938,8 +19002,8 @@ export type SpaceAboutMembershipResolvers<
 
 export type SpacePendingMembershipInfoResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpacePendingMembershipInfo'] = ResolversParentTypes['SpacePendingMembershipInfo'],
+  ParentType extends ResolversParentTypes['SpacePendingMembershipInfo'] =
+    ResolversParentTypes['SpacePendingMembershipInfo'],
 > = {
   about?: Resolver<ResolversTypes['SpaceAbout'], ParentType, ContextType>;
   communityGuidelines?: Resolver<
@@ -18954,8 +19018,8 @@ export type SpacePendingMembershipInfoResolvers<
 
 export type SpaceSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpaceSettings'] = ResolversParentTypes['SpaceSettings'],
+  ParentType extends ResolversParentTypes['SpaceSettings'] =
+    ResolversParentTypes['SpaceSettings'],
 > = {
   collaboration?: Resolver<
     ResolversTypes['SpaceSettingsCollaboration'],
@@ -18977,8 +19041,8 @@ export type SpaceSettingsResolvers<
 
 export type SpaceSettingsCollaborationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpaceSettingsCollaboration'] = ResolversParentTypes['SpaceSettingsCollaboration'],
+  ParentType extends ResolversParentTypes['SpaceSettingsCollaboration'] =
+    ResolversParentTypes['SpaceSettingsCollaboration'],
 > = {
   allowEventsFromSubspaces?: Resolver<
     ResolversTypes['Boolean'],
@@ -19010,8 +19074,8 @@ export type SpaceSettingsCollaborationResolvers<
 
 export type SpaceSettingsMembershipResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpaceSettingsMembership'] = ResolversParentTypes['SpaceSettingsMembership'],
+  ParentType extends ResolversParentTypes['SpaceSettingsMembership'] =
+    ResolversParentTypes['SpaceSettingsMembership'],
 > = {
   allowSubspaceAdminsToInviteMembers?: Resolver<
     ResolversTypes['Boolean'],
@@ -19033,8 +19097,8 @@ export type SpaceSettingsMembershipResolvers<
 
 export type SpaceSettingsPrivacyResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpaceSettingsPrivacy'] = ResolversParentTypes['SpaceSettingsPrivacy'],
+  ParentType extends ResolversParentTypes['SpaceSettingsPrivacy'] =
+    ResolversParentTypes['SpaceSettingsPrivacy'],
 > = {
   allowPlatformSupportAsAdmin?: Resolver<
     ResolversTypes['Boolean'],
@@ -19047,8 +19111,8 @@ export type SpaceSettingsPrivacyResolvers<
 
 export type SpaceSubscriptionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SpaceSubscription'] = ResolversParentTypes['SpaceSubscription'],
+  ParentType extends ResolversParentTypes['SpaceSubscription'] =
+    ResolversParentTypes['SpaceSubscription'],
 > = {
   expires?: Resolver<
     Maybe<ResolversTypes['DateTime']>,
@@ -19065,8 +19129,8 @@ export type SpaceSubscriptionResolvers<
 
 export type StorageAggregatorResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['StorageAggregator'] = ResolversParentTypes['StorageAggregator'],
+  ParentType extends ResolversParentTypes['StorageAggregator'] =
+    ResolversParentTypes['StorageAggregator'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -19107,8 +19171,8 @@ export type StorageAggregatorResolvers<
 
 export type StorageAggregatorParentResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['StorageAggregatorParent'] = ResolversParentTypes['StorageAggregatorParent'],
+  ParentType extends ResolversParentTypes['StorageAggregatorParent'] =
+    ResolversParentTypes['StorageAggregatorParent'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -19123,8 +19187,8 @@ export type StorageAggregatorParentResolvers<
 
 export type StorageBucketResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['StorageBucket'] = ResolversParentTypes['StorageBucket'],
+  ParentType extends ResolversParentTypes['StorageBucket'] =
+    ResolversParentTypes['StorageBucket'],
 > = {
   allowedMimeTypes?: Resolver<
     Array<ResolversTypes['String']>,
@@ -19163,8 +19227,8 @@ export type StorageBucketResolvers<
 
 export type StorageBucketParentResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['StorageBucketParent'] = ResolversParentTypes['StorageBucketParent'],
+  ParentType extends ResolversParentTypes['StorageBucketParent'] =
+    ResolversParentTypes['StorageBucketParent'],
 > = {
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -19175,8 +19239,8 @@ export type StorageBucketParentResolvers<
 
 export type StorageConfigResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['StorageConfig'] = ResolversParentTypes['StorageConfig'],
+  ParentType extends ResolversParentTypes['StorageConfig'] =
+    ResolversParentTypes['StorageConfig'],
 > = {
   file?: Resolver<ResolversTypes['FileStorageConfig'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -19184,8 +19248,8 @@ export type StorageConfigResolvers<
 
 export type SubscriptionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription'],
+  ParentType extends ResolversParentTypes['Subscription'] =
+    ResolversParentTypes['Subscription'],
 > = {
   activityCreated?: SubscriptionResolver<
     ResolversTypes['ActivityCreatedSubscriptionResult'],
@@ -19254,8 +19318,8 @@ export type SubscriptionResolvers<
 
 export type SubspaceCreatedResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['SubspaceCreated'] = ResolversParentTypes['SubspaceCreated'],
+  ParentType extends ResolversParentTypes['SubspaceCreated'] =
+    ResolversParentTypes['SubspaceCreated'],
 > = {
   spaceID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   subspace?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
@@ -19264,8 +19328,8 @@ export type SubspaceCreatedResolvers<
 
 export type TagsetResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Tagset'] = ResolversParentTypes['Tagset'],
+  ParentType extends ResolversParentTypes['Tagset'] =
+    ResolversParentTypes['Tagset'],
 > = {
   allowedValues?: Resolver<
     Array<ResolversTypes['String']>,
@@ -19288,8 +19352,8 @@ export type TagsetResolvers<
 
 export type TagsetTemplateResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['TagsetTemplate'] = ResolversParentTypes['TagsetTemplate'],
+  ParentType extends ResolversParentTypes['TagsetTemplate'] =
+    ResolversParentTypes['TagsetTemplate'],
 > = {
   allowedValues?: Resolver<
     Array<ResolversTypes['String']>,
@@ -19311,8 +19375,8 @@ export type TagsetTemplateResolvers<
 
 export type TaskResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Task'] = ResolversParentTypes['Task'],
+  ParentType extends ResolversParentTypes['Task'] =
+    ResolversParentTypes['Task'],
 > = {
   created?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   end?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
@@ -19342,8 +19406,8 @@ export type TaskResolvers<
 
 export type TemplateResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Template'] = ResolversParentTypes['Template'],
+  ParentType extends ResolversParentTypes['Template'] =
+    ResolversParentTypes['Template'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -19382,8 +19446,8 @@ export type TemplateResolvers<
 
 export type TemplateContentSpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['TemplateContentSpace'] = ResolversParentTypes['TemplateContentSpace'],
+  ParentType extends ResolversParentTypes['TemplateContentSpace'] =
+    ResolversParentTypes['TemplateContentSpace'],
 > = {
   about?: Resolver<ResolversTypes['SpaceAbout'], ParentType, ContextType>;
   authorization?: Resolver<
@@ -19411,8 +19475,8 @@ export type TemplateContentSpaceResolvers<
 
 export type TemplateDefaultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['TemplateDefault'] = ResolversParentTypes['TemplateDefault'],
+  ParentType extends ResolversParentTypes['TemplateDefault'] =
+    ResolversParentTypes['TemplateDefault'],
 > = {
   allowedTemplateType?: Resolver<
     ResolversTypes['TemplateType'],
@@ -19442,8 +19506,8 @@ export type TemplateDefaultResolvers<
 
 export type TemplateResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['TemplateResult'] = ResolversParentTypes['TemplateResult'],
+  ParentType extends ResolversParentTypes['TemplateResult'] =
+    ResolversParentTypes['TemplateResult'],
 > = {
   innovationPack?: Resolver<
     ResolversTypes['InnovationPack'],
@@ -19456,8 +19520,8 @@ export type TemplateResultResolvers<
 
 export type TemplatesManagerResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['TemplatesManager'] = ResolversParentTypes['TemplatesManager'],
+  ParentType extends ResolversParentTypes['TemplatesManager'] =
+    ResolversParentTypes['TemplatesManager'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -19482,8 +19546,8 @@ export type TemplatesManagerResolvers<
 
 export type TemplatesSetResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['TemplatesSet'] = ResolversParentTypes['TemplatesSet'],
+  ParentType extends ResolversParentTypes['TemplatesSet'] =
+    ResolversParentTypes['TemplatesSet'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -19554,8 +19618,8 @@ export type TemplatesSetResolvers<
 
 export type TimelineResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Timeline'] = ResolversParentTypes['Timeline'],
+  ParentType extends ResolversParentTypes['Timeline'] =
+    ResolversParentTypes['Timeline'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -19569,20 +19633,24 @@ export type TimelineResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface UuidScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
+export interface UuidScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['UUID'],
+  any
+> {
   name: 'UUID';
 }
 
-export interface UploadScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
+export interface UploadScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['Upload'],
+  any
+> {
   name: 'Upload';
 }
 
 export type UrlResolverQueryResultCalendarResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UrlResolverQueryResultCalendar'] = ResolversParentTypes['UrlResolverQueryResultCalendar'],
+  ParentType extends ResolversParentTypes['UrlResolverQueryResultCalendar'] =
+    ResolversParentTypes['UrlResolverQueryResultCalendar'],
 > = {
   calendarEventId?: Resolver<
     Maybe<ResolversTypes['UUID']>,
@@ -19595,8 +19663,8 @@ export type UrlResolverQueryResultCalendarResolvers<
 
 export type UrlResolverQueryResultCalloutsSetResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UrlResolverQueryResultCalloutsSet'] = ResolversParentTypes['UrlResolverQueryResultCalloutsSet'],
+  ParentType extends ResolversParentTypes['UrlResolverQueryResultCalloutsSet'] =
+    ResolversParentTypes['UrlResolverQueryResultCalloutsSet'],
 > = {
   calloutId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   contributionId?: Resolver<
@@ -19618,7 +19686,8 @@ export type UrlResolverQueryResultCalloutsSetResolvers<
 export type UrlResolverQueryResultCollaborationResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UrlResolverQueryResultCollaboration'] = ResolversParentTypes['UrlResolverQueryResultCollaboration'],
+    ResolversParentTypes['UrlResolverQueryResultCollaboration'] =
+    ResolversParentTypes['UrlResolverQueryResultCollaboration'],
 > = {
   calloutsSet?: Resolver<
     ResolversTypes['UrlResolverQueryResultCalloutsSet'],
@@ -19632,7 +19701,8 @@ export type UrlResolverQueryResultCollaborationResolvers<
 export type UrlResolverQueryResultInnovationPackResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UrlResolverQueryResultInnovationPack'] = ResolversParentTypes['UrlResolverQueryResultInnovationPack'],
+    ResolversParentTypes['UrlResolverQueryResultInnovationPack'] =
+    ResolversParentTypes['UrlResolverQueryResultInnovationPack'],
 > = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   templatesSet?: Resolver<
@@ -19645,8 +19715,8 @@ export type UrlResolverQueryResultInnovationPackResolvers<
 
 export type UrlResolverQueryResultSpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UrlResolverQueryResultSpace'] = ResolversParentTypes['UrlResolverQueryResultSpace'],
+  ParentType extends ResolversParentTypes['UrlResolverQueryResultSpace'] =
+    ResolversParentTypes['UrlResolverQueryResultSpace'],
 > = {
   calendar?: Resolver<
     Maybe<ResolversTypes['UrlResolverQueryResultCalendar']>,
@@ -19677,7 +19747,8 @@ export type UrlResolverQueryResultSpaceResolvers<
 export type UrlResolverQueryResultTemplatesSetResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UrlResolverQueryResultTemplatesSet'] = ResolversParentTypes['UrlResolverQueryResultTemplatesSet'],
+    ResolversParentTypes['UrlResolverQueryResultTemplatesSet'] =
+    ResolversParentTypes['UrlResolverQueryResultTemplatesSet'],
 > = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   templateId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
@@ -19687,7 +19758,8 @@ export type UrlResolverQueryResultTemplatesSetResolvers<
 export type UrlResolverQueryResultVirtualContributorResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UrlResolverQueryResultVirtualContributor'] = ResolversParentTypes['UrlResolverQueryResultVirtualContributor'],
+    ResolversParentTypes['UrlResolverQueryResultVirtualContributor'] =
+    ResolversParentTypes['UrlResolverQueryResultVirtualContributor'],
 > = {
   calloutsSet?: Resolver<
     ResolversTypes['UrlResolverQueryResultCalloutsSet'],
@@ -19700,8 +19772,8 @@ export type UrlResolverQueryResultVirtualContributorResolvers<
 
 export type UrlResolverQueryResultsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UrlResolverQueryResults'] = ResolversParentTypes['UrlResolverQueryResults'],
+  ParentType extends ResolversParentTypes['UrlResolverQueryResults'] =
+    ResolversParentTypes['UrlResolverQueryResults'],
 > = {
   discussionId?: Resolver<
     Maybe<ResolversTypes['UUID']>,
@@ -19740,8 +19812,8 @@ export type UrlResolverQueryResultsResolvers<
 
 export type UserResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['User'] = ResolversParentTypes['User'],
+  ParentType extends ResolversParentTypes['User'] =
+    ResolversParentTypes['User'],
 > = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
   accountUpn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -19787,8 +19859,8 @@ export type UserResolvers<
 
 export type UserAuthenticationResultResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserAuthenticationResult'] = ResolversParentTypes['UserAuthenticationResult'],
+  ParentType extends ResolversParentTypes['UserAuthenticationResult'] =
+    ResolversParentTypes['UserAuthenticationResult'],
 > = {
   authenticatedAt?: Resolver<
     Maybe<ResolversTypes['DateTime']>,
@@ -19810,8 +19882,8 @@ export type UserAuthenticationResultResolvers<
 
 export type UserGroupResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserGroup'] = ResolversParentTypes['UserGroup'],
+  ParentType extends ResolversParentTypes['UserGroup'] =
+    ResolversParentTypes['UserGroup'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -19837,8 +19909,8 @@ export type UserGroupResolvers<
 
 export type UserSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettings'] = ResolversParentTypes['UserSettings'],
+  ParentType extends ResolversParentTypes['UserSettings'] =
+    ResolversParentTypes['UserSettings'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -19868,8 +19940,8 @@ export type UserSettingsResolvers<
 
 export type UserSettingsCommunicationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettingsCommunication'] = ResolversParentTypes['UserSettingsCommunication'],
+  ParentType extends ResolversParentTypes['UserSettingsCommunication'] =
+    ResolversParentTypes['UserSettingsCommunication'],
 > = {
   allowOtherUsersToSendMessages?: Resolver<
     ResolversTypes['Boolean'],
@@ -19881,8 +19953,8 @@ export type UserSettingsCommunicationResolvers<
 
 export type UserSettingsNotificationResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettingsNotification'] = ResolversParentTypes['UserSettingsNotification'],
+  ParentType extends ResolversParentTypes['UserSettingsNotification'] =
+    ResolversParentTypes['UserSettingsNotification'],
 > = {
   organization?: Resolver<
     ResolversTypes['UserSettingsNotificationOrganization'],
@@ -19914,8 +19986,8 @@ export type UserSettingsNotificationResolvers<
 
 export type UserSettingsNotificationChannelsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettingsNotificationChannels'] = ResolversParentTypes['UserSettingsNotificationChannels'],
+  ParentType extends ResolversParentTypes['UserSettingsNotificationChannels'] =
+    ResolversParentTypes['UserSettingsNotificationChannels'],
 > = {
   email?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   inApp?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -19925,7 +19997,8 @@ export type UserSettingsNotificationChannelsResolvers<
 export type UserSettingsNotificationOrganizationResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UserSettingsNotificationOrganization'] = ResolversParentTypes['UserSettingsNotificationOrganization'],
+    ResolversParentTypes['UserSettingsNotificationOrganization'] =
+    ResolversParentTypes['UserSettingsNotificationOrganization'],
 > = {
   adminMentioned?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
@@ -19942,8 +20015,8 @@ export type UserSettingsNotificationOrganizationResolvers<
 
 export type UserSettingsNotificationPlatformResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettingsNotificationPlatform'] = ResolversParentTypes['UserSettingsNotificationPlatform'],
+  ParentType extends ResolversParentTypes['UserSettingsNotificationPlatform'] =
+    ResolversParentTypes['UserSettingsNotificationPlatform'],
 > = {
   admin?: Resolver<
     ResolversTypes['UserSettingsNotificationPlatformAdmin'],
@@ -19966,7 +20039,8 @@ export type UserSettingsNotificationPlatformResolvers<
 export type UserSettingsNotificationPlatformAdminResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UserSettingsNotificationPlatformAdmin'] = ResolversParentTypes['UserSettingsNotificationPlatformAdmin'],
+    ResolversParentTypes['UserSettingsNotificationPlatformAdmin'] =
+    ResolversParentTypes['UserSettingsNotificationPlatformAdmin'],
 > = {
   spaceCreated?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
@@ -19993,8 +20067,8 @@ export type UserSettingsNotificationPlatformAdminResolvers<
 
 export type UserSettingsNotificationSpaceResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettingsNotificationSpace'] = ResolversParentTypes['UserSettingsNotificationSpace'],
+  ParentType extends ResolversParentTypes['UserSettingsNotificationSpace'] =
+    ResolversParentTypes['UserSettingsNotificationSpace'],
 > = {
   admin?: Resolver<
     ResolversTypes['UserSettingsNotificationSpaceAdmin'],
@@ -20037,7 +20111,8 @@ export type UserSettingsNotificationSpaceResolvers<
 export type UserSettingsNotificationSpaceAdminResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UserSettingsNotificationSpaceAdmin'] = ResolversParentTypes['UserSettingsNotificationSpaceAdmin'],
+    ResolversParentTypes['UserSettingsNotificationSpaceAdmin'] =
+    ResolversParentTypes['UserSettingsNotificationSpaceAdmin'],
 > = {
   collaborationCalloutContributionCreated?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
@@ -20064,8 +20139,8 @@ export type UserSettingsNotificationSpaceAdminResolvers<
 
 export type UserSettingsNotificationUserResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettingsNotificationUser'] = ResolversParentTypes['UserSettingsNotificationUser'],
+  ParentType extends ResolversParentTypes['UserSettingsNotificationUser'] =
+    ResolversParentTypes['UserSettingsNotificationUser'],
 > = {
   commentReply?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
@@ -20093,7 +20168,8 @@ export type UserSettingsNotificationUserResolvers<
 export type UserSettingsNotificationUserMembershipResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UserSettingsNotificationUserMembership'] = ResolversParentTypes['UserSettingsNotificationUserMembership'],
+    ResolversParentTypes['UserSettingsNotificationUserMembership'] =
+    ResolversParentTypes['UserSettingsNotificationUserMembership'],
 > = {
   spaceCommunityInvitationReceived?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
@@ -20111,7 +20187,8 @@ export type UserSettingsNotificationUserMembershipResolvers<
 export type UserSettingsNotificationVirtualContributorResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['UserSettingsNotificationVirtualContributor'] = ResolversParentTypes['UserSettingsNotificationVirtualContributor'],
+    ResolversParentTypes['UserSettingsNotificationVirtualContributor'] =
+    ResolversParentTypes['UserSettingsNotificationVirtualContributor'],
 > = {
   adminSpaceCommunityInvitation?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
@@ -20123,8 +20200,8 @@ export type UserSettingsNotificationVirtualContributorResolvers<
 
 export type UserSettingsPrivacyResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UserSettingsPrivacy'] = ResolversParentTypes['UserSettingsPrivacy'],
+  ParentType extends ResolversParentTypes['UserSettingsPrivacy'] =
+    ResolversParentTypes['UserSettingsPrivacy'],
 > = {
   contributionRolesPubliclyVisible?: Resolver<
     ResolversTypes['Boolean'],
@@ -20136,8 +20213,8 @@ export type UserSettingsPrivacyResolvers<
 
 export type UsersInRolesResponseResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['UsersInRolesResponse'] = ResolversParentTypes['UsersInRolesResponse'],
+  ParentType extends ResolversParentTypes['UsersInRolesResponse'] =
+    ResolversParentTypes['UsersInRolesResponse'],
 > = {
   role?: Resolver<ResolversTypes['RoleName'], ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
@@ -20146,8 +20223,8 @@ export type UsersInRolesResponseResolvers<
 
 export type VcInteractionResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VcInteraction'] = ResolversParentTypes['VcInteraction'],
+  ParentType extends ResolversParentTypes['VcInteraction'] =
+    ResolversParentTypes['VcInteraction'],
 > = {
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -20164,8 +20241,8 @@ export type VcInteractionResolvers<
 
 export type VerifiedCredentialResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VerifiedCredential'] = ResolversParentTypes['VerifiedCredential'],
+  ParentType extends ResolversParentTypes['VerifiedCredential'] =
+    ResolversParentTypes['VerifiedCredential'],
 > = {
   claims?: Resolver<
     Array<ResolversTypes['VerifiedCredentialClaim']>,
@@ -20183,8 +20260,8 @@ export type VerifiedCredentialResolvers<
 
 export type VerifiedCredentialClaimResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VerifiedCredentialClaim'] = ResolversParentTypes['VerifiedCredentialClaim'],
+  ParentType extends ResolversParentTypes['VerifiedCredentialClaim'] =
+    ResolversParentTypes['VerifiedCredentialClaim'],
 > = {
   name?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
@@ -20193,8 +20270,8 @@ export type VerifiedCredentialClaimResolvers<
 
 export type VirtualContributorResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VirtualContributor'] = ResolversParentTypes['VirtualContributor'],
+  ParentType extends ResolversParentTypes['VirtualContributor'] =
+    ResolversParentTypes['VirtualContributor'],
 > = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
   agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
@@ -20281,8 +20358,8 @@ export type VirtualContributorResolvers<
 
 export type VirtualContributorModelCardResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VirtualContributorModelCard'] = ResolversParentTypes['VirtualContributorModelCard'],
+  ParentType extends ResolversParentTypes['VirtualContributorModelCard'] =
+    ResolversParentTypes['VirtualContributorModelCard'],
 > = {
   aiEngine?: Resolver<
     Maybe<ResolversTypes['ModelCardAiEngineResult']>,
@@ -20304,8 +20381,8 @@ export type VirtualContributorModelCardResolvers<
 
 export type VirtualContributorModelCardFlagResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VirtualContributorModelCardFlag'] = ResolversParentTypes['VirtualContributorModelCardFlag'],
+  ParentType extends ResolversParentTypes['VirtualContributorModelCardFlag'] =
+    ResolversParentTypes['VirtualContributorModelCardFlag'],
 > = {
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name?: Resolver<
@@ -20318,8 +20395,8 @@ export type VirtualContributorModelCardFlagResolvers<
 
 export type VirtualContributorSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VirtualContributorSettings'] = ResolversParentTypes['VirtualContributorSettings'],
+  ParentType extends ResolversParentTypes['VirtualContributorSettings'] =
+    ResolversParentTypes['VirtualContributorSettings'],
 > = {
   privacy?: Resolver<
     ResolversTypes['VirtualContributorSettingsPrivacy'],
@@ -20331,8 +20408,8 @@ export type VirtualContributorSettingsResolvers<
 
 export type VirtualContributorSettingsPrivacyResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VirtualContributorSettingsPrivacy'] = ResolversParentTypes['VirtualContributorSettingsPrivacy'],
+  ParentType extends ResolversParentTypes['VirtualContributorSettingsPrivacy'] =
+    ResolversParentTypes['VirtualContributorSettingsPrivacy'],
 > = {
   knowledgeBaseContentVisible?: Resolver<
     ResolversTypes['Boolean'],
@@ -20345,7 +20422,8 @@ export type VirtualContributorSettingsPrivacyResolvers<
 export type VirtualContributorUpdatedSubscriptionResultResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['VirtualContributorUpdatedSubscriptionResult'] = ResolversParentTypes['VirtualContributorUpdatedSubscriptionResult'],
+    ResolversParentTypes['VirtualContributorUpdatedSubscriptionResult'] =
+    ResolversParentTypes['VirtualContributorUpdatedSubscriptionResult'],
 > = {
   virtualContributor?: Resolver<
     ResolversTypes['VirtualContributor'],
@@ -20358,7 +20436,8 @@ export type VirtualContributorUpdatedSubscriptionResultResolvers<
 export type VirtualContributorsInRolesResponseResolvers<
   ContextType = any,
   ParentType extends
-    ResolversParentTypes['VirtualContributorsInRolesResponse'] = ResolversParentTypes['VirtualContributorsInRolesResponse'],
+    ResolversParentTypes['VirtualContributorsInRolesResponse'] =
+    ResolversParentTypes['VirtualContributorsInRolesResponse'],
 > = {
   role?: Resolver<ResolversTypes['RoleName'], ParentType, ContextType>;
   virtualContributors?: Resolver<
@@ -20371,8 +20450,8 @@ export type VirtualContributorsInRolesResponseResolvers<
 
 export type VisualResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Visual'] = ResolversParentTypes['Visual'],
+  ParentType extends ResolversParentTypes['Visual'] =
+    ResolversParentTypes['Visual'],
 > = {
   allowedTypes?: Resolver<
     Array<ResolversTypes['String']>,
@@ -20404,8 +20483,8 @@ export type VisualResolvers<
 
 export type VisualConstraintsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['VisualConstraints'] = ResolversParentTypes['VisualConstraints'],
+  ParentType extends ResolversParentTypes['VisualConstraints'] =
+    ResolversParentTypes['VisualConstraints'],
 > = {
   allowedTypes?: Resolver<
     Array<ResolversTypes['String']>,
@@ -20422,8 +20501,8 @@ export type VisualConstraintsResolvers<
 
 export type WhiteboardResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['Whiteboard'] = ResolversParentTypes['Whiteboard'],
+  ParentType extends ResolversParentTypes['Whiteboard'] =
+    ResolversParentTypes['Whiteboard'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -20455,15 +20534,17 @@ export type WhiteboardResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export interface WhiteboardContentScalarConfig
-  extends GraphQLScalarTypeConfig<ResolversTypes['WhiteboardContent'], any> {
+export interface WhiteboardContentScalarConfig extends GraphQLScalarTypeConfig<
+  ResolversTypes['WhiteboardContent'],
+  any
+> {
   name: 'WhiteboardContent';
 }
 
 export type WhiteboardPreviewCoordinatesResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['WhiteboardPreviewCoordinates'] = ResolversParentTypes['WhiteboardPreviewCoordinates'],
+  ParentType extends ResolversParentTypes['WhiteboardPreviewCoordinates'] =
+    ResolversParentTypes['WhiteboardPreviewCoordinates'],
 > = {
   height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -20474,8 +20555,8 @@ export type WhiteboardPreviewCoordinatesResolvers<
 
 export type WhiteboardPreviewCoordinatesDataResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['WhiteboardPreviewCoordinatesData'] = ResolversParentTypes['WhiteboardPreviewCoordinatesData'],
+  ParentType extends ResolversParentTypes['WhiteboardPreviewCoordinatesData'] =
+    ResolversParentTypes['WhiteboardPreviewCoordinatesData'],
 > = {
   height?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   width?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
@@ -20486,8 +20567,8 @@ export type WhiteboardPreviewCoordinatesDataResolvers<
 
 export type WhiteboardPreviewSettingsResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['WhiteboardPreviewSettings'] = ResolversParentTypes['WhiteboardPreviewSettings'],
+  ParentType extends ResolversParentTypes['WhiteboardPreviewSettings'] =
+    ResolversParentTypes['WhiteboardPreviewSettings'],
 > = {
   coordinates?: Resolver<
     Maybe<ResolversTypes['WhiteboardPreviewCoordinates']>,
