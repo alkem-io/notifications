@@ -184,6 +184,7 @@ For local validation before opening a PR:
 - **Jest `ts-jest` warnings**: The service tests produce warnings about `.js` email template files being compiled by `ts-jest`. Ignore unless specifically tasked to refactor test config.
 - **`.eslintignore` deprecation warning**: Services' lint run prints an `ESLintIgnoreWarning` about `.eslintignore` being deprecated. This is a warning only.
 - **Multiple Node versions**: The repo uses Volta fields per package. Pick Node 22.x and keep it consistent when running service scripts; Node 20/22 both work for the library. Avoid mixing very old Node versions.
+- **Notifications container consuming queue messages during debugging**: When debugging or developing locally, ensure any running notifications container (e.g., from Docker Compose or k8s) is stopped. If a container is running, it will consume messages from the RabbitMQ queue, preventing the locally-running service from receiving them. This can cause unexpected behavior where the service appears to not process events. Stop any running notifications containers before starting local debugging with `npm run start:dev` or the debug configuration.
 
 ## How to Work Effectively in This Repo
 

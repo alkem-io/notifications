@@ -1,36 +1,44 @@
-FROM node:22.16.0-alpine
+# ======================
+# Builder stage (with dev deps)
+# ======================
+FROM node:22.16.0-bookworm AS builder
 
+WORKDIR /app
 
-# Create app directory
-WORKDIR /usr/src/app
+COPY service/package*.json ./
+RUN npm ci
 
-# Define graphql server port
-ARG ENV_ARG=production
-
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY ./service/package*.json ./
-
-RUN npm i -g npm@10.9.3 && npm install
-
-## Add the wait script to the image
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.3/wait /wait
-RUN chmod +x /wait
-
-# If you are building your code for production
-# RUN npm ci --only=production
-
-# Bundle app source & config files for TypeORM & TypeScript
-COPY ./service/src ./src
-COPY ./service/tsconfig.json .
-COPY ./service/tsconfig.build.json .
-COPY ./service/notifications.yml .
+COPY service/tsconfig*.json ./
+COPY service/src ./src
+COPY service/notifications.yml .
 
 RUN npm run build
 
-ENV NODE_ENV=${ENV_ARG}
+
+# ======================
+# Prod deps stage (NO dev deps)
+# ======================
+FROM node:22.16.0-bookworm AS prod-deps
+
+WORKDIR /app
+
+COPY service/package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+
+# ======================
+# Runtime stage (distroless)
+# ======================
+FROM gcr.io/distroless/nodejs22-debian12:nonroot
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=prod-deps --chown=65532:65532 /app/node_modules ./node_modules
+COPY --from=builder --chown=65532:65532 /app/dist ./dist
+COPY --from=builder --chown=65532:65532 /app/src/email-templates ./src/email-templates
+COPY --from=builder --chown=65532:65532 /app/notifications.yml ./notifications.yml
+COPY --from=builder --chown=65532:65532 /app/package.json ./package.json
 
 EXPOSE 4004
-
-CMD ["/bin/sh", "-c", "npm run start:prod"]
+CMD ["dist/main.js"]

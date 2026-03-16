@@ -21,3 +21,11 @@
 **/secrets.dev.yaml
 **/values.dev.yaml
 README.md
+node_modules
+dist
+.git
+.gitignore
+Dockerfile
+.env*
+coverage
+*.log
