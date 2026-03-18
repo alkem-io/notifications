@@ -20,6 +20,7 @@ module.exports = [
       '**/dist**',
       '**/.eslintrc.js',
       'src/migrations',
+      'src/generated/*',
     ],
   },
   ...compat.extends(
