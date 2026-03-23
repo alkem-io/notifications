@@ -36,7 +36,7 @@
     "validate-connection": "ts-node src/utils/validate-connection.ts"
   },
   "dependencies": {
-    "@alkemio/notifications-lib": "0.13.0",
+    "@alkemio/notifications-lib": "0.14.2",
     "@nestjs/cli": "^11.0.7",
     "@nestjs/common": "^11.1.6",
     "@nestjs/config": "^4.0.2",
@@ -48,7 +48,7 @@
     "amqplib": "^0.8.0",
     "apollo-server-express": "^3.13.0",
     "cross-env": "^10.0.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^17.2.1",
     "graphql": "^16.12.0",
     "graphql-request": "^3.7.0",
     "markdown-to-text": "^0.1.1",

@@ -27,6 +27,10 @@ import {
   NotificationEventPayloadUserMessageRoomReply,
   NotificationEventPayloadUserMessageRoom,
   NotificationEventPayloadSpaceCalendarEvent,
+  NotificationEventPayloadSpacePollVoteCastOnOwnPoll,
+  NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
+  NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
+  NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
@@ -399,6 +403,56 @@ export class AppController {
   async sendPlatformSpaceCreatedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadPlatformSpaceCreated,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceCollaborationPollVoteCastOnOwnPoll)
+  async sendSpacePollVoteCastOnOwnPollNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpacePollVoteCastOnOwnPoll,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceCollaborationPollVoteCastOnPollIVotedOn)
+  async sendSpacePollVoteCastOnPollIVotedOnNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceCollaborationPollModifiedOnPollIVotedOn)
+  async sendSpacePollModifiedOnPollIVotedOnNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(
+    NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange
+  )
+  async sendSpacePollVoteAffectedByOptionChangeNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
