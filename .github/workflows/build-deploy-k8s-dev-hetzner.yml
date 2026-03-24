@@ -23,7 +23,7 @@ jobs:
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
 
       - name: Install Kubectl
-        uses: azure/setup-kubectl@v4.0.0
+        uses: azure/setup-kubectl@v4.0.1
         with:
           version: "v1.27.6" # Ensure this matches the version used in your cluster
 
@@ -41,7 +41,7 @@ jobs:
             --docker-password=${{ secrets.REGISTRY_PASSWORD }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - uses: Azure/k8s-deploy@v5.0.0
+      - uses: Azure/k8s-deploy@v5.0.4
         with:
           manifests: |
             service/manifests/25-notifications-deployment-dev.yaml

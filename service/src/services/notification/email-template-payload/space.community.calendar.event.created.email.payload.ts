@@ -17,7 +17,6 @@ export interface SpaceCommunityCalendarEventCreatedEmailPayload
     wholeDay: boolean;
     formattedStartDate: string;
     formattedEndDate: string | null;
-    appleCalendarUrl: string;
     outlookCalendarUrl: string;
     googleCalendarUrl: string;
     icsDownloadUrl: string;
