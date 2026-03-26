@@ -257,7 +257,7 @@ export class NotificationEmailPayloadBuilderService {
     recipient: User
   ): SpaceCommunityCalendarEventCreatedEmailPayload {
     const dateFormatOptions: Intl.DateTimeFormatOptions = {
-      timeZone: 'UTC',
+      timeZone: 'Europe/Amsterdam',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -269,14 +269,14 @@ export class NotificationEmailPayloadBuilderService {
     const startDate = new Date(eventPayload.calendarEvent.startDate);
     const endDate = new Date(eventPayload.calendarEvent.endDate);
 
-    const formattedStartDate = startDate.toLocaleString(
+    const formattedStartDate = `${startDate.toLocaleString(
       'en-GB',
       dateFormatOptions
-    );
+    )} (CET)`;
     const formattedEndDate =
       startDate.getTime() === endDate.getTime()
         ? null
-        : endDate.toLocaleString('en-GB', dateFormatOptions);
+        : `${endDate.toLocaleString('en-GB', dateFormatOptions)} (CET)`;
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       creator: {
