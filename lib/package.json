@@ -21,7 +21,7 @@
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix"
   },
   "dependencies": {
-    "@alkemio/client-lib": "0.35.0"
+    "@alkemio/client-lib": "0.36.0"
   },
   "devDependencies": {
     "@types/node": "^20.19.0",
