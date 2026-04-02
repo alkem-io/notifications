@@ -120,8 +120,11 @@ describe('NotificationEmailPayloadBuilderService', () => {
         );
 
       expect(result.calendarEvent.wholeDay).toBe(false);
-      expect(result.calendarEvent.formattedStartDate).toContain('10:15');
-      expect(result.calendarEvent.formattedEndDate).toContain('11:45');
+      // Times are displayed in CET (Europe/Amsterdam = UTC+1 in winter)
+      expect(result.calendarEvent.formattedStartDate).toContain('11:15');
+      expect(result.calendarEvent.formattedStartDate).toContain('(CET)');
+      expect(result.calendarEvent.formattedEndDate).toContain('12:45');
+      expect(result.calendarEvent.formattedEndDate).toContain('(CET)');
       expect(result.calendarEvent.location).toBe('Room 5');
       expect(result.calendarEvent.googleCalendarUrl).toBe(
         'https://calendar.google.com/event?eid=event-1'
