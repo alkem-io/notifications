@@ -1,7 +1,6 @@
 import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
-export interface CollaborationCalloutPublishedEmailPayload
-  extends BaseSpaceEmailPayload {
+export interface CollaborationCalloutPublishedEmailPayload extends BaseSpaceEmailPayload {
   callout: {
     displayName: string;
     url: string;
