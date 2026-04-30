@@ -1,7 +1,6 @@
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface PlatformForumDiscussionCreatedEmailPayload
-  extends BaseEmailPayload {
+export interface PlatformForumDiscussionCreatedEmailPayload extends BaseEmailPayload {
   createdBy: {
     firstName: string;
   };

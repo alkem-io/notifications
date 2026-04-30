@@ -1,7 +1,6 @@
 import { BaseEmailPayload } from './base.email.payload';
 
-export interface CommunicationOrganizationMentionEmailPayload
-  extends BaseEmailPayload {
+export interface CommunicationOrganizationMentionEmailPayload extends BaseEmailPayload {
   commentSender: {
     displayName: string;
     firstName: string;

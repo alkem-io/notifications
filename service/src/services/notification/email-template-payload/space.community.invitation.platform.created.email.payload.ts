@@ -1,7 +1,6 @@
 import { BaseSpaceEmailPayload } from './base.space.email.payload';
 
-export interface SpaceCommunityInvitationPlatformCreatedEmailPayload
-  extends BaseSpaceEmailPayload {
+export interface SpaceCommunityInvitationPlatformCreatedEmailPayload extends BaseSpaceEmailPayload {
   inviter: {
     name: string;
     firstName: string;
