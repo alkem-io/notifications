@@ -33,6 +33,9 @@ import {
   BaseSpaceEmailPayload,
   PollVoteCastEmailPayload,
   PollModifiedEmailPayload,
+  UserEmailChangeSecuritySignalEmailPayload,
+  UserEmailChangeNewAddressEmailPayload,
+  PlatformAdminUserEmailChangeEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -60,6 +63,9 @@ import {
   NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
   BaseEventPayload,
   NotificationEventPayloadSpace,
+  NotificationEventPayloadUserEmailChangeSecuritySignal,
+  NotificationEventPayloadUserEmailChangeNewAddress,
+  NotificationEventPayloadUserEmailChangeGlobalAdmin,
 } from '@alkemio/notifications-lib';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
@@ -339,6 +345,59 @@ export class NotificationEmailPayloadBuilderService {
       role: eventPayload.role,
       type: eventPayload.type,
       triggeredBy: eventPayload.triggeredBy.id,
+    };
+  }
+
+  public createEmailTemplatePayloadUserEmailChangeSecuritySignal(
+    eventPayload: NotificationEventPayloadUserEmailChangeSecuritySignal &
+      BaseEventPayload,
+    recipient: User
+  ): UserEmailChangeSecuritySignalEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      changedAt: this.formatChangeTimestampUTC(
+        eventPayload.commitTimestampISO8601
+      ),
+      initiatorRole: eventPayload.initiatorRole,
+      newEmailMasked: eventPayload.newEmailMasked,
+    };
+  }
+
+  public createEmailTemplatePayloadUserEmailChangeNewAddress(
+    eventPayload: NotificationEventPayloadUserEmailChangeNewAddress &
+      BaseEventPayload,
+    recipient: User
+  ): UserEmailChangeNewAddressEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      changedAt: this.formatChangeTimestampUTC(
+        eventPayload.commitTimestampISO8601
+      ),
+      initiatorRole: eventPayload.initiatorRole,
+      newEmailFull: eventPayload.newEmailFull,
+      loginUrl: eventPayload.loginUrl,
+    };
+  }
+
+  public createEmailTemplatePayloadPlatformAdminUserEmailChange(
+    eventPayload: NotificationEventPayloadUserEmailChangeGlobalAdmin,
+    recipient: User
+  ): PlatformAdminUserEmailChangeEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      subjectName: eventPayload.subjectProfileSummary.displayName,
+      // Self-initiated changes omit initiatorProfileSummary — fall back to the
+      // subject's own profile for the initiator display (FR-019).
+      initiatorName:
+        eventPayload.initiatorProfileSummary?.displayName ??
+        eventPayload.subjectProfileSummary.displayName,
+      isSelfInitiated: eventPayload.initiatorRole === 'self',
+      oldEmail: eventPayload.oldEmail,
+      newEmail: eventPayload.newEmail,
+      changedAt: this.formatChangeTimestampUTC(
+        eventPayload.commitTimestampISO8601
+      ),
+      triggerOutcome: eventPayload.triggerOutcome,
     };
   }
 
@@ -834,5 +893,28 @@ export class NotificationEmailPayloadBuilderService {
     return !framingType || framingType.toLowerCase() === 'none'
       ? 'Post'
       : framingType;
+  }
+
+  /**
+   * Formats an ISO 8601 instant as a human-readable UTC string with an
+   * explicit "UTC" label, e.g. "20 May 2026, 14:32 UTC" (FR-018). Date and
+   * time are formatted separately so the separator is a comma — en-GB's
+   * combined format uses " at ", which the spec example does not.
+   */
+  private formatChangeTimestampUTC(isoTimestamp: string): string {
+    const date = new Date(isoTimestamp);
+    const datePart = date.toLocaleDateString('en-GB', {
+      timeZone: 'UTC',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    const timePart = date.toLocaleTimeString('en-GB', {
+      timeZone: 'UTC',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+    return `${datePart}, ${timePart} UTC`;
   }
 }

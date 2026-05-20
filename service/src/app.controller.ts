@@ -31,6 +31,9 @@ import {
   NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
   NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
   NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
+  NotificationEventPayloadUserEmailChangeSecuritySignal,
+  NotificationEventPayloadUserEmailChangeNewAddress,
+  NotificationEventPayloadUserEmailChangeGlobalAdmin,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
@@ -453,6 +456,48 @@ export class AppController {
   async sendSpacePollVoteAffectedByOptionChangeNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserEmailChangeSecuritySignal)
+  async sendUserEmailChangeSecuritySignalNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserEmailChangeSecuritySignal,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      this.notificationService.normalizeRawEmailChangeEvent(
+        eventPayload,
+        NotificationEvent.UserEmailChangeSecuritySignal
+      ),
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserEmailChangeNewAddressNotification)
+  async sendUserEmailChangeNewAddressNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserEmailChangeNewAddress,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      this.notificationService.normalizeRawEmailChangeEvent(
+        eventPayload,
+        NotificationEvent.UserEmailChangeNewAddressNotification
+      ),
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserEmailChangeGlobalAdminNotification)
+  async sendUserEmailChangeGlobalAdminNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserEmailChangeGlobalAdmin,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
