@@ -36,6 +36,7 @@ import {
   UserEmailChangeSecuritySignalEmailPayload,
   UserEmailChangeNewAddressEmailPayload,
   PlatformAdminUserEmailChangeEmailPayload,
+  SpaceAdminUserEmailChangeEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -66,6 +67,7 @@ import {
   NotificationEventPayloadUserEmailChangeSecuritySignal,
   NotificationEventPayloadUserEmailChangeNewAddress,
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
+  NotificationEventPayloadUserEmailChangeSpaceAdmin,
 } from '@alkemio/notifications-lib';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
@@ -398,6 +400,27 @@ export class NotificationEmailPayloadBuilderService {
         eventPayload.commitTimestampISO8601
       ),
       triggerOutcome: eventPayload.triggerOutcome,
+    };
+  }
+
+  public createEmailTemplatePayloadSpaceAdminUserEmailChange(
+    eventPayload: NotificationEventPayloadUserEmailChangeSpaceAdmin,
+    recipient: User
+  ): SpaceAdminUserEmailChangeEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      subjectName: eventPayload.subjectProfileSummary.displayName,
+      // Self-initiated changes omit initiatorProfileSummary — fall back to the
+      // subject's own profile for the initiator display (FR-006).
+      initiatorName:
+        eventPayload.initiatorProfileSummary?.displayName ??
+        eventPayload.subjectProfileSummary.displayName,
+      isSelfInitiated: eventPayload.initiatorRole === 'self',
+      oldEmail: eventPayload.oldEmail,
+      newEmail: eventPayload.newEmail,
+      changedAt: this.formatChangeTimestampUTC(
+        eventPayload.commitTimestampISO8601
+      ),
     };
   }
 

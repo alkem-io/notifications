@@ -34,6 +34,7 @@ import {
   NotificationEventPayloadUserEmailChangeSecuritySignal,
   NotificationEventPayloadUserEmailChangeNewAddress,
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
+  NotificationEventPayloadUserEmailChangeSpaceAdmin,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -496,6 +497,11 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadUserEmailChangeGlobalAdmin,
           recipient
         );
+      case NotificationEvent.UserEmailChangeSpaceAdminNotification:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceAdminUserEmailChange(
+          eventPayload as NotificationEventPayloadUserEmailChangeSpaceAdmin,
+          recipient
+        );
       default:
         throw new EventPayloadNotProvidedException(
           `EmailPayload: Unable to recognize event:  ${eventPayload.eventType}`,
@@ -582,6 +588,8 @@ export class NotificationService {
         return 'user.email.change.new.address';
       case NotificationEvent.UserEmailChangeGlobalAdminNotification.valueOf():
         return 'platform.admin.user.email.change';
+      case NotificationEvent.UserEmailChangeSpaceAdminNotification.valueOf():
+        return 'space.admin.user.email.change';
       default:
         throw new EventPayloadNotProvidedException(
           `Email template: Unable to recognize event: ${event}`,
