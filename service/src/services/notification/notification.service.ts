@@ -141,7 +141,7 @@ export class NotificationService {
     rawPayload: { recipientEmail: string },
     eventType: NotificationEvent
   ): BaseEventPayload {
-    const recipientEmail = rawPayload.recipientEmail?.trim();
+    const recipientEmail = rawPayload?.recipientEmail?.trim();
     if (!recipientEmail) {
       throw new EventPayloadNotProvidedException(
         `recipientEmail missing for event: ${eventType}`,
