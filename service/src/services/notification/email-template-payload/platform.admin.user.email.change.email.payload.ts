@@ -10,4 +10,9 @@ export interface PlatformAdminUserEmailChangeEmailPayload extends BaseEmailPaylo
   newEmail: string;
   changedAt: string;
   triggerOutcome: 'COMMITTED' | 'DRIFT_DETECTED';
+  // Who authorized the change within the subject's organization. Absent for
+  // self-service changes.
+  approver?: { name: string; role: string; organization?: string };
+  // Admin-supplied justification for the change. Absent for self-service changes.
+  reason?: string;
 }

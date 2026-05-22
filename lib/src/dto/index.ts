@@ -11,9 +11,9 @@ export * from './platform/notification.event.payload.platform.user.removed';
 export * from './platform/notification.event.payload.invite.user.platform';
 export * from './platform/notification.event.payload.platform.forum.discussion';
 export * from './platform/notification.event.payload.platform.space.created';
-export * from './email-change/notification.event.payload.user.email.change.security.signal';
-export * from './email-change/notification.event.payload.user.email.change.new.address';
-export * from './email-change/notification.event.payload.user.email.change.global.admin';
-export * from './email-change/notification.event.payload.user.email.change.space.admin';
+export * from './user/notification.event.payload.user.email.change.security.signal';
+export * from './user/notification.event.payload.user.email.change.new.address';
+export * from './user/notification.event.payload.user.email.change.global.admin';
+export * from './user/notification.event.payload.user.email.change.space.admin';
 export * from './space';
 

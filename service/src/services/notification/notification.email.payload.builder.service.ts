@@ -400,6 +400,8 @@ export class NotificationEmailPayloadBuilderService {
         eventPayload.commitTimestampISO8601
       ),
       triggerOutcome: eventPayload.triggerOutcome,
+      approver: eventPayload.approver,
+      reason: eventPayload.reason,
     };
   }
 
@@ -926,6 +928,9 @@ export class NotificationEmailPayloadBuilderService {
    */
   private formatChangeTimestampUTC(isoTimestamp: string): string {
     const date = new Date(isoTimestamp);
+    if (Number.isNaN(date.getTime())) {
+      return isoTimestamp;
+    }
     const datePart = date.toLocaleDateString('en-GB', {
       timeZone: 'UTC',
       day: 'numeric',

@@ -34,7 +34,7 @@ Two-package monorepo (plan.md "Project Structure"):
 
 **Purpose**: Project scaffolding for the feature.
 
-- [X] T001 [P] Create the new directory `lib/src/dto/email-change/` — the home for the three email-change wire payload DTOs added in T005, T015, and T024 (plan.md "Project Structure").
+- [X] T001 [P] Confirm the existing `lib/src/dto/user/` directory — the home for the three email-change wire payload DTOs added in T005, T015, and T024 (plan.md "Project Structure"). No new directory is created; the DTOs are grouped with the other `user/` payload types.
 - [X] T002 [P] Establish the no-regression baseline: run `npm run build` in `lib/`, then `npm run build` and `npm test` in `service/`, and confirm all succeed on a clean `004-email-change-notifications` checkout before any changes (baseline evidence for FR-015 / SC-007).
 
 ---
@@ -67,8 +67,8 @@ and no "unsupported event" log line.
 
 ### Implementation for User Story 1
 
-- [X] T005 [P] [US1] Create the wire payload type `NotificationEventPayloadUserEmailChangeSecuritySignal` in `lib/src/dto/email-change/notification.event.payload.user.email.change.security.signal.ts` — fields `recipientEmail: string`, `commitTimestampISO8601: string`, `initiatorRole: 'self' | 'platform_admin'`, `newEmailMasked: string` (data-model.md §1.1). This is a RAW payload — it MUST NOT extend `BaseEventPayload` (research.md §R2).
-- [X] T006 [US1] Export the new type from `lib/src/dto/index.ts` (add `export * from './email-change/notification.event.payload.user.email.change.security.signal';`). Depends on T005.
+- [X] T005 [P] [US1] Create the wire payload type `NotificationEventPayloadUserEmailChangeSecuritySignal` in `lib/src/dto/user/notification.event.payload.user.email.change.security.signal.ts` — fields `recipientEmail: string`, `commitTimestampISO8601: string`, `initiatorRole: 'self' | 'platform_admin'`, `newEmailMasked: string` (data-model.md §1.1). This is a RAW payload — it MUST NOT extend `BaseEventPayload` (research.md §R2).
+- [X] T006 [US1] Export the new type from `lib/src/dto/index.ts` (add `export * from './user/notification.event.payload.user.email.change.security.signal';`). Depends on T005.
 - [X] T007 [P] [US1] Create the email-template payload interface `UserEmailChangeSecuritySignalEmailPayload` extending `BaseEmailPayload` in `service/src/services/notification/email-template-payload/user.email.change.security.signal.email.payload.ts` — fields `changedAt: string`, `initiatorRole: 'self' | 'platform_admin'`, `newEmailMasked: string` (data-model.md §4.1). It MUST NOT carry the full new address (FR-006).
 - [X] T008 [US1] Export `UserEmailChangeSecuritySignalEmailPayload` from `service/src/services/notification/email-template-payload/index.ts`. Depends on T007.
 - [X] T009 [US1] Add builder method `createEmailTemplatePayloadUserEmailChangeSecuritySignal(eventPayload, recipient)` to `service/src/services/notification/notification.email.payload.builder.service.ts` — format `commitTimestampISO8601` into `changedAt` as UTC with an explicit "UTC" label (e.g. `20 May 2026, 14:32 UTC`, via `toLocaleString('en-GB', { timeZone: 'UTC', ... })` — research.md §R9, FR-018); pass `initiatorRole` and `newEmailMasked` through verbatim; never emit the full new address (FR-006). Depends on T005, T007.
@@ -95,7 +95,7 @@ change time, the initiator context, and a working login link.
 
 ### Implementation for User Story 2
 
-- [X] T015 [P] [US2] Create the wire payload type `NotificationEventPayloadUserEmailChangeNewAddress` in `lib/src/dto/email-change/notification.event.payload.user.email.change.new.address.ts` — fields `recipientEmail: string`, `commitTimestampISO8601: string`, `initiatorRole: 'self' | 'platform_admin'`, `newEmailFull: string`, `loginUrl: string` (data-model.md §1.2). RAW payload — it MUST NOT extend `BaseEventPayload`.
+- [X] T015 [P] [US2] Create the wire payload type `NotificationEventPayloadUserEmailChangeNewAddress` in `lib/src/dto/user/notification.event.payload.user.email.change.new.address.ts` — fields `recipientEmail: string`, `commitTimestampISO8601: string`, `initiatorRole: 'self' | 'platform_admin'`, `newEmailFull: string`, `loginUrl: string` (data-model.md §1.2). RAW payload — it MUST NOT extend `BaseEventPayload`.
 - [X] T016 [US2] Export the new type from `lib/src/dto/index.ts`. Depends on T015.
 - [X] T017 [P] [US2] Create the email-template payload interface `UserEmailChangeNewAddressEmailPayload` extending `BaseEmailPayload` in `service/src/services/notification/email-template-payload/user.email.change.new.address.email.payload.ts` — fields `changedAt: string`, `initiatorRole: 'self' | 'platform_admin'`, `newEmailFull: string`, `loginUrl: string` (data-model.md §4.2).
 - [X] T018 [US2] Export `UserEmailChangeNewAddressEmailPayload` from `service/src/services/notification/email-template-payload/index.ts`. Depends on T017.
@@ -124,7 +124,7 @@ confirm the reconciliation-required variant renders.
 
 ### Implementation for User Story 3
 
-- [X] T024 [P] [US3] Create the wire payload type `NotificationEventPayloadUserEmailChangeGlobalAdmin` **extending `BaseEventPayload`** in `lib/src/dto/email-change/notification.event.payload.user.email.change.global.admin.ts` — event-specific fields `subjectProfileSummary: { id: string; displayName: string }`, `oldEmail: string`, `newEmail: string`, `initiatorProfileSummary?: { id: string; displayName: string }`, `initiatorRole: 'self' | 'platform_admin'`, `commitTimestampISO8601: string`, `triggerOutcome: 'COMMITTED' | 'DRIFT_DETECTED'`, optional `subjectMemberships` and `subjectGlobalRoles` (data-model.md §1.3). It carries the full `BaseEventPayload` envelope — `eventType`, `triggeredBy`, `recipients`, `platform` (research.md §R2).
+- [X] T024 [P] [US3] Create the wire payload type `NotificationEventPayloadUserEmailChangeGlobalAdmin` **extending `BaseEventPayload`** in `lib/src/dto/user/notification.event.payload.user.email.change.global.admin.ts` — event-specific fields `subjectProfileSummary: { id: string; displayName: string }`, `oldEmail: string`, `newEmail: string`, `initiatorProfileSummary?: { id: string; displayName: string }`, `initiatorRole: 'self' | 'platform_admin'`, `commitTimestampISO8601: string`, `triggerOutcome: 'COMMITTED' | 'DRIFT_DETECTED'`, optional `subjectMemberships` and `subjectGlobalRoles` (data-model.md §1.3). It carries the full `BaseEventPayload` envelope — `eventType`, `triggeredBy`, `recipients`, `platform` (research.md §R2).
 - [X] T025 [US3] Export the new type from `lib/src/dto/index.ts`. Depends on T024.
 - [X] T026 [P] [US3] Create the email-template payload interface `PlatformAdminUserEmailChangeEmailPayload` extending `BaseEmailPayload` in `service/src/services/notification/email-template-payload/platform.admin.user.email.change.email.payload.ts` — fields `subjectName: string`, `initiatorName: string`, `isSelfInitiated: boolean`, `oldEmail: string`, `newEmail: string`, `changedAt: string`, `triggerOutcome: 'COMMITTED' | 'DRIFT_DETECTED'` (data-model.md §4.3).
 - [X] T027 [US3] Export `PlatformAdminUserEmailChangeEmailPayload` from `service/src/services/notification/email-template-payload/index.ts`. Depends on T026.
@@ -211,7 +211,7 @@ lines), but the edits land in the same file and must be merged/serialized:
 
 ```bash
 # After Foundational (T003, T004), launch US1's independent file-creation tasks together:
-Task: "T005 Create wire payload type in lib/src/dto/email-change/notification.event.payload.user.email.change.security.signal.ts"
+Task: "T005 Create wire payload type in lib/src/dto/user/notification.event.payload.user.email.change.security.signal.ts"
 Task: "T007 Create email-template payload in service/src/services/notification/email-template-payload/user.email.change.security.signal.email.payload.ts"
 Task: "T010 Create Nunjucks template in service/src/email-templates/user.email.change.security.signal.js"
 Task: "T011 Add the raw-payload normalization helper in service/src/services/notification/notification.service.ts"
@@ -224,7 +224,7 @@ Task: "T011 Add the raw-payload normalization helper in service/src/services/not
 
 ```bash
 # US3 has no normalization step — three independent new files start together:
-Task: "T024 Create wire payload type in lib/src/dto/email-change/notification.event.payload.user.email.change.global.admin.ts"
+Task: "T024 Create wire payload type in lib/src/dto/user/notification.event.payload.user.email.change.global.admin.ts"
 Task: "T026 Create email-template payload in service/src/services/notification/email-template-payload/platform.admin.user.email.change.email.payload.ts"
 Task: "T029 Create Nunjucks template in service/src/email-templates/platform.admin.user.email.change.js"
 ```

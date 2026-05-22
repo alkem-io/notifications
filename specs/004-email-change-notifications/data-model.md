@@ -16,7 +16,7 @@ All three events are email-only in this release (FR-016).
 
 ## 1. Wire payloads — `@alkemio/notifications-lib`
 
-New types under `lib/src/dto/email-change/`, exported from `lib/src/dto/index.ts`.
+New types under `lib/src/dto/user/`, exported from `lib/src/dto/index.ts`.
 Naming follows the existing `notification.event.payload.*.ts` convention.
 
 ### 1.1 `NotificationEventPayloadUserEmailChangeSecuritySignal`

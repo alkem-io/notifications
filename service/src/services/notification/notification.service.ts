@@ -141,12 +141,20 @@ export class NotificationService {
     rawPayload: { recipientEmail: string },
     eventType: NotificationEvent
   ): BaseEventPayload {
+    const recipientEmail = rawPayload.recipientEmail?.trim();
+    if (!recipientEmail) {
+      throw new EventPayloadNotProvidedException(
+        `recipientEmail missing for event: ${eventType}`,
+        LogContext.NOTIFICATIONS
+      );
+    }
+
     const webclientEndpoint =
       this.configService.get(ConfigurationTypes.ALKEMIO)?.webclient_endpoint ??
       '';
 
     const syntheticRecipient = {
-      email: rawPayload.recipientEmail,
+      email: recipientEmail,
       firstName: '',
       lastName: '',
       profile: { displayName: '', url: '' },

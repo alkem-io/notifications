@@ -79,7 +79,7 @@ specs/004-email-change-notifications/
 
 ```text
 lib/                                                 # @alkemio/notifications-lib
-├── src/dto/email-change/                                            # NEW directory
+├── src/dto/user/                                                    # existing dir — 3 NEW files
 │   ├── notification.event.payload.user.email.change.security.signal.ts   # NEW
 │   ├── notification.event.payload.user.email.change.new.address.ts       # NEW
 │   └── notification.event.payload.user.email.change.global.admin.ts      # NEW
@@ -107,8 +107,8 @@ service/                                             # alkemio-notifications
 **Structure Decision**: No new structure. The feature extends the existing
 two-package monorepo along its established conventions — payload DTOs in
 `lib/src/dto/<domain>/`, email-template payloads + templates + switch cases in
-`service/`. A new `lib/src/dto/email-change/` subfolder groups the three payload
-types (per PRD FR-N1). The events-1&2 normalization (research.md §R5) lives at
+`service/`. The three payload types live in the existing `lib/src/dto/user/`
+folder. The events-1&2 normalization (research.md §R5) lives at
 the `@EventPattern` handler edge so the generic `buildAndSendEmailNotifications`
 engine is untouched — protecting the no-regression requirement (FR-015).
 

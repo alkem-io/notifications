@@ -17,8 +17,10 @@ module.exports = () => ({
         Previous email: {{oldEmail}}<br>
         New email: {{newEmail}}<br>
         Changed on: {{changedAt}}<br>
-        Initiated by: {{initiatorName}}{% if isSelfInitiated %} (the user themselves){% endif %}
-        <br><br>
+        Initiated by: {{initiatorName}}{% if isSelfInitiated %} (the user themselves){% endif %}<br>
+        {% if approver %}Authorized by: {{approver.name}} ({{approver.role}}{% if approver.organization %}, {{approver.organization}}{% endif %})<br>{% endif %}
+        {% if reason %}Reason: {{reason}}<br>{% endif %}
+        <br>
         {% endblock %}
         ${templates.footerBlock}`,
     },
