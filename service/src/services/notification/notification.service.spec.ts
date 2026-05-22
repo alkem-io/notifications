@@ -10,6 +10,7 @@ import {
 } from '@test/mocks';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
+  NotificationEventPayloadUserEmailChangeSpaceAdmin,
   BaseEventPayload,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
@@ -584,6 +585,82 @@ describe('NotificationService', () => {
         false,
         false
       );
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // createEmailTemplatePayloadSpaceAdminUserEmailChange — builder unit coverage
+  // -------------------------------------------------------------------------
+
+  describe('createEmailTemplatePayloadSpaceAdminUserEmailChange', () => {
+    // The event-routing / processNotificationEvent suites spy on every builder
+    // method; restore originals so this suite exercises the real builder.
+    beforeEach(() => jest.restoreAllMocks());
+
+    const mkSpaceAdminEvent = (
+      overrides: Partial<NotificationEventPayloadUserEmailChangeSpaceAdmin> = {}
+    ): NotificationEventPayloadUserEmailChangeSpaceAdmin =>
+      ({
+        ...MINIMAL_BASE,
+        eventType: NotificationEvent.UserEmailChangeSpaceAdminNotification,
+        space: {
+          id: 's-1',
+          level: '0',
+          profile: {
+            displayName: 'Climate Space',
+            url: 'https://alkemio.dev/climate',
+          },
+          adminURL: 'https://alkemio.dev/climate/settings',
+        },
+        subjectProfileSummary: { id: 'u-subj', displayName: 'Sam Subject' },
+        oldEmail: 'old.address@example.com',
+        newEmail: 'new.address@example.com',
+        initiatorProfileSummary: { id: 'u-init', displayName: 'Ada Admin' },
+        initiatorRole: 'platform_admin',
+        commitTimestampISO8601: '2026-05-20T14:32:00.000Z',
+        triggerOutcome: 'COMMITTED',
+        ...overrides,
+      }) as NotificationEventPayloadUserEmailChangeSpaceAdmin;
+
+    const build = (
+      overrides?: Partial<NotificationEventPayloadUserEmailChangeSpaceAdmin>
+    ) =>
+      builderService.createEmailTemplatePayloadSpaceAdminUserEmailChange(
+        mkSpaceAdminEvent(overrides),
+        MINIMAL_RECIPIENT as any
+      );
+
+    it('passes the full old and new email addresses through unchanged', () => {
+      const payload = build();
+      expect(payload.oldEmail).toBe('old.address@example.com');
+      expect(payload.newEmail).toBe('new.address@example.com');
+    });
+
+    it('names the subject and the space the event concerns', () => {
+      const payload = build();
+      expect(payload.subjectName).toBe('Sam Subject');
+      expect(payload.space.displayName).toBe('Climate Space');
+      expect(payload.space.type).toBe('space');
+    });
+
+    it('uses the initiator display name and isSelfInitiated=false for an admin-initiated change', () => {
+      const payload = build();
+      expect(payload.isSelfInitiated).toBe(false);
+      expect(payload.initiatorName).toBe('Ada Admin');
+    });
+
+    it('falls back initiatorName to the subject and sets isSelfInitiated=true when self-initiated', () => {
+      const payload = build({
+        initiatorRole: 'self',
+        initiatorProfileSummary: undefined,
+      });
+      expect(payload.isSelfInitiated).toBe(true);
+      expect(payload.initiatorName).toBe('Sam Subject');
+    });
+
+    it('renders changedAt in UTC with an explicit UTC label', () => {
+      const payload = build();
+      expect(payload.changedAt).toBe('20 May 2026, 14:32 UTC');
     });
   });
 });

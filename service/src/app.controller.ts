@@ -34,6 +34,7 @@ import {
   NotificationEventPayloadUserEmailChangeSecuritySignal,
   NotificationEventPayloadUserEmailChangeNewAddress,
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
+  NotificationEventPayloadUserEmailChangeSpaceAdmin,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
@@ -498,6 +499,18 @@ export class AppController {
   async sendUserEmailChangeGlobalAdminNotification(
     @Payload()
     eventPayload: NotificationEventPayloadUserEmailChangeGlobalAdmin,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserEmailChangeSpaceAdminNotification)
+  async sendUserEmailChangeSpaceAdminNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserEmailChangeSpaceAdmin,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
