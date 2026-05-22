@@ -1,4 +1,4 @@
-# Builds and publishes multi-architecture Docker images to Docker Hub.
+# Builds and publishes the linux/amd64 Docker image to Docker Hub.
 # Triggered only on GitHub releases (not PRs or pushes), so push/login
 # operations are always safe to execute unconditionally.
 name: Deploy to DockerHub
@@ -30,9 +30,6 @@ jobs:
             type=raw,value=latest,enable=${{ github.event.release.prerelease == false }}
             type=sha,prefix=sha-
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.7.0
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.12.0
 
@@ -47,7 +44,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
