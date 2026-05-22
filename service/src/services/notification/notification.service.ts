@@ -31,6 +31,10 @@ import {
   NotificationEventPayloadSpacePollVoteCastOnPollIVotedOn,
   NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
   NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
+  NotificationEventPayloadUserEmailChangeSecuritySignal,
+  NotificationEventPayloadUserEmailChangeNewAddress,
+  NotificationEventPayloadUserEmailChangeGlobalAdmin,
+  NotificationEventPayloadUserEmailChangeSpaceAdmin,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -121,6 +125,55 @@ export class NotificationService {
       channel.nack(originalMsg, false, false);
       this.logger.error(err);
     }
+  }
+
+  /**
+   * Events 1 & 2 (USER_EMAIL_CHANGE_SECURITY_SIGNAL /
+   * USER_EMAIL_CHANGE_NEW_ADDRESS_NOTIFICATION) are published raw — without the
+   * BaseEventPayload envelope. This injects the envelope so the raw payload
+   * flows through the standard processNotificationEvent pipeline unchanged
+   * (research.md §R5): sets eventType, derives platform.url from config, adds a
+   * minimal triggeredBy stub, and synthesizes a single recipient from
+   * recipientEmail. The synthetic recipient deliberately omits `id` so the
+   * builder's notification-preferences URL resolves to '' (research.md §R8).
+   */
+  public normalizeRawEmailChangeEvent(
+    rawPayload: { recipientEmail: string },
+    eventType: NotificationEvent
+  ): BaseEventPayload {
+    const recipientEmail = rawPayload?.recipientEmail?.trim();
+    if (!recipientEmail) {
+      throw new EventPayloadNotProvidedException(
+        `recipientEmail missing for event: ${eventType}`,
+        LogContext.NOTIFICATIONS
+      );
+    }
+
+    const webclientEndpoint =
+      this.configService.get(ConfigurationTypes.ALKEMIO)?.webclient_endpoint ??
+      '';
+
+    const syntheticRecipient = {
+      email: recipientEmail,
+      firstName: '',
+      lastName: '',
+      profile: { displayName: '', url: '' },
+    } as BaseEventPayload['recipients'][number];
+
+    return {
+      ...rawPayload,
+      eventType,
+      triggeredBy: {
+        id: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        type: 'USER',
+        profile: { displayName: '', url: '' },
+      },
+      recipients: [syntheticRecipient],
+      platform: { url: webclientEndpoint },
+    };
   }
 
   public async buildAndSendEmailNotifications(
@@ -435,6 +488,28 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
           recipient
         );
+      case NotificationEvent.UserEmailChangeSecuritySignal:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserEmailChangeSecuritySignal(
+          eventPayload as NotificationEventPayloadUserEmailChangeSecuritySignal &
+            BaseEventPayload,
+          recipient
+        );
+      case NotificationEvent.UserEmailChangeNewAddressNotification:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserEmailChangeNewAddress(
+          eventPayload as NotificationEventPayloadUserEmailChangeNewAddress &
+            BaseEventPayload,
+          recipient
+        );
+      case NotificationEvent.UserEmailChangeGlobalAdminNotification:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadPlatformAdminUserEmailChange(
+          eventPayload as NotificationEventPayloadUserEmailChangeGlobalAdmin,
+          recipient
+        );
+      case NotificationEvent.UserEmailChangeSpaceAdminNotification:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceAdminUserEmailChange(
+          eventPayload as NotificationEventPayloadUserEmailChangeSpaceAdmin,
+          recipient
+        );
       default:
         throw new EventPayloadNotProvidedException(
           `EmailPayload: Unable to recognize event:  ${eventPayload.eventType}`,
@@ -515,6 +590,14 @@ export class NotificationService {
         return 'space.collaboration.poll.modified.on.poll.i.voted.on';
       case NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange.valueOf():
         return 'space.collaboration.poll.vote.affected.by.option.change';
+      case NotificationEvent.UserEmailChangeSecuritySignal.valueOf():
+        return 'user.email.change.security.signal';
+      case NotificationEvent.UserEmailChangeNewAddressNotification.valueOf():
+        return 'user.email.change.new.address';
+      case NotificationEvent.UserEmailChangeGlobalAdminNotification.valueOf():
+        return 'platform.admin.user.email.change';
+      case NotificationEvent.UserEmailChangeSpaceAdminNotification.valueOf():
+        return 'space.admin.user.email.change';
       default:
         throw new EventPayloadNotProvidedException(
           `Email template: Unable to recognize event: ${event}`,
