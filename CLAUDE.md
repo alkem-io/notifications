@@ -80,3 +80,10 @@ Both `lib/src/dto/` (event payloads) and `service/src/services/notification/emai
 1. `npm run start:services` (starts mailslurper)
 2. Publish test message to RabbitMQ at http://localhost:15672/#/queues/%2F/alkemio-notifications
 3. Check emails at http://localhost:5051/mail
+
+## Active Technologies
+- TypeScript 5.9 (`service/`), TypeScript 5.8 (`lib/`); Node.js 22.x (service, Volta-pinned 22.16.0), Node.js 20.x (lib) + NestJS 11, `@nestjs/microservices` (RabbitMQ / amqplib), notifme-sdk, Nunjucks, `@alkemio/notifications-lib` (004-email-change-notifications)
+- N/A — the service is a stateless RabbitMQ consumer; no persistence (004-email-change-notifications)
+
+## Recent Changes
+- 004-email-change-notifications: Added TypeScript 5.9 (`service/`), TypeScript 5.8 (`lib/`); Node.js 22.x (service, Volta-pinned 22.16.0), Node.js 20.x (lib) + NestJS 11, `@nestjs/microservices` (RabbitMQ / amqplib), notifme-sdk, Nunjucks, `@alkemio/notifications-lib`
