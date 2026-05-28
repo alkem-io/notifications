@@ -37,6 +37,7 @@ import {
   UserEmailChangeNewAddressEmailPayload,
   PlatformAdminUserEmailChangeEmailPayload,
   SpaceAdminUserEmailChangeEmailPayload,
+  UserPasswordChangeSecuritySignalEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -68,6 +69,7 @@ import {
   NotificationEventPayloadUserEmailChangeNewAddress,
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
+  NotificationEventPayloadUserPasswordChangeSecuritySignal,
 } from '@alkemio/notifications-lib';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
@@ -362,6 +364,17 @@ export class NotificationEmailPayloadBuilderService {
       ),
       initiatorRole: eventPayload.initiatorRole,
       newEmailMasked: eventPayload.newEmailMasked,
+    };
+  }
+
+  public createEmailTemplatePayloadUserPasswordChangeSecuritySignal(
+    eventPayload: NotificationEventPayloadUserPasswordChangeSecuritySignal &
+      BaseEventPayload,
+    recipient: User
+  ): UserPasswordChangeSecuritySignalEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      changedAt: this.formatChangeTimestampUTC(eventPayload.observedAtISO8601),
     };
   }
 

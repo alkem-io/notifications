@@ -1,0 +1,64 @@
+# Local-dev Dockerfile. Identical to ./Dockerfile except it bundles the local
+# @alkemio/notifications-lib tarball produced by `npm pack` so the image can
+# be built before the lib is published to npm.
+#
+# Usage (build context MUST be this repository root, not service/):
+#   cd /home/vyanakiev/source/alkemio/notifications
+#   docker build -f Dockerfile.local -t alkemio/notifications:local-pwc .
+
+# ======================
+# Builder stage (with dev deps)
+# ======================
+FROM node:22.16.0-bookworm AS builder
+
+WORKDIR /app
+
+COPY service/package*.json ./
+COPY lib/alkemio-notifications-lib-0.17.0.tgz /tmp/notifications-lib.tgz
+
+# Lib 0.17.0 is not on the registry yet — rewrite the package.json dep to
+# point at the locally-packed tarball before installing, then drop the stale
+# lockfile so npm regenerates one consistent with the file: ref.
+RUN sed -i 's|"@alkemio/notifications-lib": ".*"|"@alkemio/notifications-lib": "file:/tmp/notifications-lib.tgz"|' package.json \
+  && rm -f package-lock.json \
+  && npm install --no-audit --no-fund
+
+COPY service/tsconfig*.json ./
+COPY service/src ./src
+COPY service/notifications.yml .
+
+RUN npm run build
+
+
+# ======================
+# Prod deps stage (NO dev deps)
+# ======================
+FROM node:22.16.0-bookworm AS prod-deps
+
+WORKDIR /app
+
+COPY service/package*.json ./
+COPY lib/alkemio-notifications-lib-0.17.0.tgz /tmp/notifications-lib.tgz
+
+RUN sed -i 's|"@alkemio/notifications-lib": ".*"|"@alkemio/notifications-lib": "file:/tmp/notifications-lib.tgz"|' package.json \
+  && rm -f package-lock.json \
+  && npm install --omit=dev --no-audit --no-fund \
+  && npm cache clean --force
+
+
+# ======================
+# Runtime stage (distroless)
+# ======================
+FROM gcr.io/distroless/nodejs22-debian12:nonroot
+
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=prod-deps --chown=65532:65532 /app/node_modules ./node_modules
+COPY --from=builder --chown=65532:65532 /app/dist ./dist
+COPY --from=builder --chown=65532:65532 /app/src/email-templates ./src/email-templates
+COPY --from=builder --chown=65532:65532 /app/notifications.yml ./notifications.yml
+COPY --from=builder --chown=65532:65532 /app/package.json ./package.json
+
+EXPOSE 4004
+CMD ["dist/main.js"]

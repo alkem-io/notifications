@@ -32,6 +32,7 @@ import {
   NotificationEventPayloadSpacePollModifiedOnPollIVotedOn,
   NotificationEventPayloadSpacePollVoteAffectedByOptionChange,
   NotificationEventPayloadUserEmailChangeSecuritySignal,
+  NotificationEventPayloadUserPasswordChangeSecuritySignal,
   NotificationEventPayloadUserEmailChangeNewAddress,
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
@@ -472,7 +473,7 @@ export class AppController {
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawEmailChangeEvent(
+      this.notificationService.normalizeRawRecipientEmailEvent(
         eventPayload,
         NotificationEvent.UserEmailChangeSecuritySignal
       ),
@@ -487,7 +488,7 @@ export class AppController {
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawEmailChangeEvent(
+      this.notificationService.normalizeRawRecipientEmailEvent(
         eventPayload,
         NotificationEvent.UserEmailChangeNewAddressNotification
       ),
@@ -515,6 +516,21 @@ export class AppController {
   ) {
     return this.notificationService.processNotificationEvent(
       eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserPasswordChangeSecuritySignal)
+  async sendUserPasswordChangeSecuritySignalNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserPasswordChangeSecuritySignal,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      this.notificationService.normalizeRawRecipientEmailEvent(
+        eventPayload,
+        NotificationEvent.UserPasswordChangeSecuritySignal
+      ),
       context
     );
   }
