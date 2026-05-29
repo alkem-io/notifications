@@ -35,6 +35,7 @@ import {
   NotificationEventPayloadUserEmailChangeNewAddress,
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
+  NotificationEventPayloadUserPasswordChangeSecuritySignal,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -128,16 +129,18 @@ export class NotificationService {
   }
 
   /**
-   * Events 1 & 2 (USER_EMAIL_CHANGE_SECURITY_SIGNAL /
-   * USER_EMAIL_CHANGE_NEW_ADDRESS_NOTIFICATION) are published raw — without the
-   * BaseEventPayload envelope. This injects the envelope so the raw payload
-   * flows through the standard processNotificationEvent pipeline unchanged
-   * (research.md §R5): sets eventType, derives platform.url from config, adds a
-   * minimal triggeredBy stub, and synthesizes a single recipient from
-   * recipientEmail. The synthetic recipient deliberately omits `id` so the
-   * builder's notification-preferences URL resolves to '' (research.md §R8).
+   * Some events (the email-change security signal + new-address, and the
+   * password-change security signal) are published raw — a flat
+   * `{ recipientEmail, ... }` body without the BaseEventPayload envelope —
+   * because the publishing service does not have a triggering user it can
+   * cite. This wrapper injects the envelope so the raw payload flows through
+   * the standard processNotificationEvent pipeline unchanged: sets eventType,
+   * derives platform.url from config, adds a minimal triggeredBy stub, and
+   * synthesizes a single recipient from `recipientEmail`. The synthetic
+   * recipient deliberately omits `id` so the builder's notification-preferences
+   * URL resolves to ''.
    */
-  public normalizeRawEmailChangeEvent(
+  public normalizeRawRecipientEmailEvent(
     rawPayload: { recipientEmail: string },
     eventType: NotificationEvent
   ): BaseEventPayload {
@@ -510,6 +513,12 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadUserEmailChangeSpaceAdmin,
           recipient
         );
+      case NotificationEvent.UserPasswordChangeSecuritySignal:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserPasswordChangeSecuritySignal(
+          eventPayload as NotificationEventPayloadUserPasswordChangeSecuritySignal &
+            BaseEventPayload,
+          recipient
+        );
       default:
         throw new EventPayloadNotProvidedException(
           `EmailPayload: Unable to recognize event:  ${eventPayload.eventType}`,
@@ -598,6 +607,8 @@ export class NotificationService {
         return 'platform.admin.user.email.change';
       case NotificationEvent.UserEmailChangeSpaceAdminNotification.valueOf():
         return 'space.admin.user.email.change';
+      case NotificationEvent.UserPasswordChangeSecuritySignal.valueOf():
+        return 'user.password.change.security.signal';
       default:
         throw new EventPayloadNotProvidedException(
           `Email template: Unable to recognize event: ${event}`,
