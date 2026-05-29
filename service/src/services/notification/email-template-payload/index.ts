@@ -26,6 +26,7 @@ export * from './user.email.change.security.signal.email.payload';
 export * from './user.email.change.new.address.email.payload';
 export * from './platform.admin.user.email.change.email.payload';
 export * from './space.admin.user.email.change.email.payload';
+export * from './user.password.change.security.signal.email.payload';
 export * from './platform.forum.discussion.created.email.payload';
 export * from './platform.forum.discussion.comment.email.payload';
 export * from './organization.message.email.payload';
