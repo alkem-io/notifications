@@ -8,10 +8,6 @@ name: Deploy to DockerHub
 on:
   release:
     types: [published]
-  # TEMPORARY (validation only — removed before merge): exercise the full
-  # build+merge path from this branch; pushes only a sha-prefixed test tag.
-  push:
-    branches: [ci/multi-arch-native-runners]
 
 jobs:
   build:
