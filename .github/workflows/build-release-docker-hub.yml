@@ -7,7 +7,27 @@ name: Deploy to DockerHub
 
 on:
   release:
-    types: [published]
+    # `released` additionally covers a pre-release later promoted to a full
+    # release (promotion fires no `published` event, so latest/vMAJOR would
+    # otherwise never be applied). A normal stable publish fires BOTH types;
+    # the two runs serialize via the concurrency group and are idempotent —
+    # a few duplicate runner-minutes buy the promotion path.
+    types: [published, released]
+  # TEMPORARY (validation only — removed before merge): exercise the full
+  # build+merge path from this branch; pushes only a sha-prefixed test tag.
+  push:
+    branches: [ci/multi-arch-native-runners]
+
+# Serialize whole runs against each other (the per-arch builds inside one run
+# still parallelize): two releases published minutes apart must apply their
+# floating tags (latest, vMAJOR, vMAJOR.MINOR) in publish order, or the older
+# release's slower run could re-point them backward.
+concurrency:
+  group: dockerhub-release
+  cancel-in-progress: false
+
+env:
+  REGISTRY_IMAGE: alkemio/${{ github.event.repository.name }}
 
 jobs:
   build:
@@ -17,17 +37,17 @@ jobs:
         include:
           - platform: linux/amd64
             runner: ubuntu-latest
+            pair: linux-amd64
           - platform: linux/arm64
             runner: ubuntu-24.04-arm
+            pair: linux-arm64
     runs-on: ${{ matrix.runner }}
+    # A hung build must not hold the release (and the concurrency queue)
+    # for the 6h default; normal builds take ~3 min.
+    timeout-minutes: 30
     permissions:
       contents: read    # Required for actions/checkout
     steps:
-      - name: Prepare platform slug
-        run: |
-          platform="${{ matrix.platform }}"
-          echo "PLATFORM_PAIR=${platform//\//-}" >> "$GITHUB_ENV"
-
       - name: Checkout
         uses: actions/checkout@v6.0.3
 
@@ -36,7 +56,7 @@ jobs:
         uses: docker/metadata-action@v6.1.0
         with:
           # Image name derived from repo name (e.g., alkemio/notifications)
-          images: alkemio/${{ github.event.repository.name }}
+          images: ${{ env.REGISTRY_IMAGE }}
           # Tags are applied at the merge job; this step only supplies OCI labels.
 
       - name: Set up Docker Buildx
@@ -57,10 +77,10 @@ jobs:
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           # Untagged push; the merge job assembles the manifest list from digests.
-          outputs: type=image,name=alkemio/${{ github.event.repository.name }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
           # Registry cache, one ref per arch so the builders don't evict each other
-          cache-from: type=registry,ref=alkemio/${{ github.event.repository.name }}:buildcache-${{ env.PLATFORM_PAIR }}
-          cache-to: type=registry,ref=alkemio/${{ github.event.repository.name }}:buildcache-${{ env.PLATFORM_PAIR }},mode=max
+          cache-from: type=registry,ref=${{ env.REGISTRY_IMAGE }}:buildcache-${{ matrix.pair }}
+          cache-to: type=registry,ref=${{ env.REGISTRY_IMAGE }}:buildcache-${{ matrix.pair }},mode=max
           # SLSA provenance attestation for supply chain security
           provenance: mode=max
           # A machine-readable inventory of all components, libraries, and dependencies in your container image. It lists package names, versions,
@@ -79,22 +99,30 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v7.0.1
         with:
-          name: digests-${{ env.PLATFORM_PAIR }}
+          name: digests-${{ matrix.pair }}
           path: ${{ runner.temp }}/digests/*
           if-no-files-found: error
-          retention-days: 1
+          # Recovery window: a failed merge can be re-run from these digests
+          # without rebuilding for up to a week.
+          retention-days: 7
 
   merge:
     runs-on: ubuntu-latest
     needs: build
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v6.1.0
+        env:
+          # Also emit OCI annotations targeting the manifest list (index),
+          # applied by imagetools create below — labels on the per-arch image
+          # configs alone are invisible to tooling reading the tagged index.
+          DOCKER_METADATA_ANNOTATIONS_LEVELS: index
         with:
-          images: alkemio/${{ github.event.repository.name }}
+          images: ${{ env.REGISTRY_IMAGE }}
           tags: |
             type=semver,pattern=v{{version}}
             type=semver,pattern=v{{major}}.{{minor}}
@@ -112,6 +140,18 @@ jobs:
           pattern: digests-*
           merge-multiple: true
 
+      - name: Verify digest set
+        # Publishing from a partial set would silently ship a single-arch
+        # index under all release tags ('imagetools create' happily performs
+        # a one-source carbon copy). Also turns the expired-artifacts case
+        # (>7d-late re-run) into a clear error instead of a cryptic one.
+        run: |
+          count=$(ls -1 "${{ runner.temp }}/digests" 2>/dev/null | wc -l)
+          if [ "$count" -ne 2 ]; then
+            echo "::error::expected 2 digest files (amd64 + arm64), found ${count}. If the artifacts expired (retention 7d), re-run the whole workflow, not just this job."
+            exit 1
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4.1.0
 
@@ -123,10 +163,22 @@ jobs:
 
       - name: Create multi-arch manifest and push
         working-directory: ${{ runner.temp }}/digests
+        # Tag/annotation args are built as a bash array: annotation values
+        # (e.g. image description) contain spaces, so the naive
+        # jq-into-word-splitting from the docs example would mangle them.
         run: |
-          docker buildx imagetools create \
-            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf 'alkemio/${{ github.event.repository.name }}@sha256:%s ' *)
+          declare -a args
+          while IFS= read -r tag; do
+            args+=(-t "$tag")
+          done < <(jq -cr '.tags[]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          while IFS= read -r ann; do
+            args+=(--annotation "$ann")
+          done < <(jq -cr '.annotations[]?' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          docker buildx imagetools create "${args[@]}" \
+            $(printf "${REGISTRY_IMAGE}@sha256:%s " *)
 
       - name: Inspect manifest
-        run: docker buildx imagetools inspect "alkemio/${{ github.event.repository.name }}:${{ steps.meta.outputs.version }}"
+        # Inspect the primary tag actually pushed (meta.outputs.version can be
+        # empty for tags matching no semver pattern, which would fail this step
+        # red after a successful publish).
+        run: docker buildx imagetools inspect "$(jq -cr '.tags[0]' <<< "$DOCKER_METADATA_OUTPUT_JSON")"
