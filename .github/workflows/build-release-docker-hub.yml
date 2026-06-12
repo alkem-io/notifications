@@ -33,24 +33,24 @@ jobs:
 
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5.10.0
+        uses: docker/metadata-action@v6.1.0
         with:
           # Image name derived from repo name (e.g., alkemio/notifications)
           images: alkemio/${{ github.event.repository.name }}
           # Tags are applied at the merge job; this step only supplies OCI labels.
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.12.0
+        uses: docker/setup-buildx-action@v4.1.0
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3.7.0
+        uses: docker/login-action@v4.2.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push by digest
         id: build
-        uses: docker/build-push-action@v6.19.2
+        uses: docker/build-push-action@v7.2.0
         with:
           context: .
           file: ./Dockerfile
@@ -92,7 +92,7 @@ jobs:
     steps:
       - name: Docker meta
         id: meta
-        uses: docker/metadata-action@v5.10.0
+        uses: docker/metadata-action@v6.1.0
         with:
           images: alkemio/${{ github.event.repository.name }}
           tags: |
@@ -113,10 +113,10 @@ jobs:
           merge-multiple: true
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.12.0
+        uses: docker/setup-buildx-action@v4.1.0
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3.7.0
+        uses: docker/login-action@v4.2.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
