@@ -13,10 +13,6 @@ on:
     # the two runs serialize via the concurrency group and are idempotent —
     # a few duplicate runner-minutes buy the promotion path.
     types: [published, released]
-  # TEMPORARY (validation only — removed before merge): exercise the full
-  # build+merge path from this branch; pushes only a sha-prefixed test tag.
-  push:
-    branches: [ci/multi-arch-native-runners]
 
 # Serialize whole runs against each other (the per-arch builds inside one run
 # still parallelize): two releases published minutes apart must apply their
