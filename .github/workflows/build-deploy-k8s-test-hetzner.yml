@@ -9,7 +9,7 @@ jobs:
     steps:
       # checkout the repo
       - name: "Checkout GitHub Action"
-        uses: actions/checkout@v4.3.1
+        uses: actions/checkout@v6.0.3
 
       - name: "Build and push image"
         uses: azure/docker-login@v2
@@ -22,7 +22,7 @@ jobs:
           docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/alkemio-notifications:${{ github.sha }}
 
       - name: Install Kubectl
-        uses: azure/setup-kubectl@v4.0.1
+        uses: azure/setup-kubectl@v5.1.0
         with:
           version: "v1.27.6" # Ensure this matches the version used in your cluster
 
@@ -40,7 +40,7 @@ jobs:
             --docker-password=${{ secrets.REGISTRY_PASSWORD }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - uses: Azure/k8s-deploy@v5.1.0
+      - uses: Azure/k8s-deploy@v6.0.0
         with:
           manifests: |
             service/manifests/25-notifications-deployment-dev.yaml
