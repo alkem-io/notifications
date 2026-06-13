@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: default
+  name: alkemio-notifications-deployment
+  labels:
+    app: alkemio-notifications
+    k8s-app: alkemio-notifications
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alkemio-notifications
+  template:
+    metadata:
+      labels:
+        app: alkemio-notifications
+    spec:
+      containers:
+        - name: alkemio-notifications
+          image: rg.nl-ams.scw.cloud/alkemio/alkemio-notifications:latest
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: host
+            - name: RABBITMQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: port
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: username
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: alkemio-rabbitmq-cluster-default-user
+                  key: password
+            - name: ALKEMIO_WEBCLIENT_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: alkemio-config
+                  key: ENDPOINT_CLUSTER
+          envFrom:
+            - secretRef:
+                name: alkemio-secrets
+            - configMapRef:
+                name: alkemio-config
+          resources:
+            requests:
+              cpu: 150m
+              memory: 150Mi
+            limits:
+              cpu: 250m
+              memory: 250Mi
+          # probes
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 4004
+              httpHeaders:
+                - name: Host
+                  value: '127.0.0.1'
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 4004
+              httpHeaders:
+                - name: Host
+                  value: '127.0.0.1'
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: alkemio-rabbitmq-cluster
+                topologyKey: kubernetes.io/hostname
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: alkemio-server
+                topologyKey: kubernetes.io/hostname
