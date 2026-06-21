@@ -1,7 +1,7 @@
 # ======================
 # Builder stage (with dev deps)
 # ======================
-FROM node:22.16.0-bookworm AS builder
+FROM node:22.23.0-bookworm AS builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ RUN npm run build
 # ======================
 # Prod deps stage (NO dev deps)
 # ======================
-FROM node:22.16.0-bookworm AS prod-deps
+FROM node:22.23.0-bookworm AS prod-deps
 
 WORKDIR /app
 
