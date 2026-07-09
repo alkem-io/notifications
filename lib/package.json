@@ -13,7 +13,7 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "tsc --project tsconfig.prod.json",
+    "build": "tsc6 --project tsconfig.prod.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "lint": "npm run typecheck:native && eslint src/**/*.ts{,x}",
