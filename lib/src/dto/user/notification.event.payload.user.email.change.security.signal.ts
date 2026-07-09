@@ -4,6 +4,6 @@
 export interface NotificationEventPayloadUserEmailChangeSecuritySignal {
   recipientEmail: string;
   commitTimestampISO8601: string;
-  initiatorRole: "self" | "platform_admin";
+  initiatorRole: 'self' | 'platform_admin';
   newEmailMasked: string;
 }
