@@ -1,5 +1,5 @@
-import { SpacePayload } from "../space";
-import { NotificationEventPayloadPlatform } from "./notification.event.payload.platform";
+import { SpacePayload } from '../space';
+import { NotificationEventPayloadPlatform } from './notification.event.payload.platform';
 
 export interface NotificationEventPayloadPlatformSpaceCreated extends NotificationEventPayloadPlatform {
   space: SpacePayload;
@@ -7,5 +7,5 @@ export interface NotificationEventPayloadPlatformSpaceCreated extends Notificati
   sender: {
     name: string;
     url: string;
-  }
+  };
 }

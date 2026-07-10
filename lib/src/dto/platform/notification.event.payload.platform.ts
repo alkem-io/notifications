@@ -1,5 +1,3 @@
-import { BaseEventPayload } from "../base.event.payload";
+import { BaseEventPayload } from '../base.event.payload';
 
-export interface NotificationEventPayloadPlatform
-  extends BaseEventPayload {
-}
+export type NotificationEventPayloadPlatform = BaseEventPayload;

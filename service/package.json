@@ -22,9 +22,10 @@
     "start:debug": "nest start --debug=0.0.0.0:9230 --watch",
     "start:prod": "node dist/main",
     "start:services": "docker-compose -f quickstart-mailslurper.yml up --build --force-recreate",
-    "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
-    "lint:prod": "tsc --noEmit && cross-env NODE_ENV=production eslint src/**/*.ts{,x}",
-    "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
+    "lint": "npm run typecheck:native && eslint src/**/*.ts{,x}",
+    "lint:prod": "npm run typecheck:native && cross-env NODE_ENV=production eslint src/**/*.ts{,x}",
+    "lint:fix": "npm run typecheck:native && eslint src/**/*.ts{,x} --fix",
+    "typecheck:native": "tsc -p tsconfig.json --noEmit",
     "test": "jest --config=./test/config/jest.config.js",
     "test:dev": "jest --config=./test/config/jest.config.js --no-cache --coverage=true --detectOpenHandles --runInBand --logHeapUsage",
     "test:watch": "jest --watch",
@@ -77,6 +78,7 @@
     "@types/yaml": "^1.9.7",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
+    "@typescript/native": "npm:typescript@7.0.2",
     "cd": "^0.3.3",
     "coveralls": "^3.1.1",
     "dotenv": "^17.2.1",
@@ -91,7 +93,7 @@
     "rimraf": "^6.0.1",
     "ts-jest": "^29.4.1",
     "ts-node": "^10.9.2",
-    "typescript": "~5.9.0"
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   },
   "_moduleAliases": {
     "@src": "./dist"

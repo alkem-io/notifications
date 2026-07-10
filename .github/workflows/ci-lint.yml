@@ -28,3 +28,31 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Typecheck (native TS7)
+        run: npm run typecheck:native
+
+  lint-lib:
+    runs-on: arc-runner-set
+    defaults:
+      run:
+        working-directory: lib
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6.4.0
+        with:
+          node-version: '20.20.2'
+          cache: 'npm'
+          cache-dependency-path: lib/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck (native TS7)
+        run: npm run typecheck:native
