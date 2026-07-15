@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "module": "commonjs",
+    "module": "node16",
     "lib": ["es2019", "esnext.asynciterable", "ES2020.Promise"],
     "sourceMap": true,
     "rootDir": "./src",
@@ -9,7 +9,7 @@
     "declaration": true,
     "removeComments": true,
     "strict": true,
-    "baseUrl": ".",
+    "moduleResolution": "node16",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -17,9 +17,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "types": ["node"],
     "paths": {
-      "@src/*": ["src/*"],
-      "@common/*": ["src/common/*"],
+      "@src/*": ["./src/*"],
+      "@common/*": ["./src/common/*"],
     }
   },
   "exclude": ["./node_modules"],
