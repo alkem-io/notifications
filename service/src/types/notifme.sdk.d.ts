@@ -408,11 +408,7 @@ declare module 'notifme-sdk' {
   };
 
   export type Request =
-    | EmailRequest
-    | PushRequest
-    | SmsRequest
-    | WebpushRequest
-    | SlackRequest;
+    EmailRequest | PushRequest | SmsRequest | WebpushRequest | SlackRequest;
 
   //endregion REQUEST TYPES
 }
