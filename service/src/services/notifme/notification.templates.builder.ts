@@ -17,23 +17,36 @@ const TEMPLATE_LANG = 'en-US';
 // the HTML body (injection safety) but wrong for the plain-text fields: a mail
 // client shows the subject/title literally, so "A & B" leaks as "A &amp; B".
 // We keep autoescaping for html and re-render only the plain-text fields from the
-// raw template through this non-escaping environment.
+// raw template through this non-escaping environment. Subject/title are single
+// lines with only {{ }} interpolation — no {% extends/include %}, which would
+// need a loader this environment does not have.
 const plainTextEnv = new Environment(undefined, { autoescape: false });
 
 @Injectable()
 export class NotificationTemplateBuilder {
+  // notifme-template's renderer is initialised once: it closes over the folder
+  // and reuses its internal (module-level) template cache across calls.
+  private readonly render: (
+    template: string,
+    data: BaseEmailPayload,
+    lang: string
+  ) => Promise<NotificationTemplateType>;
+
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private logger: LoggerService
-  ) {}
+  ) {
+    const getRenderer = require('notifme-template');
+    this.render = getRenderer(renderString, TEMPLATES_FOLDER);
+  }
+
   async buildTemplate(
     template: string,
     templatePayload: BaseEmailPayload
   ): Promise<NotificationTemplateType | undefined> {
     try {
-      const getRenderer = require('notifme-template');
-      const render = getRenderer(renderString, TEMPLATES_FOLDER);
-      const result: NotificationTemplateType = await render(
+      this.assertSafeTemplateName(template);
+      const result = await this.render(
         template,
         templatePayload,
         TEMPLATE_LANG
@@ -48,6 +61,15 @@ export class NotificationTemplateBuilder {
     }
 
     return undefined;
+  }
+
+  // Template names come from a fixed internal switch, never user input, but both
+  // the renderer and renderPlainTextFields require() the name off disk — reject
+  // traversal / absolute paths so it can never resolve outside TEMPLATES_FOLDER.
+  private assertSafeTemplateName(template: string): void {
+    if (template.includes('..') || path.isAbsolute(template)) {
+      throw new Error(`Invalid template name: ${template}`);
+    }
   }
 
   // Overwrite the plain-text fields (title, email subject) with a non-autoescaped
