@@ -17,4 +17,3 @@ export * from './user/notification.event.payload.user.email.change.global.admin'
 export * from './user/notification.event.payload.user.email.change.space.admin';
 export * from './user/notification.event.payload.user.password.change.security.signal';
 export * from './space';
-

@@ -4,7 +4,7 @@
 export interface NotificationEventPayloadUserEmailChangeNewAddress {
   recipientEmail: string;
   commitTimestampISO8601: string;
-  initiatorRole: "self" | "platform_admin";
+  initiatorRole: 'self' | 'platform_admin';
   newEmailFull: string;
   loginUrl: string;
 }
