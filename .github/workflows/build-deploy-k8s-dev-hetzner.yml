@@ -10,7 +10,7 @@ jobs:
     steps:
       # checkout the repo
       - name: "Checkout GitHub Action"
-        uses: actions/checkout@v6.0.3
+        uses: actions/checkout@v7
 
       - name: "Build and push image"
         uses: azure/docker-login@v2
@@ -41,7 +41,7 @@ jobs:
             --docker-password=${{ secrets.REGISTRY_PASSWORD }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - uses: Azure/k8s-deploy@v6.0.0
+      - uses: Azure/k8s-deploy@v7.0.0
         with:
           manifests: |
             manifests/25-notifications-deployment-dev.yaml
