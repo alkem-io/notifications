@@ -521,6 +521,115 @@ describe('NotificationService', () => {
       expect(channel.ack).not.toHaveBeenCalled();
     });
 
+    // -----------------------------------------------------------------------
+    // 034-messaging-notifications (FR-015/D-16): bounded redelivery on the
+    // all-failed path. A single-replica consumer must not requeue forever.
+    // -----------------------------------------------------------------------
+    describe('bounded redelivery (FR-015/D-16)', () => {
+      /** RmqContext whose message carries an x-death header with the given count. */
+      const createRmqContextWithDeathCount = (count: number | undefined) => {
+        const channel = {
+          ack: jest.fn(),
+          nack: jest.fn(),
+          reject: jest.fn(),
+        };
+        const message = {
+          properties: {
+            headers:
+              count === undefined
+                ? undefined
+                : { 'x-death': [{ count, reason: 'rejected' }] },
+          },
+        };
+        const context = {
+          getChannelRef: () => channel,
+          getMessage: () => message,
+        } as unknown as RmqContext;
+        return { context, channel };
+      };
+
+      beforeEach(() => {
+        jest.spyOn(templateBuilder, 'buildTemplate').mockResolvedValue({
+          ...MINIMAL_TEMPLATE,
+          channels: {},
+        });
+      });
+
+      it.each([0, 1, 2])(
+        'still requeues when the x-death count is %i (below the cap)',
+        async deathCount => {
+          const { context, channel } =
+            createRmqContextWithDeathCount(deathCount);
+
+          await notificationService.processNotificationEvent(
+            mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+            context
+          );
+
+          expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
+        }
+      );
+
+      it('requeues when no x-death header is present (first delivery)', async () => {
+        const { context, channel } = createRmqContextWithDeathCount(undefined);
+
+        await notificationService.processNotificationEvent(
+          mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          context
+        );
+
+        expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
+      });
+
+      it.each([3, 4, 10])(
+        'rejects WITHOUT requeue when the x-death count is %i (at/above the cap) and logs an error',
+        async deathCount => {
+          const { context, channel } =
+            createRmqContextWithDeathCount(deathCount);
+
+          await notificationService.processNotificationEvent(
+            mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+            context
+          );
+
+          expect(channel.reject).toHaveBeenCalledWith(expect.anything(), false);
+        }
+      );
+
+      it('leaves the partial-failure (nack) path unchanged regardless of death count', async () => {
+        let buildCount = 0;
+        jest
+          .spyOn(templateBuilder, 'buildTemplate')
+          .mockImplementation(async () => {
+            buildCount++;
+            return buildCount === 1
+              ? MINIMAL_TEMPLATE
+              : { ...MINIMAL_TEMPLATE, channels: {} };
+          });
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'success' });
+
+        const payload = {
+          ...mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          recipients: [
+            MINIMAL_RECIPIENT,
+            { ...MINIMAL_RECIPIENT, id: 'r2', email: 'r2@example.com' },
+          ],
+        };
+        const { context, channel } = createRmqContextWithDeathCount(10);
+
+        await notificationService.processNotificationEvent(payload, context);
+
+        expect(channel.nack).toHaveBeenCalledWith(
+          expect.anything(),
+          false,
+          false
+        );
+        expect(channel.reject).not.toHaveBeenCalled();
+      });
+    });
+
     it('nacks (without requeue) when SOME notifications failed', async () => {
       // First buildTemplate succeeds (valid channels), second returns empty channels
       // → second sendNotification throws → partial rejection

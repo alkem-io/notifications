@@ -3,6 +3,8 @@ import { NotificationEmailPayloadBuilderService } from '@src/services/notificati
 import {
   NotificationEventPayloadSpaceCommunicationUpdate,
   NotificationEventPayloadUserMessageDirect,
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadSpaceCommunicationMessageDirect,
@@ -258,6 +260,164 @@ describe('NotificationEmailPayloadBuilderService — communication notifications
       );
 
       expect(result.message).toBe('Hello, how are you?');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // createEmailTemplatePayloadUserConversationMessageDirect (034)
+  // -------------------------------------------------------------------------
+  describe('createEmailTemplatePayloadUserConversationMessageDirect', () => {
+    const basePayload: NotificationEventPayloadUserConversationMessageDirect =
+      {
+        eventType: 'USER_CONVERSATION_MESSAGE_DIRECT',
+        triggeredBy: sender,
+        recipients: [recipientPayload],
+        platform: basePlatform,
+        sender: { displayName: 'Sam Sender' },
+        conversation: {
+          id: 'conv-1',
+          url: 'https://alkemio.dev/?chat=conv-1',
+        },
+      };
+
+    it('maps sender.displayName', () => {
+      const service = createService();
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageDirect(
+          basePayload,
+          recipient
+        );
+
+      expect(result.sender.displayName).toBe('Sam Sender');
+    });
+
+    it('maps the conversation deep link', () => {
+      const service = createService();
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageDirect(
+          basePayload,
+          recipient
+        );
+
+      expect(result.conversation.url).toBe(
+        'https://alkemio.dev/?chat=conv-1'
+      );
+    });
+
+    it('carries the recipient notification-preferences footer link', () => {
+      const service = createService();
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageDirect(
+          basePayload,
+          recipient
+        );
+
+      expect(result.recipient.notificationPreferences).toBe(
+        `${recipient.profile.url}/settings/notifications`
+      );
+    });
+
+    it('never propagates a message field smuggled onto the wire payload (FR-008/R-3/R-7)', () => {
+      const service = createService();
+      const smuggledPayload = {
+        ...basePayload,
+        message: 'this must never reach the email payload',
+      } as unknown as NotificationEventPayloadUserConversationMessageDirect;
+
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageDirect(
+          smuggledPayload,
+          recipient
+        );
+
+      expect(result).not.toHaveProperty('message');
+      expect(JSON.stringify(result)).not.toContain(
+        'this must never reach the email payload'
+      );
+    });
+
+    it('never includes the sender email address (FR-009)', () => {
+      const service = createService();
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageDirect(
+          basePayload,
+          recipient
+        );
+
+      expect(JSON.stringify(result)).not.toContain(sender.email);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // createEmailTemplatePayloadUserConversationMessageGroup (034)
+  // -------------------------------------------------------------------------
+  describe('createEmailTemplatePayloadUserConversationMessageGroup', () => {
+    const basePayload: NotificationEventPayloadUserConversationMessageGroup = {
+      eventType: 'USER_CONVERSATION_MESSAGE_GROUP',
+      triggeredBy: sender,
+      recipients: [recipientPayload],
+      platform: basePlatform,
+      sender: { displayName: 'Sam Sender' },
+      conversation: {
+        id: 'conv-2',
+        url: 'https://alkemio.dev/?chat=conv-2',
+        displayName: 'Solaris Team Chat',
+      },
+    };
+
+    it('maps sender.displayName', () => {
+      const service = createService();
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageGroup(
+          basePayload,
+          recipient
+        );
+
+      expect(result.sender.displayName).toBe('Sam Sender');
+    });
+
+    it('maps the conversation deep link and displayName', () => {
+      const service = createService();
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageGroup(
+          basePayload,
+          recipient
+        );
+
+      expect(result.conversation.url).toBe(
+        'https://alkemio.dev/?chat=conv-2'
+      );
+      expect(result.conversation.displayName).toBe('Solaris Team Chat');
+    });
+
+    it('never propagates a message field smuggled onto the wire payload (FR-008/R-3/R-7)', () => {
+      const service = createService();
+      const smuggledPayload = {
+        ...basePayload,
+        message: 'this must never reach the email payload',
+      } as unknown as NotificationEventPayloadUserConversationMessageGroup;
+
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageGroup(
+          smuggledPayload,
+          recipient
+        );
+
+      expect(result).not.toHaveProperty('message');
+      expect(JSON.stringify(result)).not.toContain(
+        'this must never reach the email payload'
+      );
+    });
+
+    it('never includes the sender email address (FR-009)', () => {
+      const service = createService();
+      const result =
+        service.createEmailTemplatePayloadUserConversationMessageGroup(
+          basePayload,
+          recipient
+        );
+
+      expect(JSON.stringify(result)).not.toContain(sender.email);
     });
   });
 

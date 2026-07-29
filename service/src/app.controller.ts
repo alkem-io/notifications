@@ -16,6 +16,8 @@ import {
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadUserMessageDirect,
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCommunityInvitation,
   NotificationEventPayloadSpaceCommunicationMessageDirect,
   NotificationEventPayloadSpaceCommunicationUpdate,
@@ -259,6 +261,33 @@ export class AppController {
   @EventPattern(NotificationEvent.UserMessageSender)
   async sendUserMessageSenderNotifications(
     @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  // 034-messaging-notifications (contract C-2): two full wire events (Ruling
+  // R1) — one handler each, never routed through the leaking USER_MESSAGE
+  // event/template.
+  @EventPattern(NotificationEvent.UserConversationMessageDirect)
+  async sendUserConversationMessageDirectNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserConversationMessageDirect,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserConversationMessageGroup)
+  async sendUserConversationMessageGroupNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserConversationMessageGroup,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(

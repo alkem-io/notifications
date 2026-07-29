@@ -14,6 +14,8 @@ import {
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadSpaceCommunicationUpdate,
   NotificationEventPayloadUserMessageDirect,
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCommunityInvitation,
   NotificationEventPayloadPlatformForumDiscussion,
   NotificationEventPayloadPlatformGlobalRole,
@@ -51,6 +53,10 @@ import { Channel, Message } from 'amqplib';
 import { Ctx, Payload, RmqContext } from '@nestjs/microservices';
 @Injectable()
 export class NotificationService {
+  // 034-messaging-notifications (FR-015/D-16): redeliveries beyond this cap
+  // are rejected without requeue rather than looped forever.
+  private static readonly MAX_REDELIVERY_ATTEMPTS = 3;
+
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -103,10 +109,26 @@ export class NotificationService {
         channel.ack(originalMsg);
       } else {
         if (nacked.length === x.length) {
-          this.logger.verbose?.('All messages failed to be sent!');
-          // if all messages failed to be sent, we reject the message but we make sure the message is
-          // not discarded so we provide 'true' to requeue parameter
-          channel.reject(originalMsg, true);
+          // 034-messaging-notifications (FR-015/D-16, risk R-12): the all-
+          // failed path used to requeue unconditionally, which on a
+          // single-replica consumer is an infinite redelivery loop. Bound it:
+          // RabbitMQ's dead-letter/requeue cycle stamps each redelivery with
+          // an `x-death` header entry carrying a running `count` for this
+          // queue; once that reaches the cap, reject WITHOUT requeue (drop +
+          // log) instead of looping forever.
+          const deathCount = this.getDeathCount(originalMsg);
+          if (deathCount >= NotificationService.MAX_REDELIVERY_ATTEMPTS) {
+            this.logger.error(
+              `[${eventPayload.eventType}] All messages failed to be sent after ${deathCount} delivery attempts — rejecting without requeue to avoid an infinite redelivery loop.`,
+              LogContext.NOTIFICATIONS
+            );
+            channel.reject(originalMsg, false);
+          } else {
+            this.logger.verbose?.('All messages failed to be sent!');
+            // if all messages failed to be sent, we reject the message but we make sure the message is
+            // not discarded so we provide 'true' to requeue parameter
+            channel.reject(originalMsg, true);
+          }
         } else {
           this.logger.verbose?.(
             `${nacked.length} messages out of total ${x.length} messages failed to be sent!`,
@@ -411,6 +433,16 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadUserMessageDirect,
           recipient
         );
+      case NotificationEvent.UserConversationMessageDirect:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserConversationMessageDirect(
+          eventPayload as NotificationEventPayloadUserConversationMessageDirect,
+          recipient
+        );
+      case NotificationEvent.UserConversationMessageGroup:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserConversationMessageGroup(
+          eventPayload as NotificationEventPayloadUserConversationMessageGroup,
+          recipient
+        );
       case NotificationEvent.OrganizationAdminMessage:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationMessage(
           eventPayload as NotificationEventPayloadOrganizationMessageDirect,
@@ -567,6 +599,10 @@ export class NotificationService {
         return 'user.message.recipient';
       case NotificationEvent.UserMessageSender.valueOf():
         return 'user.message.sender';
+      case NotificationEvent.UserConversationMessageDirect.valueOf():
+        return 'user.conversation.message.direct';
+      case NotificationEvent.UserConversationMessageGroup.valueOf():
+        return 'user.conversation.message.group';
       case NotificationEvent.OrganizationAdminMessage.valueOf():
         return 'organization.message.recipient';
       case NotificationEvent.OrganizationMessageSender.valueOf():
@@ -620,4 +656,16 @@ export class NotificationService {
   private isPromiseFulfilledResult = (
     result: PromiseSettledResult<any>
   ): result is PromiseFulfilledResult<any> => result.status === 'fulfilled';
+
+  // 034-messaging-notifications (FR-015/D-16): reads the redelivery count
+  // RabbitMQ stamps on a message once it has been dead-lettered/requeued back
+  // onto the same queue (`x-death[0].count`). Absent on a first delivery, so
+  // this defaults to 0 — safe for every pre-existing call site/test.
+  private getDeathCount(message: Message): number {
+    const xDeath = message?.properties?.headers?.['x-death'];
+    if (!Array.isArray(xDeath) || xDeath.length === 0) {
+      return 0;
+    }
+    return xDeath[0]?.count ?? 0;
+  }
 }

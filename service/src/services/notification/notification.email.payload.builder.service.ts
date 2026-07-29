@@ -9,6 +9,8 @@ import {
   CommunityNewMemberEmailPayload,
   CommunicationUpdateCreatedEmailPayload,
   CommunicationUserMessageEmailPayload,
+  UserConversationMessageDirectEmailPayload,
+  UserConversationMessageGroupEmailPayload,
   CommunicationOrganizationMessageEmailPayload,
   CommunicationOrganizationMentionEmailPayload,
   CommunicationUserMentionEmailPayload,
@@ -49,6 +51,8 @@ import {
   NotificationEventPayloadPlatformForumDiscussion,
   NotificationEventPayloadSpaceCommunicationUpdate,
   NotificationEventPayloadUserMessageDirect,
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadSpaceCommunicationMessageDirect,
@@ -570,6 +574,42 @@ export class NotificationEmailPayloadBuilderService {
       message: eventPayload.message,
     };
   }
+  // 034-messaging-notifications (contract C-2, FR-008/FR-009/D-15): builder
+  // deliberately reads ONLY sender.displayName + conversation.{url,displayName}
+  // off the wire payload — never `message`, never `sender`/`triggeredBy` email —
+  // so an event payload smuggling extra fields (e.g. `message`) can never reach
+  // the template/rendered output (risk R-3/R-7 parity).
+  public createEmailTemplatePayloadUserConversationMessageDirect(
+    eventPayload: NotificationEventPayloadUserConversationMessageDirect,
+    recipient: User
+  ): UserConversationMessageDirectEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      sender: {
+        displayName: eventPayload.sender.displayName,
+      },
+      conversation: {
+        url: eventPayload.conversation.url,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadUserConversationMessageGroup(
+    eventPayload: NotificationEventPayloadUserConversationMessageGroup,
+    recipient: User
+  ): UserConversationMessageGroupEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      sender: {
+        displayName: eventPayload.sender.displayName,
+      },
+      conversation: {
+        url: eventPayload.conversation.url,
+        displayName: eventPayload.conversation.displayName,
+      },
+    };
+  }
+
   public createEmailTemplatePayloadOrganizationMessage(
     eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     recipient: User
