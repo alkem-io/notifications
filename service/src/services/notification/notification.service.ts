@@ -51,11 +51,27 @@ import { NotificationBlacklistService } from './notification.blacklist.service';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { Channel, Message } from 'amqplib';
 import { Ctx, Payload, RmqContext } from '@nestjs/microservices';
+import { createHash } from 'crypto';
 @Injectable()
 export class NotificationService {
   // 034-messaging-notifications (FR-015/D-16): redeliveries beyond this cap
   // are rejected without requeue rather than looped forever.
   private static readonly MAX_REDELIVERY_ATTEMPTS = 3;
+
+  // 034-messaging-notifications review fix (corr/spec/qual/sec
+  // notifications-2/3): RabbitMQ only stamps an `x-death` header when a
+  // message is actually dead-lettered — reject/nack with requeue=false into
+  // a queue that carries an `x-dead-letter-exchange`, or TTL/queue-length
+  // expiry. The `alkemio-notifications` queue (service/src/main.ts) declares
+  // no dead-letter exchange, so `x-death` is NEVER present here and a count
+  // read from it is always 0 — a cap keyed on it can never fire. The only
+  // broker-native signal on this topology is `message.fields.redelivered`,
+  // a boolean with no attempt count. The bound is therefore tracked
+  // in-process, keyed by message identity (messageId/correlationId/content
+  // hash). This resets on pod restart — a deliberate, minimal-effort bound;
+  // a durable bound would need a queue-level dead-letter-exchange, which is
+  // an infra change outside this repo.
+  private readonly deliveryAttempts = new Map<string, number>();
 
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
@@ -89,9 +105,12 @@ export class NotificationService {
     // nacked, which is what produced the unbounded implicit RabbitMQ
     // redelivery loop observed live. It is now inside the try, so any
     // unexpected error — from building/sending OR from the ack/nack
-    // bookkeeping below — goes through the SAME bounded
-    // redelivery/death-count path as a total-send failure (FR-015/D-16)
-    // rather than looping forever.
+    // bookkeeping below — is always caught and the message is discarded
+    // immediately (see the catch block below): a code/schema bug is very
+    // likely to recur identically on every redelivery, so bounding-and-
+    // retrying it buys nothing and risks a tight hot loop on this
+    // single-replica consumer. Only the transient, all-recipients-failed
+    // send path (e.g. an SMTP outage) is worth a few bounded retries.
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     try {
       const x = await this.buildAndSendEmailNotifications(eventPayload);
@@ -100,6 +119,7 @@ export class NotificationService {
           `[${eventPayload.eventType}] No messages to send!`,
           LogContext.NOTIFICATIONS
         );
+        this.clearDeliveryAttempts(originalMsg);
         channel.ack(originalMsg);
         return;
       }
@@ -114,22 +134,25 @@ export class NotificationService {
         );
         // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
         // so only the message supplied is acknowledged.
+        this.clearDeliveryAttempts(originalMsg);
         channel.ack(originalMsg);
       } else {
         if (nacked.length === x.length) {
-          // 034-messaging-notifications (FR-015/D-16, risk R-12): the all-
+          // 034-messaging-notifications (FR-015/D-16, risk R-12) — fixed
+          // per corr/spec/qual/sec notifications-2/3 findings: the all-
           // failed path used to requeue unconditionally, which on a
-          // single-replica consumer is an infinite redelivery loop. Bound it:
-          // RabbitMQ's dead-letter/requeue cycle stamps each redelivery with
-          // an `x-death` header entry carrying a running `count` for this
-          // queue; once that reaches the cap, reject WITHOUT requeue (drop +
-          // log) instead of looping forever.
-          const deathCount = this.getDeathCount(originalMsg);
-          if (deathCount >= NotificationService.MAX_REDELIVERY_ATTEMPTS) {
+          // single-replica consumer is an infinite redelivery loop. Bound
+          // it using an in-process attempt count keyed by message identity
+          // (see the class-level comment for why `x-death` cannot be used
+          // on this queue); once that reaches the cap, reject WITHOUT
+          // requeue (drop + log) instead of looping forever.
+          const attempts = this.recordDeliveryAttempt(originalMsg);
+          if (attempts >= NotificationService.MAX_REDELIVERY_ATTEMPTS) {
             this.logger.error(
-              `[${eventPayload.eventType}] All messages failed to be sent after ${deathCount} delivery attempts — rejecting without requeue to avoid an infinite redelivery loop.`,
+              `[${eventPayload.eventType}] All messages failed to be sent after ${attempts} delivery attempts — rejecting without requeue to avoid an infinite redelivery loop.`,
               LogContext.NOTIFICATIONS
             );
+            this.clearDeliveryAttempts(originalMsg);
             channel.reject(originalMsg, false);
           } else {
             this.logger.verbose?.('All messages failed to be sent!');
@@ -144,28 +167,23 @@ export class NotificationService {
           );
           // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
           // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
+          this.clearDeliveryAttempts(originalMsg);
           channel.nack(originalMsg, false, false);
         }
         // print all rejected notifications
         nacked.forEach(x => this.logger?.warn(x.reason));
       }
     } catch (err) {
-      // An unexpected error (not a per-recipient send failure, which is
-      // already handled via Promise.allSettled above) — bound its
-      // redelivery via the same x-death count as the all-failed path so a
-      // persistently-broken event (e.g. a code bug) can't loop forever, but
-      // a transient failure still gets a few retries.
-      const deathCount = this.getDeathCount(originalMsg);
-      if (deathCount >= NotificationService.MAX_REDELIVERY_ATTEMPTS) {
-        this.logger.error(
-          `[${eventPayload.eventType}] Unexpected error processing event after ${deathCount} delivery attempts — rejecting without requeue to avoid an infinite redelivery loop.`,
-          LogContext.NOTIFICATIONS
-        );
-        channel.reject(originalMsg, false);
-      } else {
-        channel.reject(originalMsg, true);
-      }
+      // 034-messaging-notifications review fix (corr-notifications-2,
+      // qual-notifications-2, sec-notifications-1): an unexpected error
+      // here (a code/schema bug, not a transient per-recipient send
+      // failure — those are handled above via Promise.allSettled) is very
+      // likely to recur identically on every redelivery. Requeueing it —
+      // bounded or not — buys nothing and risks an unbounded hot loop on
+      // this single-replica consumer, so discard immediately, matching the
+      // pre-034 fail-safe behaviour on this path.
       this.logger.error(err);
+      channel.nack(originalMsg, false, false);
     }
   }
 
@@ -680,15 +698,46 @@ export class NotificationService {
     result: PromiseSettledResult<any>
   ): result is PromiseFulfilledResult<any> => result.status === 'fulfilled';
 
-  // 034-messaging-notifications (FR-015/D-16): reads the redelivery count
-  // RabbitMQ stamps on a message once it has been dead-lettered/requeued back
-  // onto the same queue (`x-death[0].count`). Absent on a first delivery, so
-  // this defaults to 0 — safe for every pre-existing call site/test.
-  private getDeathCount(message: Message): number {
-    const xDeath = message?.properties?.headers?.['x-death'];
-    if (!Array.isArray(xDeath) || xDeath.length === 0) {
-      return 0;
+  // 034-messaging-notifications review fix (corr/spec/qual/sec
+  // notifications-2/3): derives a stable identity for `message` so repeat
+  // deliveries of the same event can be correlated in-process. Prefers the
+  // AMQP `messageId`/`correlationId` properties (set by a well-behaved
+  // publisher); falls back to a content hash so redeliveries of the exact
+  // same payload still share a bound even without either property. A
+  // message with neither an id nor a body (should not occur for a real
+  // AMQP delivery) falls into one shared bucket rather than retrying
+  // unbounded.
+  private getMessageKey(message: Message): string {
+    const properties = message?.properties as
+      { messageId?: string; correlationId?: string } | undefined;
+    if (properties?.messageId) {
+      return `id:${properties.messageId}`;
     }
-    return xDeath[0]?.count ?? 0;
+    if (properties?.correlationId) {
+      return `corr:${properties.correlationId}`;
+    }
+    const content = (message as unknown as { content?: Buffer })?.content;
+    if (content && content.length > 0) {
+      return `content:${createHash('sha1').update(content).digest('hex')}`;
+    }
+    return 'unidentified';
+  }
+
+  /**
+   * Records one more delivery/processing attempt for `message` and returns
+   * the running count for its identity. See `getMessageKey` and the
+   * class-level comment for why this is tracked in-process rather than via
+   * RabbitMQ's `x-death` header (never populated on this queue).
+   */
+  private recordDeliveryAttempt(message: Message): number {
+    const key = this.getMessageKey(message);
+    const attempts = (this.deliveryAttempts.get(key) ?? 0) + 1;
+    this.deliveryAttempts.set(key, attempts);
+    return attempts;
+  }
+
+  /** Drops the tracked attempt count once a message will not be redelivered (acked, or given up on), bounding map growth. */
+  private clearDeliveryAttempts(message: Message): void {
+    this.deliveryAttempts.delete(this.getMessageKey(message));
   }
 }
