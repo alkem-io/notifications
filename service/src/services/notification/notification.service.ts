@@ -78,15 +78,23 @@ export class NotificationService {
       LogContext.NOTIFICATIONS
     );
 
-    const sentNotifications =
-      await this.buildAndSendEmailNotifications(eventPayload);
-
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
 
+    // 034-messaging-notifications (D-16 hardening, US1-AS2/AS3/US2-AS2
+    // finding): buildAndSendEmailNotifications used to be awaited OUTSIDE
+    // this try block, so an unexpected throw from it (e.g. the schema-drift
+    // `.valueOf()` TypeError) propagated uncaught out of this handler
+    // instead of being nack'd — leaving the message neither acked nor
+    // nacked, which is what produced the unbounded implicit RabbitMQ
+    // redelivery loop observed live. It is now inside the try, so any
+    // unexpected error — from building/sending OR from the ack/nack
+    // bookkeeping below — goes through the SAME bounded
+    // redelivery/death-count path as a total-send failure (FR-015/D-16)
+    // rather than looping forever.
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     try {
-      const x = await sentNotifications;
+      const x = await this.buildAndSendEmailNotifications(eventPayload);
       if (x.length === 0) {
         this.logger.verbose?.(
           `[${eventPayload.eventType}] No messages to send!`,
@@ -142,10 +150,21 @@ export class NotificationService {
         nacked.forEach(x => this.logger?.warn(x.reason));
       }
     } catch (err) {
-      // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
-      // not discarded so we provide 'true' to requeue parameter
-      // channel.reject(originalMsg, true);
-      channel.nack(originalMsg, false, false);
+      // An unexpected error (not a per-recipient send failure, which is
+      // already handled via Promise.allSettled above) — bound its
+      // redelivery via the same x-death count as the all-failed path so a
+      // persistently-broken event (e.g. a code bug) can't loop forever, but
+      // a transient failure still gets a few retries.
+      const deathCount = this.getDeathCount(originalMsg);
+      if (deathCount >= NotificationService.MAX_REDELIVERY_ATTEMPTS) {
+        this.logger.error(
+          `[${eventPayload.eventType}] Unexpected error processing event after ${deathCount} delivery attempts — rejecting without requeue to avoid an infinite redelivery loop.`,
+          LogContext.NOTIFICATIONS
+        );
+        channel.reject(originalMsg, false);
+      } else {
+        channel.reject(originalMsg, true);
+      }
       this.logger.error(err);
     }
   }
@@ -353,12 +372,12 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCommunityApplication,
           recipient
         );
-      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation:
+      case NotificationEvent.VirtualAdminSpaceCommunityInvitation:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitation(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
           recipient
         );
-      case NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined:
+      case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitationDeclined(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
           recipient
@@ -425,11 +444,6 @@ export class NotificationService {
         );
       case NotificationEvent.UserMessage:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserMessage(
-          eventPayload as NotificationEventPayloadUserMessageDirect,
-          recipient
-        );
-      case NotificationEvent.UserMessageSender:
-        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserMessageSender(
           eventPayload as NotificationEventPayloadUserMessageDirect,
           recipient
         );
@@ -559,91 +573,100 @@ export class NotificationService {
     }
   }
 
+  // 034-messaging-notifications (D-16 hardening, prompted by US1-AS2/AS3/
+  // US2-AS2/US4-AS5 live-verification findings): plain enum-member case
+  // expressions, NOT `NotificationEvent.<Member>.valueOf()`. JS evaluates
+  // switch case expressions top-to-bottom until a match; `.valueOf()` on a
+  // stale/renamed/removed member throws `TypeError: Cannot read properties
+  // of undefined (reading 'valueOf')` while evaluating THAT case, aborting
+  // the whole switch — silently breaking every case listed after it (this is
+  // exactly how a schema-drift typo here took out USER_CONVERSATION_MESSAGE_
+  // DIRECT/GROUP, which sit later in source order). A bare enum reference
+  // just yields `undefined` for a missing member — a case that can never
+  // match, not a throw — so drift here can no longer cascade.
   private getEmailTemplateToUseForEvent(event: NotificationEvent): string {
     switch (event) {
-      case NotificationEvent.SpaceAdminCommunityApplication.valueOf():
+      case NotificationEvent.SpaceAdminCommunityApplication:
         return 'space.admin.community.user.application.received';
-      case NotificationEvent.UserSpaceCommunityInvitation.valueOf():
+      case NotificationEvent.UserSpaceCommunityInvitation:
         return 'user.space.community.invitation.received';
-      case NotificationEvent.UserSpaceCommunityApplicationDeclined.valueOf():
+      case NotificationEvent.UserSpaceCommunityApplicationDeclined:
         return 'user.space.community.application.declined';
-      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation.valueOf():
+      case NotificationEvent.VirtualAdminSpaceCommunityInvitation:
         return 'virtual.contributor.invitation.received';
-      case NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined.valueOf():
+      case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return 'virtual.contributor.invitation.declined';
-      case NotificationEvent.SpaceCommunityInvitationUserPlatform.valueOf():
+      case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return 'user.space.community.invitation.received';
-      case NotificationEvent.UserSpaceCommunityJoined.valueOf():
+      case NotificationEvent.UserSpaceCommunityJoined:
         return 'user.space.community.joined';
-      case NotificationEvent.SpaceAdminCommunityNewMember.valueOf():
+      case NotificationEvent.SpaceAdminCommunityNewMember:
         return 'space.admin.community.new.member';
-      case NotificationEvent.SpaceCommunityCalendarEventCreated.valueOf():
+      case NotificationEvent.SpaceCommunityCalendarEventCreated:
         return 'space.community.calendar.event.created';
-      case NotificationEvent.SpaceCommunityCalendarEventComment.valueOf():
+      case NotificationEvent.SpaceCommunityCalendarEventComment:
         return 'space.community.calendar.event.comment';
-      case NotificationEvent.PlatformAdminGlobalRoleChanged.valueOf():
+      case NotificationEvent.PlatformAdminGlobalRoleChanged:
         return 'platform.admin.user.global.role.change';
-      case NotificationEvent.UserSignUpWelcome.valueOf():
+      case NotificationEvent.UserSignUpWelcome:
         return 'user.sign.up.welcome';
-      case NotificationEvent.PlatformAdminUserProfileCreated.valueOf():
+      case NotificationEvent.PlatformAdminUserProfileCreated:
         return 'platform.admin.user.profile.created';
-      case NotificationEvent.PlatformAdminUserProfileRemoved.valueOf():
+      case NotificationEvent.PlatformAdminUserProfileRemoved:
         return 'platform.admin.user.profile.removed';
-      case NotificationEvent.SpaceCommunicationUpdate.valueOf():
+      case NotificationEvent.SpaceCommunicationUpdate:
         return 'space.communication.update.member';
-      case NotificationEvent.PlatformForumDiscussionCreated.valueOf():
+      case NotificationEvent.PlatformForumDiscussionCreated:
         return 'platform.forum.discussion.created';
-      case NotificationEvent.PlatformForumDiscussionComment.valueOf():
+      case NotificationEvent.PlatformForumDiscussionComment:
         return 'platform.forum.discussion.comment';
-      case NotificationEvent.UserMessage.valueOf():
+      case NotificationEvent.UserMessage:
         return 'user.message.recipient';
-      case NotificationEvent.UserMessageSender.valueOf():
-        return 'user.message.sender';
-      case NotificationEvent.UserConversationMessageDirect.valueOf():
+      case NotificationEvent.UserConversationMessageDirect:
         return 'user.conversation.message.direct';
-      case NotificationEvent.UserConversationMessageGroup.valueOf():
+      case NotificationEvent.UserConversationMessageGroup:
         return 'user.conversation.message.group';
-      case NotificationEvent.OrganizationAdminMessage.valueOf():
+      case NotificationEvent.OrganizationAdminMessage:
         return 'organization.message.recipient';
-      case NotificationEvent.OrganizationMessageSender.valueOf():
+      case NotificationEvent.OrganizationMessageSender:
         return 'organization.message.sender';
-      case NotificationEvent.SpaceLeadCommunicationMessage.valueOf():
+      case NotificationEvent.SpaceLeadCommunicationMessage:
         return 'space.lead.communication.message.direct.receiver';
-      case NotificationEvent.UserMentioned.valueOf():
+      case NotificationEvent.UserMentioned:
         return 'user.mention';
-      case NotificationEvent.OrganizationAdminMentioned.valueOf():
+      case NotificationEvent.OrganizationAdminMentioned:
         return 'organization.mention';
-      case NotificationEvent.SpaceCollaborationCalloutComment.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutComment:
         return 'space.collaboration.callout.comment';
-      case NotificationEvent.SpaceCollaborationCalloutContribution.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutContribution:
         return 'space.collaboration.callout.contribution';
-      case NotificationEvent.SpaceAdminCollaborationCalloutContribution.valueOf():
+      case NotificationEvent.SpaceAdminCollaborationCalloutContribution:
         return 'space.admin.collaboration.callout.contribution';
-      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment:
         return 'space.collaboration.callout.post.contribution.comment';
-      case NotificationEvent.SpaceCollaborationCalloutPublished.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutPublished:
         return 'space.collaboration.callout.published';
-      case NotificationEvent.UserCommentReply.valueOf():
+      case NotificationEvent.UserCommentReply:
         return 'user.comment.reply';
-      case NotificationEvent.PlatformAdminSpaceCreated.valueOf():
+      case NotificationEvent.PlatformAdminSpaceCreated:
         return 'platform.admin.space.created';
-      case NotificationEvent.SpaceCollaborationPollVoteCastOnOwnPoll.valueOf():
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnOwnPoll:
         return 'space.collaboration.poll.vote.cast.on.own.poll';
-      case NotificationEvent.SpaceCollaborationPollVoteCastOnPollIVotedOn.valueOf():
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnPollIVotedOn:
         return 'space.collaboration.poll.vote.cast.on.poll.i.voted.on';
-      case NotificationEvent.SpaceCollaborationPollModifiedOnPollIVotedOn.valueOf():
+      case NotificationEvent.SpaceCollaborationPollModifiedOnPollIVotedOn:
         return 'space.collaboration.poll.modified.on.poll.i.voted.on';
-      case NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange.valueOf():
+      case NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange:
         return 'space.collaboration.poll.vote.affected.by.option.change';
-      case NotificationEvent.UserEmailChangeSecuritySignal.valueOf():
+      case NotificationEvent.UserEmailChangeSecuritySignal:
         return 'user.email.change.security.signal';
-      case NotificationEvent.UserEmailChangeNewAddressNotification.valueOf():
+      case NotificationEvent.UserEmailChangeNewAddressNotification:
         return 'user.email.change.new.address';
-      case NotificationEvent.UserEmailChangeGlobalAdminNotification.valueOf():
+      case NotificationEvent.UserEmailChangeGlobalAdminNotification:
         return 'platform.admin.user.email.change';
-      case NotificationEvent.UserEmailChangeSpaceAdminNotification.valueOf():
+      case NotificationEvent.UserEmailChangeSpaceAdminNotification:
         return 'space.admin.user.email.change';
-      case NotificationEvent.UserPasswordChangeSecuritySignal.valueOf():
+      case NotificationEvent.UserPasswordChangeSecuritySignal:
         return 'user.password.change.security.signal';
       default:
         throw new EventPayloadNotProvidedException(

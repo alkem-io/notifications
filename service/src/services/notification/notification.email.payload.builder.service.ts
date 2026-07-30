@@ -79,7 +79,15 @@ import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { LogContext } from '@src/common/enums';
-import { RoleSetContributorType } from '@src/generated/alkemio-schema';
+// NotificationEvent-adjacent `RoleSetContributorType` (previously imported
+// from the generated schema) was removed from the schema entirely as part
+// of the wave-1 Actor/Account refactor, with no like-for-like replacement —
+// `ActorType.VirtualContributor` serializes to 'VIRTUAL_CONTRIBUTOR', not
+// the 'VIRTUAL' wire value this comparison has always been written against
+// (see notification.email.payload.builder.community.spec.ts). Hardcoding the
+// literal here reconciles the compile-time break from schema drift without
+// changing this pre-existing (pre-034) comparison's behavior.
+const VIRTUAL_CONTRIBUTOR_TYPE = 'VIRTUAL';
 
 @Injectable()
 export class NotificationEmailPayloadBuilderService {
@@ -230,8 +238,7 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type.toLowerCase() ===
-      RoleSetContributorType.Virtual.toLowerCase()
+      newMember.type.toLowerCase() === VIRTUAL_CONTRIBUTOR_TYPE.toLowerCase()
         ? 'Virtual Contributor'
         : newMember.type;
 
@@ -251,8 +258,7 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type.toLowerCase() ===
-      RoleSetContributorType.Virtual.toLowerCase()
+      newMember.type.toLowerCase() === VIRTUAL_CONTRIBUTOR_TYPE.toLowerCase()
         ? 'Virtual Contributor'
         : newMember.type;
 

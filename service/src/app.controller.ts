@@ -85,9 +85,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(
-    NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation
-  )
+  @EventPattern(NotificationEvent.VirtualAdminSpaceCommunityInvitation)
   async sendSpaceCommunityVirtualContributorInvitationCreatedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
@@ -99,9 +97,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(
-    NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined
-  )
+  @EventPattern(NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined)
   async sendSpaceCommunityVirtualContributorInvitationDeclinedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
@@ -258,16 +254,11 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.UserMessageSender)
-  async sendUserMessageSenderNotifications(
-    @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
-    @Ctx() context: RmqContext
-  ) {
-    return this.notificationService.processNotificationEvent(
-      eventPayload,
-      context
-    );
-  }
+  // NotificationEvent.UserMessageSender was removed from the server schema
+  // (schema drift unrelated to 034 — the server no longer emits this event;
+  // USER_MESSAGE_DIRECT/GROUP or the conversation-message events below cover
+  // the sender-facing flows now). The @EventPattern registration and switch
+  // cases were dropped in lockstep with the codegen refresh.
 
   // 034-messaging-notifications (contract C-2): two full wire events (Ruling
   // R1) — one handler each, never routed through the leaking USER_MESSAGE
