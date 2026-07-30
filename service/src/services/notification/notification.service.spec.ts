@@ -667,7 +667,14 @@ describe('NotificationService', () => {
       expect(channel.reject).not.toHaveBeenCalled();
     });
 
-    it('nacks (without requeue) on unexpected exception inside the try block', async () => {
+    // 034-messaging-notifications (D-16 hardening, US1-AS2/AS3/US2-AS2
+    // finding): an unexpected exception — whether thrown while building/
+    // sending (e.g. a schema-drift bug) or, as simulated here, while doing
+    // the ack/nack bookkeeping — must go through the SAME bounded
+    // redelivery/death-count path as a total-send failure, not an
+    // unconditional single-shot nack. Below the cap it requeues; at/above
+    // the cap it rejects without requeue.
+    it('requeues (bounded) on unexpected exception when the x-death count is below the cap', async () => {
       // channel.ack throwing inside the try block triggers the catch handler
       jest
         .spyOn(notifmeService, 'send')
@@ -689,11 +696,35 @@ describe('NotificationService', () => {
         context
       );
 
-      expect(channel.nack).toHaveBeenCalledWith(
-        expect.anything(),
-        false,
-        false
+      expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
+      expect(channel.nack).not.toHaveBeenCalled();
+    });
+
+    it('rejects WITHOUT requeue on unexpected exception once the x-death count is at/above the cap', async () => {
+      jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
+      const channel = {
+        ack: jest.fn().mockImplementation(() => {
+          throw new Error('Channel failure');
+        }),
+        nack: jest.fn(),
+        reject: jest.fn(),
+      };
+      const context = {
+        getChannelRef: () => channel,
+        getMessage: () => ({
+          properties: { headers: { 'x-death': [{ count: 3 }] } },
+        }),
+      } as unknown as RmqContext;
+
+      await notificationService.processNotificationEvent(
+        mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+        context
       );
+
+      expect(channel.reject).toHaveBeenCalledWith(expect.anything(), false);
+      expect(channel.nack).not.toHaveBeenCalled();
     });
   });
 
