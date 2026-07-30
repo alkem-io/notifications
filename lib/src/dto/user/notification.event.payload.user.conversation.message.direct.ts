@@ -9,8 +9,7 @@ import { BaseEventPayload } from '../base.event.payload';
  * deep-link URL to it. `triggeredBy.email` is zeroed by the server builder
  * before this leaves the process (sender PII never rides the durable queue).
  */
-export interface NotificationEventPayloadUserConversationMessageDirect
-  extends BaseEventPayload {
+export interface NotificationEventPayloadUserConversationMessageDirect extends BaseEventPayload {
   sender: { displayName: string };
   conversation: { id: string; url: string };
 }

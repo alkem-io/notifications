@@ -8,8 +8,7 @@ import { BaseEventPayload } from '../base.event.payload';
  * `conversation.displayName` since group email/push copy names the
  * conversation. NO message-content field exists on this DTO (FR-008).
  */
-export interface NotificationEventPayloadUserConversationMessageGroup
-  extends BaseEventPayload {
+export interface NotificationEventPayloadUserConversationMessageGroup extends BaseEventPayload {
   sender: { displayName: string };
   conversation: { id: string; url: string; displayName: string };
 }
