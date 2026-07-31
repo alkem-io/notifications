@@ -14,8 +14,6 @@ import {
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadSpaceCommunicationUpdate,
   NotificationEventPayloadUserMessageDirect,
-  NotificationEventPayloadUserConversationMessageDirect,
-  NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCommunityInvitation,
   NotificationEventPayloadPlatformForumDiscussion,
   NotificationEventPayloadPlatformGlobalRole,
@@ -39,6 +37,10 @@ import {
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
   NotificationEventPayloadUserPasswordChangeSecuritySignal,
 } from '@alkemio/notifications-lib';
+import {
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
+} from '@src/types/notifications.lib.conversation.bridge';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';

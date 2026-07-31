@@ -3,14 +3,16 @@ import { NotificationEmailPayloadBuilderService } from '@src/services/notificati
 import {
   NotificationEventPayloadSpaceCommunicationUpdate,
   NotificationEventPayloadUserMessageDirect,
-  NotificationEventPayloadUserConversationMessageDirect,
-  NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadSpaceCommunicationMessageDirect,
   NotificationEventPayloadUserMessageRoom,
   NotificationEventPayloadUserMessageRoomReply,
 } from '@alkemio/notifications-lib';
+import {
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
+} from '@src/types/notifications.lib.conversation.bridge';
 import { User } from '@core/models';
 
 // ---------------------------------------------------------------------------

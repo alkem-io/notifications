@@ -16,8 +16,6 @@ import {
   NotificationEventPayloadOrganizationMessageDirect,
   NotificationEventPayloadOrganizationMessageRoom,
   NotificationEventPayloadUserMessageDirect,
-  NotificationEventPayloadUserConversationMessageDirect,
-  NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCommunityInvitation,
   NotificationEventPayloadSpaceCommunicationMessageDirect,
   NotificationEventPayloadSpaceCommunicationUpdate,
@@ -39,6 +37,10 @@ import {
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
 } from '@alkemio/notifications-lib';
+import {
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
+} from './types/notifications.lib.conversation.bridge';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
 
