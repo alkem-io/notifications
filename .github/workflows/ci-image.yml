@@ -1,0 +1,43 @@
+# workspace#036-distroless-wave-1 (epic alkem-io/infrastructure-operations#2499)
+#
+# Builds the runtime image and runs the distroless contract regression
+# (.docker/distroless-image-smoke.sh) on every PR/push that can change it.
+#
+# NOTE ON WORKING DIRECTORY: unlike ci-build/ci-lint/ci-test — which set
+# `working-directory: service` for their npm steps — the Docker build MUST run
+# from the REPO ROOT. The Dockerfile's `COPY service/...` paths are relative to
+# the build context, so a context of `service/` silently fails to find sources.
+name: CI Image
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  image-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Build for the local daemon (single-arch) so the smoke harness can
+      # `docker run` and `docker inspect` it. The multi-arch release build
+      # lives in build-release-docker-hub.yml.
+      - name: Build runtime image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: alkemio/notifications:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Distroless contract smoke test
+        run: bash .docker/distroless-image-smoke.sh "alkemio/notifications:ci-${{ github.sha }}"
