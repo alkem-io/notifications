@@ -51,13 +51,27 @@ CMD_JSON="$(docker inspect "$IMAGE" --format '{{json .Config.Cmd}}')"
 [ "$CMD_JSON" = '["dist/main.js"]' ] || fail "expected CMD [\"dist/main.js\"], got $CMD_JSON"
 pass "CMD is [\"dist/main.js\"]"
 
-# --- no shell / no package manager ------------------------------------------
-for bin in /bin/sh /bin/bash /usr/bin/sh apk apt apt-get npm pnpm yarn; do
-  if docker run --rm --entrypoint "$bin" "$IMAGE" >/dev/null 2>&1; then
-    fail "expected '$bin' to be absent/unexecutable, but it ran"
-  fi
-done
-pass "no shell / package manager is executable"
+# --- no shell / no package manager -----------------------------------------
+# Probe for EXISTENCE on the filesystem, not exit status. A bare `docker run
+# --entrypoint apk <img>` exits non-zero on an image that HAS a working apk
+# (apk with no args is a usage error), so an exit-status test reports present
+# binaries as absent — it has no detection power. lstat (not existsSync) so a
+# dangling symlink still counts as a hit; Google's :debug variants put the
+# shell at /busybox/sh -> /busybox/busybox.
+FORBIDDEN="$(run_node -e "
+const fs = require('fs');
+const paths = [
+  '/bin/sh','/bin/bash','/usr/bin/sh','/usr/bin/bash',
+  '/busybox/sh','/busybox/busybox','/bin/busybox','/usr/bin/busybox',
+  '/sbin/apk','/usr/bin/apk','/usr/bin/apt','/usr/bin/apt-get','/usr/bin/dpkg',
+  '/usr/local/bin/npm','/usr/local/bin/npx','/usr/local/bin/yarn','/usr/local/bin/pnpm',
+  '/usr/bin/npm','/usr/bin/yarn','/usr/bin/pnpm',
+];
+const hits = paths.filter(p => { try { fs.lstatSync(p); return true; } catch { return false; } });
+console.log(hits.join(','));
+")"
+[ -z "$FORBIDDEN" ] || fail "shell/package-manager present in runtime image: $FORBIDDEN"
+pass "no shell / package manager present on the filesystem"
 
 # --- build-time-only artifacts are absent -----------------------------------
 HAS_SRC_TS="$(run_node -e "
