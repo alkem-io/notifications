@@ -2,7 +2,7 @@
 
 Re-run **2026-08-06** (drift-gate fix commit) against a `--no-cache` build of the CURRENT
 committed Dockerfile (builder reverted to non-slim `trixie`) and the CURRENT smoke harness
-(lstat-based shell/package-manager probe). The prior transcript recorded a run against a
+(PATH-directory readdir sweep). The prior transcript recorded a run against a
 superseded (`-slim`) builder image using a superseded (exit-status) probe — a PASS string that
 line no longer matches — and has been replaced wholesale, per drift-gate finding
 notifications-driftfix-spec-compliance-3.
@@ -12,7 +12,7 @@ notifications-driftfix-spec-compliance-3.
 PASS: runs as user '65532'
 PASS: entrypoint is the distroless node binary
 PASS: CMD is ["dist/main.js"]
-PASS: no shell / package manager present on the filesystem
+PASS: PATH directories are empty (no shell / package manager / any binary)
 PASS: no TypeScript sources in the runtime image
 PASS: no ts-node / typescript / pnpm in node_modules
 PASS: dist/main.js, src/email-templates/, notifications.yml, package.json all present
