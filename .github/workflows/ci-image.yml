@@ -41,3 +41,29 @@ jobs:
 
       - name: Distroless contract smoke test
         run: bash .docker/distroless-image-smoke.sh "alkemio/notifications:ci-${{ github.sha }}"
+
+  # The release workflow publishes a linux/amd64 + linux/arm64 manifest list,
+  # but every PR check above builds amd64 only — which is exactly how a
+  # toolchain regression stayed invisible until release time: farmhash has no
+  # linux-arm64 prebuild, so the arm64 leg is the only place `node-gyp
+  # rebuild` actually runs. This job compiles the arm64 image (build only, no
+  # emulated harness run) so that class of break fails the PR instead of the
+  # release.
+  image-arm64-build:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build runtime image (arm64, native)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: alkemio/notifications:ci-arm64-${{ github.sha }}
+          cache-from: type=gha,scope=arm64
+          cache-to: type=gha,mode=max,scope=arm64
