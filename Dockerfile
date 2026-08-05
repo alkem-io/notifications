@@ -8,16 +8,26 @@
 # and a child digest would break the arm64 build.
 #
 # Pins re-resolved 2026-08-05. To re-resolve:
-#   docker buildx imagetools inspect node:22.23.2-trixie-slim
+#   docker buildx imagetools inspect node:22.23.2-trixie
 #   docker buildx imagetools inspect gcr.io/distroless/nodejs22-debian13:nonroot
 # The result must be an `application/vnd.oci.image.index.v1+json` listing BOTH
 # linux/amd64 and linux/arm64.
 #
+# The BUILDER IS DELIBERATELY NON-SLIM: farmhash@3.3.1 (the one native module
+# this image ships) publishes prebuilds for linux-x64 only — no linux-arm64 —
+# so on the arm64 leg of build-release-docker-hub.yml its install falls
+# through to `node-gyp rebuild`, which needs gcc/g++/make/python3. A `-slim`
+# builder lacks a C toolchain entirely and breaks that build silently (every
+# PR check and the dev deploy build amd64 only, where a prebuild exists, so
+# the break surfaces only at GitHub Release publish time). Do not swap this
+# to a `-slim`/`-alpine` tag without first confirming an arm64 prebuild
+# exists for every native module in dependencies.
+#
 # Builder/runtime pairing: builder is Debian 13 "trixie" (glibc 2.41) and the
-# runtime is distroless debian13 (glibc 2.41) — an exact glibc match for the one
-# native module this image ships (farmhash → build/Release/farmhash.node).
-# Node major stays 22, so NODE_MODULE_VERSION (127) is unchanged; the
-# debian12 → debian13 runtime move is CVE hygiene, not an ABI necessity.
+# runtime is distroless debian13 (glibc 2.41) — an exact glibc match for
+# farmhash → build/Release/farmhash.node. Node major stays 22, so
+# NODE_MODULE_VERSION (127) is unchanged; the debian12 → debian13 runtime
+# move is CVE hygiene, not an ABI necessity.
 
 # ======================
 # Builder stage (with dev deps)

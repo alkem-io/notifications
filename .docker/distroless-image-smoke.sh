@@ -52,26 +52,28 @@ CMD_JSON="$(docker inspect "$IMAGE" --format '{{json .Config.Cmd}}')"
 pass "CMD is [\"dist/main.js\"]"
 
 # --- no shell / no package manager -----------------------------------------
-# Probe for EXISTENCE on the filesystem, not exit status. A bare `docker run
-# --entrypoint apk <img>` exits non-zero on an image that HAS a working apk
-# (apk with no args is a usage error), so an exit-status test reports present
-# binaries as absent — it has no detection power. lstat (not existsSync) so a
-# dangling symlink still counts as a hit; Google's :debug variants put the
-# shell at /busybox/sh -> /busybox/busybox.
+# Sweep every PATH-shaped directory instead of probing a fixed denylist of
+# binary names: distroless ships /bin, /sbin, /usr/bin, /usr/sbin (and has no
+# /usr/local/bin or /busybox) EMPTY, so ANY entry appearing in one of them —
+# a shell, a package manager, busybox, anything — is a regression. This
+# closes the two holes the review proved in the earlier checks: (a) an
+# exit-status probe read working binaries as absent (apk with no args exits
+# non-zero), and (b) a fixed path list missed /busybox/sh, where Google's
+# :debug variants actually put the shell. lstat/readdir needs no exec
+# permission and sees dangling symlinks.
 FORBIDDEN="$(run_node -e "
 const fs = require('fs');
-const paths = [
-  '/bin/sh','/bin/bash','/usr/bin/sh','/usr/bin/bash',
-  '/busybox/sh','/busybox/busybox','/bin/busybox','/usr/bin/busybox',
-  '/sbin/apk','/usr/bin/apk','/usr/bin/apt','/usr/bin/apt-get','/usr/bin/dpkg',
-  '/usr/local/bin/npm','/usr/local/bin/npx','/usr/local/bin/yarn','/usr/local/bin/pnpm',
-  '/usr/bin/npm','/usr/bin/yarn','/usr/bin/pnpm',
-];
-const hits = paths.filter(p => { try { fs.lstatSync(p); return true; } catch { return false; } });
+const dirs = ['/bin','/sbin','/usr/bin','/usr/sbin','/usr/local/bin','/usr/local/sbin','/busybox'];
+const hits = [];
+for (const d of dirs) {
+  let entries = [];
+  try { entries = fs.readdirSync(d); } catch { continue; } // absent dir is fine
+  for (const e of entries) hits.push(d + '/' + e);
+}
 console.log(hits.join(','));
 ")"
-[ -z "$FORBIDDEN" ] || fail "shell/package-manager present in runtime image: $FORBIDDEN"
-pass "no shell / package manager present on the filesystem"
+[ -z "$FORBIDDEN" ] || fail "unexpected executables in runtime image PATH dirs: $FORBIDDEN"
+pass "PATH directories are empty (no shell / package manager / any binary)"
 
 # --- build-time-only artifacts are absent -----------------------------------
 HAS_SRC_TS="$(run_node -e "

@@ -5,9 +5,15 @@ Re-resolved **2026-08-05** at implementation time. Any digest recorded in
 
 ## What is pinned
 
+**Corrected 2026-08-06** (drift-gate fix commit): the builder pin below was originally
+`node:22.23.2-trixie-slim`, which broke the arm64 leg of `build-release-docker-hub.yml` —
+`farmhash@3.3.1` ships prebuilds for `linux-x64` only, so arm64 falls through to
+`node-gyp rebuild`, and `-slim` carries no C toolchain. Reverted to non-slim `trixie`, which
+retains gcc/g++/make/python3. See "Builder choice" below for the corrected reasoning.
+
 | stage | before | after |
 |---|---|---|
-| builder | `node:22.23.2-bookworm` (floating) | `node:22.23.2-trixie-slim@sha256:db8a96a63e5264607ada2d206758876ebbed6a12be2ada7517793cbfb0c2a29c` |
+| builder | `node:22.23.2-bookworm` (floating) | `node:22.23.2-trixie@sha256:a566dd560283ae5615c8bb86b58fa8a1b6f3c82b492473a061672416266625da` |
 | prod-deps | `node:22.23.2-bookworm` (floating) | *(same pin as builder)* |
 | runtime | `gcr.io/distroless/nodejs22-debian12:nonroot` (floating) | `gcr.io/distroless/nodejs22-debian13:nonroot@sha256:939d6f1671529d230f50b563578e9b5d206af58f038b10ebd7e1233023d4e167` |
 
@@ -19,9 +25,9 @@ manifest list. A per-architecture child digest would break the arm64 build, so b
 top-level indexes:
 
 ```
-$ docker buildx imagetools inspect node:22.23.2-trixie-slim
+$ docker buildx imagetools inspect node:22.23.2-trixie
 MediaType: application/vnd.oci.image.index.v1+json
-Digest:    sha256:db8a96a63e5264607ada2d206758876ebbed6a12be2ada7517793cbfb0c2a29c
+Digest:    sha256:a566dd560283ae5615c8bb86b58fa8a1b6f3c82b492473a061672416266625da
   Platform: linux/amd64 · linux/arm64/v8 · linux/ppc64le · linux/s390x
 
 $ docker buildx imagetools inspect gcr.io/distroless/nodejs22-debian13:nonroot
@@ -61,21 +67,36 @@ pairing the task file settles for.
 principle (don't smuggle a version bump into a base-image swap) is respected — the tag simply
 follows the existing pin.
 
-`-bookworm` → `-trixie-slim` is also a size win on the builder stage (`-slim` drops the C/C++
-toolchain). That is safe here because `farmhash` installs a **prebuilt** binary via
-`prebuild-install` rather than compiling. Verified three ways in the `prod-deps` stage:
+### Corrected: the builder is deliberately NON-slim
+
+The implementation originally moved `-bookworm` → `-trixie-slim` as a size win, reasoning that
+`farmhash` installs a **prebuilt** binary rather than compiling. That reasoning was measured on
+**amd64 only** and does not hold on arm64:
 
 ```
-$ ls -la /app/node_modules/farmhash/build/Release/
--rwxr-xr-x 1 root root 56400 Apr 17  2024 farmhash.node   # 2024 mtime = downloaded, not built
-$ find /app/node_modules/farmhash -name '*.o' | wc -l
-0                                                        # no compile objects
-$ which gcc g++ make python3
-(none)                                                   # -slim has NO C toolchain at all
+$ npm view farmhash@3.3.1 dist.tarball    # published prebuild manifest
+$ curl -sL https://github.com/lovell/farmhash/releases/download/v3.3.1/... | tar tz
+  linux-x64.tar.gz   linuxmusl-x64.tar.gz   darwin-arm64.tar.gz   darwin-x64.tar.gz
+  win32-ia32.tar.gz  win32-x64.tar.gz
 ```
 
-The third point is the decisive one: had npm needed to compile, the `-slim` build would have
-**failed**, not silently degraded.
+**No `linux-arm64` prebuild exists.** On the arm64 leg of
+`build-release-docker-hub.yml` (native `ubuntu-24.04-arm` runner), `prebuild-install` therefore
+falls through to `node-gyp rebuild`, which requires `gcc`/`g++`/`make`/`python3` — exactly the
+toolchain `-slim` removes:
+
+```
+$ docker run --rm node:22.23.2-trixie-slim sh -c 'which cc gcc g++ make'
+NO C TOOLCHAIN
+```
+
+This was invisible in every check that ran before the drift-gate re-review: CI and the dev
+deploy both build **amd64 only**, where the prebuild exists. The break would have surfaced for
+the first time at GitHub Release publish. The amd64-only "prebuilt, no toolchain needed"
+observations above remain true *for amd64* and are kept for that record, but the builder tag
+they were used to justify has been reverted to non-slim `trixie`, which retains the toolchain.
+Verified: `docker buildx build --platform linux/arm64 .` completes successfully against the
+current (non-slim) Dockerfile.
 
 ## ABI statement
 
@@ -85,8 +106,7 @@ The debian12 → debian13 runtime move is **CVE hygiene, not an ABI necessity**:
   smoke harness (`PASS: NODE_MODULE_VERSION is 127`).
 - glibc is backward-compatible, so even the original bookworm-built (2.36) module would load on
   trixie (2.41). Moving the builder to trixie makes them identical, which is strictly stronger.
-- **The glibc question turns out to be moot for this repo.** The single native artifact is a
-  prebuilt binary that requires only `GLIBC_2.2`:
+- **On amd64**, the native artifact is a prebuilt binary requiring only `GLIBC_2.2`:
 
   ```
   $ strings -a farmhash.node | grep -oE 'GLIBC_[0-9]+\.[0-9]+' | sort -uV
@@ -95,18 +115,24 @@ The debian12 → debian13 runtime move is **CVE hygiene, not an ABI necessity**:
   ELF 64-bit LSB shared object, x86-64 … dynamically linked, stripped
   ```
 
-  Since it is never linked against the *builder's* glibc at all (it is downloaded, not
-  compiled), the builder/runtime glibc relationship carries no risk here in either direction.
-  The exact 2.41/2.41 match is belt-and-braces, not a load-bearing fix.
-- Proven empirically, not just argued: `farmhash` loads and computes inside the final image
-  (`hash32('abc') = 3330671702`), and the full NestJS app boots and listens on 4004.
+  so on amd64 it is never linked against the builder's glibc at all (downloaded, not
+  compiled), and the builder/runtime glibc relationship carries no risk there.
+- **On arm64 this does NOT hold**: no `linux-arm64` prebuild exists for farmhash@3.3.1, so
+  `node-gyp rebuild` compiles the module against the *builder's* glibc, which is then loaded by
+  the distroless runtime. Here the exact 2.41/2.41 pairing (non-slim `trixie` builder / debian13
+  runtime) IS load-bearing, not belt-and-braces — an arm64 build with a mismatched glibc pair
+  would be a genuine ABI risk this wave exists to avoid.
+- Proven empirically, not just argued: `farmhash` loads and computes inside the final amd64
+  image (`hash32('abc') = 3330671702`), the full NestJS app boots and listens on 4004, and a
+  `docker buildx build --platform linux/arm64` of the current Dockerfile completes successfully.
 
 ## Re-resolution
 
 ```bash
-docker buildx imagetools inspect node:22.23.2-trixie-slim
+docker buildx imagetools inspect node:22.23.2-trixie
 docker buildx imagetools inspect gcr.io/distroless/nodejs22-debian13:nonroot
 ```
 
 The result must be `application/vnd.oci.image.index.v1+json` listing both `linux/amd64` and
-`linux/arm64`. The same instruction is in the Dockerfile header.
+`linux/arm64`. **Do not resolve `-trixie-slim`** — see "Builder choice" above; the builder must
+keep its C toolchain for the arm64 leg. The same instruction is in the Dockerfile header.
