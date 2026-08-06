@@ -144,7 +144,11 @@ fi
 
 # --- size reporting ---------------------------------------------------------
 IMAGE_DIGEST="$(docker inspect "$IMAGE" --format '{{.Id}}')"
-IMAGE_SIZE_BYTES="$(docker save "$IMAGE" | wc -c)"
+# `docker inspect .Size`, NOT `docker save | wc -c`: on a runner that has just
+# built a multi-arch image, `docker save` streams every architecture in the
+# build cache, inflating the measurement ~3x against a correct image. `.Size`
+# counts only this image's layers, so it is architecture-correct anywhere.
+IMAGE_SIZE_BYTES="$(docker inspect "$IMAGE" --format '{{.Size}}')"
 echo "IMAGE_DIGEST=$IMAGE_DIGEST"
 echo "IMAGE_SIZE_BYTES=$IMAGE_SIZE_BYTES"
 echo "BASELINE_IMAGE_SIZE_BYTES=$BASELINE_IMAGE_SIZE_BYTES"
