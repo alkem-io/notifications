@@ -473,6 +473,11 @@ describe('NotificationService', () => {
       jest
         .spyOn(templateBuilder, 'buildTemplate')
         .mockResolvedValue(MINIMAL_TEMPLATE);
+      // The requeue path now backs off before rejecting. Stub it out so these
+      // tests stay fast; the backoff itself is asserted in its own test below.
+      jest
+        .spyOn(notificationService as any, 'delayBeforeRequeue')
+        .mockResolvedValue(undefined);
     });
 
     it('acks when all notifications sent successfully', async () => {
@@ -519,6 +524,74 @@ describe('NotificationService', () => {
 
       expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
       expect(channel.ack).not.toHaveBeenCalled();
+    });
+
+    // -----------------------------------------------------------------------
+    // A send can fail by REJECTING or by RESOLVING with notifme's
+    // `{ status: 'error' }` — `sendNotification` catches every transport error
+    // and returns the latter. Classifying only rejections as failures meant a
+    // total SMTP outage was logged as "successfully sent" and ACKED, silently
+    // discarding the notification, and made the bounded-retry path below
+    // unreachable for the transient outage it exists to handle.
+    // -----------------------------------------------------------------------
+    describe('a resolved-but-errored send counts as a failure', () => {
+      it('does NOT ack when every send resolves with status=error', async () => {
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'error' } as any);
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processNotificationEvent(
+          mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          context
+        );
+
+        expect(channel.ack).not.toHaveBeenCalled();
+        expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
+      });
+
+      it('nacks without requeue when only SOME sends resolve with status=error', async () => {
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValueOnce({ status: 'error' } as any)
+          .mockResolvedValue({ status: 'success' } as any);
+        const payload = {
+          ...mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          recipients: [{ email: 'a@alkem.io' }, { email: 'b@alkem.io' }] as any,
+        };
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processNotificationEvent(payload, context);
+
+        expect(channel.ack).not.toHaveBeenCalled();
+        expect(channel.nack).toHaveBeenCalledWith(
+          expect.anything(),
+          false,
+          false
+        );
+      });
+
+      it('backs off before requeueing, so the attempt cap is not burned instantly', async () => {
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'error' } as any);
+        const backoff = jest.spyOn(
+          notificationService as any,
+          'delayBeforeRequeue'
+        );
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processNotificationEvent(
+          mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          context
+        );
+
+        expect(backoff).toHaveBeenCalledWith(1);
+        // And the backoff completes before the requeue is issued.
+        expect(backoff.mock.invocationCallOrder[0]).toBeLessThan(
+          (channel.reject as jest.Mock).mock.invocationCallOrder[0]
+        );
+      });
     });
 
     // -----------------------------------------------------------------------

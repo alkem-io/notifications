@@ -60,6 +60,12 @@ export class NotificationService {
   // are rejected without requeue rather than looped forever.
   private static readonly MAX_REDELIVERY_ATTEMPTS = 3;
 
+  // Multiplied by the attempt number for the pre-requeue backoff, so the three
+  // attempts span ~2s + ~4s rather than completing inside a few milliseconds.
+  // A requeued message is redelivered to this same consumer immediately, so
+  // without this the cap gave a transient outage no time to recover.
+  private static readonly REQUEUE_BACKOFF_STEP_MS = 2_000;
+
   // 034-messaging-notifications review fix (corr/spec/qual/sec
   // notifications-2/3): RabbitMQ only stamps an `x-death` header when a
   // message is actually dead-lettered — reject/nack with requeue=false into
@@ -125,11 +131,29 @@ export class NotificationService {
         channel.ack(originalMsg);
         return;
       }
-      const nacked = x.filter(
-        (y: { status: string }) => y.status === 'rejected'
-      ) as PromiseRejectedResult[];
+      // A send FAILS in two distinct ways and both must count:
+      //  - the promise rejected (e.g. NotificationNoChannelsException), or
+      //  - it resolved with notifme's `{ status: 'error' }`.
+      // Only the first used to be counted. `sendNotification` catches every
+      // transport error and RETURNS `{ status: 'error' }` (see its catch), so
+      // a resolved-but-failed send arrived here as
+      // `{ status: 'fulfilled', value: { status: 'error' } }` and passed the
+      // old `y.status === 'rejected'` test. The consequence was severe and
+      // silent: a total SMTP outage produced zero "rejected" entries, took the
+      // `nacked.length === 0` branch, logged "N messages successfully sent!"
+      // and ACKED — discarding the notification while reporting delivery. It
+      // also made the bounded-retry path below unreachable for the one case it
+      // was written for.
+      const failed = x.filter(
+        result =>
+          result.status === 'rejected' || result.value?.status === 'error'
+      );
+      const failureReason = (result: (typeof failed)[number]): unknown =>
+        result.status === 'rejected'
+          ? result.reason
+          : `notifme reported status=error: ${JSON.stringify(result.value?.errors ?? {})}`;
 
-      if (nacked.length === 0) {
+      if (failed.length === 0) {
         this.logger.verbose?.(
           `[${eventPayload.eventType}] ${x.length} messages successfully sent!`,
           LogContext.NOTIFICATIONS
@@ -139,7 +163,7 @@ export class NotificationService {
         this.clearDeliveryAttempts(originalMsg);
         channel.ack(originalMsg);
       } else {
-        if (nacked.length === x.length) {
+        if (failed.length === x.length) {
           // 034-messaging-notifications (FR-015/D-16, risk R-12) — fixed
           // per corr/spec/qual/sec notifications-2/3 findings: the all-
           // failed path used to requeue unconditionally, which on a
@@ -158,13 +182,24 @@ export class NotificationService {
             channel.reject(originalMsg, false);
           } else {
             this.logger.verbose?.('All messages failed to be sent!');
+            // Back off BEFORE requeueing. RabbitMQ redelivers a requeued
+            // message to this same single-replica consumer immediately, so an
+            // instant `reject(msg, true)` burned all MAX_REDELIVERY_ATTEMPTS
+            // inside a few milliseconds — turning any transient outage into a
+            // permanent drop. The delay holds the message unacked for a few
+            // seconds, which is acceptable on an outage path and is what makes
+            // the attempt cap mean "retried over ~seconds" rather than "retried
+            // three times instantly". A DLX + per-message-TTL retry queue is
+            // the proper fix, but it needs broker topology this service does
+            // not own.
+            await this.delayBeforeRequeue(attempts);
             // if all messages failed to be sent, we reject the message but we make sure the message is
             // not discarded so we provide 'true' to requeue parameter
             channel.reject(originalMsg, true);
           }
         } else {
           this.logger.verbose?.(
-            `${nacked.length} messages out of total ${x.length} messages failed to be sent!`,
+            `${failed.length} messages out of total ${x.length} messages failed to be sent!`,
             LogContext.NOTIFICATIONS
           );
           // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
@@ -172,8 +207,8 @@ export class NotificationService {
           this.clearDeliveryAttempts(originalMsg);
           channel.nack(originalMsg, false, false);
         }
-        // print all rejected notifications
-        nacked.forEach(x => this.logger?.warn(x.reason));
+        // print all failed notifications
+        failed.forEach(result => this.logger?.warn(failureReason(result)));
       }
     } catch (err) {
       // 034-messaging-notifications review fix (corr-notifications-2,
@@ -185,6 +220,12 @@ export class NotificationService {
       // this single-replica consumer, so discard immediately, matching the
       // pre-034 fail-safe behaviour on this path.
       this.logger.error(err);
+      // The message is discarded here and will never be redelivered, so its
+      // attempt entry is dead weight. Without this, a message that recorded an
+      // attempt on the all-failed path and then threw on a later redelivery
+      // left an entry that survived for the pod's lifetime — a slow leak in an
+      // unbounded, TTL-less map on a long-lived single-replica consumer.
+      this.clearDeliveryAttempts(originalMsg);
       channel.nack(originalMsg, false, false);
     }
   }
@@ -741,5 +782,14 @@ export class NotificationService {
   /** Drops the tracked attempt count once a message will not be redelivered (acked, or given up on), bounding map growth. */
   private clearDeliveryAttempts(message: Message): void {
     this.deliveryAttempts.delete(this.getMessageKey(message));
+  }
+
+  /**
+   * Linear backoff before requeueing an all-recipients-failed message, so the
+   * attempt cap spans seconds rather than milliseconds. Overridable in tests.
+   */
+  protected delayBeforeRequeue(attempt: number): Promise<void> {
+    const delayMs = attempt * NotificationService.REQUEUE_BACKOFF_STEP_MS;
+    return new Promise(resolve => setTimeout(resolve, delayMs));
   }
 }
