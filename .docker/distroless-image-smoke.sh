@@ -24,7 +24,14 @@
 set -euo pipefail
 
 IMAGE="${1:?usage: distroless-image-smoke.sh <image> [baseline_size_bytes]}"
-BASELINE_IMAGE_SIZE_BYTES="${2:-95523751}"
+# Retired the previous constant (95,523,751): it came from `docker inspect
+# .Size` on a containerd-snapshotter daemon, which counts only layers unique
+# to the image and under-reports a shared base ~3x (the real pre-036 image is
+# ~583 MB by the same measure used below). This harness only REPORTS the
+# delta, so the wrong constant misled rather than failed — but a misleading
+# number in evidence is still wrong. Pass an explicit baseline as $2 to
+# compare against a specific prior build.
+BASELINE_IMAGE_SIZE_BYTES="${2:-0}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
@@ -144,15 +151,24 @@ fi
 
 # --- size reporting ---------------------------------------------------------
 IMAGE_DIGEST="$(docker inspect "$IMAGE" --format '{{.Id}}')"
-# `docker inspect .Size`, NOT `docker save | wc -c`: on a runner that has just
-# built a multi-arch image, `docker save` streams every architecture in the
-# build cache, inflating the measurement ~3x against a correct image. `.Size`
-# counts only this image's layers, so it is architecture-correct anywhere.
-IMAGE_SIZE_BYTES="$(docker inspect "$IMAGE" --format '{{.Size}}')"
+# Sum `docker history` layer sizes rather than `docker inspect .Size`: on a
+# containerd-snapshotter daemon .Size counts only layers UNIQUE to this image,
+# so the same image measures ~3x smaller locally than on a CI runner using the
+# classic store. The history sum is store-independent.
+IMAGE_SIZE_BYTES="$(docker history --no-trunc --format '{{.Size}}' "$IMAGE" | awk '
+  /^[0-9.]+ *[kMG]?B$/ {
+    v=$0; sub(/ *[kMG]?B$/,"",v); u=$0; sub(/^[0-9.]+ */,"",u);
+    m = (u=="kB")?1000 : (u=="MB")?1000000 : (u=="GB")?1000000000 : 1;
+    total += v*m
+  } END { printf "%d", total }')"
 echo "IMAGE_DIGEST=$IMAGE_DIGEST"
 echo "IMAGE_SIZE_BYTES=$IMAGE_SIZE_BYTES"
-echo "BASELINE_IMAGE_SIZE_BYTES=$BASELINE_IMAGE_SIZE_BYTES"
-echo "SIZE_DELTA_PCT=$(awk -v new="$IMAGE_SIZE_BYTES" -v old="$BASELINE_IMAGE_SIZE_BYTES" \
-  'BEGIN { printf "%+.2f", ((new / old) - 1) * 100 }')"
+if [ "$BASELINE_IMAGE_SIZE_BYTES" -gt 0 ] 2>/dev/null; then
+  echo "BASELINE_IMAGE_SIZE_BYTES=$BASELINE_IMAGE_SIZE_BYTES"
+  echo "SIZE_DELTA_PCT=$(awk -v new="$IMAGE_SIZE_BYTES" -v old="$BASELINE_IMAGE_SIZE_BYTES" \
+    'BEGIN { printf "%+.2f", ((new / old) - 1) * 100 }')"
+else
+  echo "SIZE_DELTA_PCT=n/a (no baseline supplied; pass one as \$2 to compare)"
+fi
 
 echo "== distroless-image-smoke: ALL CHECKS PASSED =="
