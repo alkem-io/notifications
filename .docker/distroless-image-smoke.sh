@@ -127,17 +127,24 @@ NODE_ABI="$(run_node -e "console.log(process.versions.modules)")"
 [ "$NODE_ABI" = "127" ] || note "NODE_MODULE_VERSION is $NODE_ABI (expected 127 for Node 22)"
 [ "$NODE_ABI" = "127" ] && pass "NODE_MODULE_VERSION is 127 (Node 22 ABI unchanged)"
 
-# --- known C3 exception: report, do not fail --------------------------------
-# `cross-env` is declared in `dependencies` (not devDependencies) and therefore
-# ships in the production image. Ruling C3: out of scope for this wave — moving
-# it is a dependency change, not a base-image change. Tracked as follow-up F1.
-# `@nestjs/cli` is ALSO declared in `dependencies`, but npm dedupes it to the
-# devDependencies range and marks it dev in the lockfile, so `npm ci --omit=dev`
-# already strips it; this harness verifies that empirically rather than assuming.
+# --- build-time tooling must not ship (was C3 exception, closed by F1) ------
+# Previously REPORTED and tolerated: `cross-env` was declared in `dependencies`
+# and therefore shipped in the production image; ruling C3 deferred the move to
+# follow-up F1 (#570). F1 moved `cross-env` to devDependencies and deleted the
+# redundant `@nestjs/cli` entry from `dependencies`, so both are now absent and
+# this is an ASSERTION, not a note — it fails if either regresses back into the
+# runtime tree.
+#
+# (`@nestjs/cli` never actually shipped: it was declared in BOTH blocks with
+# different ranges, and npm deduped to the devDependencies range and marked the
+# single lockfile entry `dev: true`, so `npm ci --omit=dev` already stripped it.
+# Removing the `dependencies` entry was a correctness fix, not a size fix.)
 for m in cross-env @nestjs/cli; do
   HAS="$(run_node -e "console.log(require('fs').existsSync('/app/node_modules/$m'))")"
-  note "C3/F1: '$m' present in runtime node_modules = $HAS"
+  [ "$HAS" = "false" ] ||
+    fail "build-time-only package '$m' is present in the runtime node_modules (regression of #570 / F1)"
 done
+pass "no cross-env / @nestjs/cli in the runtime node_modules"
 
 # --- no floating FROM in the Dockerfile -------------------------------------
 if [ -f "$REPO_ROOT/Dockerfile" ]; then
