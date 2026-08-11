@@ -761,7 +761,7 @@ export class NotificationService {
     }
     const content = (message as unknown as { content?: Buffer })?.content;
     if (content && content.length > 0) {
-      return `content:${createHash('sha1').update(content).digest('hex')}`;
+      return `content:${createHash('sha256').update(content).digest('hex')}`;
     }
     return 'unidentified';
   }
