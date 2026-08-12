@@ -8,11 +8,9 @@ import {
   NotificationEventPayloadSpaceCommunicationMessageDirect,
   NotificationEventPayloadUserMessageRoom,
   NotificationEventPayloadUserMessageRoomReply,
-} from '@alkemio/notifications-lib';
-import {
   NotificationEventPayloadUserConversationMessageDirect,
   NotificationEventPayloadUserConversationMessageGroup,
-} from '@src/types/notifications.lib.conversation.bridge';
+} from '@alkemio/notifications-lib';
 import { User } from '@core/models';
 
 // ---------------------------------------------------------------------------
