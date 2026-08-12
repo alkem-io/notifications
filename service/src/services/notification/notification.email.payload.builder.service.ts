@@ -72,12 +72,10 @@ import {
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
   NotificationEventPayloadUserPasswordChangeSecuritySignal,
-} from '@alkemio/notifications-lib';
-import {
   ConversationDigestEntry,
   NotificationEventPayloadUserConversationMessageDirect,
   NotificationEventPayloadUserConversationMessageGroup,
-} from '@src/types/notifications.lib.conversation.bridge';
+} from '@alkemio/notifications-lib';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';

@@ -36,11 +36,9 @@ import {
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
   NotificationEventPayloadUserPasswordChangeSecuritySignal,
-} from '@alkemio/notifications-lib';
-import {
   NotificationEventPayloadUserConversationMessageDirect,
   NotificationEventPayloadUserConversationMessageGroup,
-} from '@src/types/notifications.lib.conversation.bridge';
+} from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';

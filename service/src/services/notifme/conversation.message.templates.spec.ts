@@ -8,7 +8,7 @@ import {
   ConversationDigestEntry,
   NotificationEventPayloadUserConversationMessageDirect,
   NotificationEventPayloadUserConversationMessageGroup,
-} from '@src/types/notifications.lib.conversation.bridge';
+} from '@alkemio/notifications-lib';
 import { User } from '@core/models';
 
 // 034-messaging-notifications: render-level coverage for the two
