@@ -37,6 +37,10 @@ import {
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
 } from '@alkemio/notifications-lib';
+import {
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
+} from '@src/types/notifications.lib.conversation.bridge';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
 
@@ -83,9 +87,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(
-    NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation
-  )
+  @EventPattern(NotificationEvent.VirtualAdminSpaceCommunityInvitation)
   async sendSpaceCommunityVirtualContributorInvitationCreatedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
@@ -97,9 +99,7 @@ export class AppController {
     );
   }
 
-  @EventPattern(
-    NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined
-  )
+  @EventPattern(NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined)
   async sendSpaceCommunityVirtualContributorInvitationDeclinedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
@@ -256,9 +256,31 @@ export class AppController {
     );
   }
 
-  @EventPattern(NotificationEvent.UserMessageSender)
-  async sendUserMessageSenderNotifications(
-    @Payload() eventPayload: NotificationEventPayloadUserMessageDirect,
+  // NotificationEvent.UserMessageSender was removed from the server schema
+  // (schema drift unrelated to 034 — the server no longer emits this event;
+  // USER_MESSAGE_DIRECT/GROUP or the conversation-message events below cover
+  // the sender-facing flows now). The @EventPattern registration and switch
+  // cases were dropped in lockstep with the codegen refresh.
+
+  // 034-messaging-notifications (contract C-2): two full wire events (Ruling
+  // R1) — one handler each, never routed through the leaking USER_MESSAGE
+  // event/template.
+  @EventPattern(NotificationEvent.UserConversationMessageDirect)
+  async sendUserConversationMessageDirectNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserConversationMessageDirect,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserConversationMessageGroup)
+  async sendUserConversationMessageGroupNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserConversationMessageGroup,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(

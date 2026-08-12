@@ -38,10 +38,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
   Float: { input: number; output: number };
-  DID: { input: string; output: string };
   DateTime: { input: Date; output: Date };
   Emoji: { input: any; output: any };
-  JSON: { input: string; output: string };
   LifecycleDefinition: { input: any; output: any };
   Markdown: { input: any; output: any };
   MessageID: { input: any; output: any };
@@ -59,20 +57,24 @@ export type Apm = {
   rumEnabled: Scalars['Boolean']['output'];
 };
 
-export type Account = {
-  /** The Agent representing this Account. */
-  agent: Agent;
-  /** The authorization rules for the entity */
+export type Account = ActorFull & {
+  /** The type of Account (user or organization hosted). */
+  accountType?: Maybe<AccountType>;
+  /** The Actor representing this Account. */
+  actor: Actor;
+  /** The authorization rules for the Actor */
   authorization?: Maybe<Authorization>;
   /** The base license plan assigned to this Account. Additional entitlements may be added via other means. */
   baselineLicensePlan: AccountLicensePlan;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
+  /** The credentials held by this Actor */
+  credentials?: Maybe<Array<Credential>>;
   /** The external subscription ID for this Account. */
   externalSubscriptionID?: Maybe<Scalars['String']['output']>;
   /** The Account host. */
-  host?: Maybe<Contributor>;
-  /** The ID of the entity */
+  host?: Maybe<Actor>;
+  /** The ID of the Actor */
   id: Scalars['UUID']['output'];
   /** The InnovationHubs for this Account. */
   innovationHubs: Array<InnovationHub>;
@@ -80,18 +82,30 @@ export type Account = {
   innovationPacks: Array<InnovationPack>;
   /** The License operating on this Account. */
   license: License;
+  /** A name identifier of the Account, unique within the platform. */
+  nameID: Scalars['NameID']['output'];
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
   /** The Spaces within this Account. */
   spaces: Array<Space>;
   /** The StorageAggregator in use by this Account */
   storageAggregator: StorageAggregator;
   /** The subscriptions active for this Account. */
   subscriptions: Array<AccountSubscription>;
-  /** A type of entity that this Account is being used with. */
-  type?: Maybe<AccountType>;
+  /** The type of Actor */
+  type: ActorType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   /** The virtual contributors for this Account. */
   virtualContributors: Array<VirtualContributor>;
+};
+
+export type AccountInnovationHubsArgs = {
+  searchVisibility?: InputMaybe<Array<SearchVisibility>>;
+};
+
+export type AccountInnovationPacksArgs = {
+  searchVisibility?: InputMaybe<Array<SearchVisibility>>;
 };
 
 export type AccountAuthorizationResetInput = {
@@ -148,6 +162,7 @@ export type ActivityCreatedSubscriptionResult = {
 export enum ActivityEventType {
   CalendarEventCreated = 'CALENDAR_EVENT_CREATED',
   CalloutLinkCreated = 'CALLOUT_LINK_CREATED',
+  CalloutMemoCreated = 'CALLOUT_MEMO_CREATED',
   CalloutPostComment = 'CALLOUT_POST_COMMENT',
   CalloutPostCreated = 'CALLOUT_POST_CREATED',
   CalloutPublished = 'CALLOUT_PUBLISHED',
@@ -289,6 +304,30 @@ export type ActivityLogEntryCalloutLinkCreated = ActivityLogEntry & {
   type: ActivityEventType;
 };
 
+export type ActivityLogEntryCalloutMemoCreated = ActivityLogEntry & {
+  /** The Callout in which the Memo was created. */
+  callout: Callout;
+  /** Indicates if this Activity happened on a child Collaboration. Child results can be included via the "includeChild" parameter. */
+  child: Scalars['Boolean']['output'];
+  /** The id of the Collaboration entity within which the Activity was generated. */
+  collaborationID: Scalars['UUID']['output'];
+  /** The timestamp for the Activity. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The text details for this Activity. */
+  description: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
+  /** The Memo that was created. */
+  memo: Memo;
+  /** The display name of the parent */
+  parentDisplayName: Scalars['String']['output'];
+  /** The Space where the activity happened */
+  space?: Maybe<Space>;
+  /** The user that triggered this Activity. */
+  triggeredBy: User;
+  /** The event type for this Activity. */
+  type: ActivityEventType;
+};
+
 export type ActivityLogEntryCalloutPostComment = ActivityLogEntry & {
   /** The Callout in which the Post was commented. */
   callout: Callout;
@@ -409,16 +448,16 @@ export type ActivityLogEntryCalloutWhiteboardCreated = ActivityLogEntry & {
 };
 
 export type ActivityLogEntryMemberJoined = ActivityLogEntry & {
+  /** The Actor that joined the Community. */
+  actor: Actor;
+  /** The type of the Actor that joined the Community. */
+  actorType: ActorType;
   /** Indicates if this Activity happened on a child Collaboration. Child results can be included via the "includeChild" parameter. */
   child: Scalars['Boolean']['output'];
   /** The id of the Collaboration entity within which the Activity was generated. */
   collaborationID: Scalars['UUID']['output'];
   /** The community that was joined. */
   community: Community;
-  /** The Contributor that joined the Community. */
-  contributor: Contributor;
-  /** The type of the Contributor that joined the Community. */
-  contributorType: RoleSetContributorType;
   /** The timestamp for the Activity. */
   createdDate: Scalars['DateTime']['output'];
   /** The text details for this Activity. */
@@ -493,46 +532,118 @@ export type ActivityLogInput = {
   types?: InputMaybe<Array<ActivityEventType>>;
 };
 
-export type Agent = {
+/** Lightweight actor data containing only base fields. Use for displays where nameID and child-specific fields are not needed. */
+export type Actor = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
-  /** The Credentials held by this Agent. */
+  /** The credentials held by this Actor. */
   credentials?: Maybe<Array<Credential>>;
-  /** The Decentralized Identifier (DID) for this Agent. */
-  did?: Maybe<Scalars['DID']['output']>;
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
-  /** A type of entity that this Agent is being used with. */
-  type: AgentType;
+  /** A name identifier of the entity, unique within a given scope. */
+  nameID: Scalars['NameID']['output'];
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
+  /** The type of Actor */
+  type: ActorType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
-  /** The Verfied Credentials for this Agent. */
-  verifiedCredentials?: Maybe<Array<VerifiedCredential>>;
 };
 
-export type AgentBeginVerifiedCredentialOfferOutput = {
-  /** The token containing the information about issuer, callback endpoint and the credentials offered */
-  jwt: Scalars['String']['output'];
-  /** The QR Code Image to be offered on the client for scanning by a mobile wallet */
-  qrCodeImg: Scalars['String']['output'];
+export type ActorFilterInput = {
+  /** Return actors with credentials in the provided list */
+  credentials?: InputMaybe<Array<AuthorizationCredential>>;
 };
 
-export type AgentBeginVerifiedCredentialRequestOutput = {
-  /** The token containing the information about issuer, callback endpoint and the credentials offered */
-  jwt: Scalars['String']['output'];
-  /** The QR Code Image to be offered on the client for scanning by a mobile wallet */
-  qrCodeImg: Scalars['String']['output'];
+export type ActorFull = {
+  /** The authorization rules for the Actor */
+  authorization?: Maybe<Authorization>;
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The credentials held by this Actor */
+  credentials?: Maybe<Array<Credential>>;
+  /** The ID of the Actor */
+  id: Scalars['UUID']['output'];
+  /** A name identifier of the Actor, unique within a given scope. */
+  nameID: Scalars['NameID']['output'];
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
+  /** The type of Actor */
+  type: ActorType;
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
 };
 
-export enum AgentType {
+export type ActorRolePolicy = {
+  /** Maximum number of Actors in this role */
+  maximum: Scalars['Float']['output'];
+  /** Minimum number of Actors in this role */
+  minimum: Scalars['Float']['output'];
+};
+
+export type ActorRoles = {
+  /** The applications for the specified user; only accessible for platform admins */
+  applications: Array<CommunityApplicationForRoleResult>;
+  id: Scalars['UUID']['output'];
+  /** The invitations for the specified user; only accessible for platform admins */
+  invitations: Array<CommunityInvitationForRoleResult>;
+  /** Details of the roles the actor has in Organizations */
+  organizations: Array<RolesResultOrganization>;
+  /** Details of Spaces the User or Organization is a member of, with child memberships - if Space is accessible for the current user. */
+  spaces: Array<RolesResultSpace>;
+};
+
+export type ActorRolesApplicationsArgs = {
+  states?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type ActorRolesInvitationsArgs = {
+  states?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** The type of Actor - determines which entity table the actor belongs to. */
+export enum ActorType {
   Account = 'ACCOUNT',
   Organization = 'ORGANIZATION',
   Space = 'SPACE',
   User = 'USER',
+  VirtualAssistant = 'VIRTUAL_ASSISTANT',
   VirtualContributor = 'VIRTUAL_CONTRIBUTOR',
 }
+
+export type AddPollOptionInput = {
+  pollID: Scalars['UUID']['input'];
+  text: Scalars['String']['input'];
+};
+
+export type AddVisualToMediaGalleryInput = {
+  /** The ID of the media gallery. */
+  mediaGalleryID: Scalars['String']['input'];
+  /** The sort order of the visual within the media gallery. */
+  sortOrder?: InputMaybe<Scalars['Float']['input']>;
+  /** The type of visual to add (e.g. MEDIA_GALLERY_IMAGE, MEDIA_GALLERY_VIDEO). */
+  visualType: VisualType;
+};
+
+export type AdminUserEmailChangeDriftResolveInput = {
+  /** The admin-chosen canonical email. MUST equal either the old or new email recorded on the drift_detected audit entry. Both sides are force-aligned to this value. */
+  canonicalEmail: Scalars['String']['input'];
+  /** The subject user whose latest audit entry is drift_detected. */
+  userID: Scalars['UUID']['input'];
+};
+
+export type AdminUserEmailChangeInput = {
+  /** Who authorized the change within the subject user's organization. Distinct from the acting platform admin. */
+  approver: EmailChangeApproverInput;
+  /** The proposed new email address. */
+  newEmail: Scalars['String']['input'];
+  /** Admin justification for the change (e.g. support-ticket reference). Recorded on every audit entry for this operation. */
+  reason: Scalars['String']['input'];
+  /** The subject user whose login email is being changed. */
+  userID: Scalars['UUID']['input'];
+};
 
 export type AiPersona = {
   /** The authorization rules for the entity */
@@ -586,10 +697,10 @@ export type AiServerAiPersonaArgs = {
 };
 
 export type Application = {
+  /** The Actor for this Application. */
+  actor: Actor;
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
-  /** The User for this Application. */
-  contributor: Contributor;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
   /** The ID of the entity */
@@ -617,6 +728,13 @@ export type ApplyForEntryRoleOnRoleSetInput = {
   roleSetID: Scalars['UUID']['input'];
 };
 
+export type AssignConversationMemberInput = {
+  /** The ID of the conversation to add a member to. */
+  conversationID: Scalars['UUID']['input'];
+  /** The ID of the member (user or VC) to add. */
+  memberID: Scalars['UUID']['input'];
+};
+
 export type AssignLicensePlanToAccount = {
   /** The ID of the Account to assign the LicensePlan to. */
   accountID: Scalars['UUID']['input'];
@@ -636,24 +754,12 @@ export type AssignLicensePlanToSpace = {
 };
 
 export type AssignPlatformRoleInput = {
-  contributorID: Scalars['UUID']['input'];
+  actorID: Scalars['UUID']['input'];
   role: RoleName;
 };
 
-export type AssignRoleOnRoleSetToOrganizationInput = {
-  contributorID: Scalars['UUID']['input'];
-  role: RoleName;
-  roleSetID: Scalars['UUID']['input'];
-};
-
-export type AssignRoleOnRoleSetToUserInput = {
-  contributorID: Scalars['UUID']['input'];
-  role: RoleName;
-  roleSetID: Scalars['UUID']['input'];
-};
-
-export type AssignRoleOnRoleSetToVirtualContributorInput = {
-  contributorID: Scalars['UUID']['input'];
+export type AssignRoleOnRoleSetInput = {
+  actorID: Scalars['UUID']['input'];
   role: RoleName;
   roleSetID: Scalars['UUID']['input'];
 };
@@ -661,6 +767,38 @@ export type AssignRoleOnRoleSetToVirtualContributorInput = {
 export type AssignUserGroupMemberInput = {
   groupID: Scalars['UUID']['input'];
   userID: Scalars['UUID']['input'];
+};
+
+export type AssistantCapability = {
+  /** What the capability does (for the settings UI). */
+  description: Scalars['String']['output'];
+  /** Human-readable label for the capability toggle. */
+  displayName: Scalars['String']['output'];
+  /** READ | WRITE_ADDITIVE | WRITE_DESTRUCTIVE — drives the default (READ enabled, WRITE_* disabled) and confirmation behaviour. */
+  kind: AssistantCapabilityKind;
+  /** The MCP tool name, e.g. "search_content". */
+  name: Scalars['String']['output'];
+};
+
+/** The kind of an assistant capability — READ is enabled by default; WRITE_* are disabled by default and confirmation-gated. */
+export enum AssistantCapabilityKind {
+  Read = 'READ',
+  WriteAdditive = 'WRITE_ADDITIVE',
+  WriteDestructive = 'WRITE_DESTRUCTIVE',
+}
+
+export type AssistantCapabilityToggle = {
+  /** The capability (MCP tool name) this toggle controls. */
+  capability: Scalars['String']['output'];
+  /** Whether the capability is enabled. */
+  enabled: Scalars['Boolean']['output'];
+};
+
+export type AssistantCapabilityToggleInput = {
+  /** The capability (MCP tool name) this toggle controls. */
+  capability: Scalars['String']['input'];
+  /** Whether the capability is enabled. */
+  enabled: Scalars['Boolean']['input'];
 };
 
 export type AuthenticationConfig = {
@@ -684,10 +822,12 @@ export type AuthenticationProviderConfig = {
 export type AuthenticationProviderConfigUnion = OryConfig;
 
 export enum AuthenticationType {
+  Cleverbase = 'CLEVERBASE',
   Email = 'EMAIL',
   Github = 'GITHUB',
   Linkedin = 'LINKEDIN',
   Microsoft = 'MICROSOFT',
+  Passkey = 'PASSKEY',
   Unknown = 'UNKNOWN',
 }
 
@@ -708,10 +848,6 @@ export type Authorization = {
   type?: Maybe<AuthorizationPolicyType>;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
-  /** The set of verified credential rules that are contained by this Authorization Policy. */
-  verifiedCredentialRules?: Maybe<
-    Array<AuthorizationPolicyRuleVerifiedCredential>
-  >;
 };
 
 export type AuthorizationHasPrivilegeArgs = {
@@ -720,10 +856,12 @@ export type AuthorizationHasPrivilegeArgs = {
 
 export enum AuthorizationCredential {
   AccountAdmin = 'ACCOUNT_ADMIN',
+  AssistantAccess = 'ASSISTANT_ACCESS',
   BetaTester = 'BETA_TESTER',
   GlobalAdmin = 'GLOBAL_ADMIN',
   GlobalAnonymous = 'GLOBAL_ANONYMOUS',
   GlobalCommunityRead = 'GLOBAL_COMMUNITY_READ',
+  GlobalGuest = 'GLOBAL_GUEST',
   GlobalLicenseManager = 'GLOBAL_LICENSE_MANAGER',
   GlobalPlatformManager = 'GLOBAL_PLATFORM_MANAGER',
   GlobalRegistered = 'GLOBAL_REGISTERED',
@@ -733,6 +871,7 @@ export enum AuthorizationCredential {
   OrganizationAdmin = 'ORGANIZATION_ADMIN',
   OrganizationAssociate = 'ORGANIZATION_ASSOCIATE',
   OrganizationOwner = 'ORGANIZATION_OWNER',
+  PlatformOperationsAdmin = 'PLATFORM_OPERATIONS_ADMIN',
   SpaceAdmin = 'SPACE_ADMIN',
   SpaceLead = 'SPACE_LEAD',
   SpaceMember = 'SPACE_MEMBER',
@@ -756,12 +895,6 @@ export type AuthorizationPolicyRulePrivilege = {
   sourcePrivilege: AuthorizationPrivilege;
 };
 
-export type AuthorizationPolicyRuleVerifiedCredential = {
-  claimRule: Scalars['String']['output'];
-  credentialName: Scalars['String']['output'];
-  grantedPrivileges: Array<AuthorizationPrivilege>;
-};
-
 export enum AuthorizationPolicyType {
   Account = 'ACCOUNT',
   Agent = 'AGENT',
@@ -776,7 +909,10 @@ export enum AuthorizationPolicyType {
   CalloutFraming = 'CALLOUT_FRAMING',
   Classification = 'CLASSIFICATION',
   Collaboration = 'COLLABORATION',
+  CollaboraDocument = 'COLLABORA_DOCUMENT',
   Communication = 'COMMUNICATION',
+  CommunicationConversation = 'COMMUNICATION_CONVERSATION',
+  CommunicationMessaging = 'COMMUNICATION_MESSAGING',
   Community = 'COMMUNITY',
   CommunityGuidelines = 'COMMUNITY_GUIDELINES',
   Discussion = 'DISCUSSION',
@@ -794,10 +930,12 @@ export enum AuthorizationPolicyType {
   LicensePolicy = 'LICENSE_POLICY',
   Licensing = 'LICENSING',
   Link = 'LINK',
+  MediaGallery = 'MEDIA_GALLERY',
   Memo = 'MEMO',
   Organization = 'ORGANIZATION',
   OrganizationVerification = 'ORGANIZATION_VERIFICATION',
   Platform = 'PLATFORM',
+  Poll = 'POLL',
   Post = 'POST',
   Profile = 'PROFILE',
   Reference = 'REFERENCE',
@@ -818,6 +956,7 @@ export enum AuthorizationPolicyType {
   User = 'USER',
   UserGroup = 'USER_GROUP',
   UserSettings = 'USER_SETTINGS',
+  VirtualAssistant = 'VIRTUAL_ASSISTANT',
   VirtualContributor = 'VIRTUAL_CONTRIBUTOR',
   Visual = 'VISUAL',
   Whiteboard = 'WHITEBOARD',
@@ -825,6 +964,7 @@ export enum AuthorizationPolicyType {
 
 export enum AuthorizationPrivilege {
   AccessInteractiveGuidance = 'ACCESS_INTERACTIVE_GUIDANCE',
+  AccessVirtualAssistant = 'ACCESS_VIRTUAL_ASSISTANT',
   AccountLicenseManage = 'ACCOUNT_LICENSE_MANAGE',
   AuthorizationReset = 'AUTHORIZATION_RESET',
   CommunityAssignVcFromAccount = 'COMMUNITY_ASSIGN_VC_FROM_ACCOUNT',
@@ -841,7 +981,7 @@ export enum AuthorizationPrivilege {
   CreatePost = 'CREATE_POST',
   CreateSpace = 'CREATE_SPACE',
   CreateSubspace = 'CREATE_SUBSPACE',
-  CreateVirtualContributor = 'CREATE_VIRTUAL_CONTRIBUTOR',
+  CreateVirtual = 'CREATE_VIRTUAL',
   CreateWhiteboard = 'CREATE_WHITEBOARD',
   Delete = 'DELETE',
   FileDelete = 'FILE_DELETE',
@@ -852,7 +992,9 @@ export enum AuthorizationPrivilege {
   MoveContribution = 'MOVE_CONTRIBUTION',
   MovePost = 'MOVE_POST',
   PlatformAdmin = 'PLATFORM_ADMIN',
+  PlatformOperationsAdmin = 'PLATFORM_OPERATIONS_ADMIN',
   PlatformSettingsAdmin = 'PLATFORM_SETTINGS_ADMIN',
+  PublicShare = 'PUBLIC_SHARE',
   Read = 'READ',
   ReadAbout = 'READ_ABOUT',
   ReadLicense = 'READ_LICENSE',
@@ -910,12 +1052,18 @@ export type CalendarEvent = {
   durationDays?: Maybe<Scalars['Float']['output']>;
   /** The length of the event in minutes. */
   durationMinutes: Scalars['Float']['output'];
+  /** Google Calendar add-event URL for this CalendarEvent. */
+  googleCalendarUrl?: Maybe<Scalars['String']['output']>;
+  /** ICS download URL for this CalendarEvent. */
+  icsDownloadUrl?: Maybe<Scalars['String']['output']>;
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
   /** Flag to indicate if this event is for multiple days. */
   multipleDays: Scalars['Boolean']['output'];
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
+  /** Outlook Calendar add-event URL for this CalendarEvent. */
+  outlookCalendarUrl?: Maybe<Scalars['String']['output']>;
   /** The Profile for this Post. */
   profile: Profile;
   /** The start time for this CalendarEvent. */
@@ -972,8 +1120,8 @@ export type Callout = {
   posts?: Maybe<Array<Post>>;
   /** The user that published this Callout */
   publishedBy?: Maybe<User>;
-  /** The timestamp for the publishing of this Callout. */
-  publishedDate?: Maybe<Scalars['Float']['output']>;
+  /** The Date of the publishing of this Callout. */
+  publishedDate?: Maybe<Scalars['DateTime']['output']>;
   /** The Callout Settings associated with this Callout. */
   settings: CalloutSettings;
   /** The sorting order for this Callout. */
@@ -988,7 +1136,7 @@ export type CalloutContributionsArgs = {
   shuffle?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
-export enum CalloutAllowedContributors {
+export enum CalloutAllowedActors {
   Admins = 'ADMINS',
   Members = 'MEMBERS',
   None = 'NONE',
@@ -997,6 +1145,8 @@ export enum CalloutAllowedContributors {
 export type CalloutContribution = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
+  /** The CollaboraDocument that was contributed. */
+  collaboraDocument?: Maybe<CollaboraDocument>;
   /** The user that created this Document */
   createdBy?: Maybe<User>;
   /** The date at which the entity was created. */
@@ -1005,6 +1155,8 @@ export type CalloutContribution = {
   id: Scalars['UUID']['output'];
   /** The Link that was contributed. */
   link?: Maybe<Link>;
+  /** The Memo that was contributed. */
+  memo?: Maybe<Memo>;
   /** The Post that was contributed. */
   post?: Maybe<Post>;
   /** The sorting order for this Contribution. */
@@ -1031,6 +1183,7 @@ export type CalloutContributionDefaults = {
 };
 
 export enum CalloutContributionType {
+  CollaboraDocument = 'COLLABORA_DOCUMENT',
   Link = 'LINK',
   Memo = 'MEMO',
   Post = 'POST',
@@ -1038,6 +1191,8 @@ export enum CalloutContributionType {
 }
 
 export type CalloutContributionsCountOutput = {
+  /** The number of contributions of type CollaboraDocument in this callout */
+  collaboraDocument: Scalars['Float']['output'];
   /** The number of contributions of type Link in this callout */
   link: Scalars['Float']['output'];
   /** The number of contributions of type Memo in this callout */
@@ -1048,19 +1203,45 @@ export type CalloutContributionsCountOutput = {
   whiteboard: Scalars['Float']['output'];
 };
 
+export type CalloutContributorsSettings = {
+  /** The contributor types included in this contributor-collection callout. At least one. */
+  contributorTypes: Array<ActorType>;
+  /** The contributor type shown first (the segmented switch opens on it). One of contributorTypes. */
+  defaultContributorType: ActorType;
+  /** The default display mode (list or map). */
+  defaultView: ContributorCollectionView;
+};
+
+export enum CalloutDescriptionDisplayMode {
+  Collapsed = 'COLLAPSED',
+  Expanded = 'EXPANDED',
+}
+
 export type CalloutFraming = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
+  /** The Collabora document attached to this Callout Framing, if any. Present when framing.type = COLLABORA_DOCUMENT. */
+  collaboraDocument?: Maybe<CollaboraDocument>;
+  /** Per-type counts (users, organizations, virtual contributors) of the total eligible set for a CONTRIBUTORS framing, after type-selection and user-information visibility filtering. Zeroed for non-CONTRIBUTORS framings. */
+  contributorCounts: ContributorCollectionCounts;
+  /** The full authorized set of contributors of the given type for a CONTRIBUTORS framing, ordered leads/admins first then alphabetically. No server-side pagination or search: the client paginates (list) and name-searches client-side over this set. Empty for non-CONTRIBUTORS framings or deselected types. */
+  contributors: Array<ContributorCollectionItem>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
   /** The Link for framing the associated Callout. */
   link?: Maybe<Link>;
+  /** The media gallery associated with the callout framing */
+  mediaGallery?: Maybe<MediaGallery>;
   /** The Memo for framing the associated Callout. */
   memo?: Maybe<Memo>;
+  /** The Poll attached to this Callout Framing, if any. Present when framing.type = POLL. */
+  poll?: Maybe<Poll>;
   /** The Profile for framing the associated Callout. */
   profile: Profile;
+  /** The host space's subspaces for a SPACES framing, ordered pinned-first then the space's sortOrder/displayName. Returns the existing Space type (no new item type). No server-side pagination/search: the client name-searches and paginates client-side over this set. Empty for non-SPACES framings, for a callout not attached to a space, or for a host with no subspaces. */
+  subspaces: Array<Space>;
   /** The type of the Callout Framing, the additional content attached to this callout */
   type: CalloutFramingType;
   /** The date at which the entity was last updated. */
@@ -1069,10 +1250,19 @@ export type CalloutFraming = {
   whiteboard?: Maybe<Whiteboard>;
 };
 
+export type CalloutFramingContributorsArgs = {
+  type: ActorType;
+};
+
 export enum CalloutFramingType {
+  CollaboraDocument = 'COLLABORA_DOCUMENT',
+  Contributors = 'CONTRIBUTORS',
   Link = 'LINK',
+  MediaGallery = 'MEDIA_GALLERY',
   Memo = 'MEMO',
   None = 'NONE',
+  Poll = 'POLL',
+  Spaces = 'SPACES',
   Whiteboard = 'WHITEBOARD',
 }
 
@@ -1085,6 +1275,19 @@ export type CalloutPostCreated = {
   post: Post;
   /** The sorting order for this Contribution. */
   sortOrder: Scalars['Float']['output'];
+};
+
+/** The selection mode for a collection callout (Contributors or Subspaces). AUTO (default) returns the full computed set; CUSTOM restricts to the admin-curated selectedIds list. */
+export enum CalloutSelectionMode {
+  Auto = 'AUTO',
+  Custom = 'CUSTOM',
+}
+
+export type CalloutSelectionSettings = {
+  /** The selection mode: AUTO (full computed set) or CUSTOM (admin-curated subset). */
+  mode: CalloutSelectionMode;
+  /** The selected actor/space IDs in CUSTOM mode (0–500 entries). Ignored when mode is AUTO. */
+  selectedIds: Array<Scalars['ID']['output']>;
 };
 
 export type CalloutSettings = {
@@ -1100,7 +1303,7 @@ export type CalloutSettingsContribution = {
   /** The allowed contribution types for this callout. */
   allowedTypes: Array<CalloutContributionType>;
   /** Indicate who can add more contributions to the callout. */
-  canAddContributions: CalloutAllowedContributors;
+  canAddContributions: CalloutAllowedActors;
   /** Can comment to contributions callout. */
   commentsEnabled: Scalars['Boolean']['output'];
   /** Can add contributions to the Callout. Allowed Contribution types is going to be readOnly, so this field can be used to enable or disable the contribution temporarily instead of setting allowedTypes to None. */
@@ -1110,6 +1313,10 @@ export type CalloutSettingsContribution = {
 export type CalloutSettingsFraming = {
   /** Can comment to callout framing. */
   commentsEnabled: Scalars['Boolean']['output'];
+  /** Configuration for a contributor-collection callout. Present only when framing.type = CONTRIBUTORS. */
+  contributors?: Maybe<CalloutContributorsSettings>;
+  /** Manual-selection settings for collection callouts (CONTRIBUTORS or SPACES). Absent / null ⇒ AUTO (full computed set). */
+  selection?: Maybe<CalloutSelectionSettings>;
 };
 
 export enum CalloutVisibility {
@@ -1126,6 +1333,8 @@ export type CalloutsSet = {
   createdDate: Scalars['DateTime']['output'];
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** All the tags of the Callouts and its contributions in this CalloutsSet. Sorted by frequency, then alphabetically. */
+  tags: Array<Scalars['String']['output']>;
   /** The tagset templates on this CalloutsSet. */
   tagsetTemplates?: Maybe<Array<TagsetTemplate>>;
   /** The set of CalloutGroups in use in this CalloutsSet. */
@@ -1141,6 +1350,11 @@ export type CalloutsSetCalloutsArgs = {
   shuffle?: InputMaybe<Scalars['Boolean']['input']>;
   sortByActivity?: InputMaybe<Scalars['Boolean']['input']>;
   withContributionTypes?: InputMaybe<Array<CalloutContributionType>>;
+  withTags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type CalloutsSetTagsArgs = {
+  classificationTagsets?: InputMaybe<Array<TagsetArgs>>;
 };
 
 export enum CalloutsSetType {
@@ -1148,18 +1362,11 @@ export enum CalloutsSetType {
   KnowledgeBase = 'KNOWLEDGE_BASE',
 }
 
-export type ChatGuidanceAnswerRelevanceInput = {
-  /** The answer id. */
-  id: Scalars['String']['input'];
-  /** Is the answer relevant or not. */
-  relevant: Scalars['Boolean']['input'];
-};
-
-export type ChatGuidanceInput = {
-  /** The language of the answer. */
-  language?: InputMaybe<Scalars['String']['input']>;
-  /** The question that is being asked. */
-  question: Scalars['String']['input'];
+export type CastPollVoteInput = {
+  /** The ID of the Poll to vote on. */
+  pollID: Scalars['UUID']['input'];
+  /** The complete set of selected PollOption IDs. When updating an existing vote, the entire selection set must be provided. Count must be ≥ poll.minResponses and ≤ poll.maxResponses. All IDs must belong to the specified poll. */
+  selectedOptionIDs: Array<Scalars['UUID']['input']>;
 };
 
 export type Classification = {
@@ -1179,6 +1386,37 @@ export type Classification = {
 
 export type ClassificationTagsetArgs = {
   tagsetName: TagsetReservedName;
+};
+
+export type CollaboraDocument = {
+  /** The authorization rules for the entity */
+  authorization?: Maybe<Authorization>;
+  /** The user that created this CollaboraDocument. */
+  createdBy?: Maybe<User>;
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The type of the collaborative document. */
+  documentType: CollaboraDocumentType;
+  /** The ID of the entity */
+  id: Scalars['UUID']['output'];
+  /** The Profile for this CollaboraDocument. */
+  profile: Profile;
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
+};
+
+export enum CollaboraDocumentType {
+  Drawing = 'DRAWING',
+  Presentation = 'PRESENTATION',
+  Spreadsheet = 'SPREADSHEET',
+  Wordprocessing = 'WORDPROCESSING',
+}
+
+export type CollaboraEditorUrlResult = {
+  /** When the access token expires, as an absolute Unix timestamp in milliseconds (the WOPI access_token_ttl passed through from the WOPI host); 0 means it does not expire. */
+  accessTokenTTL: Scalars['Float']['output'];
+  /** The URL to open the document in the Collabora editor. */
+  editorUrl: Scalars['String']['output'];
 };
 
 export type Collaboration = {
@@ -1230,6 +1468,15 @@ export type CommunicationAdminMembershipResult = {
   id: Scalars['String']['output'];
   /** Rooms in this Communication */
   rooms: Array<CommunicationAdminRoomMembershipResult>;
+};
+
+export type CommunicationAdminMigrateRoomsResult = {
+  /** Errors encountered during migration */
+  errors: Array<Scalars['String']['output']>;
+  /** Number of conversations that failed to have rooms created */
+  failed: Scalars['Int']['output'];
+  /** Number of conversations that had rooms created */
+  migrated: Scalars['Int']['output'];
 };
 
 export type CommunicationAdminOrphanedUsageResult = {
@@ -1359,12 +1606,10 @@ export type CommunityGuidelines = {
 };
 
 export type CommunityInvitationForRoleResult = {
+  /** ID for Actor that is being invited to a community */
+  actorID: Scalars['UUID']['output'];
   /** ID for the community */
   communityID: Scalars['UUID']['output'];
-  /** ID for Contrbutor that is being invited to a community */
-  contributorID: Scalars['UUID']['output'];
-  /** The Type of the Contrbutor that is being invited to a community */
-  contributorType: RoleSetContributorType;
   /** ID for the user that created the invitation. */
   createdBy: Scalars['UUID']['output'];
   /** Date of creation */
@@ -1427,6 +1672,8 @@ export type Config = {
   featureFlags: Array<PlatformFeatureFlag>;
   /** Integration with a 3rd party Geo information service */
   geo: Geo;
+  /** Language configuration: eligible set for proactive offers and the platform default. */
+  language: LanguageConfig;
   /** Platform related locations. */
   locations: PlatformLocations;
   /** Sentry (client monitoring) related configuration. */
@@ -1452,53 +1699,163 @@ export type ContributionsFilterInput = {
   types?: InputMaybe<Array<CalloutContributionType>>;
 };
 
-export type Contributor = {
-  /** The Agent for the Contributor. */
-  agent: Agent;
-  /** The authorization rules for the Contributor */
+export type ContributorCollectionCounts = {
+  organizations: Scalars['Int']['output'];
+  users: Scalars['Int']['output'];
+  virtualContributors: Scalars['Int']['output'];
+};
+
+export type ContributorCollectionItem = {
+  avatarUrl?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
+  /** Location of the contributor; null for Virtual Contributors or when not readable. */
+  location?: Maybe<ContributorLocation>;
+  /** The role label for this contributor (lead/admin/member). */
+  roleLabel?: Maybe<Scalars['String']['output']>;
+  type: ActorType;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+/** The default display mode for a contributor-collection callout framing. */
+export enum ContributorCollectionView {
+  List = 'LIST',
+  Map = 'MAP',
+}
+
+export type ContributorFilterInput = {
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  nameID?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ContributorLocation = {
+  city?: Maybe<Scalars['String']['output']>;
+  country?: Maybe<Scalars['String']['output']>;
+  /** Whether the location has valid stored coordinates (geoLocation.isValid). City/country alone is false. */
+  hasValidCoordinates: Scalars['Boolean']['output'];
+  latitude?: Maybe<Scalars['Float']['output']>;
+  longitude?: Maybe<Scalars['Float']['output']>;
+};
+
+export type Conversation = {
+  /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
-  /** The ID of the Contributor */
+  /** The ID of the entity */
   id: Scalars['UUID']['output'];
-  /** A name identifier of the Contributor, unique within a given scope. */
-  nameID: Scalars['NameID']['output'];
-  /** The profile for the Contributor. */
-  profile: Profile;
+  /** All members of this Conversation, returned as actors with their types. */
+  members: Array<Actor>;
+  messaging: Messaging;
+  /** The room for this Conversation. */
+  room: Room;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
 };
 
-export type ContributorFilterInput = {
-  /** Return contributors with credentials in the provided list */
-  credentials?: InputMaybe<Array<AuthorizationCredential>>;
+/** Event fired when a new conversation is created. All members receive the event with the full conversation and its members list. */
+export type ConversationCreatedEvent = {
+  /** The conversation that was created. */
+  conversation: Conversation;
+  /** The first message in the conversation. Null when conversation is created without an initial message. */
+  message?: Maybe<Message>;
 };
 
-export type ContributorRolePolicy = {
-  /** Maximum number of Contributors in this role */
-  maximum: Scalars['Float']['output'];
-  /** Minimum number of Contributors in this role */
-  minimum: Scalars['Float']['output'];
+/** The type of conversation to create. Maps to room type: DIRECT → DM room, GROUP → group room. */
+export enum ConversationCreationType {
+  Direct = 'DIRECT',
+  Group = 'GROUP',
+}
+
+/** Event fired when a conversation is deleted. All members are notified. */
+export type ConversationDeletedEvent = {
+  /** The ID of the deleted conversation. UUID only — conversation no longer exists. */
+  conversationID: Scalars['UUID']['output'];
 };
 
-export type ContributorRoles = {
-  /** The applications for the specified user; only accessible for platform admins */
-  applications: Array<CommunityApplicationForRoleResult>;
-  id: Scalars['UUID']['output'];
-  /** The invitations for the specified user; only accessible for platform admins */
-  invitations: Array<CommunityInvitationForRoleResult>;
-  /** Details of the roles the contributor has in Organizations */
-  organizations: Array<RolesResultOrganization>;
-  /** Details of Spaces the User or Organization is a member of, with child memberships - if Space is accessible for the current user. */
-  spaces: Array<RolesResultSpace>;
+/** Payload for conversation subscription events. */
+export type ConversationEventSubscriptionResult = {
+  /** Present when eventType is CONVERSATION_CREATED. */
+  conversationCreated?: Maybe<ConversationCreatedEvent>;
+  /** Present when eventType is CONVERSATION_DELETED. */
+  conversationDeleted?: Maybe<ConversationDeletedEvent>;
+  /** Present when eventType is CONVERSATION_UPDATED. */
+  conversationUpdated?: Maybe<ConversationUpdatedEvent>;
+  /** The type of event. Use this to determine which payload field is populated. */
+  eventType: ConversationEventType;
+  /** Present when eventType is MEMBER_ADDED. */
+  memberAdded?: Maybe<ConversationMemberAddedEvent>;
+  /** Present when eventType is MEMBER_REMOVED. */
+  memberRemoved?: Maybe<ConversationMemberRemovedEvent>;
+  /** Present when eventType is MESSAGE_RECEIVED. */
+  messageReceived?: Maybe<ConversationMessageReceivedEvent>;
+  /** Present when eventType is MESSAGE_REMOVED. */
+  messageRemoved?: Maybe<ConversationMessageRemovedEvent>;
+  /** Present when eventType is READ_RECEIPT_UPDATED. */
+  readReceiptUpdated?: Maybe<ConversationReadReceiptUpdatedEvent>;
 };
 
-export type ContributorRolesApplicationsArgs = {
-  states?: InputMaybe<Array<Scalars['String']['input']>>;
+/** The type of conversation event. */
+export enum ConversationEventType {
+  ConversationCreated = 'CONVERSATION_CREATED',
+  ConversationDeleted = 'CONVERSATION_DELETED',
+  ConversationUpdated = 'CONVERSATION_UPDATED',
+  MemberAdded = 'MEMBER_ADDED',
+  MemberRemoved = 'MEMBER_REMOVED',
+  MessageReceived = 'MESSAGE_RECEIVED',
+  MessageRemoved = 'MESSAGE_REMOVED',
+  ReadReceiptUpdated = 'READ_RECEIPT_UPDATED',
+}
+
+/** Event fired when a member is added to a group conversation. */
+export type ConversationMemberAddedEvent = {
+  /** The actor that was added as a member. */
+  addedMember: Actor;
+  /** The conversation the member was added to. */
+  conversation: Conversation;
 };
 
-export type ContributorRolesInvitationsArgs = {
-  states?: InputMaybe<Array<Scalars['String']['input']>>;
+/** Event fired when a member is removed from or leaves a group conversation. */
+export type ConversationMemberRemovedEvent = {
+  /** The conversation the member was removed from. */
+  conversation: Conversation;
+  /** The ID of the removed member. UUID only — removed member may not be resolvable after removal. */
+  removedMemberID: Scalars['UUID']['output'];
+};
+
+/** Event fired when a new message is received in a conversation. */
+export type ConversationMessageReceivedEvent = {
+  /** The message that was received. */
+  message: Message;
+  /** The room ID where the message was received. */
+  roomId: Scalars['UUID']['output'];
+};
+
+/** Event fired when a message is removed from a conversation. */
+export type ConversationMessageRemovedEvent = {
+  /** The ID of the message that was removed. */
+  messageId: Scalars['MessageID']['output'];
+  /** The room ID where the message was removed. */
+  roomId: Scalars['UUID']['output'];
+};
+
+/** Event fired when a read receipt is updated in a conversation. */
+export type ConversationReadReceiptUpdatedEvent = {
+  /** The ID of the last read event (message). */
+  lastReadEventId: Scalars['MessageID']['output'];
+  /** The room ID where the read receipt was updated. */
+  roomId: Scalars['UUID']['output'];
+};
+
+/** Event fired when a conversation is updated (displayName, avatarUrl). */
+export type ConversationUpdatedEvent = {
+  /** The conversation that was updated. */
+  conversation: Conversation;
+};
+
+export type ConversationVcResetInput = {
+  /** The ID of the Conversation to reset. */
+  conversationID: Scalars['UUID']['input'];
 };
 
 export type ConversionVcSpaceToVcKnowledgeBaseInput = {
@@ -1512,9 +1869,9 @@ export type ConvertSpaceL1ToSpaceL0Input = {
 };
 
 export type ConvertSpaceL1ToSpaceL2Input = {
-  /** The Space L1 to be the parent of the Space L1 when it is moved to be L2.  */
+  /** The Space L1 to be the parent of the Space L1 when it is moved to be L2. */
   parentSpaceL1ID: Scalars['UUID']['input'];
-  /** The Space L1 to be moved to be a child of another Space L. Both the L1 Space and the parent Space must be in the same L0 Space.  */
+  /** The Space L1 to be moved to be a child of another Space L. Both the L1 Space and the parent Space must be in the same L0 Space. */
   spaceL1ID: Scalars['UUID']['input'];
 };
 
@@ -1551,6 +1908,7 @@ export type CreateCalendarEventOnCalendarInput = {
 };
 
 export type CreateCalloutContributionData = {
+  collaboraDocument?: Maybe<CreateCollaboraDocumentData>;
   link?: Maybe<CreateLinkData>;
   memo?: Maybe<CreateMemoData>;
   post?: Maybe<CreatePostData>;
@@ -1577,6 +1935,7 @@ export type CreateCalloutContributionDefaultsInput = {
 };
 
 export type CreateCalloutContributionInput = {
+  collaboraDocument?: InputMaybe<CreateCollaboraDocumentInput>;
   link?: InputMaybe<CreateLinkInput>;
   memo?: InputMaybe<CreateMemoInput>;
   post?: InputMaybe<CreatePostInput>;
@@ -1584,6 +1943,24 @@ export type CreateCalloutContributionInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   type: CalloutContributionType;
   whiteboard?: InputMaybe<CreateWhiteboardInput>;
+};
+
+export type CreateCalloutContributorsSettingsData = {
+  /** The contributor types to include. At least one type is required. */
+  contributorTypes: Array<ActorType>;
+  /** The default contributor type (one of contributorTypes). Defaults to the first selected type. */
+  defaultContributorType?: Maybe<ActorType>;
+  /** The default display mode. Defaults to LIST; MAP requires a locatable contributor type. */
+  defaultView?: Maybe<ContributorCollectionView>;
+};
+
+export type CreateCalloutContributorsSettingsInput = {
+  /** The contributor types to include. At least one type is required. */
+  contributorTypes: Array<ActorType>;
+  /** The default contributor type (one of contributorTypes). Defaults to the first selected type. */
+  defaultContributorType?: InputMaybe<ActorType>;
+  /** The default display mode. Defaults to LIST; MAP requires a locatable contributor type. */
+  defaultView?: InputMaybe<ContributorCollectionView>;
 };
 
 export type CreateCalloutData = {
@@ -1602,8 +1979,12 @@ export type CreateCalloutData = {
 };
 
 export type CreateCalloutFramingData = {
+  /** Collabora document input. Required when type = COLLABORA_DOCUMENT. */
+  collaboraDocument?: Maybe<CreateCollaboraDocumentData>;
   link?: Maybe<CreateLinkData>;
   memo?: Maybe<CreateMemoData>;
+  /** Poll definition to attach to this Callout Framing. Required when type = POLL. Ignored for all other framing types. */
+  poll?: Maybe<CreatePollData>;
   profile: CreateProfileData;
   tags?: Maybe<Array<Scalars['String']['output']>>;
   /** The type of additional content attached to the framing of the callout. Defaults to None. */
@@ -1612,8 +1993,12 @@ export type CreateCalloutFramingData = {
 };
 
 export type CreateCalloutFramingInput = {
+  /** Collabora document input. Required when type = COLLABORA_DOCUMENT. */
+  collaboraDocument?: InputMaybe<CreateCollaboraDocumentInput>;
   link?: InputMaybe<CreateLinkInput>;
   memo?: InputMaybe<CreateMemoInput>;
+  /** Poll definition to attach to this Callout Framing. Required when type = POLL. Ignored for all other framing types. */
+  poll?: InputMaybe<CreatePollInput>;
   profile: CreateProfileInput;
   tags?: InputMaybe<Array<Scalars['String']['input']>>;
   /** The type of additional content attached to the framing of the callout. Defaults to None. */
@@ -1652,11 +2037,25 @@ export type CreateCalloutOnCalloutsSetInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
 };
 
+export type CreateCalloutSelectionSettingsData = {
+  /** The selection mode (AUTO or CUSTOM). Defaults to AUTO when omitted. */
+  mode?: Maybe<CalloutSelectionMode>;
+  /** The curated selection of actor/space IDs (CUSTOM mode). At most 500. Deduplicated by the server. */
+  selectedIds?: Maybe<Array<Scalars['ID']['output']>>;
+};
+
+export type CreateCalloutSelectionSettingsInput = {
+  /** The selection mode (AUTO or CUSTOM). Defaults to AUTO when omitted. */
+  mode?: InputMaybe<CalloutSelectionMode>;
+  /** The curated selection of actor/space IDs (CUSTOM mode). At most 500. Deduplicated by the server. */
+  selectedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
 export type CreateCalloutSettingsContributionData = {
   /** Allowed Contribution types. */
   allowedTypes?: Maybe<Array<CalloutContributionType>>;
   /** Indicate who can add more contributions to the callout. */
-  canAddContributions?: Maybe<CalloutAllowedContributors>;
+  canAddContributions?: Maybe<CalloutAllowedActors>;
   /** Can comment to contributions callout. */
   commentsEnabled?: Maybe<Scalars['Boolean']['output']>;
   /** Can add contributions to the Callout. Allowed Contribution types is going to be readOnly, so this field can be used to enable or disable the contribution temporarily instead of setting allowedTypes to None. */
@@ -1667,7 +2066,7 @@ export type CreateCalloutSettingsContributionInput = {
   /** Allowed Contribution types. */
   allowedTypes?: InputMaybe<Array<CalloutContributionType>>;
   /** Indicate who can add more contributions to the callout. */
-  canAddContributions?: InputMaybe<CalloutAllowedContributors>;
+  canAddContributions?: InputMaybe<CalloutAllowedActors>;
   /** Can comment to contributions callout. */
   commentsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Can add contributions to the Callout. Allowed Contribution types is going to be readOnly, so this field can be used to enable or disable the contribution temporarily instead of setting allowedTypes to None. */
@@ -1684,11 +2083,19 @@ export type CreateCalloutSettingsData = {
 export type CreateCalloutSettingsFramingData = {
   /** Can comment to callout framing. */
   commentsEnabled?: Maybe<Scalars['Boolean']['output']>;
+  /** Configuration for a contributor-collection callout. Provide only when framing.type = CONTRIBUTORS. */
+  contributors?: Maybe<CreateCalloutContributorsSettingsData>;
+  /** Manual-selection settings for collection callouts (CONTRIBUTORS or SPACES). Provide only when framing.type ∈ {CONTRIBUTORS, SPACES}. */
+  selection?: Maybe<CreateCalloutSelectionSettingsData>;
 };
 
 export type CreateCalloutSettingsFramingInput = {
   /** Can comment to callout framing. */
   commentsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Configuration for a contributor-collection callout. Provide only when framing.type = CONTRIBUTORS. */
+  contributors?: InputMaybe<CreateCalloutContributorsSettingsInput>;
+  /** Manual-selection settings for collection callouts (CONTRIBUTORS or SPACES). Provide only when framing.type ∈ {CONTRIBUTORS, SPACES}. */
+  selection?: InputMaybe<CreateCalloutSelectionSettingsInput>;
 };
 
 export type CreateCalloutSettingsInput = {
@@ -1714,6 +2121,20 @@ export type CreateClassificationData = {
 
 export type CreateClassificationInput = {
   tagsets: Array<CreateTagsetInput>;
+};
+
+export type CreateCollaboraDocumentData = {
+  /** Title for the new collaborative document. Required for blank-create. On the upload path, defaulted from the uploaded filename (extension stripped) when absent or empty. */
+  displayName?: Maybe<Scalars['String']['output']>;
+  /** Type of document to create. Required for blank-create. On the upload path, ignored — the type is derived from the uploaded file's sniffed MIME by file-service-go. */
+  documentType?: Maybe<CollaboraDocumentType>;
+};
+
+export type CreateCollaboraDocumentInput = {
+  /** Title for the new collaborative document. Required for blank-create. On the upload path, defaulted from the uploaded filename (extension stripped) when absent or empty. */
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  /** Type of document to create. Required for blank-create. On the upload path, ignored — the type is derived from the uploaded file's sniffed MIME by file-service-go. */
+  documentType?: InputMaybe<CollaboraDocumentType>;
 };
 
 export type CreateCollaborationData = {
@@ -1751,6 +2172,7 @@ export type CreateCommunityGuidelinesInput = {
 
 export type CreateContributionOnCalloutInput = {
   calloutID: Scalars['UUID']['input'];
+  collaboraDocument?: InputMaybe<CreateCollaboraDocumentInput>;
   link?: InputMaybe<CreateLinkInput>;
   memo?: InputMaybe<CreateMemoInput>;
   post?: InputMaybe<CreatePostInput>;
@@ -1758,6 +2180,17 @@ export type CreateContributionOnCalloutInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   type: CalloutContributionType;
   whiteboard?: InputMaybe<CreateWhiteboardInput>;
+};
+
+export type CreateConversationInput = {
+  /** Optional avatar URL for GROUP conversations. Ignored for DIRECT conversations. Accepts mxc:// or https:// URLs. */
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
+  /** Optional display name for GROUP conversations. Ignored for DIRECT conversations (Synapse uses the other member name automatically). */
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  /** IDs of members to add. For DIRECT: exactly 1 ID. For GROUP: 1+ IDs. Creator is auto-included. */
+  memberIDs: Array<Scalars['UUID']['input']>;
+  /** The type of conversation to create: DIRECT for 1-on-1, GROUP for multi-party. */
+  type: ConversationCreationType;
 };
 
 export type CreateInnovationFlowData = {
@@ -1793,16 +2226,30 @@ export type CreateInnovationFlowStateInput = {
 export type CreateInnovationFlowStateSettingsData = {
   /** The flag to set. */
   allowNewCallouts: Scalars['Boolean']['output'];
+  /** Optional. How Post descriptions in this State are displayed in the feed: expanded or collapsed. Defaults to EXPANDED when omitted. */
+  descriptionDisplayMode?: Maybe<CalloutDescriptionDisplayMode>;
+  /** Optional. Whether Posts in this State show publish details in the feed. Defaults to true when omitted. */
+  showPublishDetails?: Maybe<Scalars['Boolean']['output']>;
+  /** Optional. Whether the phase is shown in member-facing navigation. Defaults to true when omitted. */
+  visible?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export type CreateInnovationFlowStateSettingsInput = {
   /** The flag to set. */
   allowNewCallouts: Scalars['Boolean']['input'];
+  /** Optional. How Post descriptions in this State are displayed in the feed: expanded or collapsed. Defaults to EXPANDED when omitted. */
+  descriptionDisplayMode?: InputMaybe<CalloutDescriptionDisplayMode>;
+  /** Optional. Whether Posts in this State show publish details in the feed. Defaults to true when omitted. */
+  showPublishDetails?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Optional. Whether the phase is shown in member-facing navigation. Defaults to true when omitted. */
+  visible?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type CreateInnovationHubOnAccountInput = {
   /** The Account where the InnovationHub is to be created. */
   accountID: Scalars['UUID']['input'];
+  /** The Innovation Packs curated for this Innovation Hub. When omitted, the Innovation Hub is created with no Innovation Packs. */
+  innovationPackListFilter?: InputMaybe<Array<Scalars['UUID']['input']>>;
   /** A readable identifier, unique within the containing scope. */
   nameID?: InputMaybe<Scalars['NameID']['input']>;
   profileData: CreateProfileInput;
@@ -1814,6 +2261,8 @@ export type CreateInnovationHubOnAccountInput = {
   subdomain: Scalars['String']['input'];
   /** The type of Innovation Hub. */
   type: InnovationHubType;
+  /** The Virtual Contributors curated for this Innovation Hub. When omitted, the Innovation Hub is created with no Virtual Contributors. */
+  virtualContributorListFilter?: InputMaybe<Array<Scalars['UUID']['input']>>;
 };
 
 export type CreateInnovationPackOnAccountInput = {
@@ -1920,6 +2369,24 @@ export type CreateOrganizationInput = {
   website?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreatePollData = {
+  /** Initial options for the poll. Minimum 2 options required. Options appear in the order provided. */
+  options: Array<Scalars['String']['output']>;
+  /** Poll configuration settings (all immutable after creation). Optional; uses defaults for any unspecified settings. */
+  settings?: Maybe<PollSettingsData>;
+  /** Poll title. Optional. Maximum length 512 characters. Becomes an empty string if not provided. */
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+export type CreatePollInput = {
+  /** Initial options for the poll. Minimum 2 options required. Options appear in the order provided. */
+  options: Array<Scalars['String']['input']>;
+  /** Poll configuration settings (all immutable after creation). Optional; uses defaults for any unspecified settings. */
+  settings?: InputMaybe<PollSettingsInput>;
+  /** Poll title. Optional. Maximum length 512 characters. Becomes an empty string if not provided. */
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreatePostData = {
   tags?: Maybe<Array<Scalars['String']['output']>>;
 };
@@ -2003,6 +2470,8 @@ export type CreateSpaceOnAccountInput = {
 export type CreateSpaceSettingsCollaborationInput = {
   /** Flag to control if events from Subspaces are visible on this Space calendar as well. */
   allowEventsFromSubspaces: Scalars['Boolean']['input'];
+  /** Flag to control if guest users can contribute to this Space. */
+  allowGuestContributions: Scalars['Boolean']['input'];
   /** Flag to control if members can create callouts. */
   allowMembersToCreateCallouts: Scalars['Boolean']['input'];
   /** Flag to control if members can create subspaces. */
@@ -2015,8 +2484,17 @@ export type CreateSpaceSettingsCollaborationInput = {
 
 export type CreateSpaceSettingsInput = {
   collaboration?: InputMaybe<CreateSpaceSettingsCollaborationInput>;
+  /** The layout settings for this Space. */
+  layout?: InputMaybe<CreateSpaceSettingsLayoutInput>;
   membership?: InputMaybe<CreateSpaceSettingsMembershipInput>;
   privacy?: InputMaybe<CreateSpaceSettingsPrivacyInput>;
+  /** The sort mode for subspaces: Alphabetical or Custom. */
+  sortMode?: InputMaybe<SpaceSortMode>;
+};
+
+export type CreateSpaceSettingsLayoutInput = {
+  /** The default display mode for callout descriptions. */
+  calloutDescriptionDisplayMode: CalloutDescriptionDisplayMode;
 };
 
 export type CreateSpaceSettingsMembershipInput = {
@@ -2032,6 +2510,8 @@ export type CreateSpaceSettingsPrivacyInput = {
   /** Flag to control if Platform Support has admin rights. */
   allowPlatformSupportAsAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   mode?: InputMaybe<SpacePrivacyMode>;
+  /** Controls who may read member-user information. Follows space visibility by default, or restricts it to members only. */
+  userInformationVisibility?: InputMaybe<UserInformationVisibility>;
 };
 
 export type CreateStateOnInnovationFlowInput = {
@@ -2132,7 +2612,6 @@ export type CreateUserGroupInput = {
 };
 
 export type CreateUserInput = {
-  accountUpn?: InputMaybe<Scalars['String']['input']>;
   email: Scalars['String']['input'];
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
@@ -2241,28 +2720,15 @@ export type CredentialDefinition = {
   type: Scalars['String']['output'];
 };
 
-export type CredentialMetadataOutput = {
-  /** A json description of what the claim contains and schema validation definition */
-  context: Scalars['String']['output'];
-  /** The purpose of the credential */
-  description: Scalars['String']['output'];
-  /** The display name of the credential */
-  name: Scalars['String']['output'];
-  /** The schema that the credential will be validated against */
-  schema: Scalars['String']['output'];
-  /** The credential types that are associated with this credential */
-  types: Array<Scalars['String']['output']>;
-  /** System recognized unique type for the credential */
-  uniqueType: Scalars['String']['output'];
-};
-
 export enum CredentialType {
   AccountAdmin = 'ACCOUNT_ADMIN',
   AccountLicensePlus = 'ACCOUNT_LICENSE_PLUS',
+  AssistantAccess = 'ASSISTANT_ACCESS',
   BetaTester = 'BETA_TESTER',
   GlobalAdmin = 'GLOBAL_ADMIN',
   GlobalAnonymous = 'GLOBAL_ANONYMOUS',
   GlobalCommunityRead = 'GLOBAL_COMMUNITY_READ',
+  GlobalGuest = 'GLOBAL_GUEST',
   GlobalLicenseManager = 'GLOBAL_LICENSE_MANAGER',
   GlobalPlatformManager = 'GLOBAL_PLATFORM_MANAGER',
   GlobalRegistered = 'GLOBAL_REGISTERED',
@@ -2272,8 +2738,10 @@ export enum CredentialType {
   OrganizationAdmin = 'ORGANIZATION_ADMIN',
   OrganizationAssociate = 'ORGANIZATION_ASSOCIATE',
   OrganizationOwner = 'ORGANIZATION_OWNER',
+  PlatformOperationsAdmin = 'PLATFORM_OPERATIONS_ADMIN',
   SpaceAdmin = 'SPACE_ADMIN',
   SpaceFeatureMemoMultiUser = 'SPACE_FEATURE_MEMO_MULTI_USER',
+  SpaceFeatureOfficeDocuments = 'SPACE_FEATURE_OFFICE_DOCUMENTS',
   SpaceFeatureSaveAsTemplate = 'SPACE_FEATURE_SAVE_AS_TEMPLATE',
   SpaceFeatureVirtualContributors = 'SPACE_FEATURE_VIRTUAL_CONTRIBUTORS',
   SpaceFeatureWhiteboardMultiUser = 'SPACE_FEATURE_WHITEBOARD_MULTI_USER',
@@ -2306,7 +2774,16 @@ export type DeleteCalloutInput = {
   ID: Scalars['UUID']['input'];
 };
 
+export type DeleteCollaboraDocumentInput = {
+  /** The ID of the CollaboraDocument to delete. */
+  ID: Scalars['UUID']['input'];
+};
+
 export type DeleteContributionInput = {
+  ID: Scalars['UUID']['input'];
+};
+
+export type DeleteConversationInput = {
   ID: Scalars['UUID']['input'];
 };
 
@@ -2392,20 +2869,32 @@ export type DeleteVirtualContributorInput = {
   ID: Scalars['UUID']['input'];
 };
 
+export type DeleteVisualFromMediaGalleryInput = {
+  /** The ID of the media gallery. */
+  mediaGalleryID: Scalars['String']['input'];
+  /** The ID of the visual to delete. */
+  visualID: Scalars['String']['input'];
+};
+
 export type DeleteWhiteboardInput = {
   ID: Scalars['UUID']['input'];
 };
 
-export type DirectRoom = {
-  /** The display name of the room */
-  displayName: Scalars['String']['output'];
-  /** The identifier of the room */
-  id: Scalars['String']['output'];
-  /** The messages that have been sent to the Room. */
-  messages: Array<Message>;
-  /** The recipient userID */
-  receiverID?: Maybe<Scalars['String']['output']>;
+export type DirectMessageDeliveryResult = {
+  /** Set when status = SENT — the (existing or newly created) 1:1 conversation the message was delivered to. */
+  conversationID?: Maybe<Scalars['UUID']['output']>;
+  /** The intended recipient. */
+  receiverID: Scalars['UUID']['output'];
+  /** The per-recipient delivery outcome. */
+  status: DirectMessageDeliveryStatus;
 };
+
+/** Per-recipient outcome of sendDirectMessageToUsers. SENT: delivered (a conversation id is returned). BLOCKED_NO_CONSENT: the recipient disabled direct messages. FAILED: an unexpected per-recipient error (other recipients are still processed). */
+export enum DirectMessageDeliveryStatus {
+  BlockedNoConsent = 'BLOCKED_NO_CONSENT',
+  Failed = 'FAILED',
+  Sent = 'SENT',
+}
 
 export type Discussion = {
   /** The authorization rules for the entity */
@@ -2484,6 +2973,25 @@ export type Document = {
   url: Scalars['String']['output'];
 };
 
+/** Who authorized an email change within the subject user’s organization. */
+export type EmailChangeApprover = {
+  /** Name of the person who authorized the change. */
+  name: Scalars['String']['output'];
+  /** The organization within which the change was authorized. */
+  organization?: Maybe<Scalars['String']['output']>;
+  /** The approver's role or title within the organization. */
+  role: Scalars['String']['output'];
+};
+
+export type EmailChangeApproverInput = {
+  /** Name of the person who authorized the change. */
+  name: Scalars['String']['input'];
+  /** The organization within which the change was authorized, if applicable. */
+  organization?: InputMaybe<Scalars['String']['input']>;
+  /** The approver's role or title within the organization (e.g. 'Organization Administrator'). */
+  role: Scalars['String']['input'];
+};
+
 export type ExploreSpacesInput = {
   /** Take into account only the activity in the past X days. */
   daysOld?: InputMaybe<Scalars['Float']['input']>;
@@ -2552,6 +3060,8 @@ export type Forum = {
   discussions?: Maybe<Array<Discussion>>;
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** Capped list of Contributors (Users, Virtual Contributors, …) that may be @mentioned in the platform Forum. The Forum is platform-wide, so all platform Contributors of the requested types are returned. Use `filter` for typeahead search and `types` to restrict which Contributor kinds are returned. */
+  mentionableContributors: Array<ActorFull>;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
 };
@@ -2562,6 +3072,12 @@ export type ForumDiscussionArgs = {
 
 export type ForumDiscussionsArgs = {
   queryData?: InputMaybe<DiscussionsInput>;
+};
+
+export type ForumMentionableContributorsArgs = {
+  filter?: InputMaybe<ContributorFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  types?: InputMaybe<Array<ActorType>>;
 };
 
 export type ForumCreateDiscussionInput = {
@@ -2602,6 +3118,13 @@ export type GeoLocation = {
   longitude?: Maybe<Scalars['Float']['output']>;
 };
 
+export type GrantAssistantActorCapabilitiesInput = {
+  /** Per-capability enable/disable toggles governing what the assistant may do system-invoked (default read-only). */
+  enabledCapabilities: Array<AssistantCapabilityToggleInput>;
+  /** The VirtualAssistant actor whose admin grant is being set. */
+  virtualAssistantID: Scalars['UUID']['input'];
+};
+
 export type GrantAuthorizationCredentialInput = {
   /** The resource to which this credential is tied. */
   resourceID?: InputMaybe<Scalars['UUID']['input']>;
@@ -2633,12 +3156,14 @@ export type ISearchCategoryResult = {
 };
 
 export type ISearchResults = {
+  /** The search results for actors (Users, Organizations). */
+  actorResults: ISearchCategoryResult;
   /** The search results for Callouts. */
   calloutResults: ISearchCategoryResult;
-  /** The search results for contributions (Posts, Whiteboards etc). */
+  /** The search results for contributions (Posts, Whiteboards, Memos). */
   contributionResults: ISearchCategoryResult;
-  /** The search results for contributors (Users, Organizations). */
-  contributorResults: ISearchCategoryResult;
+  /** The search results callout framings (Whiteboards, Memos as additional content). */
+  framingResults: ISearchCategoryResult;
   /** The search results for Spaces / Subspaces. */
   spaceResults: ISearchCategoryResult;
 };
@@ -2650,6 +3175,15 @@ export enum IdentityVerificationStatusFilter {
   Verified = 'VERIFIED',
 }
 
+export type ImportCollaboraDocumentInput = {
+  /** The ID of the Callout to attach the imported document to as a new contribution. */
+  calloutID: Scalars['UUID']['input'];
+  /** Optional title override. If absent, derived from the uploaded filename (extension stripped). */
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  /** Optional sortOrder for the new contribution. Defaults to one less than the current minimum (new contribution appears first). */
+  sortOrder?: InputMaybe<Scalars['Float']['input']>;
+};
+
 export type InAppNotification = {
   /** The category of the notification event. */
   category: NotificationEventCategory;
@@ -2660,13 +3194,13 @@ export type InAppNotification = {
   /** The payload of the notification. */
   payload: InAppNotificationPayload;
   /** The receiver of the notification. */
-  receiver: Contributor;
+  receiver: Actor;
   /** The state of the notification event. */
   state: NotificationEventInAppState;
   /** The triggered date of the notification event. */
   triggeredAt: Scalars['DateTime']['output'];
-  /** The Contributor who triggered the notification. */
-  triggeredBy?: Maybe<Contributor>;
+  /** The Actor who triggered the notification. */
+  triggeredBy?: Maybe<Actor>;
   /** The type of the notification event. */
   type: NotificationEvent;
   /** The date at which the entity was last updated. */
@@ -2679,17 +3213,12 @@ export type InAppNotificationPayload = {
   type: NotificationEventPayload;
 };
 
-export type InAppNotificationPayloadOrganization = InAppNotificationPayload & {
-  /** The payload type. */
-  type: NotificationEventPayload;
-};
-
 export type InAppNotificationPayloadOrganizationMessageDirect =
   InAppNotificationPayload & {
     /** The message content. */
     message: Scalars['String']['output'];
     /** The organization. */
-    organization: Contributor;
+    organization?: Maybe<Organization>;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2706,17 +3235,12 @@ export type InAppNotificationPayloadOrganizationMessageRoom =
     type: NotificationEventPayload;
   };
 
-export type InAppNotificationPayloadPlatform = InAppNotificationPayload & {
-  /** The payload type. */
-  type: NotificationEventPayload;
-};
-
 export type InAppNotificationPayloadPlatformForumDiscussion =
   InAppNotificationPayload & {
     /** The comment message. */
     comment?: Maybe<Scalars['String']['output']>;
     /** The discussion details. */
-    discussion?: Maybe<DiscussionDetails>;
+    discussion: DiscussionDetails;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2724,7 +3248,7 @@ export type InAppNotificationPayloadPlatformForumDiscussion =
 export type InAppNotificationPayloadPlatformGlobalRoleChange =
   InAppNotificationPayload & {
     /** The new role. */
-    role?: Maybe<Scalars['String']['output']>;
+    role: Scalars['String']['output'];
     /** The payload type. */
     type: NotificationEventPayload;
     /** The User whose role was changed. */
@@ -2742,8 +3266,8 @@ export type InAppNotificationPayloadPlatformUserMessageRoom =
     messageDetails?: Maybe<MessageDetails>;
     /** The payload type. */
     type: NotificationEventPayload;
-    /** The User for the message. */
-    user?: Maybe<User>;
+    /** The User receiver of the message. */
+    user: User;
   };
 
 export type InAppNotificationPayloadPlatformUserProfileRemoved =
@@ -2751,14 +3275,14 @@ export type InAppNotificationPayloadPlatformUserProfileRemoved =
     /** The payload type. */
     type: NotificationEventPayload;
     /** The display name of the User that was removed. */
-    userDisplayName?: Maybe<Scalars['String']['output']>;
+    userDisplayName: Scalars['String']['output'];
     /** The email of the User that was removed. */
-    userEmail?: Maybe<Scalars['String']['output']>;
+    userEmail: Scalars['String']['output'];
   };
 
 export type InAppNotificationPayloadSpace = InAppNotificationPayload & {
   /** The space details. */
-  space?: Maybe<Space>;
+  space: Space;
   /** The payload type. */
   type: NotificationEventPayload;
 };
@@ -2766,9 +3290,9 @@ export type InAppNotificationPayloadSpace = InAppNotificationPayload & {
 export type InAppNotificationPayloadSpaceCollaborationCallout =
   InAppNotificationPayload & {
     /** The Callout that was published. */
-    callout?: Maybe<Callout>;
+    callout: Callout;
     /** Where the callout is located. */
-    space?: Maybe<Space>;
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2776,11 +3300,11 @@ export type InAppNotificationPayloadSpaceCollaborationCallout =
 export type InAppNotificationPayloadSpaceCollaborationCalloutComment =
   InAppNotificationPayload & {
     /** The Callout that was published. */
-    callout?: Maybe<Callout>;
+    callout: Callout;
     /** The details of the message. */
     messageDetails?: Maybe<MessageDetails>;
     /** The Space where the comment was made. */
-    space?: Maybe<Space>;
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2788,11 +3312,25 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutComment =
 export type InAppNotificationPayloadSpaceCollaborationCalloutPostComment =
   InAppNotificationPayload & {
     /** The Callout that was published. */
-    callout?: Maybe<Callout>;
+    callout: Callout;
     /** The details of the message. */
     messageDetails?: Maybe<MessageDetails>;
     /** The Space where the comment was made. */
-    space?: Maybe<Space>;
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
+  };
+
+export type InAppNotificationPayloadSpaceCollaborationPoll =
+  InAppNotificationPayload & {
+    /** The Callout that contains the poll. */
+    callout: Callout;
+    /** The Poll this notification relates to. */
+    poll: Poll;
+    /** The ID of the Poll this notification relates to. */
+    pollID: Scalars['UUID']['output'];
+    /** Where the callout is located. */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2801,28 +3339,38 @@ export type InAppNotificationPayloadSpaceCommunicationMessageDirect =
   InAppNotificationPayload & {
     /** The message content. */
     message: Scalars['String']['output'];
-    /** The space details. */
-    space?: Maybe<Space>;
+    /** The Space where the message was sent. */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
 
 export type InAppNotificationPayloadSpaceCommunicationUpdate =
   InAppNotificationPayload & {
-    /** The space details. */
-    space?: Maybe<Space>;
+    /** The Space where the update was sent. */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
     /** The update content. */
-    update?: Maybe<Scalars['String']['output']>;
+    update: Scalars['String']['output'];
+  };
+
+export type InAppNotificationPayloadSpaceCommunityActor =
+  InAppNotificationPayload & {
+    /** The Actor that joined. */
+    actor: Actor;
+    /** The Space that was joined. */
+    space: Space;
+    /** The payload type. */
+    type: NotificationEventPayload;
   };
 
 export type InAppNotificationPayloadSpaceCommunityApplication =
   InAppNotificationPayload & {
     /** The Application that the notification is related to. */
-    application?: Maybe<Application>;
-    /** The space details. */
-    space?: Maybe<Space>;
+    application: Application;
+    /** The Space that the application was made to. */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2830,11 +3378,9 @@ export type InAppNotificationPayloadSpaceCommunityApplication =
 export type InAppNotificationPayloadSpaceCommunityCalendarEvent =
   InAppNotificationPayload & {
     /** The CalendarEvent that was created. */
-    calendarEvent?: Maybe<CalendarEvent>;
-    /** ID of the calendar event. */
-    calendarEventID: Scalars['UUID']['output'];
-    /** The space details. */
-    space?: Maybe<Space>;
+    calendarEvent: CalendarEvent;
+    /** The Space where the calendar event was created. */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2842,39 +3388,27 @@ export type InAppNotificationPayloadSpaceCommunityCalendarEvent =
 export type InAppNotificationPayloadSpaceCommunityCalendarEventComment =
   InAppNotificationPayload & {
     /** The calendar event that was commented on. */
-    calendarEvent?: Maybe<CalendarEvent>;
-    /** ID of the calendar event that was commented on. */
-    calendarEventID: Scalars['UUID']['output'];
+    calendarEvent: CalendarEvent;
     /** Preview text of the comment */
     commentText: Scalars['String']['output'];
     /** The space details. */
-    space?: Maybe<Space>;
-    /** The payload type. */
-    type: NotificationEventPayload;
-  };
-
-export type InAppNotificationPayloadSpaceCommunityContributor =
-  InAppNotificationPayload & {
-    /** The Contributor that joined. */
-    contributor?: Maybe<Contributor>;
-    /** The space details. */
-    space?: Maybe<Space>;
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
 
 export type InAppNotificationPayloadSpaceCommunityInvitation =
   InAppNotificationPayload & {
-    /** The space details. */
-    space?: Maybe<Space>;
+    /** The Space that the invitation is for. */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
 
 export type InAppNotificationPayloadSpaceCommunityInvitationPlatform =
   InAppNotificationPayload & {
-    /** The space details. */
-    space?: Maybe<Space>;
+    /** The Space that the invitation is for. */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
   };
@@ -2882,7 +3416,7 @@ export type InAppNotificationPayloadSpaceCommunityInvitationPlatform =
 export type InAppNotificationPayloadUserMessageDirect =
   InAppNotificationPayload & {
     /** The message content. */
-    message?: Maybe<Scalars['String']['output']>;
+    message: Scalars['String']['output'];
     /** The payload type. */
     type: NotificationEventPayload;
     /** The User that was sent the message. */
@@ -2891,11 +3425,11 @@ export type InAppNotificationPayloadUserMessageDirect =
 
 export type InAppNotificationPayloadVirtualContributor =
   InAppNotificationPayload & {
-    contributor?: Maybe<VirtualContributor>;
-    space?: Maybe<Space>;
+    actor: VirtualContributor;
+    /** The Space related to the notification */
+    space: Space;
     /** The payload type. */
     type: NotificationEventPayload;
-    virtualContributorID: Scalars['String']['output'];
   };
 
 export type InnovationFlow = {
@@ -2929,6 +3463,8 @@ export type InnovationFlowState = {
   authorization?: Maybe<Authorization>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
+  /** Default callout template applied to this flow state (nullable, optional). */
+  defaultCalloutTemplate?: Maybe<Template>;
   /** The explanation text to clarify the state. */
   description?: Maybe<Scalars['Markdown']['output']>;
   /** The display name for the State */
@@ -2946,6 +3482,12 @@ export type InnovationFlowState = {
 export type InnovationFlowStateSettings = {
   /** Whether new callouts can be added to this State. */
   allowNewCallouts: Scalars['Boolean']['output'];
+  /** How Post descriptions in this State are displayed in the feed: expanded or collapsed. Default expanded. */
+  descriptionDisplayMode: CalloutDescriptionDisplayMode;
+  /** Whether Posts in this State show publish details (publisher, publish date, avatar) in the feed. Presentation only — does not restrict access to publisher data. Default true. */
+  showPublishDetails: Scalars['Boolean']['output'];
+  /** Whether this State/phase is shown in the member-facing navigation. Default true. UI-affordance only: it does NOT gate access to the phase content. */
+  visible: Scalars['Boolean']['output'];
 };
 
 export type InnovationHub = {
@@ -2957,6 +3499,8 @@ export type InnovationHub = {
   createdDate: Scalars['DateTime']['output'];
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** The Innovation Packs curated for this Innovation Hub, in stored (curated) order, filtered to those the requesting agent may read. */
+  innovationPackListFilter?: Maybe<Array<InnovationPack>>;
   /** Flag to control if this InnovationHub is listed in the platform store. */
   listedInStore: Scalars['Boolean']['output'];
   /** A name identifier of the entity, unique within a given scope. */
@@ -2964,7 +3508,7 @@ export type InnovationHub = {
   /** The Innovation Hub profile. */
   profile: Profile;
   /** The InnovationHub provider. */
-  provider: Contributor;
+  provider: Actor;
   /** Visibility of the InnovationHub in searches. */
   searchVisibility: SearchVisibility;
   spaceListFilter?: Maybe<Array<Space>>;
@@ -2976,6 +3520,8 @@ export type InnovationHub = {
   type: InnovationHubType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
+  /** The Virtual Contributors curated for this Innovation Hub, in stored (curated) order, filtered to those the requesting agent may read. */
+  virtualContributorListFilter?: Maybe<Array<VirtualContributor>>;
 };
 
 export enum InnovationHubType {
@@ -2997,7 +3543,7 @@ export type InnovationPack = {
   /** The Profile for this InnovationPack. */
   profile: Profile;
   /** The InnovationPack provider. */
-  provider: Contributor;
+  provider: Actor;
   /** Visibility of the InnovationPack in searches. */
   searchVisibility: SearchVisibility;
   /** The templatesSet in use by this InnovationPack */
@@ -3053,21 +3599,19 @@ export type InputCreatorQueryResultsWhiteboardArgs = {
 };
 
 export type Invitation = {
+  /** The Actor who is invited. */
+  actor: Actor;
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
-  /** The Contributor who is invited. */
-  contributor: Contributor;
-  /** The type of contributor that is invited. */
-  contributorType: RoleSetContributorType;
   /** The User who triggered the invitation. */
   createdBy?: Maybe<User>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
-  /** Additional roles to assign to the Contributor, in addition to the entry Role. */
+  /** Additional roles to assign to the Actor, in addition to the entry Role. */
   extraRoles: Array<RoleName>;
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
-  /** Whether to also add the invited contributor to the parent community. */
+  /** Whether to also add the invited actor to the parent community. */
   invitedToParent: Scalars['Boolean']['output'];
   /** Is this lifecycle in a final state (done). */
   isFinalized: Scalars['Boolean']['output'];
@@ -3076,6 +3620,8 @@ export type Invitation = {
   nextEvents: Array<Scalars['String']['output']>;
   /** The current state of this Lifecycle. */
   state: Scalars['String']['output'];
+  /** Optional language the inviter expects the invitee to prefer; recorded per invitation. */
+  suggestedLanguage?: Maybe<Scalars['String']['output']>;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   welcomeMessage?: Maybe<Scalars['String']['output']>;
@@ -3089,10 +3635,12 @@ export type InvitationEventInput = {
 export type InviteForEntryRoleOnRoleSetInput = {
   /** Additional roles to assign in addition to the entry Role. */
   extraRoles: Array<RoleName>;
-  /** The identifiers for the contributors being invited. */
-  invitedContributorIDs: Array<Scalars['UUID']['input']>;
+  /** The identifiers for the actors being invited. */
+  invitedActorIDs: Array<Scalars['UUID']['input']>;
   invitedUserEmails: Array<Scalars['String']['input']>;
   roleSetID: Scalars['UUID']['input'];
+  /** Optional language the inviter expects the invitees to prefer (single value for the whole batch). Must be in the eligible set at compose time. Recorded per-invitation so per-invitee granularity later is a UI change, not a migration. */
+  suggestedLanguage?: InputMaybe<Scalars['String']['input']>;
   /** The welcome message to send */
   welcomeMessage?: InputMaybe<Scalars['String']['input']>;
 };
@@ -3133,11 +3681,23 @@ export type KratosIdentity = {
   verificationStatus: Scalars['String']['output'];
 };
 
+export type LanguageConfig = {
+  /** The platform-wide default interface language. */
+  default: Scalars['String']['output'];
+  /** Languages the platform proactively detects, offers, and allows as invitation suggestions — subset of the supported set; empty = all proactive offers disabled. */
+  eligible: Array<Scalars['String']['output']>;
+};
+
 export type LatestReleaseDiscussion = {
   /** Id of the latest release discussion. */
   id: Scalars['String']['output'];
   /** NameID of the latest release discussion. */
   nameID: Scalars['String']['output'];
+};
+
+export type LeaveConversationInput = {
+  /** The ID of the conversation to leave. */
+  conversationID: Scalars['UUID']['input'];
 };
 
 export type Library = {
@@ -3151,8 +3711,12 @@ export type Library = {
   innovationHubs: Array<InnovationHub>;
   /** The Innovation Packs in the platform Innovation Library. */
   innovationPacks: Array<InnovationPack>;
+  /** Paginated Innovation Packs in the platform Innovation Library (newest first). */
+  innovationPacksPaginated: PaginatedInnovationPacks;
   /** The Templates in the Innovation Library, together with information about the InnovationPack. */
   templates: Array<TemplateResult>;
+  /** Paginated Templates in the Innovation Library, each with the InnovationPack that contributes it (newest first). */
+  templatesPaginated: PaginatedLibraryTemplateResults;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   /** The VirtualContributors listed on this platform */
@@ -3163,11 +3727,34 @@ export type LibraryInnovationPacksArgs = {
   queryData?: InputMaybe<InnovationPacksInput>;
 };
 
+export type LibraryInnovationPacksPaginatedArgs = {
+  after?: InputMaybe<Scalars['UUID']['input']>;
+  before?: InputMaybe<Scalars['UUID']['input']>;
+  filter?: InputMaybe<LibraryInnovationPacksFilterInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export type LibraryTemplatesArgs = {
   filter?: InputMaybe<LibraryTemplatesFilterInput>;
 };
 
+export type LibraryTemplatesPaginatedArgs = {
+  after?: InputMaybe<Scalars['UUID']['input']>;
+  before?: InputMaybe<Scalars['UUID']['input']>;
+  filter?: InputMaybe<LibraryTemplatesFilterInput>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type LibraryInnovationPacksFilterInput = {
+  /** Return Innovation Packs whose title, description or tags contain this term (case-insensitive). */
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type LibraryTemplatesFilterInput = {
+  /** Return Templates whose title, description or tags contain this term (case-insensitive). */
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
   /** Return Templates within the Library matching the specified Template Types. */
   types?: InputMaybe<Array<TemplateType>>;
 };
@@ -3216,6 +3803,7 @@ export enum LicenseEntitlementDataType {
 }
 
 export enum LicenseEntitlementType {
+  AccountAiAssistantTokensMonth = 'ACCOUNT_AI_ASSISTANT_TOKENS_MONTH',
   AccountInnovationHub = 'ACCOUNT_INNOVATION_HUB',
   AccountInnovationPack = 'ACCOUNT_INNOVATION_PACK',
   AccountSpaceFree = 'ACCOUNT_SPACE_FREE',
@@ -3223,6 +3811,7 @@ export enum LicenseEntitlementType {
   AccountSpacePremium = 'ACCOUNT_SPACE_PREMIUM',
   AccountVirtualContributor = 'ACCOUNT_VIRTUAL_CONTRIBUTOR',
   SpaceFlagMemoMultiUser = 'SPACE_FLAG_MEMO_MULTI_USER',
+  SpaceFlagOfficeDocuments = 'SPACE_FLAG_OFFICE_DOCUMENTS',
   SpaceFlagSaveAsTemplate = 'SPACE_FLAG_SAVE_AS_TEMPLATE',
   SpaceFlagVirtualContributorAccess = 'SPACE_FLAG_VIRTUAL_CONTRIBUTOR_ACCESS',
   SpaceFlagWhiteboardMultiUser = 'SPACE_FLAG_WHITEBOARD_MULTI_USER',
@@ -3304,6 +3893,7 @@ export type Licensing = {
 export enum LicensingCredentialBasedCredentialType {
   AccountLicensePlus = 'ACCOUNT_LICENSE_PLUS',
   SpaceFeatureMemoMultiUser = 'SPACE_FEATURE_MEMO_MULTI_USER',
+  SpaceFeatureOfficeDocuments = 'SPACE_FEATURE_OFFICE_DOCUMENTS',
   SpaceFeatureSaveAsTemplate = 'SPACE_FEATURE_SAVE_AS_TEMPLATE',
   SpaceFeatureVirtualContributors = 'SPACE_FEATURE_VIRTUAL_CONTRIBUTORS',
   SpaceFeatureWhiteboardMultiUser = 'SPACE_FEATURE_WHITEBOARD_MULTI_USER',
@@ -3625,6 +4215,8 @@ export type LookupQueryResults = {
   communityGuidelines?: Maybe<CommunityGuidelines>;
   /** Lookup the specified CalloutContribution */
   contribution?: Maybe<CalloutContribution>;
+  /** Lookup the specified Conversation */
+  conversation?: Maybe<Conversation>;
   /** Lookup the specified Document */
   document?: Maybe<Document>;
   /** Lookup the specified InnovationFlow */
@@ -3730,6 +4322,10 @@ export type LookupQueryResultsContributionArgs = {
   ID: Scalars['UUID']['input'];
 };
 
+export type LookupQueryResultsConversationArgs = {
+  ID: Scalars['UUID']['input'];
+};
+
 export type LookupQueryResultsDocumentArgs = {
   ID: Scalars['UUID']['input'];
 };
@@ -3826,6 +4422,11 @@ export type LookupQueryResultsWhiteboardArgs = {
   ID: Scalars['UUID']['input'];
 };
 
+export type MeConversationsResult = {
+  /** All conversations (direct and group) for the current authenticated user. Client handles categorization by room type and member actor types. */
+  conversations: Array<Conversation>;
+};
+
 export type MeQueryResults = {
   /** The community applications current authenticated user can act on. */
   communityApplications: Array<CommunityApplicationResult>;
@@ -3833,6 +4434,8 @@ export type MeQueryResults = {
   communityInvitations: Array<CommunityInvitationResult>;
   /** The number of invitations the current authenticated user can act on. */
   communityInvitationsCount: Scalars['Float']['output'];
+  /** The conversations the current authenticated user is part of. */
+  conversations: MeConversationsResult;
   /** The query id */
   id: Scalars['String']['output'];
   /** The Spaces I am contributing to */
@@ -3877,6 +4480,22 @@ export type MeQueryResultsSpaceMembershipsHierarchicalArgs = {
   limit?: InputMaybe<Scalars['Float']['input']>;
 };
 
+export type MediaGallery = {
+  /** The authorization rules for the entity */
+  authorization?: Maybe<Authorization>;
+  createdBy?: Maybe<Scalars['String']['output']>;
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The ID of the entity */
+  id: Scalars['UUID']['output'];
+  /** The storage bucket associated with this media gallery. */
+  storageBucket?: Maybe<StorageBucket>;
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
+  /** The visuals contained in this media gallery. */
+  visuals: Array<Visual>;
+};
+
 export type Memo = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
@@ -3911,23 +4530,11 @@ export type Message = {
   /** Reactions on this message */
   reactions: Array<Reaction>;
   /** The User or Virtual Contributor that created this Message */
-  sender?: Maybe<Contributor>;
+  sender?: Maybe<Actor>;
   /** The message being replied to */
-  threadID?: Maybe<Scalars['String']['output']>;
+  threadID?: Maybe<Scalars['MessageID']['output']>;
   /** The server timestamp in UTC */
   timestamp: Scalars['Float']['output'];
-};
-
-/** A detailed answer to a question, typically from an AI service. */
-export type MessageAnswerQuestion = {
-  /** Error message if an error occurred */
-  error?: Maybe<Scalars['String']['output']>;
-  /** The id of the answer; null if an error was returned */
-  id?: Maybe<Scalars['String']['output']>;
-  /** The original question */
-  question: Scalars['String']['output'];
-  /** Message successfully sent. If false, error will have the reason. */
-  success: Scalars['Boolean']['output'];
 };
 
 /** Details about a message, including the room it was sent in and the parent entity that is using the room. */
@@ -3950,6 +4557,17 @@ export type MessageParent = {
   url: Scalars['String']['output'];
 };
 
+export type Messaging = {
+  /** The authorization rules for the entity */
+  authorization?: Maybe<Authorization>;
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The ID of the entity */
+  id: Scalars['UUID']['output'];
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
+};
+
 export type Metadata = {
   /** Collection of metadata about Alkemio services. */
   services: Array<ServiceMetadata>;
@@ -3963,11 +4581,16 @@ export type MigrateEmbeddings = {
 export enum MimeType {
   Avif = 'AVIF',
   Bmp = 'BMP',
+  Csv = 'CSV',
   Doc = 'DOC',
   Docx = 'DOCX',
   Gif = 'GIF',
+  Heic = 'HEIC',
+  Heif = 'HEIF',
+  Ics = 'ICS',
   Jpeg = 'JPEG',
   Jpg = 'JPG',
+  Odg = 'ODG',
   Odp = 'ODP',
   Ods = 'ODS',
   Odt = 'ODT',
@@ -3980,6 +4603,7 @@ export enum MimeType {
   Ppt = 'PPT',
   Pptm = 'PPTM',
   Pptx = 'PPTX',
+  Rtf = 'RTF',
   Svg = 'SVG',
   Webp = 'WEBP',
   Xls = 'XLS',
@@ -4023,15 +4647,58 @@ export type MoveCalloutContributionInput = {
   contributionID: Scalars['UUID']['input'];
 };
 
+export type MoveSpaceL1ToSpaceL0Input = {
+  /** Send invitations to former community members who are also in the target L0 community. */
+  autoInvite?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Custom invitation message. Used only when autoInvite is true. */
+  invitationMessage?: InputMaybe<Scalars['String']['input']>;
+  /** The L1 subspace to move to a different L0 space. */
+  spaceL1ID: Scalars['UUID']['input'];
+  /** The target L0 space (must be different from the current parent L0). */
+  targetSpaceL0ID: Scalars['UUID']['input'];
+};
+
+export type MoveSpaceL1ToSpaceL2Input = {
+  /** Send invitations to former community members who are also in the target L0 community. */
+  autoInvite?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Custom invitation message. Used only when autoInvite is true. */
+  invitationMessage?: InputMaybe<Scalars['String']['input']>;
+  /** The L1 subspace to move and demote to L2. */
+  spaceL1ID: Scalars['UUID']['input'];
+  /** The target L1 subspace in a different L0 (new parent for the demoted space). */
+  targetSpaceL1ID: Scalars['UUID']['input'];
+};
+
+export type MoveSpaceL2ToSpaceL1Input = {
+  /** Send invitations to former community members who are also in the target L0 community. */
+  autoInvite?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Custom invitation message. Used only when autoInvite is true. */
+  invitationMessage?: InputMaybe<Scalars['String']['input']>;
+  /** The L2 subspace to move (stays L2). */
+  spaceL2ID: Scalars['UUID']['input'];
+  /** The target L1 subspace in a different L0 (new parent for the moved L2). */
+  targetSpaceL1ID: Scalars['UUID']['input'];
+};
+
 export type Mutation = {
   /** Adds an Iframe Allowed URL to the Platform Settings */
   addIframeAllowedURL: Array<Scalars['String']['output']>;
+  /** Adds a full email address to the platform notification blacklist */
+  addNotificationEmailToBlacklist: Array<Scalars['String']['output']>;
+  /** Add a new option to a Poll. Requires UPDATE privilege, or CONTRIBUTE privilege when the poll setting allowContributorsAddOptions is enabled. The new option is appended with the next available sort order. */
+  addPollOption: Poll;
   /** Add a reaction to a message from the specified Room. */
   addReactionToMessageInRoom: Reaction;
+  /** Adds a new visual to the specified media gallery. */
+  addVisualToMediaGallery: Visual;
   /** Ensure all community members are registered for communications. */
   adminCommunicationEnsureAccessToCommunications: Scalars['Boolean']['output'];
+  /** Create rooms for legacy conversations that were created without one (from lazy room creation era). */
+  adminCommunicationMigrateOrphanedConversations: CommunicationAdminMigrateRoomsResult;
   /** Remove an orphaned room from messaging platform. */
   adminCommunicationRemoveOrphanedRoom: Scalars['Boolean']['output'];
+  /** Synchronize all Alkemio spaces into the Matrix space hierarchy. Idempotent — safe to call multiple times. */
+  adminCommunicationSyncSpaceHierarchy: Scalars['Boolean']['output'];
   /** Allow updating the state flags of a particular rule. */
   adminCommunicationUpdateRoomState: Scalars['Boolean']['output'];
   /** Delete a Kratos identity by ID. */
@@ -4052,6 +4719,10 @@ export type Mutation = {
   adminUpdateGeoLocationData: Scalars['Boolean']['output'];
   /** Remove the Kratos account associated with the specified User. Note: the Users profile on the platform is not deleted. */
   adminUserAccountDelete: User;
+  /** Change a user's login email synchronously, acting as a platform administrator. The admin is responsible for verifying the subject user's identity out-of-band — the platform does NOT send a confirmation message to the new mailbox and does NOT require the new mailbox to prove ownership. Validates uniqueness, commits Kratos → Alkemio with bounded retry, invalidates the subject's existing sessions, and sends a security-signal notification to the old address. Requires PLATFORM_ADMIN. */
+  adminUserEmailChange: UserEmailChangeResult;
+  /** Reconcile an outstanding drift-detected state for a subject user by force-aligning Alkemio and Kratos to a canonical email chosen by the admin. Requires PLATFORM_ADMIN. */
+  adminUserEmailChangeDriftResolve: UserEmailChangeResult;
   /** Create a test customer on wingback. */
   adminWingbackCreateTestCustomer: Scalars['String']['output'];
   /** Get wingback customer entitlements. */
@@ -4066,14 +4737,16 @@ export type Mutation = {
   aiServerUpdateAiPersona: AiPersona;
   /** Apply to join the specified RoleSet in the entry Role. */
   applyForEntryRoleOnRoleSet: Application;
-  /** Ask the chat engine for guidance. */
-  askChatGuidanceQuestion: MessageAnswerQuestion;
+  /** Assign a member to a group conversation. Returns true when the RPC is sent. Actual membership change arrives via MEMBER_ADDED subscription event. */
+  assignConversationMember: Scalars['Boolean']['output'];
   /** Assign the specified LicensePlan to an Account. */
   assignLicensePlanToAccount: Account;
   /** Assign the specified LicensePlan to a Space. */
   assignLicensePlanToSpace: Space;
   /** Assigns a User to a role on the Platform. */
   assignPlatformRoleToUser: User;
+  /** Assigns an Actor (User, Organization, or Virtual Contributor) to a role in the specified RoleSet. */
+  assignRole: Actor;
   /** Assigns an Organization a Role in the specified Community. */
   assignRoleToOrganization: Organization;
   /** Assigns a User to a role in the specified Community. */
@@ -4096,12 +4769,8 @@ export type Mutation = {
   authorizationPolicyResetOnUser: User;
   /** Reset the specified Authorization Policy to global admin privileges */
   authorizationPolicyResetToGlobalAdminsAccess: Authorization;
-  /** Generate Alkemio user credential offer */
-  beginAlkemioUserVerifiedCredentialOfferInteraction: AgentBeginVerifiedCredentialOfferOutput;
-  /** Generate community member credential offer */
-  beginCommunityMemberVerifiedCredentialOfferInteraction: AgentBeginVerifiedCredentialOfferOutput;
-  /** Generate verified credential share request */
-  beginVerifiedCredentialRequestInteraction: AgentBeginVerifiedCredentialRequestOutput;
+  /** Cast or update a vote on a Poll. Requires CONTRIBUTE privilege on the Poll (space member). If the calling user has already voted, their vote is REPLACED ENTIRELY with the new selection set. */
+  castPollVote: Poll;
   /** Deletes collections nameID-... */
   cleanupCollections: MigrateEmbeddings;
   /** Move an L1 Space up in the hierarchy, to be a L0 Space. */
@@ -4112,12 +4781,12 @@ export type Mutation = {
   convertSpaceL2ToSpaceL1: Space;
   /** Convert a VC of type ALKEMIO_SPACE to be of type KNOWLEDGE_BASE. All Callouts from the Space currently being used are moved to the Knowledge Base. Note: only allowed for VCs using a Space within the same Account. */
   convertVirtualContributorToUseKnowledgeBase: VirtualContributor;
-  /** Create a new Callout on the CalloutsSet. */
+  /** Create a new Callout on the CalloutsSet. When `file` is supplied alongside a COLLABORA_DOCUMENT framing, the new callout is framed with a Collabora document populated from the uploaded bytes (file-service-go sniffs MIME, validates format and size, and derives the document type; any documentType in the input is ignored on the upload path; displayName defaults from the filename when absent). When `file` is omitted, the existing blank-create behaviour applies and framing.collaboraDocument must specify both displayName and documentType. */
   createCalloutOnCalloutsSet: Callout;
-  /** Create a guidance chat room. */
-  createChatGuidanceRoom?: Maybe<Room>;
   /** Create a new Contribution on the Callout. */
   createContributionOnCallout: CalloutContribution;
+  /** Create a new Conversation. Use type DIRECT for 1-on-1, GROUP for multi-party. */
+  createConversation: Conversation;
   /** Creates a new Discussion as part of this Forum. */
   createDiscussion: Discussion;
   /** Create a new CalendarEvent on the Calendar. */
@@ -4152,18 +4821,22 @@ export type Mutation = {
   createTemplateFromSpace: Template;
   /** Creates a new User on the platform. */
   createUser: User;
-  /** Creates a new User profile on the platform for a user that has a valid Authentication session. */
-  createUserNewRegistration: User;
   /** Creates a new VirtualContributor on an Account. */
   createVirtualContributor: VirtualContributor;
   /** Creates an account in Wingback */
   createWingbackAccount: Scalars['String']['output'];
+  /** Removes the specified Application. */
+  deleteApplication: Application;
   /** Deletes the specified CalendarEvent. */
   deleteCalendarEvent: CalendarEvent;
   /** Delete a Callout. */
   deleteCallout: Callout;
+  /** Deletes the specified CollaboraDocument. */
+  deleteCollaboraDocument: CollaboraDocument;
   /** Deletes a contribution. */
   deleteContribution: CalloutContribution;
+  /** Deletes a Conversation. All members are notified via CONVERSATION_DELETED event. */
+  deleteConversation: Conversation;
   /** Deletes the specified Discussion. */
   deleteDiscussion: Discussion;
   /** Deletes the specified Document. */
@@ -4198,50 +4871,78 @@ export type Mutation = {
   deleteTemplate: Template;
   /** Deletes the specified User. */
   deleteUser: User;
-  /** Removes the specified User Application. */
-  deleteUserApplication: Application;
   /** Deletes the specified User Group. */
   deleteUserGroup: UserGroup;
   /** Deletes the specified VirtualContributor. */
   deleteVirtualContributor: VirtualContributor;
+  /** Deletes a visual from the specified media gallery. */
+  deleteVisualFromMediaGallery: Visual;
   /** Deletes the specified Whiteboard. */
   deleteWhiteboard: Whiteboard;
+  /** Re-enable a previously disabled push notification subscription for the current user. */
+  enablePushSubscription: PushSubscription;
   /** Trigger an event on the Application. */
   eventOnApplication: Application;
   /** Trigger an event on the Invitation. */
   eventOnInvitation: Invitation;
   /** Trigger an event on the Organization Verification. */
   eventOnOrganizationVerification: OrganizationVerification;
+  /** Grant a credential to an Actor. */
+  grantCredentialToActor: Credential;
   /** Grants an authorization credential to an Organization. */
   grantCredentialToOrganization: Organization;
   /** Grants an authorization credential to a User. */
   grantCredentialToUser: User;
+  /** Import an existing file as a CollaboraDocument contribution on the callout. file-service-go sniffs the MIME from content and rejects formats Collabora cannot edit. */
+  importCollaboraDocument: CalloutContribution;
   /** Invite new Contributors or users by email to join the specified RoleSet in the Entry Role. */
   inviteForEntryRoleOnRoleSet: Array<RoleSetInvitationResult>;
   /** Join the specified RoleSet using the entry Role, without going through an approval process. */
   joinRoleSet: RoleSet;
+  /** Leave a group conversation. Returns true when the RPC is sent. Actual membership change arrives via MEMBER_REMOVED subscription event. If the last member leaves, the conversation is auto-deleted and a CONVERSATION_DELETED event follows. */
+  leaveConversation: Scalars['Boolean']['output'];
   /** Reset the License with Entitlements on the specified Account. */
   licenseResetOnAccount: Account;
+  /** Marks a message as read for the current user. */
+  markMessageAsReadInRoom: Scalars['Boolean']['output'];
   /** Mark notifications as read. If no filter is provided, marks all user notifications as read. If filter with types is provided, marks only those notification types as read. */
   markNotificationsAsRead: Scalars['Boolean']['output'];
   /** Mark notifications as unread. If no filter is provided, marks all user notifications as unread. If filter with types is provided, marks only those notification types as unread. */
   markNotificationsAsUnread: Scalars['Boolean']['output'];
   /** Moves the specified Contribution to another Callout. */
   moveContributionToCallout: CalloutContribution;
+  /** Move an L1 subspace to a different L0 space. The subspace remains at level 1       but changes parent. All content moves with it. All community memberships are cleared.       Requires platform admin privileges. */
+  moveSpaceL1ToSpaceL0: Space;
+  /** Move an L1 subspace to become an L2 sub-subspace under a target L1 in a different L0 space.       The space is demoted from level 1 to level 2. All community roles are cleared.       Requires platform admin privileges. */
+  moveSpaceL1ToSpaceL2: Space;
+  /** Move an L2 sub-subspace to become an L2 subspace under a target L1 in a different L0 space.       The subspace stays at level 2 but changes both its parent L1 and its top-level L0.       All community roles (including admins) are cleared and pending invitations dropped.       Platform access rules are recomputed from the new parent hierarchy.       Requires platform admin privileges. */
+  moveSpaceL2ToSpaceL1: Space;
   /** Refresh the Bodies of Knowledge on All VCs */
   refreshAllBodiesOfKnowledge: Scalars['Boolean']['output'];
   /** Triggers a request to the backing AI Service to refresh the knowledge that is available to it. */
   refreshVirtualContributorBodyOfKnowledge: Scalars['Boolean']['output'];
   /** Empties the CommunityGuidelines. */
   removeCommunityGuidelinesContent: CommunityGuidelines;
+  /** Remove a member from a group conversation. Returns true when the RPC is sent. Actual membership change arrives via MEMBER_REMOVED subscription event. */
+  removeConversationMember: Scalars['Boolean']['output'];
+  /** Remove the default callout template from an InnovationFlowState. */
+  removeDefaultCalloutTemplateOnInnovationFlowState: InnovationFlowState;
   /** Removes an Iframe Allowed URL from the Platform Settings */
   removeIframeAllowedURL: Array<Scalars['String']['output']>;
   /** Removes a message. */
   removeMessageOnRoom: Scalars['MessageID']['output'];
+  /** Removes an email address from the platform notification blacklist */
+  removeNotificationEmailFromBlacklist: Array<Scalars['String']['output']>;
   /** Removes a User from a Role on the Platform. */
   removePlatformRoleFromUser: User;
+  /** Remove an option from a Poll. Requires UPDATE privilege. Poll must retain at least 2 options. Votes that selected this option are deleted and affected voters are notified. */
+  removePollOption: Poll;
+  /** Remove the current user vote from a Poll. Requires CONTRIBUTE privilege on the Poll. If the user has not voted, returns a validation error. */
+  removePollVote: Poll;
   /** Remove a reaction on a message from the specified Room. */
   removeReactionToMessageInRoom: Scalars['Boolean']['output'];
+  /** Removes an Actor (User, Organization, or Virtual Contributor) from a role in the specified RoleSet. */
+  removeRole: Actor;
   /** Removes an Organization from a Role in the specified Community. */
   removeRoleFromOrganization: Organization;
   /** Removes a User from a Role in the specified Community. */
@@ -4250,10 +4951,16 @@ export type Mutation = {
   removeRoleFromVirtualContributor: VirtualContributor;
   /** Removes the specified User from specified user group */
   removeUserFromGroup: UserGroup;
-  /** Resets the interaction with the chat engine. */
-  resetChatGuidance: Scalars['Boolean']['output'];
+  /** Reorder Poll options. Requires UPDATE privilege. The provided list must contain exactly the same option IDs as the current poll options. */
+  reorderPollOptions: Poll;
+  /** Replace the backing file of an existing CollaboraDocument in place, preserving its identity. Requires UPDATE on the document. The replacement must be an allowed OfficeDocs format, within the size cap, and the SAME document type as the current file. Refused while the document is being edited. */
+  replaceCollaboraDocument: CollaboraDocument;
+  /** Resets the interaction with the VC by recreating the room. */
+  resetConversationVc: Conversation;
   /** Reset all license plans on Accounts */
-  resetLicenseOnAccounts: Space;
+  resetLicenseOnAccounts: Scalars['Boolean']['output'];
+  /** Revoke a credential from an Actor. */
+  revokeCredentialFromActor: Scalars['Boolean']['output'];
   /** Removes an authorization credential from an Organization. */
   revokeCredentialFromOrganization: Organization;
   /** Removes an authorization credential from a User. */
@@ -4262,6 +4969,8 @@ export type Mutation = {
   revokeLicensePlanFromAccount: Account;
   /** Revokes the specified LicensePlan on a Space. */
   revokeLicensePlanFromSpace: Space;
+  /** Send a private (1:1) chat message to each of the given Users individually. Does NOT create a group conversation. Each recipient is processed independently and reported on; partial success is possible. */
+  sendDirectMessageToUsers: Array<DirectMessageDeliveryResult>;
   /** Sends a reply to a message from the specified Room. */
   sendMessageReplyToRoom: Message;
   /** Send message to Community Leads. */
@@ -4270,10 +4979,14 @@ export type Mutation = {
   sendMessageToOrganization: Scalars['Boolean']['output'];
   /** Sends an comment message. Returns the id of the new Update message. */
   sendMessageToRoom: Message;
-  /** Sends a message on the specified User`s behalf and returns the room id */
-  sendMessageToUserDirect: Scalars['String']['output'];
   /** Send message to multiple Users. */
   sendMessageToUsers: Scalars['Boolean']['output'];
+  /** Set the default callout template for an InnovationFlowState. */
+  setDefaultCalloutTemplateOnInnovationFlowState: InnovationFlowState;
+  /** Set the mapping of a well-known Virtual Contributor to a specific Virtual Contributor UUID. */
+  setPlatformWellKnownVirtualContributor: PlatformWellKnownVirtualContributors;
+  /** Subscribe the current user's device to push notifications. If the subscription endpoint already exists, it is updated. If the user has reached the maximum number of subscriptions (10), the oldest subscription is automatically replaced. */
+  subscribeToPushNotifications: PushSubscription;
   /** Transfer the specified Callout from its current CalloutsSet to the target CalloutsSet. Note: this is experimental, and only for GlobalAdmins. The user that executes the transfer becomes the creator of the Callout. */
   transferCallout: Callout;
   /** Transfer the specified InnovationHub to another Account. */
@@ -4284,10 +4997,12 @@ export type Mutation = {
   transferSpaceToAccount: Space;
   /** Transfer the specified Virtual Contributor to another Account. */
   transferVirtualContributorToAccount: InnovationPack;
-  /** User vote if a specific answer is relevant. */
-  updateAnswerRelevance: Scalars['Boolean']['output'];
+  /** Disable a push notification subscription for the current user. The subscription is retained but will not receive notifications until re-enabled. */
+  unsubscribeFromPushNotifications: PushSubscription;
   /** Update the Application Form used by this RoleSet. */
   updateApplicationFormOnRoleSet: RoleSet;
+  /** Set the admin per-capability grant on the virtual-assistant actor, governing what it may do system-invoked (default read-only). Requires the platform-operations-admin privilege. */
+  updateAssistantActorCapabilities: VirtualAssistant;
   /** Update the baseline License Plan on the specified Account. */
   updateBaselineLicensePlanOnAccount: Account;
   /** Updates the specified CalendarEvent. */
@@ -4302,12 +5017,16 @@ export type Mutation = {
   updateCalloutsSortOrder: Array<Callout>;
   /** Updates a Tagset on a Classification. */
   updateClassificationTagset: Tagset;
-  /** Updates a Collaboration, including InnovationFlow states, using the Space content from the specified Template. */
+  /** Updates the specified CollaboraDocument. */
+  updateCollaboraDocument: CollaboraDocument;
+  /** Updates a Collaboration using the Space content from the specified Template. Behavior depends on parameter combinations: (1) Flow Only: deleteExistingCallouts=false, addCallouts=false - updates only InnovationFlow states; (2) Add Posts: deleteExistingCallouts=false, addCallouts=true - keeps existing and adds template callouts; (3) Replace All: deleteExistingCallouts=true, addCallouts=true - deletes existing then adds template callouts; (4) Delete Only: deleteExistingCallouts=true, addCallouts=false - deletes existing callouts and updates InnovationFlow states. Execution order: delete (if requested) → update flow states (always) → add (if requested). */
   updateCollaborationFromSpaceTemplate: Collaboration;
   /** Updates the CommunityGuidelines. */
   updateCommunityGuidelines: CommunityGuidelines;
   /** Update the sortOrder field of the Contributions of s Callout. */
   updateContributionsSortOrder: Array<CalloutContribution>;
+  /** Update a group conversation (display name, avatar). Returns true when the RPC is sent. Actual changes arrive via CONVERSATION_UPDATED subscription events. When both fields are provided, clients may receive separate update events for each. */
+  updateConversation: Scalars['Boolean']['output'];
   /** Updates the specified Discussion. */
   updateDiscussion: Discussion;
   /** Updates the specified Document. */
@@ -4340,6 +5059,10 @@ export type Mutation = {
   updateOrganizationSettings: Organization;
   /** Updates one of the Setting on the Platform */
   updatePlatformSettings: PlatformSettings;
+  /** Update the text of an existing Poll option. Requires UPDATE privilege. Votes that selected this option are deleted and affected voters are notified. */
+  updatePollOption: Poll;
+  /** Change the status of a Poll (OPEN ↔ CLOSED). Requires UPDATE privilege on the parent Callout. When a poll is CLOSED, all state-mutating operations are rejected. Idempotent: setting to current status succeeds without error. */
+  updatePollStatus: Poll;
   /** Updates the specified Post. */
   updatePost: Post;
   /** Updates the specified Profile. */
@@ -4352,6 +5075,10 @@ export type Mutation = {
   updateSpacePlatformSettings: Space;
   /** Updates one of the Setting on a Space */
   updateSpaceSettings: Space;
+  /** Updates the pinned state of a Subspace within the specified Space. Returns the updated Subspace. */
+  updateSubspacePinned: Space;
+  /** Update the sortOrder field of the supplied Subspaces to increase as per the order that they are provided in. */
+  updateSubspacesSortOrder: Array<Space>;
   /** Updates the specified Tagset. */
   updateTagset: Tagset;
   /** Updates the specified Template. */
@@ -4372,18 +5099,22 @@ export type Mutation = {
   updateUserSettings: User;
   /** Updates the specified VirtualContributor. */
   updateVirtualContributor: VirtualContributor;
-  /** Updates one of the Setting on an Organization */
+  /** Updates platform-level settings of a VirtualContributor (platform admins only). */
+  updateVirtualContributorPlatformSettings: VirtualContributor;
+  /** Updates one of the Setting on an Virtual Contributor */
   updateVirtualContributorSettings: VirtualContributor;
   /** Updates the image URI for the specified Visual. */
   updateVisual: Visual;
   /** Updates the specified Whiteboard. */
   updateWhiteboard: Whiteboard;
+  /** Grants or revokes GLOBAL_GUEST permissions for a whiteboard using a single toggle. */
+  updateWhiteboardGuestAccess: UpdateWhiteboardGuestAccessResult;
   /** Create a new Document on the Storage and return the value as part of the returned Link. */
   uploadFileOnLink: Link;
   /** Create a new Document on the Storage and return the value as part of the returned Reference. */
   uploadFileOnReference: Reference;
-  /** Create a new Document on the Storage and return the public Url. */
-  uploadFileOnStorageBucket: Scalars['String']['output'];
+  /** Create a new Document on the Storage and return the ID and public URL. */
+  uploadFileOnStorageBucket: StorageBucketUploadFileResult;
   /** Uploads and sets an image for the specified Visual. */
   uploadImageOnVisual: Visual;
 };
@@ -4392,8 +5123,20 @@ export type MutationAddIframeAllowedUrlArgs = {
   whitelistedURL: Scalars['String']['input'];
 };
 
+export type MutationAddNotificationEmailToBlacklistArgs = {
+  input: NotificationEmailAddressInput;
+};
+
+export type MutationAddPollOptionArgs = {
+  optionData: AddPollOptionInput;
+};
+
 export type MutationAddReactionToMessageInRoomArgs = {
   reactionData: RoomAddReactionToMessageInput;
+};
+
+export type MutationAddVisualToMediaGalleryArgs = {
+  addData: AddVisualToMediaGalleryInput;
 };
 
 export type MutationAdminCommunicationEnsureAccessToCommunicationsArgs = {
@@ -4432,6 +5175,14 @@ export type MutationAdminUserAccountDeleteArgs = {
   userID: Scalars['UUID']['input'];
 };
 
+export type MutationAdminUserEmailChangeArgs = {
+  adminUserEmailChangeData: AdminUserEmailChangeInput;
+};
+
+export type MutationAdminUserEmailChangeDriftResolveArgs = {
+  adminUserEmailChangeDriftResolveData: AdminUserEmailChangeDriftResolveInput;
+};
+
 export type MutationAdminWingbackGetCustomerEntitlementsArgs = {
   customerID: Scalars['String']['input'];
 };
@@ -4452,8 +5203,8 @@ export type MutationApplyForEntryRoleOnRoleSetArgs = {
   applicationData: ApplyForEntryRoleOnRoleSetInput;
 };
 
-export type MutationAskChatGuidanceQuestionArgs = {
-  chatData: ChatGuidanceInput;
+export type MutationAssignConversationMemberArgs = {
+  memberData: AssignConversationMemberInput;
 };
 
 export type MutationAssignLicensePlanToAccountArgs = {
@@ -4468,16 +5219,20 @@ export type MutationAssignPlatformRoleToUserArgs = {
   roleData: AssignPlatformRoleInput;
 };
 
+export type MutationAssignRoleArgs = {
+  roleData: AssignRoleOnRoleSetInput;
+};
+
 export type MutationAssignRoleToOrganizationArgs = {
-  roleData: AssignRoleOnRoleSetToOrganizationInput;
+  roleData: AssignRoleOnRoleSetInput;
 };
 
 export type MutationAssignRoleToUserArgs = {
-  roleData: AssignRoleOnRoleSetToUserInput;
+  roleData: AssignRoleOnRoleSetInput;
 };
 
 export type MutationAssignRoleToVirtualContributorArgs = {
-  roleData: AssignRoleOnRoleSetToVirtualContributorInput;
+  roleData: AssignRoleOnRoleSetInput;
 };
 
 export type MutationAssignUserToGroupArgs = {
@@ -4500,13 +5255,8 @@ export type MutationAuthorizationPolicyResetToGlobalAdminsAccessArgs = {
   authorizationID: Scalars['String']['input'];
 };
 
-export type MutationBeginCommunityMemberVerifiedCredentialOfferInteractionArgs =
-  {
-    communityID: Scalars['String']['input'];
-  };
-
-export type MutationBeginVerifiedCredentialRequestInteractionArgs = {
-  types: Array<Scalars['String']['input']>;
+export type MutationCastPollVoteArgs = {
+  voteData: CastPollVoteInput;
 };
 
 export type MutationConvertSpaceL1ToSpaceL0Args = {
@@ -4527,10 +5277,15 @@ export type MutationConvertVirtualContributorToUseKnowledgeBaseArgs = {
 
 export type MutationCreateCalloutOnCalloutsSetArgs = {
   calloutData: CreateCalloutOnCalloutsSetInput;
+  file?: InputMaybe<Scalars['Upload']['input']>;
 };
 
 export type MutationCreateContributionOnCalloutArgs = {
   contributionData: CreateContributionOnCalloutInput;
+};
+
+export type MutationCreateConversationArgs = {
+  conversationData: CreateConversationInput;
 };
 
 export type MutationCreateDiscussionArgs = {
@@ -4609,6 +5364,10 @@ export type MutationCreateWingbackAccountArgs = {
   accountID: Scalars['UUID']['input'];
 };
 
+export type MutationDeleteApplicationArgs = {
+  deleteData: DeleteApplicationInput;
+};
+
 export type MutationDeleteCalendarEventArgs = {
   deleteData: DeleteCalendarEventInput;
 };
@@ -4617,8 +5376,16 @@ export type MutationDeleteCalloutArgs = {
   deleteData: DeleteCalloutInput;
 };
 
+export type MutationDeleteCollaboraDocumentArgs = {
+  deleteData: DeleteCollaboraDocumentInput;
+};
+
 export type MutationDeleteContributionArgs = {
   deleteData: DeleteContributionInput;
+};
+
+export type MutationDeleteConversationArgs = {
+  deleteData: DeleteConversationInput;
 };
 
 export type MutationDeleteDiscussionArgs = {
@@ -4689,10 +5456,6 @@ export type MutationDeleteUserArgs = {
   deleteData: DeleteUserInput;
 };
 
-export type MutationDeleteUserApplicationArgs = {
-  deleteData: DeleteApplicationInput;
-};
-
 export type MutationDeleteUserGroupArgs = {
   deleteData: DeleteUserGroupInput;
 };
@@ -4701,8 +5464,16 @@ export type MutationDeleteVirtualContributorArgs = {
   deleteData: DeleteVirtualContributorInput;
 };
 
+export type MutationDeleteVisualFromMediaGalleryArgs = {
+  deleteData: DeleteVisualFromMediaGalleryInput;
+};
+
 export type MutationDeleteWhiteboardArgs = {
   whiteboardData: DeleteWhiteboardInput;
+};
+
+export type MutationEnablePushSubscriptionArgs = {
+  subscriptionData: UnsubscribeFromPushNotificationsInput;
 };
 
 export type MutationEventOnApplicationArgs = {
@@ -4717,12 +5488,23 @@ export type MutationEventOnOrganizationVerificationArgs = {
   eventData: OrganizationVerificationEventInput;
 };
 
+export type MutationGrantCredentialToActorArgs = {
+  actorID: Scalars['UUID']['input'];
+  credentialType: CredentialType;
+  resourceID?: InputMaybe<Scalars['UUID']['input']>;
+};
+
 export type MutationGrantCredentialToOrganizationArgs = {
   grantCredentialData: GrantOrganizationAuthorizationCredentialInput;
 };
 
 export type MutationGrantCredentialToUserArgs = {
   grantCredentialData: GrantAuthorizationCredentialInput;
+};
+
+export type MutationImportCollaboraDocumentArgs = {
+  file: Scalars['Upload']['input'];
+  uploadData: ImportCollaboraDocumentInput;
 };
 
 export type MutationInviteForEntryRoleOnRoleSetArgs = {
@@ -4733,8 +5515,16 @@ export type MutationJoinRoleSetArgs = {
   joinData: JoinAsEntryRoleOnRoleSetInput;
 };
 
+export type MutationLeaveConversationArgs = {
+  leaveData: LeaveConversationInput;
+};
+
 export type MutationLicenseResetOnAccountArgs = {
   resetData: AccountLicenseResetInput;
+};
+
+export type MutationMarkMessageAsReadInRoomArgs = {
+  messageData: RoomMarkMessageReadInput;
 };
 
 export type MutationMarkNotificationsAsReadArgs = {
@@ -4749,12 +5539,32 @@ export type MutationMoveContributionToCalloutArgs = {
   moveContributionData: MoveCalloutContributionInput;
 };
 
+export type MutationMoveSpaceL1ToSpaceL0Args = {
+  moveData: MoveSpaceL1ToSpaceL0Input;
+};
+
+export type MutationMoveSpaceL1ToSpaceL2Args = {
+  moveData: MoveSpaceL1ToSpaceL2Input;
+};
+
+export type MutationMoveSpaceL2ToSpaceL1Args = {
+  moveData: MoveSpaceL2ToSpaceL1Input;
+};
+
 export type MutationRefreshVirtualContributorBodyOfKnowledgeArgs = {
   refreshData: RefreshVirtualContributorBodyOfKnowledgeInput;
 };
 
 export type MutationRemoveCommunityGuidelinesContentArgs = {
   communityGuidelinesData: RemoveCommunityGuidelinesContentInput;
+};
+
+export type MutationRemoveConversationMemberArgs = {
+  memberData: RemoveConversationMemberInput;
+};
+
+export type MutationRemoveDefaultCalloutTemplateOnInnovationFlowStateArgs = {
+  removeData: RemoveDefaultCalloutTemplateOnInnovationFlowStateInput;
 };
 
 export type MutationRemoveIframeAllowedUrlArgs = {
@@ -4765,28 +5575,63 @@ export type MutationRemoveMessageOnRoomArgs = {
   messageData: RoomRemoveMessageInput;
 };
 
+export type MutationRemoveNotificationEmailFromBlacklistArgs = {
+  input: NotificationEmailAddressInput;
+};
+
 export type MutationRemovePlatformRoleFromUserArgs = {
   roleData: RemovePlatformRoleInput;
+};
+
+export type MutationRemovePollOptionArgs = {
+  optionData: RemovePollOptionInput;
+};
+
+export type MutationRemovePollVoteArgs = {
+  voteData: RemovePollVoteInput;
 };
 
 export type MutationRemoveReactionToMessageInRoomArgs = {
   reactionData: RoomRemoveReactionToMessageInput;
 };
 
+export type MutationRemoveRoleArgs = {
+  roleData: RemoveRoleOnRoleSetInput;
+};
+
 export type MutationRemoveRoleFromOrganizationArgs = {
-  roleData: RemoveRoleOnRoleSetFromOrganizationInput;
+  roleData: RemoveRoleOnRoleSetInput;
 };
 
 export type MutationRemoveRoleFromUserArgs = {
-  roleData: RemoveRoleOnRoleSetFromUserInput;
+  roleData: RemoveRoleOnRoleSetInput;
 };
 
 export type MutationRemoveRoleFromVirtualContributorArgs = {
-  roleData: RemoveRoleOnRoleSetFromVirtualContributorInput;
+  roleData: RemoveRoleOnRoleSetInput;
 };
 
 export type MutationRemoveUserFromGroupArgs = {
   membershipData: RemoveUserGroupMemberInput;
+};
+
+export type MutationReorderPollOptionsArgs = {
+  optionData: ReorderPollOptionsInput;
+};
+
+export type MutationReplaceCollaboraDocumentArgs = {
+  file: Scalars['Upload']['input'];
+  replaceData: ReplaceCollaboraDocumentInput;
+};
+
+export type MutationResetConversationVcArgs = {
+  input: ConversationVcResetInput;
+};
+
+export type MutationRevokeCredentialFromActorArgs = {
+  actorID: Scalars['UUID']['input'];
+  credentialType: CredentialType;
+  resourceID?: InputMaybe<Scalars['UUID']['input']>;
 };
 
 export type MutationRevokeCredentialFromOrganizationArgs = {
@@ -4805,6 +5650,10 @@ export type MutationRevokeLicensePlanFromSpaceArgs = {
   planData: RevokeLicensePlanFromSpace;
 };
 
+export type MutationSendDirectMessageToUsersArgs = {
+  messageData: SendDirectMessageToUsersInput;
+};
+
 export type MutationSendMessageReplyToRoomArgs = {
   messageData: RoomSendMessageReplyInput;
 };
@@ -4821,12 +5670,20 @@ export type MutationSendMessageToRoomArgs = {
   messageData: RoomSendMessageInput;
 };
 
-export type MutationSendMessageToUserDirectArgs = {
-  messageData: UserSendMessageInput;
-};
-
 export type MutationSendMessageToUsersArgs = {
   messageData: CommunicationSendMessageToUsersInput;
+};
+
+export type MutationSetDefaultCalloutTemplateOnInnovationFlowStateArgs = {
+  setData: SetDefaultCalloutTemplateOnInnovationFlowStateInput;
+};
+
+export type MutationSetPlatformWellKnownVirtualContributorArgs = {
+  mappingData: SetPlatformWellKnownVirtualContributorInput;
+};
+
+export type MutationSubscribeToPushNotificationsArgs = {
+  subscriptionData: SubscribeToPushNotificationsInput;
 };
 
 export type MutationTransferCalloutArgs = {
@@ -4849,12 +5706,16 @@ export type MutationTransferVirtualContributorToAccountArgs = {
   transferData: TransferAccountVirtualContributorInput;
 };
 
-export type MutationUpdateAnswerRelevanceArgs = {
-  input: ChatGuidanceAnswerRelevanceInput;
+export type MutationUnsubscribeFromPushNotificationsArgs = {
+  subscriptionData: UnsubscribeFromPushNotificationsInput;
 };
 
 export type MutationUpdateApplicationFormOnRoleSetArgs = {
   applicationFormData: UpdateApplicationFormOnRoleSetInput;
+};
+
+export type MutationUpdateAssistantActorCapabilitiesArgs = {
+  grantData: GrantAssistantActorCapabilitiesInput;
 };
 
 export type MutationUpdateBaselineLicensePlanOnAccountArgs = {
@@ -4885,6 +5746,10 @@ export type MutationUpdateClassificationTagsetArgs = {
   updateData: UpdateClassificationSelectTagsetValueInput;
 };
 
+export type MutationUpdateCollaboraDocumentArgs = {
+  updateData: UpdateCollaboraDocumentInput;
+};
+
 export type MutationUpdateCollaborationFromSpaceTemplateArgs = {
   updateData: UpdateCollaborationFromSpaceTemplateInput;
 };
@@ -4895,6 +5760,10 @@ export type MutationUpdateCommunityGuidelinesArgs = {
 
 export type MutationUpdateContributionsSortOrderArgs = {
   sortOrderData: UpdateContributionCalloutsSortOrderInput;
+};
+
+export type MutationUpdateConversationArgs = {
+  updateData: UpdateConversationInput;
 };
 
 export type MutationUpdateDiscussionArgs = {
@@ -4961,6 +5830,14 @@ export type MutationUpdatePlatformSettingsArgs = {
   settingsData: UpdatePlatformSettingsInput;
 };
 
+export type MutationUpdatePollOptionArgs = {
+  optionData: UpdatePollOptionInput;
+};
+
+export type MutationUpdatePollStatusArgs = {
+  statusData: UpdatePollStatusInput;
+};
+
 export type MutationUpdatePostArgs = {
   postData: UpdatePostInput;
 };
@@ -4983,6 +5860,14 @@ export type MutationUpdateSpacePlatformSettingsArgs = {
 
 export type MutationUpdateSpaceSettingsArgs = {
   settingsData: UpdateSpaceSettingsInput;
+};
+
+export type MutationUpdateSubspacePinnedArgs = {
+  pinnedData: UpdateSubspacePinnedInput;
+};
+
+export type MutationUpdateSubspacesSortOrderArgs = {
+  sortOrderData: UpdateSubspacesSortOrderInput;
 };
 
 export type MutationUpdateTagsetArgs = {
@@ -5025,6 +5910,10 @@ export type MutationUpdateVirtualContributorArgs = {
   virtualContributorData: UpdateVirtualContributorInput;
 };
 
+export type MutationUpdateVirtualContributorPlatformSettingsArgs = {
+  settingsData: UpdateVirtualContributorPlatformSettingsInput;
+};
+
 export type MutationUpdateVirtualContributorSettingsArgs = {
   settingsData: UpdateVirtualContributorSettingsInput;
 };
@@ -5035,6 +5924,10 @@ export type MutationUpdateVisualArgs = {
 
 export type MutationUpdateWhiteboardArgs = {
   whiteboardData: UpdateWhiteboardEntityInput;
+};
+
+export type MutationUpdateWhiteboardGuestAccessArgs = {
+  input: UpdateWhiteboardGuestAccessInput;
 };
 
 export type MutationUploadFileOnLinkArgs = {
@@ -5079,6 +5972,11 @@ export type Nvp = {
   value: Scalars['String']['output'];
 };
 
+export type NotificationEmailAddressInput = {
+  /** Full email address to add/remove; lowercase enforced by server */
+  email: Scalars['String']['input'];
+};
+
 export enum NotificationEvent {
   OrganizationAdminMentioned = 'ORGANIZATION_ADMIN_MENTIONED',
   OrganizationAdminMessage = 'ORGANIZATION_ADMIN_MESSAGE',
@@ -5092,7 +5990,7 @@ export enum NotificationEvent {
   SpaceAdminCollaborationCalloutContribution = 'SPACE_ADMIN_COLLABORATION_CALLOUT_CONTRIBUTION',
   SpaceAdminCommunityApplication = 'SPACE_ADMIN_COMMUNITY_APPLICATION',
   SpaceAdminCommunityNewMember = 'SPACE_ADMIN_COMMUNITY_NEW_MEMBER',
-  SpaceAdminVirtualContributorCommunityInvitationDeclined = 'SPACE_ADMIN_VIRTUAL_CONTRIBUTOR_COMMUNITY_INVITATION_DECLINED',
+  SpaceAdminVirtualCommunityInvitationDeclined = 'SPACE_ADMIN_VIRTUAL_COMMUNITY_INVITATION_DECLINED',
   SpaceCollaborationCalloutComment = 'SPACE_COLLABORATION_CALLOUT_COMMENT',
   SpaceCollaborationCalloutContribution = 'SPACE_COLLABORATION_CALLOUT_CONTRIBUTION',
   SpaceCollaborationCalloutPostContributionComment = 'SPACE_COLLABORATION_CALLOUT_POST_CONTRIBUTION_COMMENT',
@@ -5107,19 +6005,20 @@ export enum NotificationEvent {
   SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
   SpaceLeadCommunicationMessage = 'SPACE_LEAD_COMMUNICATION_MESSAGE',
   UserCommentReply = 'USER_COMMENT_REPLY',
+  UserConversationMessageDirect = 'USER_CONVERSATION_MESSAGE_DIRECT',
+  UserConversationMessageGroup = 'USER_CONVERSATION_MESSAGE_GROUP',
   UserEmailChangeGlobalAdminNotification = 'USER_EMAIL_CHANGE_GLOBAL_ADMIN_NOTIFICATION',
   UserEmailChangeNewAddressNotification = 'USER_EMAIL_CHANGE_NEW_ADDRESS_NOTIFICATION',
   UserEmailChangeSecuritySignal = 'USER_EMAIL_CHANGE_SECURITY_SIGNAL',
   UserEmailChangeSpaceAdminNotification = 'USER_EMAIL_CHANGE_SPACE_ADMIN_NOTIFICATION',
-  UserPasswordChangeSecuritySignal = 'USER_PASSWORD_CHANGE_SECURITY_SIGNAL',
   UserMentioned = 'USER_MENTIONED',
   UserMessage = 'USER_MESSAGE',
-  UserMessageSender = 'USER_MESSAGE_SENDER',
+  UserPasswordChangeSecuritySignal = 'USER_PASSWORD_CHANGE_SECURITY_SIGNAL',
   UserSignUpWelcome = 'USER_SIGN_UP_WELCOME',
   UserSpaceCommunityApplicationDeclined = 'USER_SPACE_COMMUNITY_APPLICATION_DECLINED',
   UserSpaceCommunityInvitation = 'USER_SPACE_COMMUNITY_INVITATION',
   UserSpaceCommunityJoined = 'USER_SPACE_COMMUNITY_JOINED',
-  VirtualContributorAdminSpaceCommunityInvitation = 'VIRTUAL_CONTRIBUTOR_ADMIN_SPACE_COMMUNITY_INVITATION',
+  VirtualAdminSpaceCommunityInvitation = 'VIRTUAL_ADMIN_SPACE_COMMUNITY_INVITATION',
 }
 
 /** A categorization of notification type. */
@@ -5142,22 +6041,25 @@ export enum NotificationEventPayload {
   OrganizationMessageDirect = 'ORGANIZATION_MESSAGE_DIRECT',
   OrganizationMessageRoom = 'ORGANIZATION_MESSAGE_ROOM',
   PlatformForumDiscussion = 'PLATFORM_FORUM_DISCUSSION',
-  PlatformForumDiscussionComment = 'PLATFORM_FORUM_DISCUSSION_COMMENT',
   PlatformGlobalRoleChange = 'PLATFORM_GLOBAL_ROLE_CHANGE',
   PlatformUserProfileRemoved = 'PLATFORM_USER_PROFILE_REMOVED',
   Space = 'SPACE',
   SpaceCollaborationCallout = 'SPACE_COLLABORATION_CALLOUT',
   SpaceCollaborationCalloutComment = 'SPACE_COLLABORATION_CALLOUT_COMMENT',
   SpaceCollaborationCalloutPostComment = 'SPACE_COLLABORATION_CALLOUT_POST_COMMENT',
+  SpaceCollaborationPoll = 'SPACE_COLLABORATION_POLL',
   SpaceCommunicationMessageDirect = 'SPACE_COMMUNICATION_MESSAGE_DIRECT',
   SpaceCommunicationUpdate = 'SPACE_COMMUNICATION_UPDATE',
+  SpaceCommunityActor = 'SPACE_COMMUNITY_ACTOR',
   SpaceCommunityApplication = 'SPACE_COMMUNITY_APPLICATION',
   SpaceCommunityCalendarEvent = 'SPACE_COMMUNITY_CALENDAR_EVENT',
   SpaceCommunityCalendarEventComment = 'SPACE_COMMUNITY_CALENDAR_EVENT_COMMENT',
-  SpaceCommunityContributor = 'SPACE_COMMUNITY_CONTRIBUTOR',
   SpaceCommunityInvitation = 'SPACE_COMMUNITY_INVITATION',
   SpaceCommunityInvitationUserPlatform = 'SPACE_COMMUNITY_INVITATION_USER_PLATFORM',
   User = 'USER',
+  UserEmailChangeGlobalAdminNotification = 'USER_EMAIL_CHANGE_GLOBAL_ADMIN_NOTIFICATION',
+  UserEmailChangeNewAddressNotification = 'USER_EMAIL_CHANGE_NEW_ADDRESS_NOTIFICATION',
+  UserEmailChangeSecuritySignal = 'USER_EMAIL_CHANGE_SECURITY_SIGNAL',
   UserMessageDirect = 'USER_MESSAGE_DIRECT',
   UserMessageRoom = 'USER_MESSAGE_ROOM',
   VirtualContributor = 'VIRTUAL_CONTRIBUTOR',
@@ -5173,6 +6075,8 @@ export type NotificationRecipientResult = {
   emailRecipients: Array<User>;
   /** The in-app recipients for the notification. */
   inAppRecipients: Array<User>;
+  /** The push recipients for the notification. */
+  pushRecipients: Array<User>;
   /** The user that triggered the event. */
   triggeredBy?: Maybe<User>;
 };
@@ -5188,6 +6092,8 @@ export type NotificationRecipientsInput = {
   triggeredBy?: InputMaybe<Scalars['UUID']['input']>;
   /** The ID of the specific user recipient for user-related notifications (e.g., invitations, mentions). */
   userID?: InputMaybe<Scalars['UUID']['input']>;
+  /** Plural recipient user IDs (e.g. conversation-message events) — resolved via a single OR-combined credentials query. Bounded to at most 100 entries; larger conversations must be fanned out by the caller in bounded batches. */
+  userIDs?: InputMaybe<Array<Scalars['UUID']['input']>>;
   /** The ID of the Virtual Contributor to use to determine recipients. */
   virtualContributorID?: InputMaybe<Scalars['UUID']['input']>;
 };
@@ -5197,70 +6103,69 @@ export type NotificationSettingInput = {
   email?: InputMaybe<Scalars['Boolean']['input']>;
   /** Enable in-app notifications for this setting */
   inApp?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Enable push notifications for this setting */
+  push?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum OpenAiModel {
-  Babbage_002 = 'BABBAGE_002',
-  DallE_2 = 'DALL_E_2',
-  DallE_3 = 'DALL_E_3',
-  Davinci_002 = 'DAVINCI_002',
-  Gpt_3_5Turbo = 'GPT_3_5_TURBO',
-  Gpt_4 = 'GPT_4',
-  Gpt_4O = 'GPT_4O',
-  Gpt_4OAudioPreview = 'GPT_4O_AUDIO_PREVIEW',
-  Gpt_4OMini = 'GPT_4O_MINI',
-  Gpt_4OMiniAudioPreview = 'GPT_4O_MINI_AUDIO_PREVIEW',
-  Gpt_4OMiniRealtimePreview = 'GPT_4O_MINI_REALTIME_PREVIEW',
-  Gpt_4ORealtimePreview = 'GPT_4O_REALTIME_PREVIEW',
-  Gpt_4_5Preview = 'GPT_4_5_PREVIEW',
-  Gpt_4Turbo = 'GPT_4_TURBO',
-  O1 = 'O1',
-  O1Mini = 'O1_MINI',
+  Gpt_5 = 'GPT_5',
+  Gpt_5_1 = 'GPT_5_1',
+  Gpt_5_1Mini = 'GPT_5_1_MINI',
+  Gpt_5_2 = 'GPT_5_2',
+  Gpt_5_2Pro = 'GPT_5_2_PRO',
+  Gpt_5_4 = 'GPT_5_4',
+  Gpt_5_4Mini = 'GPT_5_4_MINI',
+  Gpt_5_4Nano = 'GPT_5_4_NANO',
+  Gpt_5_4Pro = 'GPT_5_4_PRO',
+  Gpt_5_5 = 'GPT_5_5',
+  Gpt_5_5Pro = 'GPT_5_5_PRO',
+  Gpt_5Mini = 'GPT_5_MINI',
+  Gpt_5Nano = 'GPT_5_NANO',
+  Gpt_5Pro = 'GPT_5_PRO',
+  O3 = 'O3',
   O3Mini = 'O3_MINI',
-  OmniModerationLatest = 'OMNI_MODERATION_LATEST',
-  TextEmbedding_3Large = 'TEXT_EMBEDDING_3_LARGE',
-  TextEmbedding_3Small = 'TEXT_EMBEDDING_3_SMALL',
-  TextEmbeddingAda_002 = 'TEXT_EMBEDDING_ADA_002',
-  TextModerationLatest = 'TEXT_MODERATION_LATEST',
-  Tts_1 = 'TTS_1',
-  Tts_1Hd = 'TTS_1_HD',
-  Whisper_1 = 'WHISPER_1',
+  O3Pro = 'O3_PRO',
+  O4Mini = 'O4_MINI',
 }
 
-export type Organization = Contributor &
+export type Organization = ActorFull &
   Groupable & {
     /** The account hosted by this Organization. */
     account?: Maybe<Account>;
-    /** The Agent representing this User. */
-    agent: Agent;
-    /** The authorization rules for the Contributor */
+    /** The Actor representing this User. */
+    actor: Actor;
+    /** The authorization rules for the Actor */
     authorization?: Maybe<Authorization>;
     /** Organization contact email */
     contactEmail?: Maybe<Scalars['String']['output']>;
     /** The date at which the entity was created. */
     createdDate: Scalars['DateTime']['output'];
+    /** The credentials held by this Actor */
+    credentials?: Maybe<Array<Credential>>;
     /** Domain name; what is verified, eg. alkem.io */
     domain?: Maybe<Scalars['String']['output']>;
     /** Group defined on this organization. */
     group?: Maybe<UserGroup>;
     /** Groups defined on this organization. */
     groups?: Maybe<Array<UserGroup>>;
-    /** The ID of the Contributor */
+    /** The ID of the Actor */
     id: Scalars['UUID']['output'];
     /** Legal name - required if hosting an Space */
     legalEntityName?: Maybe<Scalars['String']['output']>;
     /** Metrics about the activity within this Organization. */
     metrics?: Maybe<Array<Nvp>>;
-    /** A name identifier of the Contributor, unique within a given scope. */
+    /** A name identifier of the entity, unique within a given scope. */
     nameID: Scalars['NameID']['output'];
-    /** The profile for this Organization. */
-    profile: Profile;
+    /** The profile for this Actor. */
+    profile?: Maybe<Profile>;
     /** The RoleSet for this Organization. */
     roleSet: RoleSet;
     /** The settings for this Organization. */
     settings: OrganizationSettings;
     /** The StorageAggregator for managing storage buckets in use by this Organization */
     storageAggregator?: Maybe<StorageAggregator>;
+    /** The type of Actor */
+    type: ActorType;
     /** The date at which the entity was last updated. */
     updatedDate: Scalars['DateTime']['output'];
     verification: OrganizationVerification;
@@ -5361,6 +6266,18 @@ export type PaginatedInAppNotifications = {
   total: Scalars['Float']['output'];
 };
 
+export type PaginatedInnovationPacks = {
+  innovationPacks: Array<InnovationPack>;
+  pageInfo: PageInfo;
+  total: Scalars['Float']['output'];
+};
+
+export type PaginatedLibraryTemplateResults = {
+  pageInfo: PageInfo;
+  templateResults: Array<TemplateResult>;
+  total: Scalars['Float']['output'];
+};
+
 export type PaginatedOrganization = {
   organization: Array<Organization>;
   pageInfo: PageInfo;
@@ -5388,8 +6305,6 @@ export type PaginatedVirtualContributor = {
 export type Platform = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
-  /** The Virtual Contributor that is used to provide chat help on the platform. */
-  chatGuidanceVirtualContributor: VirtualContributor;
   /** Alkemio configuration. Provides configuration to external services in the Alkemio ecosystem. */
   configuration: Config;
   /** The date at which the entity was created. */
@@ -5406,6 +6321,7 @@ export type Platform = {
   library: Library;
   /** The Licensing in use by the platform. */
   licensingFramework: Licensing;
+  messaging?: Maybe<Messaging>;
   /** Alkemio Services Metadata. */
   metadata: Metadata;
   /** The RoleSet for this Platform. */
@@ -5418,6 +6334,10 @@ export type Platform = {
   templatesManager?: Maybe<TemplatesManager>;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
+  /** Whether the current user may use the web AI assistant (the ACCESS_VIRTUAL_ASSISTANT privilege, 004-web-ai-assistant). client-web reads this to gate every assistant UI cue. */
+  virtualAssistantAccess: Scalars['Boolean']['output'];
+  /** The mappings of well-known Virtual Contributors to their UUIDs. */
+  wellKnownVirtualContributors: PlatformWellKnownVirtualContributors;
 };
 
 export type PlatformInnovationHubArgs = {
@@ -5454,6 +6374,8 @@ export type PlatformAdminIdentityQueryResultsIdentitiesArgs = {
 };
 
 export type PlatformAdminQueryResults = {
+  /** Retrieve all Accounts on the Platform. This is only available to Platform Admins. */
+  accounts: Array<Account>;
   /** Lookup Communication related information. */
   communication: PlatformAdminCommunicationQueryResults;
   /** Lookup Identity related information. */
@@ -5462,18 +6384,28 @@ export type PlatformAdminQueryResults = {
   innovationHubs: Array<InnovationHub>;
   /** Retrieve all Innovation Packs on the Platform. This is only available to Platform Admins. */
   innovationPacks: Array<InnovationPack>;
+  /** The most recent email-change audit entry for the named subject user. Returns null if no audit entry exists. */
+  latestUserEmailChangeAuditEntry?: Maybe<UserEmailChangeAuditEntry>;
   /** Retrieve all Organizations on the Platform. This is only available to Platform Admins. */
   organizations: PaginatedOrganization;
   /** Retrieve all Spaces on the Platform. This is only available to Platform Admins. */
   spaces: Array<Space>;
+  /** Paginated email-change audit-entry history for the named subject user, ordered by timestamp descending. Cursor pagination per docs/Pagination.md. */
+  userEmailChangeAuditEntries: UserEmailChangeAuditEntries;
   /** Retrieve all Users on the Platform. This is only available to Platform Admins. */
   users: PaginatedUsers;
+  /** The singleton virtual-assistant actor, including its current admin capability grant and ID. This is only available to Platform Admins, and is the discovery path for updateAssistantActorCapabilities. */
+  virtualAssistant: VirtualAssistant;
   /** Retrieve all Virtual Contributors on the Platform. This is only available to Platform Admins. */
   virtualContributors: Array<VirtualContributor>;
 };
 
 export type PlatformAdminQueryResultsInnovationPacksArgs = {
   queryData?: InputMaybe<InnovationPacksInput>;
+};
+
+export type PlatformAdminQueryResultsLatestUserEmailChangeAuditEntryArgs = {
+  userID: Scalars['UUID']['input'];
 };
 
 export type PlatformAdminQueryResultsOrganizationsArgs = {
@@ -5490,6 +6422,14 @@ export type PlatformAdminQueryResultsSpacesArgs = {
   filter?: InputMaybe<SpaceFilterInput>;
 };
 
+export type PlatformAdminQueryResultsUserEmailChangeAuditEntriesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Float']['input']>;
+  last?: InputMaybe<Scalars['Float']['input']>;
+  userID: Scalars['UUID']['input'];
+};
+
 export type PlatformAdminQueryResultsUsersArgs = {
   after?: InputMaybe<Scalars['UUID']['input']>;
   before?: InputMaybe<Scalars['UUID']['input']>;
@@ -5500,7 +6440,7 @@ export type PlatformAdminQueryResultsUsersArgs = {
 };
 
 export type PlatformAdminQueryResultsVirtualContributorsArgs = {
-  filter?: InputMaybe<ContributorFilterInput>;
+  filter?: InputMaybe<ActorFilterInput>;
   limit?: InputMaybe<Scalars['Float']['input']>;
   shuffle?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -5519,7 +6459,6 @@ export enum PlatformFeatureFlagName {
   LandingPage = 'LANDING_PAGE',
   Memo = 'MEMO',
   Notifications = 'NOTIFICATIONS',
-  Ssi = 'SSI',
   Subscriptions = 'SUBSCRIPTIONS',
   Whiteboards = 'WHITEBOARDS',
 }
@@ -5527,6 +6466,8 @@ export enum PlatformFeatureFlagName {
 export type PlatformIntegrationSettings = {
   /** The list of allowed URLs for iFrames within Markdown content. */
   iframeAllowedUrls: Array<Scalars['String']['output']>;
+  /** List of fully-qualified email addresses blocked from receiving notifications */
+  notificationEmailBlacklist: Array<Scalars['String']['output']>;
 };
 
 export type PlatformInvitation = {
@@ -5546,10 +6487,12 @@ export type PlatformInvitation = {
   platformRole?: Maybe<RoleName>;
   /** Whether a new user profile has been created. */
   profileCreated: Scalars['Boolean']['output'];
-  /** Additional roles to assign to the Contributor, in addition to the entry Role. */
+  /** Additional roles to assign to the Actor, in addition to the entry Role. */
   roleSetExtraRoles: Array<RoleName>;
   /** Whether to also add the invited user to the parent community. */
   roleSetInvitedToParent: Scalars['Boolean']['output'];
+  /** Optional language the inviter expects the invitee to prefer; recorded per invitation. */
+  suggestedLanguage?: Maybe<Scalars['String']['output']>;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   welcomeMessage?: Maybe<Scalars['String']['output']>;
@@ -5618,6 +6561,159 @@ export type PlatformSettings = {
   integration: PlatformIntegrationSettings;
 };
 
+export type PlatformWellKnownVirtualContributorMapping = {
+  /** The UUID of the Virtual Contributor. */
+  virtualContributorID: Scalars['UUID']['output'];
+  /** The well-known identifier for the Virtual Contributor. */
+  wellKnown: VirtualContributorWellKnown;
+};
+
+export type PlatformWellKnownVirtualContributors = {
+  /** The mappings of well-known Virtual Contributors to their UUIDs. */
+  mappings: Array<PlatformWellKnownVirtualContributorMapping>;
+};
+
+export type Poll = {
+  /** The authorization rules for the entity */
+  authorization?: Maybe<Authorization>;
+  /** Whether the current user can see detailed results (visibility gate passed). */
+  canSeeDetailedResults: Scalars['Boolean']['output'];
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** [Future] Date/time after which the poll automatically closes. Always null in this iteration. */
+  deadline?: Maybe<Scalars['DateTime']['output']>;
+  /** The ID of the entity */
+  id: Scalars['UUID']['output'];
+  /** The current user's vote on this poll, or null if the current user has not voted. */
+  myVote?: Maybe<PollVote>;
+  /** The selectable options for this poll, always ordered by sortOrder ascending. */
+  options: Array<PollOption>;
+  /** Configuration settings for this poll (immutable after creation). */
+  settings: PollSettings;
+  /** Current lifecycle status of this poll. Always OPEN in this iteration; CLOSED reserved for future use. */
+  status: PollStatus;
+  /** Poll title. */
+  title: Scalars['String']['output'];
+  /** Total number of votes cast on this poll. Null when resultsVisibility = HIDDEN and the current user has not voted. */
+  totalVotes?: Maybe<Scalars['Int']['output']>;
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
+};
+
+/** The type of event that occurred on a poll. */
+export enum PollEventType {
+  PollOptionsChanged = 'POLL_OPTIONS_CHANGED',
+  PollStatusChanged = 'POLL_STATUS_CHANGED',
+  PollVoteUpdated = 'POLL_VOTE_UPDATED',
+}
+
+export type PollOption = {
+  createdDate: Scalars['DateTime']['output'];
+  id: Scalars['UUID']['output'];
+  /** Position of this option in the creation order (used for tie-breaking in results). */
+  sortOrder: Scalars['Int']['output'];
+  text: Scalars['String']['output'];
+  updatedDate: Scalars['DateTime']['output'];
+  /** Number of votes this option has received. Null when results are hidden or resultsDetail = PERCENTAGE. */
+  voteCount?: Maybe<Scalars['Int']['output']>;
+  /** Percentage of total votes this option has received (0–100). Null when results are hidden or resultsDetail = COUNT. Null when totalVotes = 0. */
+  votePercentage?: Maybe<Scalars['Float']['output']>;
+  /** List of space members who voted for this option. Null when results are hidden or resultsDetail is not FULL. */
+  voters?: Maybe<Array<User>>;
+};
+
+export type PollOptionsChangedSubscriptionResult = {
+  /** The updated Poll. Fields are filtered per subscriber's visibility context. */
+  poll: Poll;
+  /** The type of poll event. */
+  pollEventType: PollEventType;
+};
+
+/** Controls the level of detail shown in poll results. */
+export enum PollResultsDetail {
+  /** Vote count per option; no voter identities. */
+  Count = 'COUNT',
+  /** Counts and voter list per option — fully transparent (default). */
+  Full = 'FULL',
+  /** Only percentage per option; no vote counts or voter identities. */
+  Percentage = 'PERCENTAGE',
+}
+
+/** Controls when poll results become visible to voters. */
+export enum PollResultsVisibility {
+  /** Results hidden until the viewer has cast their own vote. */
+  Hidden = 'HIDDEN',
+  /** Only the total vote count is shown before voting; details (depending on PollResultsDetail) become available after voting. */
+  TotalOnly = 'TOTAL_ONLY',
+  /** Full results always visible regardless of whether the viewer has voted (default). */
+  Visible = 'VISIBLE',
+}
+
+export type PollSettings = {
+  /** Whether users with CONTRIBUTE privilege can add new options to the poll. Immutable after poll creation. Default: false. */
+  allowContributorsAddOptions: Scalars['Boolean']['output'];
+  /** Maximum number of options a voter may select (0 = unlimited). Immutable after poll creation. */
+  maxResponses: Scalars['Int']['output'];
+  /** Minimum number of options a voter must select (≥ 1). Immutable after poll creation. */
+  minResponses: Scalars['Int']['output'];
+  /** Controls how much detail is shown in results. Immutable after poll creation. */
+  resultsDetail: PollResultsDetail;
+  /** Controls when results become visible to voters. Immutable after poll creation. */
+  resultsVisibility: PollResultsVisibility;
+};
+
+export type PollSettingsData = {
+  /** Whether voters can add new options to the poll. Defaults to false. */
+  allowContributorsAddOptions?: Maybe<Scalars['Boolean']['output']>;
+  /** Maximum selections allowed. Defaults to 1. Set to 0 for unlimited. */
+  maxResponses?: Maybe<Scalars['Int']['output']>;
+  /** Minimum selections required. Defaults to 1. */
+  minResponses?: Maybe<Scalars['Int']['output']>;
+  /** How much detail is shown. Defaults to FULL. */
+  resultsDetail?: Maybe<PollResultsDetail>;
+  /** When results become visible. Defaults to VISIBLE. */
+  resultsVisibility?: Maybe<PollResultsVisibility>;
+};
+
+export type PollSettingsInput = {
+  /** Whether voters can add new options to the poll. Defaults to false. */
+  allowContributorsAddOptions?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Maximum selections allowed. Defaults to 1. Set to 0 for unlimited. */
+  maxResponses?: InputMaybe<Scalars['Int']['input']>;
+  /** Minimum selections required. Defaults to 1. */
+  minResponses?: InputMaybe<Scalars['Int']['input']>;
+  /** How much detail is shown. Defaults to FULL. */
+  resultsDetail?: InputMaybe<PollResultsDetail>;
+  /** When results become visible. Defaults to VISIBLE. */
+  resultsVisibility?: InputMaybe<PollResultsVisibility>;
+};
+
+/** Lifecycle status of a Poll. OPEN allows voting and option management; CLOSED prevents all state-mutating operations. */
+export enum PollStatus {
+  Closed = 'CLOSED',
+  Open = 'OPEN',
+}
+
+export type PollVote = {
+  /** ID of the user who cast this vote. */
+  createdBy: Scalars['UUID']['output'];
+  /** The date at which the entity was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** The ID of the entity */
+  id: Scalars['UUID']['output'];
+  /** The options selected in this vote. */
+  selectedOptions: Array<PollOption>;
+  /** The date at which the entity was last updated. */
+  updatedDate: Scalars['DateTime']['output'];
+};
+
+export type PollVoteUpdatedSubscriptionResult = {
+  /** The updated Poll. Fields are filtered per subscriber's visibility context. */
+  poll: Poll;
+  /** The type of poll event. */
+  pollEventType: PollEventType;
+};
+
 export type Post = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
@@ -5680,16 +6776,11 @@ export type ProfileVisualArgs = {
   type: VisualType;
 };
 
-export type ProfileCredentialVerified = {
-  /** The email */
-  userEmail: Scalars['String']['output'];
-  /** The vc. */
-  vc: Scalars['String']['output'];
-};
-
 export enum ProfileType {
+  Account = 'ACCOUNT',
   CalendarEvent = 'CALENDAR_EVENT',
   CalloutFraming = 'CALLOUT_FRAMING',
+  CollaboraDocument = 'COLLABORA_DOCUMENT',
   CommunityGuidelines = 'COMMUNITY_GUIDELINES',
   ContributionLink = 'CONTRIBUTION_LINK',
   Discussion = 'DISCUSSION',
@@ -5700,6 +6791,7 @@ export enum ProfileType {
   Memo = 'MEMO',
   Organization = 'ORGANIZATION',
   Post = 'POST',
+  Space = 'SPACE',
   SpaceAbout = 'SPACE_ABOUT',
   Template = 'TEMPLATE',
   User = 'USER',
@@ -5820,23 +6912,48 @@ export type PruneInAppNotificationAdminResult = {
   removedCountOutsideRetentionPeriod: Scalars['Int']['output'];
 };
 
+/** Represents a user's push notification subscription for a specific device/browser. */
+export type PushSubscription = {
+  /** When this subscription was created. */
+  createdDate: Scalars['DateTime']['output'];
+  /** Unique identifier for this subscription. */
+  id: Scalars['UUID']['output'];
+  /** Last time a notification was successfully delivered to this subscription. */
+  lastActiveDate?: Maybe<Scalars['DateTime']['output']>;
+  /** Current status of the subscription. */
+  status: PushSubscriptionStatus;
+  /** Browser/device user agent string for display purposes. */
+  userAgent?: Maybe<Scalars['String']['output']>;
+};
+
+/** Status of a push notification subscription. */
+export enum PushSubscriptionStatus {
+  Active = 'ACTIVE',
+  Disabled = 'DISABLED',
+  Expired = 'EXPIRED',
+}
+
 export type Query = {
-  /** The Accounts on this platform; If accessed through an Innovation Hub will return ONLY the Accounts defined in it. */
-  accounts: Array<Account>;
   /** Activity events related to the current user. */
   activityFeed: ActivityFeed;
   /** Activity events related to the current user grouped by Activity type and resource. */
   activityFeedGrouped: Array<ActivityLogEntry>;
   /** Retrieve the ActivityLog for the specified Collaboration */
   activityLogOnCollaboration: Array<ActivityLogEntry>;
+  /** Get an Actor by ID. Returns null if not found. */
+  actor?: Maybe<ActorFull>;
+  /** All Actors that hold credentials matching the supplied criteria. */
+  actorsWithCredential: Array<ActorFull>;
   /** Get all unverified identities from Kratos. */
   adminIdentitiesUnverified: Array<KratosIdentity>;
   /** Alkemio AiServer */
   aiServer: AiServer;
+  /** Retrieves the editor URL for the specified CollaboraDocument. */
+  collaboraEditorUrl: CollaboraEditorUrlResult;
+  /** Whether the WOPI save service backing this CollaboraDocument is currently reachable. A side-effect-free health check — unlike collaboraEditorUrl it issues no access token and records no analytics — used to surface a save-path outage in the editor. */
+  collaboraServiceAvailable: Scalars['Boolean']['output'];
   /** Active Spaces only, order by most active in the past X days. */
   exploreSpaces: Array<Space>;
-  /** Get supported credential metadata */
-  getSupportedVerifiedCredentialMetadata: Array<CredentialMetadataOutput>;
   /** Allow creation of inputs based on existing entities in the domain model */
   inputCreator: InputCreatorQueryResults;
   /** Allow direct lookup of entities from the domain model */
@@ -5845,6 +6962,8 @@ export type Query = {
   lookupByName: LookupByNameQueryResults;
   /** Information about the current authenticated user */
   me: MeQueryResults;
+  /** Returns the current user's push notification subscriptions (active and disabled). Requires authentication. */
+  myPushSubscriptions: Array<PushSubscription>;
   /** The notificationRecipients for the provided event on the given entity. */
   notificationRecipients: NotificationRecipientResult;
   /** A particular Organization */
@@ -5857,14 +6976,16 @@ export type Query = {
   platform: Platform;
   /** Allow looking up of information for Platform administration. */
   platformAdmin: PlatformAdminQueryResults;
+  /** The enumerable assistant capability surface (one per MCP tool), with each tool classified READ / WRITE_ADDITIVE / WRITE_DESTRUCTIVE. */
+  platformCapabilities: Array<AssistantCapability>;
   /** Get the list of restricted space names. */
   restrictedSpaceNames: Array<Scalars['String']['output']>;
   /** The roles that the specified Organization has. */
-  rolesOrganization: ContributorRoles;
+  rolesOrganization: ActorRoles;
   /** The roles that that the specified User has. */
-  rolesUser: ContributorRoles;
+  rolesUser: ActorRoles;
   /** The roles that the specified VirtualContributor has. */
-  rolesVirtualContributor: ContributorRoles;
+  rolesVirtualContributor: ActorRoles;
   /** Search the platform for terms supplied */
   search: ISearchResults;
   /** The Spaces on this platform; If accessed through an Innovation Hub will return ONLY the Spaces defined in it. */
@@ -5885,6 +7006,8 @@ export type Query = {
   usersPaginated: PaginatedUsers;
   /** All Users that hold credentials matching the supplied criteria. */
   usersWithAuthorizationCredential: Array<User>;
+  /** Returns the VAPID public key needed by clients to subscribe to push notifications. Returns null if push notifications are not enabled on this server. */
+  vapidPublicKey?: Maybe<Scalars['String']['output']>;
   /** A particular VirtualContributor */
   virtualContributor: VirtualContributor;
   /** The VirtualContributors on this platform; only accessible to platform admins */
@@ -5907,6 +7030,23 @@ export type QueryActivityLogOnCollaborationArgs = {
   queryData: ActivityLogInput;
 };
 
+export type QueryActorArgs = {
+  id: Scalars['UUID']['input'];
+};
+
+export type QueryActorsWithCredentialArgs = {
+  credentialType: CredentialType;
+  resourceID?: InputMaybe<Scalars['UUID']['input']>;
+};
+
+export type QueryCollaboraEditorUrlArgs = {
+  collaboraDocumentID: Scalars['UUID']['input'];
+};
+
+export type QueryCollaboraServiceAvailableArgs = {
+  collaboraDocumentID: Scalars['UUID']['input'];
+};
+
 export type QueryExploreSpacesArgs = {
   options?: InputMaybe<ExploreSpacesInput>;
 };
@@ -5920,7 +7060,7 @@ export type QueryOrganizationArgs = {
 };
 
 export type QueryOrganizationsArgs = {
-  filter?: InputMaybe<ContributorFilterInput>;
+  filter?: InputMaybe<ActorFilterInput>;
   limit?: InputMaybe<Scalars['Float']['input']>;
   shuffle?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -5935,15 +7075,15 @@ export type QueryOrganizationsPaginatedArgs = {
 };
 
 export type QueryRolesOrganizationArgs = {
-  rolesData: RolesOrganizationInput;
+  rolesData: RolesActorInput;
 };
 
 export type QueryRolesUserArgs = {
-  rolesData: RolesUserInput;
+  rolesData: RolesActorInput;
 };
 
 export type QueryRolesVirtualContributorArgs = {
-  rolesData: RolesVirtualContributorInput;
+  rolesData: RolesActorInput;
 };
 
 export type QuerySearchArgs = {
@@ -5981,7 +7121,7 @@ export type QueryUserArgs = {
 
 export type QueryUsersArgs = {
   IDs?: InputMaybe<Array<Scalars['UUID']['input']>>;
-  filter?: InputMaybe<ContributorFilterInput>;
+  filter?: InputMaybe<ActorFilterInput>;
   limit?: InputMaybe<Scalars['Float']['input']>;
   shuffle?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -6004,7 +7144,7 @@ export type QueryVirtualContributorArgs = {
 };
 
 export type QueryVirtualContributorsArgs = {
-  filter?: InputMaybe<ContributorFilterInput>;
+  filter?: InputMaybe<ActorFilterInput>;
   limit?: InputMaybe<Scalars['Float']['input']>;
   shuffle?: InputMaybe<Scalars['Boolean']['input']>;
 };
@@ -6054,16 +7194,16 @@ export type RefreshVirtualContributorBodyOfKnowledgeInput = {
   virtualContributorID: Scalars['UUID']['input'];
 };
 
-export type RelayPaginatedSpace = {
+export type RelayPaginatedSpace = ActorFull & {
   /** About this space. */
   about: SpaceAbout;
   /** The Account that this Space is part of. */
   account: Account;
   /** The "highest" subscription active for this Space. */
   activeSubscription?: Maybe<SpaceSubscription>;
-  /** The Agent representing this Space. */
-  agent: Agent;
-  /** The authorization rules for the entity */
+  /** The Actor representing this Space. */
+  actor: Actor;
+  /** The authorization rules for the Actor */
   authorization?: Maybe<Authorization>;
   /** The collaboration for the Space. */
   collaboration: Collaboration;
@@ -6071,20 +7211,34 @@ export type RelayPaginatedSpace = {
   community: Community;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
-  /** The ID of the entity */
+  /** The credentials held by this Actor */
+  credentials?: Maybe<Array<Credential>>;
+  /** The ID of the Actor */
   id: Scalars['UUID']['output'];
+  /** The layout settings for this Space. Accessible without READ privilege. */
+  layout: SpaceSettingsLayout;
   /** The level of this Space, representing the number of Spaces above this one. */
   level: SpaceLevel;
   /** The ID of the level zero space for this tree. */
   levelZeroSpaceID: Scalars['String']['output'];
   /** The License operating on this Space. */
   license: License;
+  /** Capped list of Contributors (Users, Virtual Contributors, …) that may be @mentioned in this Space. Scope adapts to the Space's privacy and the privacy of its ancestors: a private Space yields only its own Members; a public Space includes its Members plus the Members of each ancestor, walking up until the first private ancestor (inclusive) or until the public L0 root is reached, in which case all platform Contributors of the requested types are returned. Use `filter` for typeahead search and `types` to restrict which Contributor kinds are returned. */
+  mentionableContributors: Array<ActorFull>;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
+  /** Whether this Space is pinned in its parent Space. */
+  pinned: Scalars['Boolean']['output'];
   /** The calculated platform access for this Space. */
   platformAccess: PlatformRolesAccess;
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
   /** The settings for this Space. */
   settings: SpaceSettings;
+  /** The sort mode for subspaces of this Space: Alphabetical or Custom. Accessible without READ privilege. */
+  sortMode: SpaceSortMode;
+  /** The sorting order for this Space within its parent. */
+  sortOrder: Scalars['Int']['output'];
   /** The StorageAggregator in use by this Space */
   storageAggregator: StorageAggregator;
   /** The subscriptions active for this Space. */
@@ -6095,10 +7249,18 @@ export type RelayPaginatedSpace = {
   subspaces: Array<Space>;
   /** The TemplatesManager in use by this Space */
   templatesManager?: Maybe<TemplatesManager>;
+  /** The type of Actor */
+  type: ActorType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   /** Visibility of the Space. */
   visibility: SpaceVisibility;
+};
+
+export type RelayPaginatedSpaceMentionableContributorsArgs = {
+  filter?: InputMaybe<ContributorFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  types?: InputMaybe<Array<ActorType>>;
 };
 
 export type RelayPaginatedSpaceSubspaceByNameIdArgs = {
@@ -6131,25 +7293,34 @@ export type RemoveCommunityGuidelinesContentInput = {
   communityGuidelinesID: Scalars['UUID']['input'];
 };
 
+export type RemoveConversationMemberInput = {
+  /** The ID of the conversation to remove a member from. */
+  conversationID: Scalars['UUID']['input'];
+  /** The ID of the member (user or VC) to remove. */
+  memberID: Scalars['UUID']['input'];
+};
+
+export type RemoveDefaultCalloutTemplateOnInnovationFlowStateInput = {
+  flowStateID: Scalars['UUID']['input'];
+};
+
 export type RemovePlatformRoleInput = {
-  contributorID: Scalars['UUID']['input'];
+  actorID: Scalars['UUID']['input'];
   role: RoleName;
 };
 
-export type RemoveRoleOnRoleSetFromOrganizationInput = {
-  contributorID: Scalars['UUID']['input'];
-  role: RoleName;
-  roleSetID: Scalars['UUID']['input'];
+export type RemovePollOptionInput = {
+  optionID: Scalars['UUID']['input'];
+  pollID: Scalars['UUID']['input'];
 };
 
-export type RemoveRoleOnRoleSetFromUserInput = {
-  contributorID: Scalars['UUID']['input'];
-  role: RoleName;
-  roleSetID: Scalars['UUID']['input'];
+export type RemovePollVoteInput = {
+  /** The ID of the Poll from which to remove the current user vote. */
+  pollID: Scalars['UUID']['input'];
 };
 
-export type RemoveRoleOnRoleSetFromVirtualContributorInput = {
-  contributorID: Scalars['UUID']['input'];
+export type RemoveRoleOnRoleSetInput = {
+  actorID: Scalars['UUID']['input'];
   role: RoleName;
   roleSetID: Scalars['UUID']['input'];
 };
@@ -6157,6 +7328,18 @@ export type RemoveRoleOnRoleSetFromVirtualContributorInput = {
 export type RemoveUserGroupMemberInput = {
   groupID: Scalars['UUID']['input'];
   userID: Scalars['UUID']['input'];
+};
+
+export type ReorderPollOptionsInput = {
+  optionIDs: Array<Scalars['UUID']['input']>;
+  pollID: Scalars['UUID']['input'];
+};
+
+export type ReplaceCollaboraDocumentInput = {
+  /** The ID of the CollaboraDocument whose backing file is being replaced. */
+  ID: Scalars['UUID']['input'];
+  /** Optional title chosen in the replace dialog (defaults to the incoming file title). When supplied it is persisted as the CollaboraDocument display name (the same entity), propagating to the editor title and the download filename. Omit to leave the current name unchanged. */
+  displayName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RevokeAuthorizationCredentialInput = {
@@ -6203,7 +7386,7 @@ export type Role = {
   /** The CommunityRole that this role definition is for. */
   name: RoleName;
   /** The role policy that applies for Organizations in this Role. */
-  organizationPolicy: ContributorRolePolicy;
+  organizationPolicy: ActorRolePolicy;
   /** The Credential associated with this Role. */
   parentCredentials: Array<CredentialDefinition>;
   /** Flag to indicate if this Role requires the entry level role to be held. */
@@ -6213,9 +7396,9 @@ export type Role = {
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   /** The role policy that applies for Users in this Role. */
-  userPolicy: ContributorRolePolicy;
+  userPolicy: ActorRolePolicy;
   /** The role policy that applies for VirtualContributors in this Role. */
-  virtualContributorPolicy: ContributorRolePolicy;
+  virtualContributorPolicy: ActorRolePolicy;
 };
 
 export enum RoleName {
@@ -6229,10 +7412,13 @@ export enum RoleName {
   GlobalSpacesReader = 'GLOBAL_SPACES_READER',
   GlobalSupport = 'GLOBAL_SUPPORT',
   GlobalSupportManager = 'GLOBAL_SUPPORT_MANAGER',
+  Guest = 'GUEST',
   Lead = 'LEAD',
   Member = 'MEMBER',
   Owner = 'OWNER',
+  PlatformAssistantAccess = 'PLATFORM_ASSISTANT_ACCESS',
   PlatformBetaTester = 'PLATFORM_BETA_TESTER',
+  PlatformOperationsAdmin = 'PLATFORM_OPERATIONS_ADMIN',
   PlatformVcCampaign = 'PLATFORM_VC_CAMPAIGN',
   Registered = 'REGISTERED',
 }
@@ -6356,21 +7542,19 @@ export type RoleSetVirtualContributorsInRolesArgs = {
   roles: Array<RoleName>;
 };
 
-export enum RoleSetContributorType {
-  Organization = 'ORGANIZATION',
-  User = 'USER',
-  Virtual = 'VIRTUAL',
-}
-
 export type RoleSetInvitationResult = {
+  /** The existing open application that blocks this invitation, when the result type is ALREADY_HAS_OPEN_APPLICATION. */
+  application?: Maybe<Application>;
   invitation?: Maybe<Invitation>;
   platformInvitation?: Maybe<PlatformInvitation>;
   type: RoleSetInvitationResultType;
 };
 
 export enum RoleSetInvitationResultType {
+  AlreadyHasOpenApplication = 'ALREADY_HAS_OPEN_APPLICATION',
   AlreadyInvitedToPlatformAndRoleSet = 'ALREADY_INVITED_TO_PLATFORM_AND_ROLE_SET',
   AlreadyInvitedToRoleSet = 'ALREADY_INVITED_TO_ROLE_SET',
+  AlreadyMemberOfRoleSet = 'ALREADY_MEMBER_OF_ROLE_SET',
   InvitationToParentNotAuthorized = 'INVITATION_TO_PARENT_NOT_AUTHORIZED',
   InvitedToPlatformAndRoleSet = 'INVITED_TO_PLATFORM_AND_ROLE_SET',
   InvitedToRoleSet = 'INVITED_TO_ROLE_SET',
@@ -6387,11 +7571,11 @@ export enum RoleSetType {
   Space = 'SPACE',
 }
 
-export type RolesOrganizationInput = {
+export type RolesActorInput = {
+  /** The ID of the actor to retrieve the roles of. */
+  actorID: Scalars['UUID']['input'];
   /** Return membership in Spaces matching the provided filter. */
   filter?: InputMaybe<SpaceFilterInput>;
-  /** The ID of the organization to retrieve the roles of. */
-  organizationID: Scalars['UUID']['input'];
 };
 
 export type RolesResult = {
@@ -6401,7 +7585,7 @@ export type RolesResult = {
   id: Scalars['String']['output'];
   /** Name Identifier of the entity */
   nameID: Scalars['NameID']['output'];
-  /** The roles held by the contributor */
+  /** The roles held by the actor */
   roles: Array<Scalars['String']['output']>;
 };
 
@@ -6414,7 +7598,7 @@ export type RolesResultCommunity = {
   level: SpaceLevel;
   /** Name Identifier of the entity */
   nameID: Scalars['NameID']['output'];
-  /** The roles held by the contributor */
+  /** The roles held by the actor */
   roles: Array<Scalars['String']['output']>;
 };
 
@@ -6427,7 +7611,7 @@ export type RolesResultOrganization = {
   nameID: Scalars['NameID']['output'];
   /** The Organization ID. */
   organizationID: Scalars['String']['output'];
-  /** The roles held by the contributor */
+  /** The roles held by the actor */
   roles: Array<Scalars['String']['output']>;
   /** Details of the Groups in the Organizations the user is a member of */
   userGroups: Array<RolesResult>;
@@ -6442,7 +7626,7 @@ export type RolesResultSpace = {
   level: SpaceLevel;
   /** Name Identifier of the entity */
   nameID: Scalars['NameID']['output'];
-  /** The roles held by the contributor */
+  /** The roles held by the actor */
   roles: Array<Scalars['String']['output']>;
   /** The Space ID */
   spaceID: Scalars['String']['output'];
@@ -6452,33 +7636,37 @@ export type RolesResultSpace = {
   visibility: SpaceVisibility;
 };
 
-export type RolesUserInput = {
-  /** Return membership in Spaces matching the provided filter. */
-  filter?: InputMaybe<SpaceFilterInput>;
-  /** The ID of the user to retrieve the roles of. */
-  userID: Scalars['UUID']['input'];
-};
-
-export type RolesVirtualContributorInput = {
-  /** The ID or nameID of the VC to retrieve the roles of. */
-  virtualContributorID: Scalars['UUID']['input'];
-};
-
 export type Room = {
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
+  /** The avatar URL of the Room (mxc:// or https://). Fetched from Matrix. */
+  avatarUrl?: Maybe<Scalars['String']['output']>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
+  /** The display name of the Room. */
+  displayName: Scalars['String']['output'];
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** The last message sent to the Room. Useful for conversation previews. */
+  lastMessage?: Maybe<Message>;
   /** Messages in this Room. */
   messages: Array<Message>;
   /** The number of messages in the Room. */
-  messagesCount: Scalars['Float']['output'];
+  messagesCount: Scalars['Int']['output'];
+  /** The type of room (e.g., post, callout, conversation_direct, conversation_group). */
+  type: RoomType;
+  /** Simple unread message count for the current user. Use unreadCounts for per-thread breakdown. */
+  unreadCount: Scalars['Int']['output'];
+  /** Unread message counts for the current user in this Room. */
+  unreadCounts: RoomUnreadCounts;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   /** Virtual Contributor Interactions in this Room. */
   vcInteractions: Array<VcInteraction>;
+};
+
+export type RoomUnreadCountsArgs = {
+  threadIds?: InputMaybe<Array<Scalars['MessageID']['input']>>;
 };
 
 export type RoomAddReactionToMessageInput = {
@@ -6500,6 +7688,15 @@ export type RoomEventSubscriptionResult = {
   room: Room;
   /** The identifier for the Room on which the event happened. */
   roomID: Scalars['String']['output'];
+};
+
+export type RoomMarkMessageReadInput = {
+  /** The message id that should be marked as read. */
+  messageID: Scalars['MessageID']['input'];
+  /** The Room to mark message as read in. */
+  roomID: Scalars['UUID']['input'];
+  /** The thread id if the message is in a thread. */
+  threadID?: InputMaybe<Scalars['MessageID']['input']>;
 };
 
 /** A message event happened in the subscribed room */
@@ -6550,11 +7747,40 @@ export type RoomSendMessageReplyInput = {
   threadID: Scalars['MessageID']['input'];
 };
 
-/** The category in which to search. A category may include a couple of entity types, e.g. "responses" include posts, whiteboard, etc. */
+/** Unread message count for a specific thread in a Room. */
+export type RoomThreadUnreadCount = {
+  /** The number of unread messages in the thread. */
+  count: Scalars['Int']['output'];
+  /** The thread ID. */
+  threadId: Scalars['MessageID']['output'];
+};
+
+/** The type of room. */
+export enum RoomType {
+  CalendarEvent = 'CALENDAR_EVENT',
+  Callout = 'CALLOUT',
+  Conversation = 'CONVERSATION',
+  ConversationDirect = 'CONVERSATION_DIRECT',
+  ConversationGroup = 'CONVERSATION_GROUP',
+  DiscussionForum = 'DISCUSSION_FORUM',
+  Post = 'POST',
+  Updates = 'UPDATES',
+}
+
+/** Unread message counts for a Room. */
+export type RoomUnreadCounts = {
+  /** The total number of unread messages in the Room. */
+  roomUnreadCount: Scalars['Int']['output'];
+  /** Unread counts per thread, if thread IDs were requested. */
+  threadUnreadCounts?: Maybe<Array<RoomThreadUnreadCount>>;
+};
+
+/** The category in which to search. A category may include a couple of entity types, e.g. "contributions" include posts, whiteboard, etc. */
 export enum SearchCategory {
   CollaborationTools = 'COLLABORATION_TOOLS',
+  Contributions = 'CONTRIBUTIONS',
   Contributors = 'CONTRIBUTORS',
-  Responses = 'RESPONSES',
+  Framings = 'FRAMINGS',
   Spaces = 'SPACES',
 }
 
@@ -6572,6 +7798,10 @@ export type SearchFilterInput = {
 export type SearchInput = {
   /** Return results that satisfy these conditions. */
   filters?: InputMaybe<Array<SearchFilterInput>>;
+  /** When searching Callouts (COLLABORATION_TOOLS / CALLOUT), also match in the Callout framing resources (whiteboard, memo) and its contributions (post, whiteboard, memo). Any match folds up to the containing Callout, deduped, in calloutResults. */
+  foldCalloutResources?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Restrict the search to a single flow state, identified by the InnovationFlowState UUID. The state UUID is globally unique and transitively identifies its Collaboration, so no separate CalloutsSet filter is needed. Default is all flow states. */
+  searchInFlowStateFilter?: InputMaybe<Scalars['UUID']['input']>;
   /** Restrict the search to only the specified Space. Default is all Spaces. */
   searchInSpaceFilter?: InputMaybe<Scalars['UUID']['input']>;
   /** Expand the search to includes Tagsets with the provided names. Max 2. */
@@ -6599,6 +7829,44 @@ export type SearchResultCallout = SearchResult & {
   /** The score for this search result; more matches means a higher score. */
   score: Scalars['Float']['output'];
   /** The parent Space of the Callout. */
+  space: Space;
+  /** The terms that were matched for this result */
+  terms: Array<Scalars['String']['output']>;
+  /** The type of returned result for this search. */
+  type: SearchResultType;
+};
+
+export type SearchResultCollaboraDocument = SearchResult & {
+  /** The Callout of the Collabora document. */
+  callout: Callout;
+  /** The Collabora document that was found. */
+  collaboraDocument: CollaboraDocument;
+  /** The identifier of the search result. Does not represent the entity in Alkemio. */
+  id: Scalars['UUID']['output'];
+  /** Whether the Collabora document is a contribution (response) or part of the framing. */
+  isContribution: Scalars['Boolean']['output'];
+  /** The score for this search result; more matches means a higher score. */
+  score: Scalars['Float']['output'];
+  /** The Space of the Collabora document. */
+  space: Space;
+  /** The terms that were matched for this result */
+  terms: Array<Scalars['String']['output']>;
+  /** The type of returned result for this search. */
+  type: SearchResultType;
+};
+
+export type SearchResultMemo = SearchResult & {
+  /** The Callout of the Memo. */
+  callout: Callout;
+  /** The identifier of the search result. Does not represent the entity in Alkemio. */
+  id: Scalars['UUID']['output'];
+  /** Whether the Memo is a contribution (response) or part of the framing. */
+  isContribution: Scalars['Boolean']['output'];
+  /** The Memo that was found. */
+  memo: Memo;
+  /** The score for this search result; more matches means a higher score. */
+  score: Scalars['Float']['output'];
+  /** The Space of the Memo. */
   space: Space;
   /** The terms that were matched for this result */
   terms: Array<Scalars['String']['output']>;
@@ -6654,6 +7922,7 @@ export type SearchResultSpace = SearchResult & {
 /** The different types of available search results. */
 export enum SearchResultType {
   Callout = 'CALLOUT',
+  CollaboraDocument = 'COLLABORA_DOCUMENT',
   Memo = 'MEMO',
   Organization = 'ORGANIZATION',
   Post = 'POST',
@@ -6676,11 +7945,37 @@ export type SearchResultUser = SearchResult & {
   user: User;
 };
 
+export type SearchResultWhiteboard = SearchResult & {
+  /** The Callout of the Whiteboard. */
+  callout: Callout;
+  /** The identifier of the search result. Does not represent the entity in Alkemio. */
+  id: Scalars['UUID']['output'];
+  /** Whether the Whiteboard is a contribution (response) or part of the framing. */
+  isContribution: Scalars['Boolean']['output'];
+  /** The score for this search result; more matches means a higher score. */
+  score: Scalars['Float']['output'];
+  /** The Space of the Whiteboard. */
+  space: Space;
+  /** The terms that were matched for this result */
+  terms: Array<Scalars['String']['output']>;
+  /** The type of returned result for this search. */
+  type: SearchResultType;
+  /** The Whiteboard that was found. */
+  whiteboard: Whiteboard;
+};
+
 export enum SearchVisibility {
   Account = 'ACCOUNT',
   Hidden = 'HIDDEN',
   Public = 'PUBLIC',
 }
+
+export type SendDirectMessageToUsersInput = {
+  /** The message being sent to each recipient. */
+  message: Scalars['String']['input'];
+  /** The Users (1..N) the message is sent to, each as an individual 1:1 chat. No group conversation is created. */
+  receiverIDs: Array<Scalars['UUID']['input']>;
+};
 
 export type Sentry = {
   /** Flag indicating if the client should use Sentry for monitoring. */
@@ -6700,16 +7995,28 @@ export type ServiceMetadata = {
   version?: Maybe<Scalars['String']['output']>;
 };
 
-export type Space = {
+export type SetDefaultCalloutTemplateOnInnovationFlowStateInput = {
+  flowStateID: Scalars['UUID']['input'];
+  templateID: Scalars['UUID']['input'];
+};
+
+export type SetPlatformWellKnownVirtualContributorInput = {
+  /** The UUID of the Virtual Contributor. */
+  virtualContributorID: Scalars['UUID']['input'];
+  /** The well-known Virtual Contributor type. */
+  wellKnown: VirtualContributorWellKnown;
+};
+
+export type Space = ActorFull & {
   /** About this space. */
   about: SpaceAbout;
   /** The Account that this Space is part of. */
   account: Account;
   /** The "highest" subscription active for this Space. */
   activeSubscription?: Maybe<SpaceSubscription>;
-  /** The Agent representing this Space. */
-  agent: Agent;
-  /** The authorization rules for the entity */
+  /** The Actor representing this Space. */
+  actor: Actor;
+  /** The authorization rules for the Actor */
   authorization?: Maybe<Authorization>;
   /** The collaboration for the Space. */
   collaboration: Collaboration;
@@ -6717,20 +8024,34 @@ export type Space = {
   community: Community;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
-  /** The ID of the entity */
+  /** The credentials held by this Actor */
+  credentials?: Maybe<Array<Credential>>;
+  /** The ID of the Actor */
   id: Scalars['UUID']['output'];
+  /** The layout settings for this Space. Accessible without READ privilege. */
+  layout: SpaceSettingsLayout;
   /** The level of this Space, representing the number of Spaces above this one. */
   level: SpaceLevel;
   /** The ID of the level zero space for this tree. */
   levelZeroSpaceID: Scalars['String']['output'];
   /** The License operating on this Space. */
   license: License;
+  /** Capped list of Contributors (Users, Virtual Contributors, …) that may be @mentioned in this Space. Scope adapts to the Space's privacy and the privacy of its ancestors: a private Space yields only its own Members; a public Space includes its Members plus the Members of each ancestor, walking up until the first private ancestor (inclusive) or until the public L0 root is reached, in which case all platform Contributors of the requested types are returned. Use `filter` for typeahead search and `types` to restrict which Contributor kinds are returned. */
+  mentionableContributors: Array<ActorFull>;
   /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
+  /** Whether this Space is pinned in its parent Space. */
+  pinned: Scalars['Boolean']['output'];
   /** The calculated platform access for this Space. */
   platformAccess: PlatformRolesAccess;
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
   /** The settings for this Space. */
   settings: SpaceSettings;
+  /** The sort mode for subspaces of this Space: Alphabetical or Custom. Accessible without READ privilege. */
+  sortMode: SpaceSortMode;
+  /** The sorting order for this Space within its parent. */
+  sortOrder: Scalars['Int']['output'];
   /** The StorageAggregator in use by this Space */
   storageAggregator: StorageAggregator;
   /** The subscriptions active for this Space. */
@@ -6741,10 +8062,18 @@ export type Space = {
   subspaces: Array<Space>;
   /** The TemplatesManager in use by this Space */
   templatesManager?: Maybe<TemplatesManager>;
+  /** The type of Actor */
+  type: ActorType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   /** Visibility of the Space. */
   visibility: SpaceVisibility;
+};
+
+export type SpaceMentionableContributorsArgs = {
+  filter?: InputMaybe<ContributorFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  types?: InputMaybe<Array<ActorType>>;
 };
 
 export type SpaceSubspaceByNameIdArgs = {
@@ -6775,7 +8104,7 @@ export type SpaceAbout = {
   /** The Profile for the Space. */
   profile: Profile;
   /** The Space provider (host). */
-  provider: Contributor;
+  provider?: Maybe<Actor>;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   /** Who should get involved in this challenge */
@@ -6831,15 +8160,21 @@ export enum SpacePrivacyMode {
 export type SpaceSettings = {
   /** The collaboration settings for this Space. */
   collaboration: SpaceSettingsCollaboration;
+  /** The layout settings for this Space. */
+  layout: SpaceSettingsLayout;
   /** The membership settings for this Space. */
   membership: SpaceSettingsMembership;
   /** The privacy settings for this Space */
   privacy: SpaceSettingsPrivacy;
+  /** The sort mode for subspaces of this Space: Alphabetical or Custom. */
+  sortMode: SpaceSortMode;
 };
 
 export type SpaceSettingsCollaboration = {
   /** Flag to control if events from Subspaces are visible on this Space calendar as well. */
   allowEventsFromSubspaces: Scalars['Boolean']['output'];
+  /** Flag to control if guest users can contribute to this Space. */
+  allowGuestContributions: Scalars['Boolean']['output'];
   /** Flag to control if members can create callouts. */
   allowMembersToCreateCallouts: Scalars['Boolean']['output'];
   /** Flag to control if members can create subspaces. */
@@ -6848,6 +8183,14 @@ export type SpaceSettingsCollaboration = {
   allowMembersToVideoCall: Scalars['Boolean']['output'];
   /** Flag to control if ability to contribute is inherited from parent Space. */
   inheritMembershipRights: Scalars['Boolean']['output'];
+};
+
+export type SpaceSettingsLayout = {
+  /**
+   * The default display mode for callout descriptions in this Space.
+   * @deprecated REMOVE_AFTER=2026-10-31 | superseded by InnovationFlowStateSettings.descriptionDisplayMode
+   */
+  calloutDescriptionDisplayMode: CalloutDescriptionDisplayMode;
 };
 
 export type SpaceSettingsMembership = {
@@ -6864,7 +8207,14 @@ export type SpaceSettingsPrivacy = {
   allowPlatformSupportAsAdmin: Scalars['Boolean']['output'];
   /** The privacy mode for this Space */
   mode: SpacePrivacyMode;
+  /** Controls who may read member-user information. Follows space visibility by default, or restricts it to members only. Absent is treated as follow-space-visibility. */
+  userInformationVisibility?: Maybe<UserInformationVisibility>;
 };
+
+export enum SpaceSortMode {
+  Alphabetical = 'ALPHABETICAL',
+  Custom = 'CUSTOM',
+}
 
 export type SpaceSubscription = {
   /** The expiry date of this subscription, null if it does never expire. */
@@ -6877,6 +8227,7 @@ export enum SpaceVisibility {
   Active = 'ACTIVE',
   Archived = 'ARCHIVED',
   Demo = 'DEMO',
+  Inactive = 'INACTIVE',
 }
 
 export type StorageAggregator = {
@@ -6979,23 +8330,45 @@ export type StorageBucketUploadFileOnReferenceInput = {
   referenceID: Scalars['String']['input'];
 };
 
+export type StorageBucketUploadFileResult = {
+  /** The ID of the uploaded Document. */
+  id: Scalars['UUID']['output'];
+  /** The publicly accessible URL for the uploaded file. */
+  url: Scalars['String']['output'];
+};
+
 export type StorageConfig = {
   /** Config for uploading files to Alkemio. */
   file: FileStorageConfig;
+};
+
+export type SubscribeToPushNotificationsInput = {
+  /** The auth key from PushSubscription.getKey('auth'), Base64URL-encoded */
+  auth: Scalars['String']['input'];
+  /** The push service endpoint URL from PushSubscription.endpoint */
+  endpoint: Scalars['String']['input'];
+  /** The p256dh key from PushSubscription.getKey('p256dh'), Base64URL-encoded */
+  p256dh: Scalars['String']['input'];
+  /** Optional browser/device user agent for display in subscription management UI */
+  userAgent?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Subscription = {
   activityCreated: ActivityCreatedSubscriptionResult;
   /** Receive new Update messages on Communities the currently authenticated User is a member of. */
   calloutPostCreated: CalloutPostCreated;
+  /** Receive conversation events for the authenticated user. Includes conversation lifecycle (created, updated, deleted), messages (received, removed), membership changes (member added, removed), and read receipts. */
+  conversationEvents: ConversationEventSubscriptionResult;
   /** Receive updates on Discussions */
   forumDiscussionUpdated: Discussion;
   /** New in-app notification received for the currently authenticated user. */
   inAppNotificationReceived: InAppNotification;
   /** Counter of unread in-app notifications for the currently authenticated user. */
   notificationsUnreadCount: Scalars['Int']['output'];
-  /** Received on verified credentials change */
-  profileVerifiedCredential: ProfileCredentialVerified;
+  /** Subscribe to option changes on a specific Poll. Fires when options are added, removed, updated, or reordered. Always delivered regardless of resultsVisibility. */
+  pollOptionsChanged: PollOptionsChangedSubscriptionResult;
+  /** Subscribe to vote updates on a specific Poll. Fires when votes are cast or updated. When resultsVisibility = HIDDEN and the subscriber has not voted, events are suppressed. */
+  pollVoteUpdated: PollVoteUpdatedSubscriptionResult;
   /** Receive Room event */
   roomEvents: RoomEventSubscriptionResult;
   /** Receive new Subspaces created on the Space. */
@@ -7014,6 +8387,14 @@ export type SubscriptionCalloutPostCreatedArgs = {
 
 export type SubscriptionForumDiscussionUpdatedArgs = {
   forumID: Scalars['UUID']['input'];
+};
+
+export type SubscriptionPollOptionsChangedArgs = {
+  pollID: Scalars['UUID']['input'];
+};
+
+export type SubscriptionPollVoteUpdatedArgs = {
+  pollID: Scalars['UUID']['input'];
 };
 
 export type SubscriptionRoomEventsArgs = {
@@ -7304,6 +8685,11 @@ export type TransferCalloutInput = {
   targetCalloutsSetID: Scalars['UUID']['input'];
 };
 
+export type UnsubscribeFromPushNotificationsInput = {
+  /** The ID of the push subscription to remove. */
+  subscriptionID: Scalars['UUID']['input'];
+};
+
 export type UpdateAiPersonaInput = {
   ID: Scalars['UUID']['input'];
   engine?: InputMaybe<AiPersonaEngine>;
@@ -7364,6 +8750,15 @@ export type UpdateCalloutContributionDefaultsInput = {
   whiteboardContent?: InputMaybe<Scalars['WhiteboardContent']['input']>;
 };
 
+export type UpdateCalloutContributorsSettingsInput = {
+  /** When provided, replaces the selected contributor types (at least one). */
+  contributorTypes?: InputMaybe<Array<ActorType>>;
+  /** The default contributor type (one of contributorTypes). Defaults to the first selected type. */
+  defaultContributorType?: InputMaybe<ActorType>;
+  /** The default display mode. Defaults to LIST; MAP requires a locatable contributor type. */
+  defaultView?: InputMaybe<ContributorCollectionView>;
+};
+
 export type UpdateCalloutEntityInput = {
   ID: Scalars['UUID']['input'];
   classification?: InputMaybe<UpdateClassificationInput>;
@@ -7379,9 +8774,13 @@ export type UpdateCalloutEntityInput = {
 };
 
 export type UpdateCalloutFramingInput = {
+  /** Collabora document input. Used when switching framing type to COLLABORA_DOCUMENT. */
+  collaboraDocument?: InputMaybe<CreateCollaboraDocumentInput>;
   link?: InputMaybe<UpdateLinkInput>;
   /** The new markdown content for the Memo. */
   memoContent?: InputMaybe<Scalars['Markdown']['input']>;
+  /** Updates for the Poll attached to this Framing. Only applies when type = POLL. */
+  poll?: InputMaybe<UpdatePollInput>;
   /** The Profile of the Template. */
   profile?: InputMaybe<UpdateProfileInput>;
   /** The type of additional content attached to the framing of the callout. */
@@ -7401,9 +8800,16 @@ export type UpdateCalloutPublishInfoInput = {
   publisherID?: InputMaybe<Scalars['UUID']['input']>;
 };
 
+export type UpdateCalloutSelectionSettingsInput = {
+  /** The selection mode (AUTO or CUSTOM). When omitted, the stored mode is unchanged. */
+  mode?: InputMaybe<CalloutSelectionMode>;
+  /** Replaces the curated selection in full (CUSTOM mode). At most 500 entries. Deduplicated by the server. When omitted, the stored list is unchanged. */
+  selectedIds?: InputMaybe<Array<Scalars['ID']['input']>>;
+};
+
 export type UpdateCalloutSettingsContributionInput = {
   /** Indicate who can add more contributions to the callout. */
-  canAddContributions?: InputMaybe<CalloutAllowedContributors>;
+  canAddContributions?: InputMaybe<CalloutAllowedActors>;
   /** Can comment to contributions callout. */
   commentsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Can add contributions to the Callout. Allowed Contribution types is going to be readOnly, so this field can be used to enable or disable the contribution temporarily instead of setting allowedTypes to None. */
@@ -7413,6 +8819,10 @@ export type UpdateCalloutSettingsContributionInput = {
 export type UpdateCalloutSettingsFramingInput = {
   /** Can comment to callout framing. */
   commentsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Configuration for a contributor-collection callout. Provide only when framing.type = CONTRIBUTORS. */
+  contributors?: InputMaybe<UpdateCalloutContributorsSettingsInput>;
+  /** Manual-selection settings for collection callouts (CONTRIBUTORS or SPACES). Provide only when framing.type ∈ {CONTRIBUTORS, SPACES}. */
+  selection?: InputMaybe<UpdateCalloutSelectionSettingsInput>;
 };
 
 export type UpdateCalloutSettingsInput = {
@@ -7447,11 +8857,20 @@ export type UpdateClassificationSelectTagsetValueInput = {
   tagsetName: Scalars['String']['input'];
 };
 
+export type UpdateCollaboraDocumentInput = {
+  /** The ID of the CollaboraDocument to update. */
+  ID: Scalars['UUID']['input'];
+  /** Updated display name for the document. */
+  displayName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateCollaborationFromSpaceTemplateInput = {
   /** Add the Callouts from the Collaboration Template */
   addCallouts?: InputMaybe<Scalars['Boolean']['input']>;
   /** ID of the Collaboration to be updated */
   collaborationID: Scalars['UUID']['input'];
+  /** Delete existing Callouts before applying template. When combined with addCallouts=true, enables Replace All behavior. */
+  deleteExistingCallouts?: InputMaybe<Scalars['Boolean']['input']>;
   /** The Space Template whose Collaboration that will be used for updates to the target Collaboration */
   spaceTemplateID: Scalars['UUID']['input'];
 };
@@ -7469,6 +8888,15 @@ export type UpdateContributionCalloutsSortOrderInput = {
   contributionIDs: Array<Scalars['UUID']['input']>;
 };
 
+export type UpdateConversationInput = {
+  /** Avatar URL for the conversation. Accepts mxc:// or https:// URLs. Pass empty string to remove. */
+  avatarUrl?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the conversation to update. */
+  conversationID: Scalars['UUID']['input'];
+  /** New display name for the conversation. Only GROUP conversations support custom names. */
+  displayName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateDiscussionInput = {
   ID: Scalars['UUID']['input'];
   /** The category for the Discussion */
@@ -7481,8 +8909,8 @@ export type UpdateDiscussionInput = {
 
 export type UpdateDocumentInput = {
   ID: Scalars['UUID']['input'];
-  /** The display name for the Document. */
-  displayName: Scalars['String']['input'];
+  /** Display name. Currently rejected with a ValidationException — for documents owned by a parent entity (e.g., CollaboraDocument, Profile), use the parent's update mutation, which carries the context (file extension, MIME, profile coupling) needed to keep editor titles, download names, and the file-service row in sync. Direct rename via updateDocument will be wired when documents become a directly-managed resource (e.g., a per-space documents collection). */
+  displayName?: InputMaybe<Scalars['String']['input']>;
   tagset?: InputMaybe<UpdateTagsetInput>;
 };
 
@@ -7519,18 +8947,24 @@ export type UpdateInnovationFlowInput = {
 };
 
 export type UpdateInnovationFlowStateInput = {
-  /** The explanation text to clarify the State. */
+  /** Optional. The explanation text to clarify the State; omission leaves the stored value unchanged. */
   description?: InputMaybe<Scalars['Markdown']['input']>;
-  /** The display name for the State */
-  displayName: Scalars['String']['input'];
+  /** Optional. The display name for the State; omission leaves the stored value unchanged. */
+  displayName?: InputMaybe<Scalars['String']['input']>;
   /** ID of the Innovation Flow */
   innovationFlowStateID: Scalars['UUID']['input'];
   settings?: InputMaybe<UpdateInnovationFlowStateSettingsInput>;
 };
 
 export type UpdateInnovationFlowStateSettingsInput = {
-  /** The flag to set. */
-  allowNewCallouts: Scalars['Boolean']['input'];
+  /** Optional. Sets whether new callouts can be added to this State; omission leaves the stored value unchanged. */
+  allowNewCallouts?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Optional. Sets how Post descriptions in this State are displayed in the feed; omission leaves the stored value unchanged. */
+  descriptionDisplayMode?: InputMaybe<CalloutDescriptionDisplayMode>;
+  /** Optional. Sets whether Posts in this State show publish details (publisher, publish date, avatar) in the feed; omission leaves the stored value unchanged. */
+  showPublishDetails?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Optional. Sets whether the phase is shown in member-facing navigation; omission leaves the stored value unchanged. */
+  visible?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateInnovationFlowStatesSortOrderInput = {
@@ -7541,6 +8975,8 @@ export type UpdateInnovationFlowStatesSortOrderInput = {
 
 export type UpdateInnovationHubInput = {
   ID: Scalars['UUID']['input'];
+  /** The Innovation Packs curated for this Innovation Hub; full replace. An empty list is allowed and hides the section. Omit to leave unchanged. */
+  innovationPackListFilter?: InputMaybe<Array<Scalars['UUID']['input']>>;
   /** Flag to control the visibility of the InnovationHub in the platform store. */
   listedInStore?: InputMaybe<Scalars['Boolean']['input']>;
   /** A display identifier, unique within the containing scope. Note: updating the nameID will affect URL on the client. */
@@ -7549,10 +8985,12 @@ export type UpdateInnovationHubInput = {
   profileData?: InputMaybe<UpdateProfileInput>;
   /** Visibility of the InnovationHub in searches. */
   searchVisibility?: InputMaybe<SearchVisibility>;
-  /** A list of Spaces to include in this Innovation Hub. Only valid when type 'list' is used. */
+  /** A list of Spaces to include in this Innovation Hub; full replace. An empty list is allowed and hides the Spaces listing. Only valid when type 'list' is used. */
   spaceListFilter?: InputMaybe<Array<Scalars['UUID']['input']>>;
   /** Spaces with which visibility this Innovation Hub will display. Only valid when type 'visibility' is used. */
   spaceVisibilityFilter?: InputMaybe<SpaceVisibility>;
+  /** The Virtual Contributors curated for this Innovation Hub; full replace. An empty list is allowed and hides the section. Omit to leave unchanged. */
+  virtualContributorListFilter?: InputMaybe<Array<Scalars['UUID']['input']>>;
 };
 
 export type UpdateInnovationPackInput = {
@@ -7681,6 +9119,26 @@ export type UpdatePlatformSettingsInput = {
 export type UpdatePlatformSettingsIntegrationInput = {
   /** Update the list of allowed URLs for iFrames within Markdown content. */
   iframeAllowedUrls: Array<Scalars['String']['input']>;
+  /** Update the list of email addresses blocked from receiving notifications. */
+  notificationEmailBlacklist?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type UpdatePollInput = {
+  /** Updated title for the Poll (max 512 chars). This is the only mutable property once a poll is created; options are managed via separate mutations. */
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdatePollOptionInput = {
+  optionID: Scalars['UUID']['input'];
+  pollID: Scalars['UUID']['input'];
+  text: Scalars['String']['input'];
+};
+
+export type UpdatePollStatusInput = {
+  /** The ID of the Poll to update. */
+  pollID: Scalars['UUID']['input'];
+  /** The new status for the poll. */
+  status: PollStatus;
 };
 
 export type UpdatePostInput = {
@@ -7745,21 +9203,27 @@ export type UpdateSpacePlatformSettingsInput = {
 
 export type UpdateSpaceSettingsCollaborationInput = {
   /** Flag to control if events from Subspaces are visible on this Space calendar as well. */
-  allowEventsFromSubspaces: Scalars['Boolean']['input'];
+  allowEventsFromSubspaces?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Flag to control if guest users can contribute to this Space. */
+  allowGuestContributions?: InputMaybe<Scalars['Boolean']['input']>;
   /** Flag to control if members can create callouts. */
-  allowMembersToCreateCallouts: Scalars['Boolean']['input'];
+  allowMembersToCreateCallouts?: InputMaybe<Scalars['Boolean']['input']>;
   /** Flag to control if members can create subspaces. */
-  allowMembersToCreateSubspaces: Scalars['Boolean']['input'];
+  allowMembersToCreateSubspaces?: InputMaybe<Scalars['Boolean']['input']>;
   /** Flag to control if members can create video calls in this Space. */
-  allowMembersToVideoCall: Scalars['Boolean']['input'];
+  allowMembersToVideoCall?: InputMaybe<Scalars['Boolean']['input']>;
   /** Flag to control if ability to contribute is inherited from parent Space. */
-  inheritMembershipRights: Scalars['Boolean']['input'];
+  inheritMembershipRights?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateSpaceSettingsEntityInput = {
   collaboration?: InputMaybe<UpdateSpaceSettingsCollaborationInput>;
+  /** The layout settings for this Space. */
+  layout?: InputMaybe<UpdateSpaceSettingsLayoutInput>;
   membership?: InputMaybe<UpdateSpaceSettingsMembershipInput>;
   privacy?: InputMaybe<UpdateSpaceSettingsPrivacyInput>;
+  /** The sort mode for subspaces: Alphabetical or Custom. */
+  sortMode?: InputMaybe<SpaceSortMode>;
 };
 
 export type UpdateSpaceSettingsInput = {
@@ -7767,6 +9231,11 @@ export type UpdateSpaceSettingsInput = {
   settings: UpdateSpaceSettingsEntityInput;
   /** The identifier for the Space whose settings are to be updated. */
   spaceID: Scalars['String']['input'];
+};
+
+export type UpdateSpaceSettingsLayoutInput = {
+  /** The default display mode for callout descriptions. */
+  calloutDescriptionDisplayMode: CalloutDescriptionDisplayMode;
 };
 
 export type UpdateSpaceSettingsMembershipInput = {
@@ -7782,6 +9251,23 @@ export type UpdateSpaceSettingsPrivacyInput = {
   /** Flag to control if Platform Support has admin rights. */
   allowPlatformSupportAsAdmin?: InputMaybe<Scalars['Boolean']['input']>;
   mode?: InputMaybe<SpacePrivacyMode>;
+  /** Controls who may read member-user information. Follows space visibility by default, or restricts it to members only. */
+  userInformationVisibility?: InputMaybe<UserInformationVisibility>;
+};
+
+export type UpdateSubspacePinnedInput = {
+  /** Whether the subspace should be pinned (true) or unpinned (false). */
+  pinned: Scalars['Boolean']['input'];
+  /** The ID of the parent Space containing the subspace. */
+  spaceID: Scalars['UUID']['input'];
+  /** The ID of the subspace to pin or unpin. */
+  subspaceID: Scalars['UUID']['input'];
+};
+
+export type UpdateSubspacesSortOrderInput = {
+  spaceID: Scalars['UUID']['input'];
+  /** The IDs of the subspaces to update the sort order on */
+  subspaceIDs: Array<Scalars['UUID']['input']>;
 };
 
 export type UpdateTagsetInput = {
@@ -7832,7 +9318,6 @@ export type UpdateUserGroupInput = {
 
 export type UpdateUserInput = {
   ID: Scalars['UUID']['input'];
-  accountUpn?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
   /** A display identifier, unique within the containing scope. Note: updating the nameID will affect URL on the client. */
@@ -7852,18 +9337,42 @@ export type UpdateUserPlatformSettingsInput = {
   userID: Scalars['String']['input'];
 };
 
+export type UpdateUserSettingsAssistantInput = {
+  /** Per-capability enable/disable toggles bounding what the assistant may do on behalf of this user. */
+  enabledCapabilities?: InputMaybe<Array<AssistantCapabilityToggleInput>>;
+};
+
 export type UpdateUserSettingsCommunicationInput = {
+  /** Allow other Users to be offered an email contact route to this User (using the account email; the address is never exposed). */
+  allowOtherUsersToContactViaEmail?: InputMaybe<Scalars['Boolean']['input']>;
   /** Allow Users to send messages to this User. */
   allowOtherUsersToSendMessages?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdateUserSettingsEntityInput = {
+  /** Settings related to the AI assistant authority for this User. */
+  assistant?: InputMaybe<UpdateUserSettingsAssistantInput>;
   /** Settings related to this users Communication preferences. */
   communication?: InputMaybe<UpdateUserSettingsCommunicationInput>;
+  /** Update the user's design version. Any integer accepted (1 = legacy design generation, deprecated and scheduled for removal; 2 = current default design generation; 3+ reserved for future generations). */
+  designVersion?: InputMaybe<Scalars['Int']['input']>;
+  /** Settings related to Home Space. */
+  homeSpace?: InputMaybe<UpdateUserSettingsHomeSpaceInput>;
+  /** Set the user's interface language preference. Must be a value from the supported languages set. Any language write also latches languageOfferAnswered=true. */
+  language?: InputMaybe<Scalars['String']['input']>;
+  /** Mark that this User has answered the one-time language offer. One-way latch: setting false is rejected. */
+  languageOfferAnswered?: InputMaybe<Scalars['Boolean']['input']>;
   /** Settings related to this users Notifications preferences. */
   notification?: InputMaybe<UpdateUserSettingsNotificationInput>;
   /** Settings related to Privacy. */
   privacy?: InputMaybe<UpdateUserSettingsPrivacyInput>;
+};
+
+export type UpdateUserSettingsHomeSpaceInput = {
+  /** Automatically redirect to home space instead of the dashboard. */
+  autoRedirect?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The ID of the Space to use as home. Set to null to clear. */
+  spaceID?: InputMaybe<Scalars['UUID']['input']>;
 };
 
 export type UpdateUserSettingsInput = {
@@ -7878,6 +9387,8 @@ export type UpdateUserSettingsNotificationInput = {
   organization?: InputMaybe<UpdateUserSettingsNotificationOrganizationInput>;
   /** Settings related to Platform Notifications. */
   platform?: InputMaybe<UpdateUserSettingsNotificationPlatformInput>;
+  /** Settings related to notification sound playback. */
+  sound?: InputMaybe<UpdateUserSettingsNotificationSoundInput>;
   /** Settings related to Space Notifications. */
   space?: InputMaybe<UpdateUserSettingsNotificationSpaceInput>;
   /** Settings related to User Notifications. */
@@ -7896,6 +9407,8 @@ export type UpdateUserSettingsNotificationOrganizationInput = {
 export type UpdateUserSettingsNotificationPlatformAdminInput = {
   /** [Admin] Receive a notification when a new L0 Space is created */
   spaceCreated?: InputMaybe<NotificationSettingInput>;
+  /** [Admin] Receive a notification when a user changes their login email address */
+  userEmailChanged?: InputMaybe<NotificationSettingInput>;
   /** [Admin] Receive a notification user is assigned or removed from a global role */
   userGlobalRoleChanged?: InputMaybe<NotificationSettingInput>;
   /** [Admin] Receive notification when a new user signs up */
@@ -7913,6 +9426,13 @@ export type UpdateUserSettingsNotificationPlatformInput = {
   forumDiscussionCreated?: InputMaybe<NotificationSettingInput>;
 };
 
+export type UpdateUserSettingsNotificationSoundInput = {
+  /** Play a sound when a chat message is received. Default true. */
+  chatMessage?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Play a sound when a non-chat in-app notification is received. Default true. */
+  inAppNotification?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type UpdateUserSettingsNotificationSpaceAdminInput = {
   /** Receive a notification when a contribution is added (admin) */
   collaborationCalloutContributionCreated?: InputMaybe<NotificationSettingInput>;
@@ -7922,6 +9442,8 @@ export type UpdateUserSettingsNotificationSpaceAdminInput = {
   communityApplicationReceived?: InputMaybe<NotificationSettingInput>;
   /** Receive a notification when a new member joins the community (admin) */
   communityNewMember?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when the login email of an admin or lead of a Space I administer is changed (admin) */
+  userEmailChanged?: InputMaybe<NotificationSettingInput>;
 };
 
 export type UpdateUserSettingsNotificationSpaceInput = {
@@ -7935,6 +9457,14 @@ export type UpdateUserSettingsNotificationSpaceInput = {
   collaborationCalloutPostContributionComment?: InputMaybe<NotificationSettingInput>;
   /** Receive a notification when a callout is published */
   collaborationCalloutPublished?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when a poll you voted on is modified */
+  collaborationPollModifiedOnPollIVotedOn?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when a poll option you voted for is changed or removed */
+  collaborationPollVoteAffectedByOptionChange?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when a vote is cast on a poll you created */
+  collaborationPollVoteCastOnOwnPoll?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when another user votes on a poll you already voted on */
+  collaborationPollVoteCastOnPollIVotedOn?: InputMaybe<NotificationSettingInput>;
   /** Receive a notification for community updates */
   communicationUpdates?: InputMaybe<NotificationSettingInput>;
   /** Receive a notification when a calendar event is created */
@@ -7944,6 +9474,10 @@ export type UpdateUserSettingsNotificationSpaceInput = {
 export type UpdateUserSettingsNotificationUserInput = {
   /** Receive a notification when someone replies to a comment I made. */
   commentReply?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when someone sends me a direct (1:1) chat message. Note: the inApp channel is permanently OFF regardless of the stored value. */
+  conversationMessageDirect?: InputMaybe<NotificationSettingInput>;
+  /** Receive a notification when someone posts in a group chat I am a member of. Note: the inApp channel is permanently OFF regardless of the stored value. */
+  conversationMessageGroup?: InputMaybe<NotificationSettingInput>;
   /** Settings related to User Membership Notifications. */
   membership?: InputMaybe<UpdateUserSettingsNotificationUserMembershipInput>;
   /** Receive a notification you are mentioned */
@@ -7987,6 +9521,18 @@ export type UpdateVirtualContributorInput = {
   searchVisibility?: InputMaybe<SearchVisibility>;
 };
 
+export type UpdateVirtualContributorPlatformSettingsEntityInput = {
+  /** Enable or disable the editing of the prompt graph for this Virtual Contributor. */
+  promptGraphEditingEnabled: Scalars['Boolean']['input'];
+};
+
+export type UpdateVirtualContributorPlatformSettingsInput = {
+  /** Platform-level settings to apply to this Virtual Contributor. */
+  settings: UpdateVirtualContributorPlatformSettingsEntityInput;
+  /** ID of the Virtual Contributor to update. */
+  virtualContributorID: Scalars['UUID']['input'];
+};
+
 export type UpdateVirtualContributorSettingsEntityInput = {
   privacy?: InputMaybe<UpdateVirtualContributorSettingsPrivacyInput>;
 };
@@ -8020,6 +9566,20 @@ export type UpdateWhiteboardEntityInput = {
   profile?: InputMaybe<UpdateProfileInput>;
 };
 
+export type UpdateWhiteboardGuestAccessInput = {
+  /** Target state for guest collaboration. True enables GLOBAL_GUEST privileges. */
+  guestAccessEnabled: Scalars['Boolean']['input'];
+  /** The identifier of the whiteboard whose guest access should be toggled. */
+  whiteboardId: Scalars['UUID']['input'];
+};
+
+export type UpdateWhiteboardGuestAccessResult = {
+  /** Indicates whether the mutation completed successfully. */
+  success: Scalars['Boolean']['output'];
+  /** Whiteboard snapshot reflecting the latest guest access state. */
+  whiteboard?: Maybe<Whiteboard>;
+};
+
 export type UpdateWhiteboardPreviewSettingsInput = {
   /** The coordinates for the preview. */
   coordinates?: InputMaybe<WhiteboardPreviewCoordinatesInput>;
@@ -8033,6 +9593,18 @@ export type UpdateWhiteboardPreviewSettingsInput = {
   mode?: InputMaybe<WhiteboardPreviewMode>;
 };
 
+export type UrlResolverQueryClosestAncestor = {
+  discussionId?: Maybe<Scalars['UUID']['output']>;
+  innovationHubId?: Maybe<Scalars['UUID']['output']>;
+  innovationPack?: Maybe<UrlResolverQueryResultInnovationPack>;
+  organizationId?: Maybe<Scalars['UUID']['output']>;
+  space?: Maybe<UrlResolverQueryResultSpace>;
+  type: UrlType;
+  url: Scalars['String']['output'];
+  userId?: Maybe<Scalars['UUID']['output']>;
+  virtualContributor?: Maybe<UrlResolverQueryResultVirtualContributor>;
+};
+
 export type UrlResolverQueryResultCalendar = {
   calendarEventId?: Maybe<Scalars['UUID']['output']>;
   id: Scalars['UUID']['output'];
@@ -8042,6 +9614,7 @@ export type UrlResolverQueryResultCalloutsSet = {
   calloutId?: Maybe<Scalars['UUID']['output']>;
   contributionId?: Maybe<Scalars['UUID']['output']>;
   id: Scalars['UUID']['output'];
+  memoId?: Maybe<Scalars['UUID']['output']>;
   postId?: Maybe<Scalars['UUID']['output']>;
   type: UrlType;
   whiteboardId?: Maybe<Scalars['UUID']['output']>;
@@ -8078,20 +9651,29 @@ export type UrlResolverQueryResultVirtualContributor = {
 };
 
 export type UrlResolverQueryResults = {
+  closestAncestor?: Maybe<UrlResolverQueryClosestAncestor>;
   discussionId?: Maybe<Scalars['UUID']['output']>;
   innovationHubId?: Maybe<Scalars['UUID']['output']>;
   innovationPack?: Maybe<UrlResolverQueryResultInnovationPack>;
   organizationId?: Maybe<Scalars['UUID']['output']>;
   space?: Maybe<UrlResolverQueryResultSpace>;
+  state: UrlResolverResultState;
   type: UrlType;
   userId?: Maybe<Scalars['UUID']['output']>;
   virtualContributor?: Maybe<UrlResolverQueryResultVirtualContributor>;
 };
 
+export enum UrlResolverResultState {
+  Forbidden = 'Forbidden',
+  NotFound = 'NotFound',
+  Resolved = 'Resolved',
+}
+
 export enum UrlType {
   Admin = 'ADMIN',
   Callout = 'CALLOUT',
   CalloutsSet = 'CALLOUTS_SET',
+  ContributionMemo = 'CONTRIBUTION_MEMO',
   ContributionPost = 'CONTRIBUTION_POST',
   ContributionWhiteboard = 'CONTRIBUTION_WHITEBOARD',
   ContributorsExplorer = 'CONTRIBUTORS_EXPLORER',
@@ -8121,41 +9703,41 @@ export enum UrlType {
   VirtualContributor = 'VIRTUAL_CONTRIBUTOR',
 }
 
-export type User = Contributor & {
+export type User = ActorFull & {
   /** The account hosted by this User. */
   account?: Maybe<Account>;
-  /** The unique personal identifier (upn) for the account associated with this user profile */
-  accountUpn: Scalars['String']['output'];
-  /** The Agent representing this User. */
-  agent: Agent;
+  /** The Actor representing this User. */
+  actor: Actor;
   /** Details about the authentication used for this User. */
   authentication?: Maybe<UserAuthenticationResult>;
-  /** The authorization rules for the Contributor */
+  /** The authorization rules for the Actor */
   authorization?: Maybe<Authorization>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
-  /** The direct rooms this user is a member of */
-  directRooms?: Maybe<Array<DirectRoom>>;
+  /** The credentials held by this Actor */
+  credentials?: Maybe<Array<Credential>>;
   /** The email address for this User. */
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
-  /** Guidance Chat Room for this user */
-  guidanceRoom?: Maybe<Room>;
-  /** The ID of the Contributor */
+  /** The ID of the Actor */
   id: Scalars['UUID']['output'];
   /** Can a message be sent to this User. */
   isContactable: Scalars['Boolean']['output'];
+  /** Whether this User can be offered an email contact route (they enabled email contact). Exposes only the consent flag, never the email address. */
+  isContactableViaEmail: Scalars['Boolean']['output'];
   lastName: Scalars['String']['output'];
-  /** A name identifier of the Contributor, unique within a given scope. */
+  /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
   /** The phone number for this User. */
   phone?: Maybe<Scalars['String']['output']>;
-  /** The Profile for this User. */
-  profile: Profile;
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
   /** The settings for this User. */
   settings: UserSettings;
   /** The StorageAggregator for managing storage buckets in use by this User */
   storageAggregator?: Maybe<StorageAggregator>;
+  /** The type of Actor */
+  type: ActorType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
 };
@@ -8172,6 +9754,72 @@ export type UserAuthenticationResult = {
 export type UserAuthorizationResetInput = {
   /** The identifier of the User whose Authorization Policy should be reset. */
   userID: Scalars['UUID']['input'];
+};
+
+/** Cursor-paginated list of email-change audit entries (per docs/Pagination.md). */
+export type UserEmailChangeAuditEntries = {
+  auditEntries: Array<UserEmailChangeAuditEntry>;
+  pageInfo: UserEmailChangeAuditEntriesPageInfo;
+  total: Scalars['Float']['output'];
+};
+
+export type UserEmailChangeAuditEntriesPageInfo = {
+  endCursor?: Maybe<Scalars['String']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  startCursor?: Maybe<Scalars['String']['output']>;
+};
+
+/** A single email-change audit-trail entry. Append-only and retained indefinitely (FR-014a). */
+export type UserEmailChangeAuditEntry = {
+  /** Who authorized the change within the subject user’s organization. Set for platform-admin-initiated changes; null for self-service entries. */
+  approver?: Maybe<EmailChangeApprover>;
+  /** Short non-leaky failure reason. Set on failure outcomes only. */
+  failureReason?: Maybe<Scalars['String']['output']>;
+  id: Scalars['UUID']['output'];
+  /** The user who initiated the change. Null for entries whose initiator could not be resolved (early validation rejects); initiatorRole is still present. */
+  initiator?: Maybe<UserProfileSummary>;
+  initiatorRole: UserEmailChangeInitiatorRole;
+  /** For commit/rollback entries: the proposed/applied new address. For drift_detected entries: the value observed on the Kratos side at the moment of drift. */
+  newEmail?: Maybe<Scalars['String']['output']>;
+  /** Old email at the time of this audit entry. Null only for entries with no old-email context. */
+  oldEmail?: Maybe<Scalars['String']['output']>;
+  outcome: UserEmailChangeAuditOutcome;
+  /** Admin-supplied justification for the change. Set for platform-admin-initiated changes; null for self-service entries. */
+  reason?: Maybe<Scalars['String']['output']>;
+  /** The user whose email is being changed. */
+  subject: UserProfileSummary;
+  timestamp: Scalars['DateTime']['output'];
+};
+
+/** Outcome recorded for a single user-email-change audit entry. Spec 098 extends this enum additively with verification-flow outcomes. */
+export enum UserEmailChangeAuditOutcome {
+  Committed = 'COMMITTED',
+  DriftDetected = 'DRIFT_DETECTED',
+  DriftResolutionFailed = 'DRIFT_RESOLUTION_FAILED',
+  DriftResolved = 'DRIFT_RESOLVED',
+  GlobalAdminNotificationFailed = 'GLOBAL_ADMIN_NOTIFICATION_FAILED',
+  NewAddressNotificationFailed = 'NEW_ADDRESS_NOTIFICATION_FAILED',
+  RejectedConflict = 'REJECTED_CONFLICT',
+  RejectedValidation = 'REJECTED_VALIDATION',
+  RolledBack = 'ROLLED_BACK',
+  SecuritySignalFailed = 'SECURITY_SIGNAL_FAILED',
+  SessionInvalidationFailed = 'SESSION_INVALIDATION_FAILED',
+  SpaceAdminNotificationFailed = 'SPACE_ADMIN_NOTIFICATION_FAILED',
+}
+
+/** Role of the actor who initiated a user-email-change audit event. */
+export enum UserEmailChangeInitiatorRole {
+  PlatformAdmin = 'PLATFORM_ADMIN',
+  Self = 'SELF',
+}
+
+/** Result returned to the admin caller. Deliberately minimal — failures surface as typed GraphQL errors instead of returning false. Returned by both adminUserEmailChange and adminUserEmailChangeDriftResolve. */
+export type UserEmailChangeResult = {
+  /** The committed (canonical) email. Present on success. */
+  email?: Maybe<Scalars['String']['output']>;
+  /** Always true on success. Failures throw typed GraphQL errors instead of returning false. */
+  success: Scalars['Boolean']['output'];
 };
 
 export type UserFilterInput = {
@@ -8198,22 +9846,37 @@ export type UserGroup = {
   updatedDate: Scalars['DateTime']['output'];
 };
 
-export type UserSendMessageInput = {
-  /** The message being sent */
-  message: Scalars['String']['input'];
-  /** The user a message is being sent to */
-  receivingUserID: Scalars['String']['input'];
+/** Controls who may read member-user information in a Space. Follows space visibility by default, or restricts user info to members only. */
+export enum UserInformationVisibility {
+  FollowSpaceVisibility = 'FOLLOW_SPACE_VISIBILITY',
+  MembersOnly = 'MEMBERS_ONLY',
+}
+
+/** Minimal user-profile summary identifying a user without exposing PII beyond id + displayName. */
+export type UserProfileSummary = {
+  displayName: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
 };
 
 export type UserSettings = {
+  /** The AI assistant authority settings for this User (per-capability toggles). */
+  assistant: UserSettingsAssistant;
   /** The authorization rules for the entity */
   authorization?: Maybe<Authorization>;
   /** The communication settings for this User. */
   communication: UserSettingsCommunication;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
+  /** The design version this User has selected (1 = legacy design generation, deprecated and scheduled for removal; 2 = current default design generation; 3+ reserved for future generations). */
+  designVersion: Scalars['Int']['output'];
+  /** The home space settings for this User. */
+  homeSpace: UserSettingsHomeSpace;
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** The interface language chosen by this User. Null = the User has never chosen a language (distinct from having chosen the platform default). */
+  language?: Maybe<Scalars['String']['output']>;
+  /** Whether this User has answered the one-time language offer (global across all languages). Latched true by any language write. */
+  languageOfferAnswered: Scalars['Boolean']['output'];
   /** The notification settings for this User. */
   notification: UserSettingsNotification;
   /** The privacy settings for this User */
@@ -8222,9 +9885,23 @@ export type UserSettings = {
   updatedDate: Scalars['DateTime']['output'];
 };
 
+export type UserSettingsAssistant = {
+  /** Per-capability enable/disable toggles bounding what the assistant may do on behalf of this user (read-only by default). */
+  enabledCapabilities: Array<AssistantCapabilityToggle>;
+};
+
 export type UserSettingsCommunication = {
+  /** Allow other Users to be offered an email contact route to this User (using the account email; the address is never exposed). Default false. */
+  allowOtherUsersToContactViaEmail: Scalars['Boolean']['output'];
   /** Allow Users to send messages to this User. */
   allowOtherUsersToSendMessages: Scalars['Boolean']['output'];
+};
+
+export type UserSettingsHomeSpace = {
+  /** Automatically redirect to home space instead of the dashboard. */
+  autoRedirect: Scalars['Boolean']['output'];
+  /** The ID of the Space to use as home. Null if not set. */
+  spaceID?: Maybe<Scalars['String']['output']>;
 };
 
 export type UserSettingsNotification = {
@@ -8232,6 +9909,8 @@ export type UserSettingsNotification = {
   organization: UserSettingsNotificationOrganization;
   /** The notifications settings for Platform events for this User */
   platform: UserSettingsNotificationPlatform;
+  /** The sound playback settings for this User. */
+  sound: UserSettingsNotificationSound;
   /** The notifications settings for Space events for this User */
   space: UserSettingsNotificationSpace;
   /** The notifications settings for User events for this User */
@@ -8245,6 +9924,8 @@ export type UserSettingsNotificationChannels = {
   email: Scalars['Boolean']['output'];
   /** Receive notifications by inApp. */
   inApp: Scalars['Boolean']['output'];
+  /** Receive push notifications. */
+  push: Scalars['Boolean']['output'];
 };
 
 export type UserSettingsNotificationOrganization = {
@@ -8266,12 +9947,21 @@ export type UserSettingsNotificationPlatform = {
 export type UserSettingsNotificationPlatformAdmin = {
   /** Receive a notification when a new L0 Space is created */
   spaceCreated: UserSettingsNotificationChannels;
+  /** Receive a notification when a user changes their login email address. */
+  userEmailChanged: UserSettingsNotificationChannels;
   /** Receive a notification when a user global role is assigned or removed. */
   userGlobalRoleChanged: UserSettingsNotificationChannels;
   /** Receive notification when a new user signs up */
   userProfileCreated: UserSettingsNotificationChannels;
   /** Receive a notification when a user profile is removed */
   userProfileRemoved: UserSettingsNotificationChannels;
+};
+
+export type UserSettingsNotificationSound = {
+  /** Play a sound when a chat message is received. Default true. */
+  chatMessage: Scalars['Boolean']['output'];
+  /** Play a sound when a non-chat in-app notification is received. Default true. */
+  inAppNotification: Scalars['Boolean']['output'];
 };
 
 export type UserSettingsNotificationSpace = {
@@ -8285,6 +9975,14 @@ export type UserSettingsNotificationSpace = {
   collaborationCalloutPostContributionComment: UserSettingsNotificationChannels;
   /** Receive a notification when a callout is published */
   collaborationCalloutPublished: UserSettingsNotificationChannels;
+  /** Receive a notification when a poll you voted on is modified */
+  collaborationPollModifiedOnPollIVotedOn: UserSettingsNotificationChannels;
+  /** Receive a notification when a poll option you voted for is changed or removed */
+  collaborationPollVoteAffectedByOptionChange: UserSettingsNotificationChannels;
+  /** Receive a notification when a vote is cast on a poll you created */
+  collaborationPollVoteCastOnOwnPoll: UserSettingsNotificationChannels;
+  /** Receive a notification when another user votes on a poll you already voted on */
+  collaborationPollVoteCastOnPollIVotedOn: UserSettingsNotificationChannels;
   /** Receive a notification for community updates */
   communicationUpdates: UserSettingsNotificationChannels;
   /** Receive a notification when a calendar event is created */
@@ -8300,11 +9998,17 @@ export type UserSettingsNotificationSpaceAdmin = {
   communityApplicationReceived: UserSettingsNotificationChannels;
   /** Receive a notification when a new member joins the community (admin) */
   communityNewMember: UserSettingsNotificationChannels;
+  /** Receive a notification when the login email of an admin or lead of a Space I administer is changed (admin) */
+  userEmailChanged: UserSettingsNotificationChannels;
 };
 
 export type UserSettingsNotificationUser = {
   /** Receive a notification when someone replies to a comment I made. */
   commentReply: UserSettingsNotificationChannels;
+  /** Receive a notification when someone sends me a direct (1:1) chat message. The inApp channel is permanently OFF (enforced platform-wide) — the stored value is retained for row-shape symmetry only. */
+  conversationMessageDirect: UserSettingsNotificationChannels;
+  /** Receive a notification when someone posts in a group chat I am a member of. The inApp channel is permanently OFF (enforced platform-wide) — the stored value is retained for row-shape symmetry only. */
+  conversationMessageGroup: UserSettingsNotificationChannels;
   /** The notifications settings for membership events for this User */
   membership: UserSettingsNotificationUserMembership;
   /** Receive a notification you are mentioned */
@@ -8343,63 +10047,59 @@ export type UsersWithAuthorizationCredentialInput = {
 };
 
 export type VcInteraction = {
+  /** The thread ID (Matrix message ID) where VC is engaged */
+  threadID: Scalars['MessageID']['output'];
+  /** The actor ID (agent.id) of the Virtual Contributor */
+  virtualContributorID: Scalars['String']['output'];
+};
+
+export type VirtualAssistant = ActorFull & {
+  /** The authorization rules for the Actor */
+  authorization?: Maybe<Authorization>;
+  /** The admin per-capability grant governing system-invoked authority for this Virtual Assistant (default read-only). */
+  capabilityGrant: Array<AssistantCapabilityToggle>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
-  /** The ID of the entity */
+  /** The credentials held by this Actor */
+  credentials?: Maybe<Array<Credential>>;
+  /** The ID of the Actor */
   id: Scalars['UUID']['output'];
-  room: Room;
-  threadID: Scalars['String']['output'];
+  /** A name identifier of the entity, unique within a given scope. */
+  nameID: Scalars['NameID']['output'];
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
+  /** The type of Actor */
+  type: ActorType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
-  virtualContributorID: Scalars['UUID']['output'];
 };
 
-export type VerifiedCredential = {
-  /** The time at which the credential is no longer valid */
-  claims: Array<VerifiedCredentialClaim>;
-  /** JSON for the context in the credential */
-  context: Scalars['JSON']['output'];
-  /** The time at which the credential is no longer valid */
-  expires: Scalars['String']['output'];
-  /** The time at which the credential was issued */
-  issued: Scalars['String']['output'];
-  /** The party issuing the VC */
-  issuer: Scalars['String']['output'];
-  /** The name of the VC */
-  name: Scalars['String']['output'];
-  /** The type of VC */
-  type: Scalars['String']['output'];
-};
-
-export type VerifiedCredentialClaim = {
-  /** The name of the claim */
-  name: Scalars['JSON']['output'];
-  /** The value for the claim */
-  value: Scalars['JSON']['output'];
-};
-
-export type VirtualContributor = Contributor & {
+export type VirtualContributor = ActorFull & {
   /** The Account of the Virtual Contributor. */
   account?: Maybe<Account>;
-  /** The Agent representing this User. */
-  agent: Agent;
+  /** The Actor representing this User. */
+  actor: Actor;
   /** The AI persona associated with this Virtual Contributor. */
   aiPersona?: Maybe<AiPersona>;
-  /** The authorization rules for the Contributor */
+  /** The authorization rules for the Actor */
   authorization?: Maybe<Authorization>;
   /** Description of the body of knowledge for this VC. */
   bodyOfKnowledgeDescription?: Maybe<Scalars['Markdown']['output']>;
   /** The ID of the body of knowledge used by this Virtual Contributor. */
   bodyOfKnowledgeID?: Maybe<Scalars['UUID']['output']>;
+  /** The date when the body of knowledge was last successfully ingested. */
+  bodyOfKnowledgeLastUpdated?: Maybe<Scalars['DateTime']['output']>;
   /** The type of body of knowledge used by this Virtual Contributor. */
   bodyOfKnowledgeType: VirtualContributorBodyOfKnowledgeType;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
+  /** The credentials held by this Actor */
+  credentials?: Maybe<Array<Credential>>;
   /** The data access mode defining what data this Virtual Contributor can access. */
   dataAccessMode: VirtualContributorDataAccessMode;
   /** The engine powering this Virtual Contributor */
   engine: AiPersonaEngine;
-  /** The ID of the Contributor */
+  /** The ID of the Actor */
   id: Scalars['UUID']['output'];
   /** Interaction modes supported by this Virtual Contributor. */
   interactionModes: VirtualContributorInteractionMode;
@@ -8411,22 +10111,28 @@ export type VirtualContributor = Contributor & {
   listedInStore: Scalars['Boolean']['output'];
   /** The model card information about this Virtual Contributor */
   modelCard: VirtualContributorModelCard;
-  /** A name identifier of the Contributor, unique within a given scope. */
+  /** A name identifier of the entity, unique within a given scope. */
   nameID: Scalars['NameID']['output'];
-  /** The profile for this Virtual. */
-  profile: Profile;
+  /** Platform-level settings of this Virtual Contributor, modifiable only by platform admins. */
+  platformSettings: VirtualContributorPlatformSettings;
+  /** The profile for this Actor. */
+  profile?: Maybe<Profile>;
   /** Prompt graph definition for this Virtual Contributor. */
   promptGraphDefinition?: Maybe<PromptGraphDefinition>;
   /** The Virtual Contributor provider. */
-  provider: Contributor;
+  provider: Actor;
   /** Visibility of the VC in searches. */
   searchVisibility: SearchVisibility;
   /** The settings of this Virtual Contributor. */
   settings: VirtualContributorSettings;
   /** The status of the virtual contributor */
   status: VirtualContributorStatus;
+  /** The type of Actor */
+  type: ActorType;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
+  /** The well-known identifier of this Virtual Contributor, if configured at platform level. */
+  wellKnownVirtualContributor?: Maybe<VirtualContributorWellKnown>;
 };
 
 export enum VirtualContributorBodyOfKnowledgeType {
@@ -8480,6 +10186,11 @@ export type VirtualContributorModelCardFlag = {
   name: VirtualContributorModelCardEntryFlagName;
 };
 
+export type VirtualContributorPlatformSettings = {
+  /** Enable or disable the editing of the prompt graph for this Virtual Contributor. */
+  promptGraphEditingEnabled: Scalars['Boolean']['output'];
+};
+
 export type VirtualContributorSettings = {
   /** The privacy settings for this VirtualContributor */
   privacy: VirtualContributorSettingsPrivacy;
@@ -8500,6 +10211,11 @@ export type VirtualContributorUpdatedSubscriptionResult = {
   /** The Virtual Contributor that was updated */
   virtualContributor: VirtualContributor;
 };
+
+export enum VirtualContributorWellKnown {
+  ChatGuidance = 'CHAT_GUIDANCE',
+  StewardOwnershipExpert = 'STEWARD_OWNERSHIP_EXPERT',
+}
 
 export type VirtualContributorsInRolesResponse = {
   role: RoleName;
@@ -8526,6 +10242,7 @@ export type Visual = {
   /** Minimum width resolution. */
   minWidth: Scalars['Float']['output'];
   name: VisualType;
+  sortOrder?: Maybe<Scalars['Float']['output']>;
   /** The date at which the entity was last updated. */
   updatedDate: Scalars['DateTime']['output'];
   uri: Scalars['String']['output'];
@@ -8551,6 +10268,8 @@ export enum VisualType {
   Banner = 'BANNER',
   BannerWide = 'BANNER_WIDE',
   Card = 'CARD',
+  MediaGalleryImage = 'MEDIA_GALLERY_IMAGE',
+  MediaGalleryVideo = 'MEDIA_GALLERY_VIDEO',
   WhiteboardPreview = 'WHITEBOARD_PREVIEW',
 }
 
@@ -8570,6 +10289,8 @@ export type Whiteboard = {
   createdBy?: Maybe<User>;
   /** The date at which the entity was created. */
   createdDate: Scalars['DateTime']['output'];
+  /** Indicates whether guest collaborators are currently allowed via GLOBAL_GUEST permissions. */
+  guestContributionsAllowed: Scalars['Boolean']['output'];
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
   /** Whether the Whiteboard is multi-user enabled on Space level. */
@@ -8769,28 +10490,33 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
         })
       | (Omit<
           ActivityLogEntryCalloutLinkCreated,
-          'callout' | 'link' | 'space' | 'triggeredBy'
+          'callout' | 'space' | 'triggeredBy'
         > & {
           callout: _RefType['Callout'];
-          link: _RefType['Link'];
+          space?: Maybe<_RefType['Space']>;
+          triggeredBy: _RefType['User'];
+        })
+      | (Omit<
+          ActivityLogEntryCalloutMemoCreated,
+          'callout' | 'space' | 'triggeredBy'
+        > & {
+          callout: _RefType['Callout'];
           space?: Maybe<_RefType['Space']>;
           triggeredBy: _RefType['User'];
         })
       | (Omit<
           ActivityLogEntryCalloutPostComment,
-          'callout' | 'post' | 'space' | 'triggeredBy'
+          'callout' | 'space' | 'triggeredBy'
         > & {
           callout: _RefType['Callout'];
-          post: _RefType['Post'];
           space?: Maybe<_RefType['Space']>;
           triggeredBy: _RefType['User'];
         })
       | (Omit<
           ActivityLogEntryCalloutPostCreated,
-          'callout' | 'post' | 'space' | 'triggeredBy'
+          'callout' | 'space' | 'triggeredBy'
         > & {
           callout: _RefType['Callout'];
-          post: _RefType['Post'];
           space?: Maybe<_RefType['Space']>;
           triggeredBy: _RefType['User'];
         })
@@ -8804,28 +10530,26 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
         })
       | (Omit<
           ActivityLogEntryCalloutWhiteboardContentModified,
-          'callout' | 'space' | 'triggeredBy' | 'whiteboard'
+          'callout' | 'space' | 'triggeredBy'
         > & {
           callout: _RefType['Callout'];
           space?: Maybe<_RefType['Space']>;
           triggeredBy: _RefType['User'];
-          whiteboard: _RefType['Whiteboard'];
         })
       | (Omit<
           ActivityLogEntryCalloutWhiteboardCreated,
-          'callout' | 'space' | 'triggeredBy' | 'whiteboard'
+          'callout' | 'space' | 'triggeredBy'
         > & {
           callout: _RefType['Callout'];
           space?: Maybe<_RefType['Space']>;
           triggeredBy: _RefType['User'];
-          whiteboard: _RefType['Whiteboard'];
         })
       | (Omit<
           ActivityLogEntryMemberJoined,
-          'community' | 'contributor' | 'space' | 'triggeredBy'
+          'actor' | 'community' | 'space' | 'triggeredBy'
         > & {
+          actor: _RefType['Actor'];
           community: _RefType['Community'];
-          contributor: _RefType['Contributor'];
           space?: Maybe<_RefType['Space']>;
           triggeredBy: _RefType['User'];
         })
@@ -8837,44 +10561,122 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
           subspace: _RefType['Space'];
           triggeredBy: _RefType['User'];
         })
-      | (Omit<
-          ActivityLogEntryUpdateSent,
-          'space' | 'triggeredBy' | 'updates'
-        > & {
+      | (Omit<ActivityLogEntryUpdateSent, 'space' | 'triggeredBy'> & {
           space?: Maybe<_RefType['Space']>;
           triggeredBy: _RefType['User'];
-          updates: _RefType['Room'];
         });
-    Contributor:
+    ActorFull:
+      | (Omit<
+          Account,
+          | 'actor'
+          | 'baselineLicensePlan'
+          | 'credentials'
+          | 'host'
+          | 'innovationHubs'
+          | 'innovationPacks'
+          | 'profile'
+          | 'spaces'
+        > & {
+          actor: _RefType['Actor'];
+          baselineLicensePlan: _RefType['AccountLicensePlan'];
+          credentials?: Maybe<Array<_RefType['Credential']>>;
+          host?: Maybe<_RefType['Actor']>;
+          innovationHubs: Array<_RefType['InnovationHub']>;
+          innovationPacks: Array<_RefType['InnovationPack']>;
+          profile?: Maybe<_RefType['Profile']>;
+          spaces: Array<_RefType['Space']>;
+        })
       | (Omit<
           Organization,
-          'account' | 'group' | 'groups' | 'profile' | 'roleSet'
+          | 'account'
+          | 'actor'
+          | 'credentials'
+          | 'group'
+          | 'groups'
+          | 'profile'
+          | 'roleSet'
         > & {
           account?: Maybe<_RefType['Account']>;
+          actor: _RefType['Actor'];
+          credentials?: Maybe<Array<_RefType['Credential']>>;
           group?: Maybe<_RefType['UserGroup']>;
           groups?: Maybe<Array<_RefType['UserGroup']>>;
-          profile: _RefType['Profile'];
+          profile?: Maybe<_RefType['Profile']>;
           roleSet: _RefType['RoleSet'];
         })
-      | (Omit<User, 'account' | 'directRooms' | 'guidanceRoom' | 'profile'> & {
+      | (Omit<
+          RelayPaginatedSpace,
+          | 'about'
+          | 'account'
+          | 'actor'
+          | 'collaboration'
+          | 'community'
+          | 'credentials'
+          | 'mentionableContributors'
+          | 'profile'
+          | 'subspaceByNameID'
+          | 'subspaces'
+        > & {
+          about: _RefType['SpaceAbout'];
+          account: _RefType['Account'];
+          actor: _RefType['Actor'];
+          collaboration: _RefType['Collaboration'];
+          community: _RefType['Community'];
+          credentials?: Maybe<Array<_RefType['Credential']>>;
+          mentionableContributors: Array<_RefType['ActorFull']>;
+          profile?: Maybe<_RefType['Profile']>;
+          subspaceByNameID: _RefType['Space'];
+          subspaces: Array<_RefType['Space']>;
+        })
+      | (Omit<
+          Space,
+          | 'about'
+          | 'account'
+          | 'actor'
+          | 'collaboration'
+          | 'community'
+          | 'credentials'
+          | 'mentionableContributors'
+          | 'profile'
+          | 'subspaceByNameID'
+          | 'subspaces'
+        > & {
+          about: _RefType['SpaceAbout'];
+          account: _RefType['Account'];
+          actor: _RefType['Actor'];
+          collaboration: _RefType['Collaboration'];
+          community: _RefType['Community'];
+          credentials?: Maybe<Array<_RefType['Credential']>>;
+          mentionableContributors: Array<_RefType['ActorFull']>;
+          profile?: Maybe<_RefType['Profile']>;
+          subspaceByNameID: _RefType['Space'];
+          subspaces: Array<_RefType['Space']>;
+        })
+      | (Omit<User, 'account' | 'actor' | 'credentials' | 'profile'> & {
           account?: Maybe<_RefType['Account']>;
-          directRooms?: Maybe<Array<_RefType['DirectRoom']>>;
-          guidanceRoom?: Maybe<_RefType['Room']>;
-          profile: _RefType['Profile'];
+          actor: _RefType['Actor'];
+          credentials?: Maybe<Array<_RefType['Credential']>>;
+          profile?: Maybe<_RefType['Profile']>;
+        })
+      | (Omit<VirtualAssistant, 'credentials' | 'profile'> & {
+          credentials?: Maybe<Array<_RefType['Credential']>>;
+          profile?: Maybe<_RefType['Profile']>;
         })
       | (Omit<
           VirtualContributor,
           | 'account'
-          | 'knowledgeBase'
+          | 'actor'
+          | 'credentials'
           | 'knowledgeSpace'
           | 'profile'
           | 'provider'
         > & {
           account?: Maybe<_RefType['Account']>;
-          knowledgeBase: _RefType['KnowledgeBase'];
+          actor: _RefType['Actor'];
+          credentials?: Maybe<Array<_RefType['Credential']>>;
           knowledgeSpace?: Maybe<_RefType['Space']>;
-          profile: _RefType['Profile'];
-          provider: _RefType['Contributor'];
+          profile?: Maybe<_RefType['Profile']>;
+          provider: _RefType['Actor'];
         });
     Groupable:
       | (Omit<Community, 'communication' | 'group' | 'groups' | 'roleSet'> & {
@@ -8885,134 +10687,129 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> =
         })
       | (Omit<
           Organization,
-          'account' | 'group' | 'groups' | 'profile' | 'roleSet'
+          | 'account'
+          | 'actor'
+          | 'credentials'
+          | 'group'
+          | 'groups'
+          | 'profile'
+          | 'roleSet'
         > & {
           account?: Maybe<_RefType['Account']>;
+          actor: _RefType['Actor'];
+          credentials?: Maybe<Array<_RefType['Credential']>>;
           group?: Maybe<_RefType['UserGroup']>;
           groups?: Maybe<Array<_RefType['UserGroup']>>;
-          profile: _RefType['Profile'];
+          profile?: Maybe<_RefType['Profile']>;
           roleSet: _RefType['RoleSet'];
         });
     InAppNotificationPayload:
-      | InAppNotificationPayloadOrganization
       | (Omit<
           InAppNotificationPayloadOrganizationMessageDirect,
           'organization'
-        > & { organization: _RefType['Contributor'] })
+        > & { organization?: Maybe<_RefType['Organization']> })
       | (Omit<
           InAppNotificationPayloadOrganizationMessageRoom,
           'organization'
         > & { organization: _RefType['Organization'] })
-      | InAppNotificationPayloadPlatform
       | InAppNotificationPayloadPlatformForumDiscussion
       | (Omit<InAppNotificationPayloadPlatformGlobalRoleChange, 'user'> & {
           user?: Maybe<_RefType['User']>;
         })
       | InAppNotificationPayloadPlatformUser
-      | (Omit<
-          InAppNotificationPayloadPlatformUserMessageRoom,
-          'messageDetails' | 'user'
-        > & {
-          messageDetails?: Maybe<_RefType['MessageDetails']>;
-          user?: Maybe<_RefType['User']>;
+      | (Omit<InAppNotificationPayloadPlatformUserMessageRoom, 'user'> & {
+          user: _RefType['User'];
         })
       | InAppNotificationPayloadPlatformUserProfileRemoved
       | (Omit<InAppNotificationPayloadSpace, 'space'> & {
-          space?: Maybe<_RefType['Space']>;
+          space: _RefType['Space'];
         })
       | (Omit<
           InAppNotificationPayloadSpaceCollaborationCallout,
           'callout' | 'space'
-        > & {
-          callout?: Maybe<_RefType['Callout']>;
-          space?: Maybe<_RefType['Space']>;
-        })
+        > & { callout: _RefType['Callout']; space: _RefType['Space'] })
       | (Omit<
           InAppNotificationPayloadSpaceCollaborationCalloutComment,
-          'callout' | 'messageDetails' | 'space'
-        > & {
-          callout?: Maybe<_RefType['Callout']>;
-          messageDetails?: Maybe<_RefType['MessageDetails']>;
-          space?: Maybe<_RefType['Space']>;
-        })
+          'callout' | 'space'
+        > & { callout: _RefType['Callout']; space: _RefType['Space'] })
       | (Omit<
           InAppNotificationPayloadSpaceCollaborationCalloutPostComment,
-          'callout' | 'messageDetails' | 'space'
-        > & {
-          callout?: Maybe<_RefType['Callout']>;
-          messageDetails?: Maybe<_RefType['MessageDetails']>;
-          space?: Maybe<_RefType['Space']>;
-        })
+          'callout' | 'space'
+        > & { callout: _RefType['Callout']; space: _RefType['Space'] })
+      | (Omit<
+          InAppNotificationPayloadSpaceCollaborationPoll,
+          'callout' | 'space'
+        > & { callout: _RefType['Callout']; space: _RefType['Space'] })
       | (Omit<
           InAppNotificationPayloadSpaceCommunicationMessageDirect,
           'space'
-        > & { space?: Maybe<_RefType['Space']> })
+        > & { space: _RefType['Space'] })
       | (Omit<InAppNotificationPayloadSpaceCommunicationUpdate, 'space'> & {
-          space?: Maybe<_RefType['Space']>;
+          space: _RefType['Space'];
         })
       | (Omit<
-          InAppNotificationPayloadSpaceCommunityApplication,
-          'application' | 'space'
-        > & {
-          application?: Maybe<_RefType['Application']>;
-          space?: Maybe<_RefType['Space']>;
+          InAppNotificationPayloadSpaceCommunityActor,
+          'actor' | 'space'
+        > & { actor: _RefType['Actor']; space: _RefType['Space'] })
+      | (Omit<InAppNotificationPayloadSpaceCommunityApplication, 'space'> & {
+          space: _RefType['Space'];
         })
       | (Omit<
           InAppNotificationPayloadSpaceCommunityCalendarEvent,
           'calendarEvent' | 'space'
         > & {
-          calendarEvent?: Maybe<_RefType['CalendarEvent']>;
-          space?: Maybe<_RefType['Space']>;
+          calendarEvent: _RefType['CalendarEvent'];
+          space: _RefType['Space'];
         })
       | (Omit<
           InAppNotificationPayloadSpaceCommunityCalendarEventComment,
           'calendarEvent' | 'space'
         > & {
-          calendarEvent?: Maybe<_RefType['CalendarEvent']>;
-          space?: Maybe<_RefType['Space']>;
-        })
-      | (Omit<
-          InAppNotificationPayloadSpaceCommunityContributor,
-          'contributor' | 'space'
-        > & {
-          contributor?: Maybe<_RefType['Contributor']>;
-          space?: Maybe<_RefType['Space']>;
+          calendarEvent: _RefType['CalendarEvent'];
+          space: _RefType['Space'];
         })
       | (Omit<InAppNotificationPayloadSpaceCommunityInvitation, 'space'> & {
-          space?: Maybe<_RefType['Space']>;
+          space: _RefType['Space'];
         })
       | (Omit<
           InAppNotificationPayloadSpaceCommunityInvitationPlatform,
           'space'
-        > & { space?: Maybe<_RefType['Space']> })
+        > & { space: _RefType['Space'] })
       | (Omit<InAppNotificationPayloadUserMessageDirect, 'user'> & {
           user?: Maybe<_RefType['User']>;
         })
-      | (Omit<
-          InAppNotificationPayloadVirtualContributor,
-          'contributor' | 'space'
-        > & {
-          contributor?: Maybe<_RefType['VirtualContributor']>;
-          space?: Maybe<_RefType['Space']>;
+      | (Omit<InAppNotificationPayloadVirtualContributor, 'space'> & {
+          space: _RefType['Space'];
         });
     SearchResult:
       | (Omit<SearchResultCallout, 'callout' | 'space'> & {
           callout: _RefType['Callout'];
           space: _RefType['Space'];
         })
+      | (Omit<SearchResultCollaboraDocument, 'callout' | 'space'> & {
+          callout: _RefType['Callout'];
+          space: _RefType['Space'];
+        })
+      | (Omit<SearchResultMemo, 'callout' | 'space'> & {
+          callout: _RefType['Callout'];
+          space: _RefType['Space'];
+        })
       | (Omit<SearchResultOrganization, 'organization'> & {
           organization: _RefType['Organization'];
         })
-      | (Omit<SearchResultPost, 'callout' | 'post' | 'space'> & {
+      | (Omit<SearchResultPost, 'callout' | 'space'> & {
           callout: _RefType['Callout'];
-          post: _RefType['Post'];
           space: _RefType['Space'];
         })
       | (Omit<SearchResultSpace, 'parentSpace' | 'space'> & {
           parentSpace?: Maybe<_RefType['Space']>;
           space: _RefType['Space'];
         })
-      | (Omit<SearchResultUser, 'user'> & { user: _RefType['User'] });
+      | (Omit<SearchResultUser, 'user'> & { user: _RefType['User'] })
+      | (Omit<SearchResultWhiteboard, 'callout' | 'space'> & {
+          callout: _RefType['Callout'];
+          space: _RefType['Space'];
+        });
   };
 
 /** Mapping between all available schema types and the resolvers types */
@@ -9021,17 +10818,23 @@ export type ResolversTypes = {
   Account: ResolverTypeWrapper<
     Omit<
       Account,
+      | 'actor'
+      | 'baselineLicensePlan'
+      | 'credentials'
       | 'host'
       | 'innovationHubs'
       | 'innovationPacks'
+      | 'profile'
       | 'spaces'
-      | 'virtualContributors'
     > & {
-      host?: Maybe<ResolversTypes['Contributor']>;
+      actor: ResolversTypes['Actor'];
+      baselineLicensePlan: ResolversTypes['AccountLicensePlan'];
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
+      host?: Maybe<ResolversTypes['Actor']>;
       innovationHubs: Array<ResolversTypes['InnovationHub']>;
       innovationPacks: Array<ResolversTypes['InnovationPack']>;
+      profile?: Maybe<ResolversTypes['Profile']>;
       spaces: Array<ResolversTypes['Space']>;
-      virtualContributors: Array<ResolversTypes['VirtualContributor']>;
     }
   >;
   AccountAuthorizationResetInput: AccountAuthorizationResetInput;
@@ -9047,9 +10850,8 @@ export type ResolversTypes = {
   >;
   ActivityEventType: ActivityEventType;
   ActivityFeed: ResolverTypeWrapper<
-    Omit<ActivityFeed, 'activityFeed' | 'pageInfo'> & {
+    Omit<ActivityFeed, 'activityFeed'> & {
       activityFeed: Array<ResolversTypes['ActivityLogEntry']>;
-      pageInfo: ResolversTypes['PageInfo'];
     }
   >;
   ActivityFeedGroupedQueryArgs: ActivityFeedGroupedQueryArgs;
@@ -9082,10 +10884,19 @@ export type ResolversTypes = {
   ActivityLogEntryCalloutLinkCreated: ResolverTypeWrapper<
     Omit<
       ActivityLogEntryCalloutLinkCreated,
-      'callout' | 'link' | 'space' | 'triggeredBy'
+      'callout' | 'space' | 'triggeredBy'
     > & {
       callout: ResolversTypes['Callout'];
-      link: ResolversTypes['Link'];
+      space?: Maybe<ResolversTypes['Space']>;
+      triggeredBy: ResolversTypes['User'];
+    }
+  >;
+  ActivityLogEntryCalloutMemoCreated: ResolverTypeWrapper<
+    Omit<
+      ActivityLogEntryCalloutMemoCreated,
+      'callout' | 'space' | 'triggeredBy'
+    > & {
+      callout: ResolversTypes['Callout'];
       space?: Maybe<ResolversTypes['Space']>;
       triggeredBy: ResolversTypes['User'];
     }
@@ -9093,10 +10904,9 @@ export type ResolversTypes = {
   ActivityLogEntryCalloutPostComment: ResolverTypeWrapper<
     Omit<
       ActivityLogEntryCalloutPostComment,
-      'callout' | 'post' | 'space' | 'triggeredBy'
+      'callout' | 'space' | 'triggeredBy'
     > & {
       callout: ResolversTypes['Callout'];
-      post: ResolversTypes['Post'];
       space?: Maybe<ResolversTypes['Space']>;
       triggeredBy: ResolversTypes['User'];
     }
@@ -9104,10 +10914,9 @@ export type ResolversTypes = {
   ActivityLogEntryCalloutPostCreated: ResolverTypeWrapper<
     Omit<
       ActivityLogEntryCalloutPostCreated,
-      'callout' | 'post' | 'space' | 'triggeredBy'
+      'callout' | 'space' | 'triggeredBy'
     > & {
       callout: ResolversTypes['Callout'];
-      post: ResolversTypes['Post'];
       space?: Maybe<ResolversTypes['Space']>;
       triggeredBy: ResolversTypes['User'];
     }
@@ -9125,32 +10934,30 @@ export type ResolversTypes = {
   ActivityLogEntryCalloutWhiteboardContentModified: ResolverTypeWrapper<
     Omit<
       ActivityLogEntryCalloutWhiteboardContentModified,
-      'callout' | 'space' | 'triggeredBy' | 'whiteboard'
+      'callout' | 'space' | 'triggeredBy'
     > & {
       callout: ResolversTypes['Callout'];
       space?: Maybe<ResolversTypes['Space']>;
       triggeredBy: ResolversTypes['User'];
-      whiteboard: ResolversTypes['Whiteboard'];
     }
   >;
   ActivityLogEntryCalloutWhiteboardCreated: ResolverTypeWrapper<
     Omit<
       ActivityLogEntryCalloutWhiteboardCreated,
-      'callout' | 'space' | 'triggeredBy' | 'whiteboard'
+      'callout' | 'space' | 'triggeredBy'
     > & {
       callout: ResolversTypes['Callout'];
       space?: Maybe<ResolversTypes['Space']>;
       triggeredBy: ResolversTypes['User'];
-      whiteboard: ResolversTypes['Whiteboard'];
     }
   >;
   ActivityLogEntryMemberJoined: ResolverTypeWrapper<
     Omit<
       ActivityLogEntryMemberJoined,
-      'community' | 'contributor' | 'space' | 'triggeredBy'
+      'actor' | 'community' | 'space' | 'triggeredBy'
     > & {
+      actor: ResolversTypes['Actor'];
       community: ResolversTypes['Community'];
-      contributor: ResolversTypes['Contributor'];
       space?: Maybe<ResolversTypes['Space']>;
       triggeredBy: ResolversTypes['User'];
     }
@@ -9166,34 +10973,47 @@ export type ResolversTypes = {
     }
   >;
   ActivityLogEntryUpdateSent: ResolverTypeWrapper<
-    Omit<ActivityLogEntryUpdateSent, 'space' | 'triggeredBy' | 'updates'> & {
+    Omit<ActivityLogEntryUpdateSent, 'space' | 'triggeredBy'> & {
       space?: Maybe<ResolversTypes['Space']>;
       triggeredBy: ResolversTypes['User'];
-      updates: ResolversTypes['Room'];
     }
   >;
   ActivityLogInput: ActivityLogInput;
-  Agent: ResolverTypeWrapper<Agent>;
-  AgentBeginVerifiedCredentialOfferOutput: ResolverTypeWrapper<AgentBeginVerifiedCredentialOfferOutput>;
-  AgentBeginVerifiedCredentialRequestOutput: ResolverTypeWrapper<AgentBeginVerifiedCredentialRequestOutput>;
-  AgentType: AgentType;
+  Actor: ResolverTypeWrapper<
+    Omit<Actor, 'credentials' | 'profile'> & {
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
+      profile?: Maybe<ResolversTypes['Profile']>;
+    }
+  >;
+  ActorFilterInput: ActorFilterInput;
+  ActorFull: ResolverTypeWrapper<
+    ResolversInterfaceTypes<ResolversTypes>['ActorFull']
+  >;
+  ActorRolePolicy: ResolverTypeWrapper<ActorRolePolicy>;
+  ActorRoles: ResolverTypeWrapper<ActorRoles>;
+  ActorType: ActorType;
+  AddPollOptionInput: AddPollOptionInput;
+  AddVisualToMediaGalleryInput: AddVisualToMediaGalleryInput;
+  AdminUserEmailChangeDriftResolveInput: AdminUserEmailChangeDriftResolveInput;
+  AdminUserEmailChangeInput: AdminUserEmailChangeInput;
   AiPersona: ResolverTypeWrapper<AiPersona>;
   AiPersonaEngine: AiPersonaEngine;
   AiServer: ResolverTypeWrapper<AiServer>;
   Application: ResolverTypeWrapper<
-    Omit<Application, 'contributor'> & {
-      contributor: ResolversTypes['Contributor'];
-    }
+    Omit<Application, 'actor'> & { actor: ResolversTypes['Actor'] }
   >;
   ApplicationEventInput: ApplicationEventInput;
   ApplyForEntryRoleOnRoleSetInput: ApplyForEntryRoleOnRoleSetInput;
+  AssignConversationMemberInput: AssignConversationMemberInput;
   AssignLicensePlanToAccount: AssignLicensePlanToAccount;
   AssignLicensePlanToSpace: AssignLicensePlanToSpace;
   AssignPlatformRoleInput: AssignPlatformRoleInput;
-  AssignRoleOnRoleSetToOrganizationInput: AssignRoleOnRoleSetToOrganizationInput;
-  AssignRoleOnRoleSetToUserInput: AssignRoleOnRoleSetToUserInput;
-  AssignRoleOnRoleSetToVirtualContributorInput: AssignRoleOnRoleSetToVirtualContributorInput;
+  AssignRoleOnRoleSetInput: AssignRoleOnRoleSetInput;
   AssignUserGroupMemberInput: AssignUserGroupMemberInput;
+  AssistantCapability: ResolverTypeWrapper<AssistantCapability>;
+  AssistantCapabilityKind: AssistantCapabilityKind;
+  AssistantCapabilityToggle: ResolverTypeWrapper<AssistantCapabilityToggle>;
+  AssistantCapabilityToggleInput: AssistantCapabilityToggleInput;
   AuthenticationConfig: ResolverTypeWrapper<
     Omit<AuthenticationConfig, 'providers'> & {
       providers: Array<ResolversTypes['AuthenticationProviderConfig']>;
@@ -9212,7 +11032,6 @@ export type ResolversTypes = {
   AuthorizationCredential: AuthorizationCredential;
   AuthorizationPolicyRuleCredential: ResolverTypeWrapper<AuthorizationPolicyRuleCredential>;
   AuthorizationPolicyRulePrivilege: ResolverTypeWrapper<AuthorizationPolicyRulePrivilege>;
-  AuthorizationPolicyRuleVerifiedCredential: ResolverTypeWrapper<AuthorizationPolicyRuleVerifiedCredential>;
   AuthorizationPolicyType: AuthorizationPolicyType;
   AuthorizationPrivilege: AuthorizationPrivilege;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
@@ -9223,8 +11042,7 @@ export type ResolversTypes = {
     }
   >;
   CalendarEvent: ResolverTypeWrapper<
-    Omit<CalendarEvent, 'comments' | 'createdBy' | 'profile' | 'subspace'> & {
-      comments: ResolversTypes['Room'];
+    Omit<CalendarEvent, 'createdBy' | 'profile' | 'subspace'> & {
       createdBy?: Maybe<ResolversTypes['User']>;
       profile: ResolversTypes['Profile'];
       subspace?: Maybe<ResolversTypes['Space']>;
@@ -9234,47 +11052,36 @@ export type ResolversTypes = {
   Callout: ResolverTypeWrapper<
     Omit<
       Callout,
-      | 'classification'
-      | 'comments'
-      | 'contributions'
-      | 'createdBy'
-      | 'framing'
-      | 'posts'
-      | 'publishedBy'
+      'contributionDefaults' | 'createdBy' | 'framing' | 'publishedBy'
     > & {
-      classification?: Maybe<ResolversTypes['Classification']>;
-      comments?: Maybe<ResolversTypes['Room']>;
-      contributions: Array<ResolversTypes['CalloutContribution']>;
+      contributionDefaults: ResolversTypes['CalloutContributionDefaults'];
       createdBy?: Maybe<ResolversTypes['User']>;
       framing: ResolversTypes['CalloutFraming'];
-      posts?: Maybe<Array<ResolversTypes['Post']>>;
       publishedBy?: Maybe<ResolversTypes['User']>;
     }
   >;
-  CalloutAllowedContributors: CalloutAllowedContributors;
+  CalloutAllowedActors: CalloutAllowedActors;
   CalloutContribution: ResolverTypeWrapper<
-    Omit<CalloutContribution, 'createdBy' | 'link' | 'post' | 'whiteboard'> & {
+    Omit<CalloutContribution, 'createdBy'> & {
       createdBy?: Maybe<ResolversTypes['User']>;
-      link?: Maybe<ResolversTypes['Link']>;
-      post?: Maybe<ResolversTypes['Post']>;
-      whiteboard?: Maybe<ResolversTypes['Whiteboard']>;
     }
   >;
   CalloutContributionDefaults: ResolverTypeWrapper<CalloutContributionDefaults>;
   CalloutContributionType: CalloutContributionType;
   CalloutContributionsCountOutput: ResolverTypeWrapper<CalloutContributionsCountOutput>;
+  CalloutContributorsSettings: ResolverTypeWrapper<CalloutContributorsSettings>;
+  CalloutDescriptionDisplayMode: CalloutDescriptionDisplayMode;
   CalloutFraming: ResolverTypeWrapper<
-    Omit<CalloutFraming, 'link' | 'memo' | 'profile' | 'whiteboard'> & {
-      link?: Maybe<ResolversTypes['Link']>;
-      memo?: Maybe<ResolversTypes['Memo']>;
+    Omit<CalloutFraming, 'contributorCounts' | 'profile' | 'subspaces'> & {
+      contributorCounts: ResolversTypes['ContributorCollectionCounts'];
       profile: ResolversTypes['Profile'];
-      whiteboard?: Maybe<ResolversTypes['Whiteboard']>;
+      subspaces: Array<ResolversTypes['Space']>;
     }
   >;
   CalloutFramingType: CalloutFramingType;
-  CalloutPostCreated: ResolverTypeWrapper<
-    Omit<CalloutPostCreated, 'post'> & { post: ResolversTypes['Post'] }
-  >;
+  CalloutPostCreated: ResolverTypeWrapper<CalloutPostCreated>;
+  CalloutSelectionMode: CalloutSelectionMode;
+  CalloutSelectionSettings: ResolverTypeWrapper<CalloutSelectionSettings>;
   CalloutSettings: ResolverTypeWrapper<CalloutSettings>;
   CalloutSettingsContribution: ResolverTypeWrapper<CalloutSettingsContribution>;
   CalloutSettingsFraming: ResolverTypeWrapper<CalloutSettingsFraming>;
@@ -9285,22 +11092,24 @@ export type ResolversTypes = {
     }
   >;
   CalloutsSetType: CalloutsSetType;
-  ChatGuidanceAnswerRelevanceInput: ChatGuidanceAnswerRelevanceInput;
-  ChatGuidanceInput: ChatGuidanceInput;
+  CastPollVoteInput: CastPollVoteInput;
   Classification: ResolverTypeWrapper<Classification>;
-  Collaboration: ResolverTypeWrapper<
-    Omit<Collaboration, 'calloutsSet' | 'innovationFlow' | 'timeline'> & {
-      calloutsSet: ResolversTypes['CalloutsSet'];
-      innovationFlow: ResolversTypes['InnovationFlow'];
-      timeline: ResolversTypes['Timeline'];
+  CollaboraDocument: ResolverTypeWrapper<
+    Omit<CollaboraDocument, 'createdBy' | 'profile'> & {
+      createdBy?: Maybe<ResolversTypes['User']>;
+      profile: ResolversTypes['Profile'];
     }
   >;
-  Communication: ResolverTypeWrapper<
-    Omit<Communication, 'updates'> & { updates: ResolversTypes['Room'] }
+  CollaboraDocumentType: CollaboraDocumentType;
+  CollaboraEditorUrlResult: ResolverTypeWrapper<CollaboraEditorUrlResult>;
+  Collaboration: ResolverTypeWrapper<
+    Omit<Collaboration, 'timeline'> & { timeline: ResolversTypes['Timeline'] }
   >;
+  Communication: ResolverTypeWrapper<Communication>;
   CommunicationAdminEnsureAccessInput: CommunicationAdminEnsureAccessInput;
   CommunicationAdminMembershipInput: CommunicationAdminMembershipInput;
   CommunicationAdminMembershipResult: ResolverTypeWrapper<CommunicationAdminMembershipResult>;
+  CommunicationAdminMigrateRoomsResult: ResolverTypeWrapper<CommunicationAdminMigrateRoomsResult>;
   CommunicationAdminOrphanedUsageResult: ResolverTypeWrapper<CommunicationAdminOrphanedUsageResult>;
   CommunicationAdminRemoveOrphanedRoomInput: CommunicationAdminRemoveOrphanedRoomInput;
   CommunicationAdminRoomMembershipResult: ResolverTypeWrapper<CommunicationAdminRoomMembershipResult>;
@@ -9319,11 +11128,7 @@ export type ResolversTypes = {
   >;
   CommunityApplicationForRoleResult: ResolverTypeWrapper<CommunityApplicationForRoleResult>;
   CommunityApplicationResult: ResolverTypeWrapper<
-    Omit<
-      CommunityApplicationResult,
-      'application' | 'spacePendingMembershipInfo'
-    > & {
-      application: ResolversTypes['Application'];
+    Omit<CommunityApplicationResult, 'spacePendingMembershipInfo'> & {
       spacePendingMembershipInfo: ResolversTypes['SpacePendingMembershipInfo'];
     }
   >;
@@ -9357,12 +11162,56 @@ export type ResolversTypes = {
   >;
   ContentUpdatePolicy: ContentUpdatePolicy;
   ContributionsFilterInput: ContributionsFilterInput;
-  Contributor: ResolverTypeWrapper<
-    ResolversInterfaceTypes<ResolversTypes>['Contributor']
-  >;
+  ContributorCollectionCounts: ResolverTypeWrapper<ContributorCollectionCounts>;
+  ContributorCollectionItem: ResolverTypeWrapper<ContributorCollectionItem>;
+  ContributorCollectionView: ContributorCollectionView;
   ContributorFilterInput: ContributorFilterInput;
-  ContributorRolePolicy: ResolverTypeWrapper<ContributorRolePolicy>;
-  ContributorRoles: ResolverTypeWrapper<ContributorRoles>;
+  ContributorLocation: ResolverTypeWrapper<ContributorLocation>;
+  Conversation: ResolverTypeWrapper<
+    Omit<Conversation, 'members'> & { members: Array<ResolversTypes['Actor']> }
+  >;
+  ConversationCreatedEvent: ResolverTypeWrapper<
+    Omit<ConversationCreatedEvent, 'conversation'> & {
+      conversation: ResolversTypes['Conversation'];
+    }
+  >;
+  ConversationCreationType: ConversationCreationType;
+  ConversationDeletedEvent: ResolverTypeWrapper<ConversationDeletedEvent>;
+  ConversationEventSubscriptionResult: ResolverTypeWrapper<
+    Omit<
+      ConversationEventSubscriptionResult,
+      | 'conversationCreated'
+      | 'conversationUpdated'
+      | 'memberAdded'
+      | 'memberRemoved'
+    > & {
+      conversationCreated?: Maybe<ResolversTypes['ConversationCreatedEvent']>;
+      conversationUpdated?: Maybe<ResolversTypes['ConversationUpdatedEvent']>;
+      memberAdded?: Maybe<ResolversTypes['ConversationMemberAddedEvent']>;
+      memberRemoved?: Maybe<ResolversTypes['ConversationMemberRemovedEvent']>;
+    }
+  >;
+  ConversationEventType: ConversationEventType;
+  ConversationMemberAddedEvent: ResolverTypeWrapper<
+    Omit<ConversationMemberAddedEvent, 'addedMember' | 'conversation'> & {
+      addedMember: ResolversTypes['Actor'];
+      conversation: ResolversTypes['Conversation'];
+    }
+  >;
+  ConversationMemberRemovedEvent: ResolverTypeWrapper<
+    Omit<ConversationMemberRemovedEvent, 'conversation'> & {
+      conversation: ResolversTypes['Conversation'];
+    }
+  >;
+  ConversationMessageReceivedEvent: ResolverTypeWrapper<ConversationMessageReceivedEvent>;
+  ConversationMessageRemovedEvent: ResolverTypeWrapper<ConversationMessageRemovedEvent>;
+  ConversationReadReceiptUpdatedEvent: ResolverTypeWrapper<ConversationReadReceiptUpdatedEvent>;
+  ConversationUpdatedEvent: ResolverTypeWrapper<
+    Omit<ConversationUpdatedEvent, 'conversation'> & {
+      conversation: ResolversTypes['Conversation'];
+    }
+  >;
+  ConversationVcResetInput: ConversationVcResetInput;
   ConversionVcSpaceToVcKnowledgeBaseInput: ConversionVcSpaceToVcKnowledgeBaseInput;
   ConvertSpaceL1ToSpaceL0Input: ConvertSpaceL1ToSpaceL0Input;
   ConvertSpaceL1ToSpaceL2Input: ConvertSpaceL1ToSpaceL2Input;
@@ -9373,11 +11222,15 @@ export type ResolversTypes = {
   CreateCalloutContributionDefaultsData: ResolverTypeWrapper<CreateCalloutContributionDefaultsData>;
   CreateCalloutContributionDefaultsInput: CreateCalloutContributionDefaultsInput;
   CreateCalloutContributionInput: CreateCalloutContributionInput;
+  CreateCalloutContributorsSettingsData: ResolverTypeWrapper<CreateCalloutContributorsSettingsData>;
+  CreateCalloutContributorsSettingsInput: CreateCalloutContributorsSettingsInput;
   CreateCalloutData: ResolverTypeWrapper<CreateCalloutData>;
   CreateCalloutFramingData: ResolverTypeWrapper<CreateCalloutFramingData>;
   CreateCalloutFramingInput: CreateCalloutFramingInput;
   CreateCalloutInput: CreateCalloutInput;
   CreateCalloutOnCalloutsSetInput: CreateCalloutOnCalloutsSetInput;
+  CreateCalloutSelectionSettingsData: ResolverTypeWrapper<CreateCalloutSelectionSettingsData>;
+  CreateCalloutSelectionSettingsInput: CreateCalloutSelectionSettingsInput;
   CreateCalloutSettingsContributionData: ResolverTypeWrapper<CreateCalloutSettingsContributionData>;
   CreateCalloutSettingsContributionInput: CreateCalloutSettingsContributionInput;
   CreateCalloutSettingsData: ResolverTypeWrapper<CreateCalloutSettingsData>;
@@ -9388,12 +11241,15 @@ export type ResolversTypes = {
   CreateCalloutsSetInput: CreateCalloutsSetInput;
   CreateClassificationData: ResolverTypeWrapper<CreateClassificationData>;
   CreateClassificationInput: CreateClassificationInput;
+  CreateCollaboraDocumentData: ResolverTypeWrapper<CreateCollaboraDocumentData>;
+  CreateCollaboraDocumentInput: CreateCollaboraDocumentInput;
   CreateCollaborationData: ResolverTypeWrapper<CreateCollaborationData>;
   CreateCollaborationInput: CreateCollaborationInput;
   CreateCollaborationOnSpaceInput: CreateCollaborationOnSpaceInput;
   CreateCommunityGuidelinesData: ResolverTypeWrapper<CreateCommunityGuidelinesData>;
   CreateCommunityGuidelinesInput: CreateCommunityGuidelinesInput;
   CreateContributionOnCalloutInput: CreateContributionOnCalloutInput;
+  CreateConversationInput: CreateConversationInput;
   CreateInnovationFlowData: ResolverTypeWrapper<CreateInnovationFlowData>;
   CreateInnovationFlowInput: CreateInnovationFlowInput;
   CreateInnovationFlowStateData: ResolverTypeWrapper<CreateInnovationFlowStateData>;
@@ -9413,6 +11269,8 @@ export type ResolversTypes = {
   CreateMemoInput: CreateMemoInput;
   CreateNVPInput: CreateNvpInput;
   CreateOrganizationInput: CreateOrganizationInput;
+  CreatePollData: ResolverTypeWrapper<CreatePollData>;
+  CreatePollInput: CreatePollInput;
   CreatePostData: ResolverTypeWrapper<CreatePostData>;
   CreatePostInput: CreatePostInput;
   CreateProfileData: ResolverTypeWrapper<CreateProfileData>;
@@ -9424,6 +11282,7 @@ export type ResolversTypes = {
   CreateSpaceOnAccountInput: CreateSpaceOnAccountInput;
   CreateSpaceSettingsCollaborationInput: CreateSpaceSettingsCollaborationInput;
   CreateSpaceSettingsInput: CreateSpaceSettingsInput;
+  CreateSpaceSettingsLayoutInput: CreateSpaceSettingsLayoutInput;
   CreateSpaceSettingsMembershipInput: CreateSpaceSettingsMembershipInput;
   CreateSpaceSettingsPrivacyInput: CreateSpaceSettingsPrivacyInput;
   CreateStateOnInnovationFlowInput: CreateStateOnInnovationFlowInput;
@@ -9446,15 +11305,15 @@ export type ResolversTypes = {
   CreateWhiteboardPreviewSettingsInput: CreateWhiteboardPreviewSettingsInput;
   Credential: ResolverTypeWrapper<Credential>;
   CredentialDefinition: ResolverTypeWrapper<CredentialDefinition>;
-  CredentialMetadataOutput: ResolverTypeWrapper<CredentialMetadataOutput>;
   CredentialType: CredentialType;
-  DID: ResolverTypeWrapper<Scalars['DID']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DeleteAiPersonaInput: DeleteAiPersonaInput;
   DeleteApplicationInput: DeleteApplicationInput;
   DeleteCalendarEventInput: DeleteCalendarEventInput;
   DeleteCalloutInput: DeleteCalloutInput;
+  DeleteCollaboraDocumentInput: DeleteCollaboraDocumentInput;
   DeleteContributionInput: DeleteContributionInput;
+  DeleteConversationInput: DeleteConversationInput;
   DeleteDiscussionInput: DeleteDiscussionInput;
   DeleteDocumentInput: DeleteDocumentInput;
   DeleteInnovationHubInput: DeleteInnovationHubInput;
@@ -9475,17 +11334,12 @@ export type ResolversTypes = {
   DeleteUserGroupInput: DeleteUserGroupInput;
   DeleteUserInput: DeleteUserInput;
   DeleteVirtualContributorInput: DeleteVirtualContributorInput;
+  DeleteVisualFromMediaGalleryInput: DeleteVisualFromMediaGalleryInput;
   DeleteWhiteboardInput: DeleteWhiteboardInput;
-  DirectRoom: ResolverTypeWrapper<
-    Omit<DirectRoom, 'messages'> & {
-      messages: Array<ResolversTypes['Message']>;
-    }
-  >;
+  DirectMessageDeliveryResult: ResolverTypeWrapper<DirectMessageDeliveryResult>;
+  DirectMessageDeliveryStatus: DirectMessageDeliveryStatus;
   Discussion: ResolverTypeWrapper<
-    Omit<Discussion, 'comments' | 'profile'> & {
-      comments: ResolversTypes['Room'];
-      profile: ResolversTypes['Profile'];
-    }
+    Omit<Discussion, 'profile'> & { profile: ResolversTypes['Profile'] }
   >;
   DiscussionDetails: ResolverTypeWrapper<DiscussionDetails>;
   DiscussionsInput: DiscussionsInput;
@@ -9493,6 +11347,8 @@ export type ResolversTypes = {
   Document: ResolverTypeWrapper<
     Omit<Document, 'createdBy'> & { createdBy?: Maybe<ResolversTypes['User']> }
   >;
+  EmailChangeApprover: ResolverTypeWrapper<EmailChangeApprover>;
+  EmailChangeApproverInput: EmailChangeApproverInput;
   Emoji: ResolverTypeWrapper<Scalars['Emoji']['output']>;
   ExploreSpacesInput: ExploreSpacesInput;
   ExternalConfig: ResolverTypeWrapper<ExternalConfig>;
@@ -9502,9 +11358,10 @@ export type ResolversTypes = {
   Form: ResolverTypeWrapper<Form>;
   FormQuestion: ResolverTypeWrapper<FormQuestion>;
   Forum: ResolverTypeWrapper<
-    Omit<Forum, 'discussion' | 'discussions'> & {
+    Omit<Forum, 'discussion' | 'discussions' | 'mentionableContributors'> & {
       discussion?: Maybe<ResolversTypes['Discussion']>;
       discussions?: Maybe<Array<ResolversTypes['Discussion']>>;
+      mentionableContributors: Array<ResolversTypes['ActorFull']>;
     }
   >;
   ForumCreateDiscussionInput: ForumCreateDiscussionInput;
@@ -9512,11 +11369,13 @@ export type ResolversTypes = {
   ForumDiscussionPrivacy: ForumDiscussionPrivacy;
   Geo: ResolverTypeWrapper<Geo>;
   GeoLocation: ResolverTypeWrapper<GeoLocation>;
+  GrantAssistantActorCapabilitiesInput: GrantAssistantActorCapabilitiesInput;
   GrantAuthorizationCredentialInput: GrantAuthorizationCredentialInput;
   GrantOrganizationAuthorizationCredentialInput: GrantOrganizationAuthorizationCredentialInput;
   Groupable: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>['Groupable']
   >;
+  ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   ISearchCategoryResult: ResolverTypeWrapper<
     Omit<ISearchCategoryResult, 'results'> & {
       results: Array<ResolversTypes['SearchResult']>;
@@ -9525,32 +11384,34 @@ export type ResolversTypes = {
   ISearchResults: ResolverTypeWrapper<
     Omit<
       ISearchResults,
+      | 'actorResults'
       | 'calloutResults'
       | 'contributionResults'
-      | 'contributorResults'
+      | 'framingResults'
       | 'spaceResults'
     > & {
+      actorResults: ResolversTypes['ISearchCategoryResult'];
       calloutResults: ResolversTypes['ISearchCategoryResult'];
       contributionResults: ResolversTypes['ISearchCategoryResult'];
-      contributorResults: ResolversTypes['ISearchCategoryResult'];
+      framingResults: ResolversTypes['ISearchCategoryResult'];
       spaceResults: ResolversTypes['ISearchCategoryResult'];
     }
   >;
   IdentityVerificationStatusFilter: IdentityVerificationStatusFilter;
+  ImportCollaboraDocumentInput: ImportCollaboraDocumentInput;
   InAppNotification: ResolverTypeWrapper<
     Omit<InAppNotification, 'payload' | 'receiver' | 'triggeredBy'> & {
       payload: ResolversTypes['InAppNotificationPayload'];
-      receiver: ResolversTypes['Contributor'];
-      triggeredBy?: Maybe<ResolversTypes['Contributor']>;
+      receiver: ResolversTypes['Actor'];
+      triggeredBy?: Maybe<ResolversTypes['Actor']>;
     }
   >;
   InAppNotificationPayload: ResolverTypeWrapper<
     ResolversInterfaceTypes<ResolversTypes>['InAppNotificationPayload']
   >;
-  InAppNotificationPayloadOrganization: ResolverTypeWrapper<InAppNotificationPayloadOrganization>;
   InAppNotificationPayloadOrganizationMessageDirect: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadOrganizationMessageDirect, 'organization'> & {
-      organization: ResolversTypes['Contributor'];
+      organization?: Maybe<ResolversTypes['Organization']>;
     }
   >;
   InAppNotificationPayloadOrganizationMessageRoom: ResolverTypeWrapper<
@@ -9558,7 +11419,6 @@ export type ResolversTypes = {
       organization: ResolversTypes['Organization'];
     }
   >;
-  InAppNotificationPayloadPlatform: ResolverTypeWrapper<InAppNotificationPayloadPlatform>;
   InAppNotificationPayloadPlatformForumDiscussion: ResolverTypeWrapper<InAppNotificationPayloadPlatformForumDiscussion>;
   InAppNotificationPayloadPlatformGlobalRoleChange: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadPlatformGlobalRoleChange, 'user'> & {
@@ -9567,66 +11427,59 @@ export type ResolversTypes = {
   >;
   InAppNotificationPayloadPlatformUser: ResolverTypeWrapper<InAppNotificationPayloadPlatformUser>;
   InAppNotificationPayloadPlatformUserMessageRoom: ResolverTypeWrapper<
-    Omit<
-      InAppNotificationPayloadPlatformUserMessageRoom,
-      'messageDetails' | 'user'
-    > & {
-      messageDetails?: Maybe<ResolversTypes['MessageDetails']>;
-      user?: Maybe<ResolversTypes['User']>;
+    Omit<InAppNotificationPayloadPlatformUserMessageRoom, 'user'> & {
+      user: ResolversTypes['User'];
     }
   >;
   InAppNotificationPayloadPlatformUserProfileRemoved: ResolverTypeWrapper<InAppNotificationPayloadPlatformUserProfileRemoved>;
   InAppNotificationPayloadSpace: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadSpace, 'space'> & {
-      space?: Maybe<ResolversTypes['Space']>;
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadSpaceCollaborationCallout: ResolverTypeWrapper<
     Omit<
       InAppNotificationPayloadSpaceCollaborationCallout,
       'callout' | 'space'
-    > & {
-      callout?: Maybe<ResolversTypes['Callout']>;
-      space?: Maybe<ResolversTypes['Space']>;
-    }
+    > & { callout: ResolversTypes['Callout']; space: ResolversTypes['Space'] }
   >;
   InAppNotificationPayloadSpaceCollaborationCalloutComment: ResolverTypeWrapper<
     Omit<
       InAppNotificationPayloadSpaceCollaborationCalloutComment,
-      'callout' | 'messageDetails' | 'space'
-    > & {
-      callout?: Maybe<ResolversTypes['Callout']>;
-      messageDetails?: Maybe<ResolversTypes['MessageDetails']>;
-      space?: Maybe<ResolversTypes['Space']>;
-    }
+      'callout' | 'space'
+    > & { callout: ResolversTypes['Callout']; space: ResolversTypes['Space'] }
   >;
   InAppNotificationPayloadSpaceCollaborationCalloutPostComment: ResolverTypeWrapper<
     Omit<
       InAppNotificationPayloadSpaceCollaborationCalloutPostComment,
-      'callout' | 'messageDetails' | 'space'
-    > & {
-      callout?: Maybe<ResolversTypes['Callout']>;
-      messageDetails?: Maybe<ResolversTypes['MessageDetails']>;
-      space?: Maybe<ResolversTypes['Space']>;
-    }
+      'callout' | 'space'
+    > & { callout: ResolversTypes['Callout']; space: ResolversTypes['Space'] }
+  >;
+  InAppNotificationPayloadSpaceCollaborationPoll: ResolverTypeWrapper<
+    Omit<
+      InAppNotificationPayloadSpaceCollaborationPoll,
+      'callout' | 'space'
+    > & { callout: ResolversTypes['Callout']; space: ResolversTypes['Space'] }
   >;
   InAppNotificationPayloadSpaceCommunicationMessageDirect: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadSpaceCommunicationMessageDirect, 'space'> & {
-      space?: Maybe<ResolversTypes['Space']>;
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadSpaceCommunicationUpdate: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadSpaceCommunicationUpdate, 'space'> & {
-      space?: Maybe<ResolversTypes['Space']>;
+      space: ResolversTypes['Space'];
+    }
+  >;
+  InAppNotificationPayloadSpaceCommunityActor: ResolverTypeWrapper<
+    Omit<InAppNotificationPayloadSpaceCommunityActor, 'actor' | 'space'> & {
+      actor: ResolversTypes['Actor'];
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadSpaceCommunityApplication: ResolverTypeWrapper<
-    Omit<
-      InAppNotificationPayloadSpaceCommunityApplication,
-      'application' | 'space'
-    > & {
-      application?: Maybe<ResolversTypes['Application']>;
-      space?: Maybe<ResolversTypes['Space']>;
+    Omit<InAppNotificationPayloadSpaceCommunityApplication, 'space'> & {
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadSpaceCommunityCalendarEvent: ResolverTypeWrapper<
@@ -9634,8 +11487,8 @@ export type ResolversTypes = {
       InAppNotificationPayloadSpaceCommunityCalendarEvent,
       'calendarEvent' | 'space'
     > & {
-      calendarEvent?: Maybe<ResolversTypes['CalendarEvent']>;
-      space?: Maybe<ResolversTypes['Space']>;
+      calendarEvent: ResolversTypes['CalendarEvent'];
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadSpaceCommunityCalendarEventComment: ResolverTypeWrapper<
@@ -9643,27 +11496,18 @@ export type ResolversTypes = {
       InAppNotificationPayloadSpaceCommunityCalendarEventComment,
       'calendarEvent' | 'space'
     > & {
-      calendarEvent?: Maybe<ResolversTypes['CalendarEvent']>;
-      space?: Maybe<ResolversTypes['Space']>;
-    }
-  >;
-  InAppNotificationPayloadSpaceCommunityContributor: ResolverTypeWrapper<
-    Omit<
-      InAppNotificationPayloadSpaceCommunityContributor,
-      'contributor' | 'space'
-    > & {
-      contributor?: Maybe<ResolversTypes['Contributor']>;
-      space?: Maybe<ResolversTypes['Space']>;
+      calendarEvent: ResolversTypes['CalendarEvent'];
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadSpaceCommunityInvitation: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadSpaceCommunityInvitation, 'space'> & {
-      space?: Maybe<ResolversTypes['Space']>;
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadSpaceCommunityInvitationPlatform: ResolverTypeWrapper<
     Omit<InAppNotificationPayloadSpaceCommunityInvitationPlatform, 'space'> & {
-      space?: Maybe<ResolversTypes['Space']>;
+      space: ResolversTypes['Space'];
     }
   >;
   InAppNotificationPayloadUserMessageDirect: ResolverTypeWrapper<
@@ -9672,28 +11516,33 @@ export type ResolversTypes = {
     }
   >;
   InAppNotificationPayloadVirtualContributor: ResolverTypeWrapper<
-    Omit<
-      InAppNotificationPayloadVirtualContributor,
-      'contributor' | 'space'
-    > & {
-      contributor?: Maybe<ResolversTypes['VirtualContributor']>;
-      space?: Maybe<ResolversTypes['Space']>;
+    Omit<InAppNotificationPayloadVirtualContributor, 'space'> & {
+      space: ResolversTypes['Space'];
     }
   >;
   InnovationFlow: ResolverTypeWrapper<
     Omit<InnovationFlow, 'profile'> & { profile: ResolversTypes['Profile'] }
   >;
   InnovationFlowSettings: ResolverTypeWrapper<InnovationFlowSettings>;
-  InnovationFlowState: ResolverTypeWrapper<InnovationFlowState>;
+  InnovationFlowState: ResolverTypeWrapper<
+    Omit<InnovationFlowState, 'defaultCalloutTemplate'> & {
+      defaultCalloutTemplate?: Maybe<ResolversTypes['Template']>;
+    }
+  >;
   InnovationFlowStateSettings: ResolverTypeWrapper<InnovationFlowStateSettings>;
   InnovationHub: ResolverTypeWrapper<
     Omit<
       InnovationHub,
-      'account' | 'profile' | 'provider' | 'spaceListFilter'
+      | 'account'
+      | 'innovationPackListFilter'
+      | 'profile'
+      | 'provider'
+      | 'spaceListFilter'
     > & {
       account: ResolversTypes['Account'];
+      innovationPackListFilter?: Maybe<Array<ResolversTypes['InnovationPack']>>;
       profile: ResolversTypes['Profile'];
-      provider: ResolversTypes['Contributor'];
+      provider: ResolversTypes['Actor'];
       spaceListFilter?: Maybe<Array<ResolversTypes['Space']>>;
     }
   >;
@@ -9701,7 +11550,7 @@ export type ResolversTypes = {
   InnovationPack: ResolverTypeWrapper<
     Omit<InnovationPack, 'profile' | 'provider' | 'templatesSet'> & {
       profile: ResolversTypes['Profile'];
-      provider: ResolversTypes['Contributor'];
+      provider: ResolversTypes['Actor'];
       templatesSet?: Maybe<ResolversTypes['TemplatesSet']>;
     }
   >;
@@ -9710,34 +11559,38 @@ export type ResolversTypes = {
   InputCreatorQueryResults: ResolverTypeWrapper<InputCreatorQueryResults>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Invitation: ResolverTypeWrapper<
-    Omit<Invitation, 'contributor' | 'createdBy'> & {
-      contributor: ResolversTypes['Contributor'];
+    Omit<Invitation, 'actor' | 'createdBy'> & {
+      actor: ResolversTypes['Actor'];
       createdBy?: Maybe<ResolversTypes['User']>;
     }
   >;
   InvitationEventInput: InvitationEventInput;
   InviteForEntryRoleOnRoleSetInput: InviteForEntryRoleOnRoleSetInput;
-  JSON: ResolverTypeWrapper<Scalars['JSON']['output']>;
   JoinAsEntryRoleOnRoleSetInput: JoinAsEntryRoleOnRoleSetInput;
   KnowledgeBase: ResolverTypeWrapper<
-    Omit<KnowledgeBase, 'calloutsSet' | 'profile'> & {
-      calloutsSet: ResolversTypes['CalloutsSet'];
-      profile: ResolversTypes['Profile'];
-    }
+    Omit<KnowledgeBase, 'profile'> & { profile: ResolversTypes['Profile'] }
   >;
   KratosIdentity: ResolverTypeWrapper<KratosIdentity>;
+  LanguageConfig: ResolverTypeWrapper<LanguageConfig>;
   LatestReleaseDiscussion: ResolverTypeWrapper<LatestReleaseDiscussion>;
+  LeaveConversationInput: LeaveConversationInput;
   Library: ResolverTypeWrapper<
     Omit<
       Library,
-      'innovationHubs' | 'innovationPacks' | 'templates' | 'virtualContributors'
+      | 'innovationHubs'
+      | 'innovationPacks'
+      | 'innovationPacksPaginated'
+      | 'templates'
+      | 'templatesPaginated'
     > & {
       innovationHubs: Array<ResolversTypes['InnovationHub']>;
       innovationPacks: Array<ResolversTypes['InnovationPack']>;
+      innovationPacksPaginated: ResolversTypes['PaginatedInnovationPacks'];
       templates: Array<ResolversTypes['TemplateResult']>;
-      virtualContributors: Array<ResolversTypes['VirtualContributor']>;
+      templatesPaginated: ResolversTypes['PaginatedLibraryTemplateResults'];
     }
   >;
+  LibraryInnovationPacksFilterInput: LibraryInnovationPacksFilterInput;
   LibraryTemplatesFilterInput: LibraryTemplatesFilterInput;
   License: ResolverTypeWrapper<License>;
   LicenseEntitlement: ResolverTypeWrapper<LicenseEntitlement>;
@@ -9771,79 +11624,63 @@ export type ResolversTypes = {
       LookupQueryResults,
       | 'about'
       | 'account'
-      | 'application'
       | 'calendar'
       | 'calendarEvent'
       | 'callout'
-      | 'calloutsSet'
       | 'collaboration'
       | 'community'
       | 'communityGuidelines'
-      | 'contribution'
+      | 'conversation'
       | 'document'
-      | 'innovationFlow'
       | 'innovationHub'
       | 'innovationPack'
       | 'invitation'
-      | 'knowledgeBase'
-      | 'memo'
       | 'organization'
-      | 'platformInvitation'
-      | 'post'
       | 'profile'
       | 'roleSet'
-      | 'room'
       | 'space'
       | 'storageBucket'
       | 'template'
       | 'templateContentSpace'
-      | 'templatesManager'
       | 'templatesSet'
       | 'user'
-      | 'virtualContributor'
-      | 'whiteboard'
     > & {
       about?: Maybe<ResolversTypes['SpaceAbout']>;
       account?: Maybe<ResolversTypes['Account']>;
-      application?: Maybe<ResolversTypes['Application']>;
       calendar?: Maybe<ResolversTypes['Calendar']>;
       calendarEvent?: Maybe<ResolversTypes['CalendarEvent']>;
       callout?: Maybe<ResolversTypes['Callout']>;
-      calloutsSet?: Maybe<ResolversTypes['CalloutsSet']>;
       collaboration?: Maybe<ResolversTypes['Collaboration']>;
       community?: Maybe<ResolversTypes['Community']>;
       communityGuidelines?: Maybe<ResolversTypes['CommunityGuidelines']>;
-      contribution?: Maybe<ResolversTypes['CalloutContribution']>;
+      conversation?: Maybe<ResolversTypes['Conversation']>;
       document?: Maybe<ResolversTypes['Document']>;
-      innovationFlow?: Maybe<ResolversTypes['InnovationFlow']>;
       innovationHub?: Maybe<ResolversTypes['InnovationHub']>;
       innovationPack?: Maybe<ResolversTypes['InnovationPack']>;
       invitation?: Maybe<ResolversTypes['Invitation']>;
-      knowledgeBase: ResolversTypes['KnowledgeBase'];
-      memo?: Maybe<ResolversTypes['Memo']>;
       organization?: Maybe<ResolversTypes['Organization']>;
-      platformInvitation?: Maybe<ResolversTypes['PlatformInvitation']>;
-      post?: Maybe<ResolversTypes['Post']>;
       profile?: Maybe<ResolversTypes['Profile']>;
       roleSet?: Maybe<ResolversTypes['RoleSet']>;
-      room?: Maybe<ResolversTypes['Room']>;
       space?: Maybe<ResolversTypes['Space']>;
       storageBucket?: Maybe<ResolversTypes['StorageBucket']>;
       template?: Maybe<ResolversTypes['Template']>;
       templateContentSpace?: Maybe<ResolversTypes['TemplateContentSpace']>;
-      templatesManager?: Maybe<ResolversTypes['TemplatesManager']>;
       templatesSet?: Maybe<ResolversTypes['TemplatesSet']>;
       user?: Maybe<ResolversTypes['User']>;
-      virtualContributor?: Maybe<ResolversTypes['VirtualContributor']>;
-      whiteboard?: Maybe<ResolversTypes['Whiteboard']>;
     }
   >;
   Markdown: ResolverTypeWrapper<Scalars['Markdown']['output']>;
+  MeConversationsResult: ResolverTypeWrapper<
+    Omit<MeConversationsResult, 'conversations'> & {
+      conversations: Array<ResolversTypes['Conversation']>;
+    }
+  >;
   MeQueryResults: ResolverTypeWrapper<
     Omit<
       MeQueryResults,
       | 'communityApplications'
       | 'communityInvitations'
+      | 'conversations'
       | 'mySpaces'
       | 'notifications'
       | 'spaceMembershipsFlat'
@@ -9854,6 +11691,7 @@ export type ResolversTypes = {
         ResolversTypes['CommunityApplicationResult']
       >;
       communityInvitations: Array<ResolversTypes['CommunityInvitationResult']>;
+      conversations: ResolversTypes['MeConversationsResult'];
       mySpaces: Array<ResolversTypes['MySpaceResults']>;
       notifications: ResolversTypes['PaginatedInAppNotifications'];
       spaceMembershipsFlat: Array<ResolversTypes['CommunityMembershipResult']>;
@@ -9863,6 +11701,11 @@ export type ResolversTypes = {
       user?: Maybe<ResolversTypes['User']>;
     }
   >;
+  MediaGallery: ResolverTypeWrapper<
+    Omit<MediaGallery, 'storageBucket'> & {
+      storageBucket?: Maybe<ResolversTypes['StorageBucket']>;
+    }
+  >;
   Memo: ResolverTypeWrapper<
     Omit<Memo, 'createdBy' | 'profile'> & {
       createdBy?: Maybe<ResolversTypes['User']>;
@@ -9870,20 +11713,12 @@ export type ResolversTypes = {
     }
   >;
   Message: ResolverTypeWrapper<
-    Omit<Message, 'reactions' | 'sender'> & {
-      reactions: Array<ResolversTypes['Reaction']>;
-      sender?: Maybe<ResolversTypes['Contributor']>;
-    }
+    Omit<Message, 'sender'> & { sender?: Maybe<ResolversTypes['Actor']> }
   >;
-  MessageAnswerQuestion: ResolverTypeWrapper<MessageAnswerQuestion>;
-  MessageDetails: ResolverTypeWrapper<
-    Omit<MessageDetails, 'parent' | 'room'> & {
-      parent: ResolversTypes['MessageParent'];
-      room: ResolversTypes['Room'];
-    }
-  >;
+  MessageDetails: ResolverTypeWrapper<MessageDetails>;
   MessageID: ResolverTypeWrapper<Scalars['MessageID']['output']>;
   MessageParent: ResolverTypeWrapper<MessageParent>;
+  Messaging: ResolverTypeWrapper<Messaging>;
   Metadata: ResolverTypeWrapper<Metadata>;
   MigrateEmbeddings: ResolverTypeWrapper<MigrateEmbeddings>;
   MimeType: MimeType;
@@ -9891,6 +11726,9 @@ export type ResolversTypes = {
   ModelCardMonitoringResult: ResolverTypeWrapper<ModelCardMonitoringResult>;
   ModelCardSpaceUsageResult: ResolverTypeWrapper<ModelCardSpaceUsageResult>;
   MoveCalloutContributionInput: MoveCalloutContributionInput;
+  MoveSpaceL1ToSpaceL0Input: MoveSpaceL1ToSpaceL0Input;
+  MoveSpaceL1ToSpaceL2Input: MoveSpaceL1ToSpaceL2Input;
+  MoveSpaceL2ToSpaceL1Input: MoveSpaceL2ToSpaceL1Input;
   Mutation: ResolverTypeWrapper<{}>;
   MutationType: MutationType;
   MySpaceResults: ResolverTypeWrapper<
@@ -9901,6 +11739,7 @@ export type ResolversTypes = {
   >;
   NVP: ResolverTypeWrapper<Nvp>;
   NameID: ResolverTypeWrapper<Scalars['NameID']['output']>;
+  NotificationEmailAddressInput: NotificationEmailAddressInput;
   NotificationEvent: NotificationEvent;
   NotificationEventCategory: NotificationEventCategory;
   NotificationEventInAppState: NotificationEventInAppState;
@@ -9909,10 +11748,11 @@ export type ResolversTypes = {
   NotificationRecipientResult: ResolverTypeWrapper<
     Omit<
       NotificationRecipientResult,
-      'emailRecipients' | 'inAppRecipients' | 'triggeredBy'
+      'emailRecipients' | 'inAppRecipients' | 'pushRecipients' | 'triggeredBy'
     > & {
       emailRecipients: Array<ResolversTypes['User']>;
       inAppRecipients: Array<ResolversTypes['User']>;
+      pushRecipients: Array<ResolversTypes['User']>;
       triggeredBy?: Maybe<ResolversTypes['User']>;
     }
   >;
@@ -9922,12 +11762,20 @@ export type ResolversTypes = {
   Organization: ResolverTypeWrapper<
     Omit<
       Organization,
-      'account' | 'group' | 'groups' | 'profile' | 'roleSet'
+      | 'account'
+      | 'actor'
+      | 'credentials'
+      | 'group'
+      | 'groups'
+      | 'profile'
+      | 'roleSet'
     > & {
       account?: Maybe<ResolversTypes['Account']>;
+      actor: ResolversTypes['Actor'];
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
       group?: Maybe<ResolversTypes['UserGroup']>;
       groups?: Maybe<Array<ResolversTypes['UserGroup']>>;
-      profile: ResolversTypes['Profile'];
+      profile?: Maybe<ResolversTypes['Profile']>;
       roleSet: ResolversTypes['RoleSet'];
     }
   >;
@@ -9947,53 +11795,42 @@ export type ResolversTypes = {
   OryConfig: ResolverTypeWrapper<OryConfig>;
   PageInfo: ResolverTypeWrapper<PageInfo>;
   PaginatedInAppNotifications: ResolverTypeWrapper<
-    Omit<PaginatedInAppNotifications, 'inAppNotifications' | 'pageInfo'> & {
+    Omit<PaginatedInAppNotifications, 'inAppNotifications'> & {
       inAppNotifications: Array<ResolversTypes['InAppNotification']>;
-      pageInfo: ResolversTypes['PageInfo'];
+    }
+  >;
+  PaginatedInnovationPacks: ResolverTypeWrapper<
+    Omit<PaginatedInnovationPacks, 'innovationPacks'> & {
+      innovationPacks: Array<ResolversTypes['InnovationPack']>;
+    }
+  >;
+  PaginatedLibraryTemplateResults: ResolverTypeWrapper<
+    Omit<PaginatedLibraryTemplateResults, 'templateResults'> & {
+      templateResults: Array<ResolversTypes['TemplateResult']>;
     }
   >;
   PaginatedOrganization: ResolverTypeWrapper<
-    Omit<PaginatedOrganization, 'organization' | 'pageInfo'> & {
+    Omit<PaginatedOrganization, 'organization'> & {
       organization: Array<ResolversTypes['Organization']>;
-      pageInfo: ResolversTypes['PageInfo'];
     }
   >;
   PaginatedSpaces: ResolverTypeWrapper<
-    Omit<PaginatedSpaces, 'pageInfo' | 'spaces'> & {
-      pageInfo: ResolversTypes['PageInfo'];
-      spaces: Array<ResolversTypes['Space']>;
-    }
+    Omit<PaginatedSpaces, 'spaces'> & { spaces: Array<ResolversTypes['Space']> }
   >;
   PaginatedUsers: ResolverTypeWrapper<
-    Omit<PaginatedUsers, 'pageInfo' | 'users'> & {
-      pageInfo: ResolversTypes['PageInfo'];
-      users: Array<ResolversTypes['User']>;
-    }
+    Omit<PaginatedUsers, 'users'> & { users: Array<ResolversTypes['User']> }
   >;
-  PaginatedVirtualContributor: ResolverTypeWrapper<
-    Omit<PaginatedVirtualContributor, 'pageInfo' | 'virtualContributors'> & {
-      pageInfo: ResolversTypes['PageInfo'];
-      virtualContributors: Array<ResolversTypes['VirtualContributor']>;
-    }
-  >;
+  PaginatedVirtualContributor: ResolverTypeWrapper<PaginatedVirtualContributor>;
   Platform: ResolverTypeWrapper<
     Omit<
       Platform,
-      | 'chatGuidanceVirtualContributor'
-      | 'configuration'
-      | 'forum'
-      | 'innovationHub'
-      | 'library'
-      | 'roleSet'
-      | 'templatesManager'
+      'configuration' | 'forum' | 'innovationHub' | 'library' | 'roleSet'
     > & {
-      chatGuidanceVirtualContributor: ResolversTypes['VirtualContributor'];
       configuration: ResolversTypes['Config'];
       forum: ResolversTypes['Forum'];
       innovationHub?: Maybe<ResolversTypes['InnovationHub']>;
       library: ResolversTypes['Library'];
       roleSet: ResolversTypes['RoleSet'];
-      templatesManager?: Maybe<ResolversTypes['TemplatesManager']>;
     }
   >;
   PlatformAccessRole: ResolverTypeWrapper<PlatformAccessRole>;
@@ -10002,19 +11839,19 @@ export type ResolversTypes = {
   PlatformAdminQueryResults: ResolverTypeWrapper<
     Omit<
       PlatformAdminQueryResults,
+      | 'accounts'
       | 'innovationHubs'
       | 'innovationPacks'
       | 'organizations'
       | 'spaces'
-      | 'users'
-      | 'virtualContributors'
+      | 'virtualAssistant'
     > & {
+      accounts: Array<ResolversTypes['Account']>;
       innovationHubs: Array<ResolversTypes['InnovationHub']>;
       innovationPacks: Array<ResolversTypes['InnovationPack']>;
       organizations: ResolversTypes['PaginatedOrganization'];
       spaces: Array<ResolversTypes['Space']>;
-      users: ResolversTypes['PaginatedUsers'];
-      virtualContributors: Array<ResolversTypes['VirtualContributor']>;
+      virtualAssistant: ResolversTypes['VirtualAssistant'];
     }
   >;
   PlatformFeatureFlag: ResolverTypeWrapper<PlatformFeatureFlag>;
@@ -10028,9 +11865,26 @@ export type ResolversTypes = {
   PlatformLocations: ResolverTypeWrapper<PlatformLocations>;
   PlatformRolesAccess: ResolverTypeWrapper<PlatformRolesAccess>;
   PlatformSettings: ResolverTypeWrapper<PlatformSettings>;
+  PlatformWellKnownVirtualContributorMapping: ResolverTypeWrapper<PlatformWellKnownVirtualContributorMapping>;
+  PlatformWellKnownVirtualContributors: ResolverTypeWrapper<PlatformWellKnownVirtualContributors>;
+  Poll: ResolverTypeWrapper<Poll>;
+  PollEventType: PollEventType;
+  PollOption: ResolverTypeWrapper<
+    Omit<PollOption, 'voters'> & {
+      voters?: Maybe<Array<ResolversTypes['User']>>;
+    }
+  >;
+  PollOptionsChangedSubscriptionResult: ResolverTypeWrapper<PollOptionsChangedSubscriptionResult>;
+  PollResultsDetail: PollResultsDetail;
+  PollResultsVisibility: PollResultsVisibility;
+  PollSettings: ResolverTypeWrapper<PollSettings>;
+  PollSettingsData: ResolverTypeWrapper<PollSettingsData>;
+  PollSettingsInput: PollSettingsInput;
+  PollStatus: PollStatus;
+  PollVote: ResolverTypeWrapper<PollVote>;
+  PollVoteUpdatedSubscriptionResult: ResolverTypeWrapper<PollVoteUpdatedSubscriptionResult>;
   Post: ResolverTypeWrapper<
-    Omit<Post, 'comments' | 'createdBy' | 'profile'> & {
-      comments: ResolversTypes['Room'];
+    Omit<Post, 'createdBy' | 'profile'> & {
       createdBy?: Maybe<ResolversTypes['User']>;
       profile: ResolversTypes['Profile'];
     }
@@ -10041,7 +11895,6 @@ export type ResolversTypes = {
       storageBucket: ResolversTypes['StorageBucket'];
     }
   >;
-  ProfileCredentialVerified: ResolverTypeWrapper<ProfileCredentialVerified>;
   ProfileType: ProfileType;
   PromptGraph: ResolverTypeWrapper<PromptGraph>;
   PromptGraphDataPoint: ResolverTypeWrapper<PromptGraphDataPoint>;
@@ -10059,6 +11912,8 @@ export type ResolversTypes = {
   PromptGraphNode: ResolverTypeWrapper<PromptGraphNode>;
   PromptGraphNodeInput: PromptGraphNodeInput;
   PruneInAppNotificationAdminResult: ResolverTypeWrapper<PruneInAppNotificationAdminResult>;
+  PushSubscription: ResolverTypeWrapper<PushSubscription>;
+  PushSubscriptionStatus: PushSubscriptionStatus;
   Query: ResolverTypeWrapper<{}>;
   Question: ResolverTypeWrapper<Question>;
   Reaction: ResolverTypeWrapper<
@@ -10071,19 +11926,25 @@ export type ResolversTypes = {
       RelayPaginatedSpace,
       | 'about'
       | 'account'
+      | 'actor'
       | 'collaboration'
       | 'community'
+      | 'credentials'
+      | 'mentionableContributors'
+      | 'profile'
       | 'subspaceByNameID'
       | 'subspaces'
-      | 'templatesManager'
     > & {
       about: ResolversTypes['SpaceAbout'];
       account: ResolversTypes['Account'];
+      actor: ResolversTypes['Actor'];
       collaboration: ResolversTypes['Collaboration'];
       community: ResolversTypes['Community'];
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
+      mentionableContributors: Array<ResolversTypes['ActorFull']>;
+      profile?: Maybe<ResolversTypes['Profile']>;
       subspaceByNameID: ResolversTypes['Space'];
       subspaces: Array<ResolversTypes['Space']>;
-      templatesManager?: Maybe<ResolversTypes['TemplatesManager']>;
     }
   >;
   RelayPaginatedSpaceEdge: ResolverTypeWrapper<
@@ -10093,11 +11954,15 @@ export type ResolversTypes = {
   >;
   RelayPaginatedSpacePageInfo: ResolverTypeWrapper<RelayPaginatedSpacePageInfo>;
   RemoveCommunityGuidelinesContentInput: RemoveCommunityGuidelinesContentInput;
+  RemoveConversationMemberInput: RemoveConversationMemberInput;
+  RemoveDefaultCalloutTemplateOnInnovationFlowStateInput: RemoveDefaultCalloutTemplateOnInnovationFlowStateInput;
   RemovePlatformRoleInput: RemovePlatformRoleInput;
-  RemoveRoleOnRoleSetFromOrganizationInput: RemoveRoleOnRoleSetFromOrganizationInput;
-  RemoveRoleOnRoleSetFromUserInput: RemoveRoleOnRoleSetFromUserInput;
-  RemoveRoleOnRoleSetFromVirtualContributorInput: RemoveRoleOnRoleSetFromVirtualContributorInput;
+  RemovePollOptionInput: RemovePollOptionInput;
+  RemovePollVoteInput: RemovePollVoteInput;
+  RemoveRoleOnRoleSetInput: RemoveRoleOnRoleSetInput;
   RemoveUserGroupMemberInput: RemoveUserGroupMemberInput;
+  ReorderPollOptionsInput: ReorderPollOptionsInput;
+  ReplaceCollaboraDocumentInput: ReplaceCollaboraDocumentInput;
   RevokeAuthorizationCredentialInput: RevokeAuthorizationCredentialInput;
   RevokeLicensePlanFromAccount: RevokeLicensePlanFromAccount;
   RevokeLicensePlanFromSpace: RevokeLicensePlanFromSpace;
@@ -10107,88 +11972,45 @@ export type ResolversTypes = {
   RoleSet: ResolverTypeWrapper<
     Omit<
       RoleSet,
-      | 'applications'
-      | 'availableUsersForElevatedRole'
-      | 'availableUsersForEntryRole'
-      | 'availableVirtualContributorsForEntryRole'
       | 'invitations'
       | 'organizationsInRole'
       | 'organizationsInRoles'
-      | 'platformInvitations'
       | 'usersInRole'
-      | 'usersInRoles'
-      | 'virtualContributorsInRole'
-      | 'virtualContributorsInRoleInHierarchy'
-      | 'virtualContributorsInRoles'
     > & {
-      applications: Array<ResolversTypes['Application']>;
-      availableUsersForElevatedRole: ResolversTypes['PaginatedUsers'];
-      availableUsersForEntryRole: ResolversTypes['PaginatedUsers'];
-      availableVirtualContributorsForEntryRole: ResolversTypes['PaginatedVirtualContributor'];
       invitations: Array<ResolversTypes['Invitation']>;
       organizationsInRole: Array<ResolversTypes['Organization']>;
       organizationsInRoles: Array<
         ResolversTypes['OrganizationsInRolesResponse']
       >;
-      platformInvitations: Array<ResolversTypes['PlatformInvitation']>;
       usersInRole: Array<ResolversTypes['User']>;
-      usersInRoles: Array<ResolversTypes['UsersInRolesResponse']>;
-      virtualContributorsInRole: Array<ResolversTypes['VirtualContributor']>;
-      virtualContributorsInRoleInHierarchy: Array<
-        ResolversTypes['VirtualContributor']
-      >;
-      virtualContributorsInRoles: Array<
-        ResolversTypes['VirtualContributorsInRolesResponse']
-      >;
     }
   >;
-  RoleSetContributorType: RoleSetContributorType;
   RoleSetInvitationResult: ResolverTypeWrapper<
-    Omit<RoleSetInvitationResult, 'invitation' | 'platformInvitation'> & {
+    Omit<RoleSetInvitationResult, 'invitation'> & {
       invitation?: Maybe<ResolversTypes['Invitation']>;
-      platformInvitation?: Maybe<ResolversTypes['PlatformInvitation']>;
     }
   >;
   RoleSetInvitationResultType: RoleSetInvitationResultType;
   RoleSetRoleImplicit: RoleSetRoleImplicit;
   RoleSetType: RoleSetType;
-  RolesOrganizationInput: RolesOrganizationInput;
+  RolesActorInput: RolesActorInput;
   RolesResult: ResolverTypeWrapper<RolesResult>;
   RolesResultCommunity: ResolverTypeWrapper<RolesResultCommunity>;
   RolesResultOrganization: ResolverTypeWrapper<RolesResultOrganization>;
   RolesResultSpace: ResolverTypeWrapper<RolesResultSpace>;
-  RolesUserInput: RolesUserInput;
-  RolesVirtualContributorInput: RolesVirtualContributorInput;
-  Room: ResolverTypeWrapper<
-    Omit<Room, 'messages' | 'vcInteractions'> & {
-      messages: Array<ResolversTypes['Message']>;
-      vcInteractions: Array<ResolversTypes['VcInteraction']>;
-    }
-  >;
+  Room: ResolverTypeWrapper<Room>;
   RoomAddReactionToMessageInput: RoomAddReactionToMessageInput;
-  RoomEventSubscriptionResult: ResolverTypeWrapper<
-    Omit<RoomEventSubscriptionResult, 'message' | 'reaction' | 'room'> & {
-      message?: Maybe<ResolversTypes['RoomMessageEventSubscriptionResult']>;
-      reaction?: Maybe<
-        ResolversTypes['RoomMessageReactionEventSubscriptionResult']
-      >;
-      room: ResolversTypes['Room'];
-    }
-  >;
-  RoomMessageEventSubscriptionResult: ResolverTypeWrapper<
-    Omit<RoomMessageEventSubscriptionResult, 'data'> & {
-      data: ResolversTypes['Message'];
-    }
-  >;
-  RoomMessageReactionEventSubscriptionResult: ResolverTypeWrapper<
-    Omit<RoomMessageReactionEventSubscriptionResult, 'data'> & {
-      data: ResolversTypes['Reaction'];
-    }
-  >;
+  RoomEventSubscriptionResult: ResolverTypeWrapper<RoomEventSubscriptionResult>;
+  RoomMarkMessageReadInput: RoomMarkMessageReadInput;
+  RoomMessageEventSubscriptionResult: ResolverTypeWrapper<RoomMessageEventSubscriptionResult>;
+  RoomMessageReactionEventSubscriptionResult: ResolverTypeWrapper<RoomMessageReactionEventSubscriptionResult>;
   RoomRemoveMessageInput: RoomRemoveMessageInput;
   RoomRemoveReactionToMessageInput: RoomRemoveReactionToMessageInput;
   RoomSendMessageInput: RoomSendMessageInput;
   RoomSendMessageReplyInput: RoomSendMessageReplyInput;
+  RoomThreadUnreadCount: ResolverTypeWrapper<RoomThreadUnreadCount>;
+  RoomType: RoomType;
+  RoomUnreadCounts: ResolverTypeWrapper<RoomUnreadCounts>;
   SearchCategory: SearchCategory;
   SearchCursor: ResolverTypeWrapper<Scalars['SearchCursor']['output']>;
   SearchFilterInput: SearchFilterInput;
@@ -10202,15 +12024,26 @@ export type ResolversTypes = {
       space: ResolversTypes['Space'];
     }
   >;
+  SearchResultCollaboraDocument: ResolverTypeWrapper<
+    Omit<SearchResultCollaboraDocument, 'callout' | 'space'> & {
+      callout: ResolversTypes['Callout'];
+      space: ResolversTypes['Space'];
+    }
+  >;
+  SearchResultMemo: ResolverTypeWrapper<
+    Omit<SearchResultMemo, 'callout' | 'space'> & {
+      callout: ResolversTypes['Callout'];
+      space: ResolversTypes['Space'];
+    }
+  >;
   SearchResultOrganization: ResolverTypeWrapper<
     Omit<SearchResultOrganization, 'organization'> & {
       organization: ResolversTypes['Organization'];
     }
   >;
   SearchResultPost: ResolverTypeWrapper<
-    Omit<SearchResultPost, 'callout' | 'post' | 'space'> & {
+    Omit<SearchResultPost, 'callout' | 'space'> & {
       callout: ResolversTypes['Callout'];
-      post: ResolversTypes['Post'];
       space: ResolversTypes['Space'];
     }
   >;
@@ -10224,27 +12057,42 @@ export type ResolversTypes = {
   SearchResultUser: ResolverTypeWrapper<
     Omit<SearchResultUser, 'user'> & { user: ResolversTypes['User'] }
   >;
+  SearchResultWhiteboard: ResolverTypeWrapper<
+    Omit<SearchResultWhiteboard, 'callout' | 'space'> & {
+      callout: ResolversTypes['Callout'];
+      space: ResolversTypes['Space'];
+    }
+  >;
   SearchVisibility: SearchVisibility;
+  SendDirectMessageToUsersInput: SendDirectMessageToUsersInput;
   Sentry: ResolverTypeWrapper<Sentry>;
   ServiceMetadata: ResolverTypeWrapper<ServiceMetadata>;
+  SetDefaultCalloutTemplateOnInnovationFlowStateInput: SetDefaultCalloutTemplateOnInnovationFlowStateInput;
+  SetPlatformWellKnownVirtualContributorInput: SetPlatformWellKnownVirtualContributorInput;
   Space: ResolverTypeWrapper<
     Omit<
       Space,
       | 'about'
       | 'account'
+      | 'actor'
       | 'collaboration'
       | 'community'
+      | 'credentials'
+      | 'mentionableContributors'
+      | 'profile'
       | 'subspaceByNameID'
       | 'subspaces'
-      | 'templatesManager'
     > & {
       about: ResolversTypes['SpaceAbout'];
       account: ResolversTypes['Account'];
+      actor: ResolversTypes['Actor'];
       collaboration: ResolversTypes['Collaboration'];
       community: ResolversTypes['Community'];
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
+      mentionableContributors: Array<ResolversTypes['ActorFull']>;
+      profile?: Maybe<ResolversTypes['Profile']>;
       subspaceByNameID: ResolversTypes['Space'];
       subspaces: Array<ResolversTypes['Space']>;
-      templatesManager?: Maybe<ResolversTypes['TemplatesManager']>;
     }
   >;
   SpaceAbout: ResolverTypeWrapper<
@@ -10252,7 +12100,7 @@ export type ResolversTypes = {
       guidelines: ResolversTypes['CommunityGuidelines'];
       membership: ResolversTypes['SpaceAboutMembership'];
       profile: ResolversTypes['Profile'];
-      provider: ResolversTypes['Contributor'];
+      provider?: Maybe<ResolversTypes['Actor']>;
     }
   >;
   SpaceAboutMembership: ResolverTypeWrapper<
@@ -10272,8 +12120,10 @@ export type ResolversTypes = {
   SpacePrivacyMode: SpacePrivacyMode;
   SpaceSettings: ResolverTypeWrapper<SpaceSettings>;
   SpaceSettingsCollaboration: ResolverTypeWrapper<SpaceSettingsCollaboration>;
+  SpaceSettingsLayout: ResolverTypeWrapper<SpaceSettingsLayout>;
   SpaceSettingsMembership: ResolverTypeWrapper<SpaceSettingsMembership>;
   SpaceSettingsPrivacy: ResolverTypeWrapper<SpaceSettingsPrivacy>;
+  SpaceSortMode: SpaceSortMode;
   SpaceSubscription: ResolverTypeWrapper<SpaceSubscription>;
   SpaceVisibility: SpaceVisibility;
   StorageAggregator: ResolverTypeWrapper<
@@ -10294,8 +12144,10 @@ export type ResolversTypes = {
   StorageBucketUploadFileInput: StorageBucketUploadFileInput;
   StorageBucketUploadFileOnLinkInput: StorageBucketUploadFileOnLinkInput;
   StorageBucketUploadFileOnReferenceInput: StorageBucketUploadFileOnReferenceInput;
+  StorageBucketUploadFileResult: ResolverTypeWrapper<StorageBucketUploadFileResult>;
   StorageConfig: ResolverTypeWrapper<StorageConfig>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
+  SubscribeToPushNotificationsInput: SubscribeToPushNotificationsInput;
   Subscription: ResolverTypeWrapper<{}>;
   SubspaceCreated: ResolverTypeWrapper<
     Omit<SubspaceCreated, 'subspace'> & { subspace: ResolversTypes['Space'] }
@@ -10310,17 +12162,12 @@ export type ResolversTypes = {
   Template: ResolverTypeWrapper<
     Omit<
       Template,
-      | 'callout'
-      | 'communityGuidelines'
-      | 'contentSpace'
-      | 'profile'
-      | 'whiteboard'
+      'callout' | 'communityGuidelines' | 'contentSpace' | 'profile'
     > & {
       callout?: Maybe<ResolversTypes['Callout']>;
       communityGuidelines?: Maybe<ResolversTypes['CommunityGuidelines']>;
       contentSpace?: Maybe<ResolversTypes['TemplateContentSpace']>;
       profile: ResolversTypes['Profile'];
-      whiteboard?: Maybe<ResolversTypes['Whiteboard']>;
     }
   >;
   TemplateContentSpace: ResolverTypeWrapper<
@@ -10344,8 +12191,7 @@ export type ResolversTypes = {
   >;
   TemplateType: TemplateType;
   TemplatesManager: ResolverTypeWrapper<
-    Omit<TemplatesManager, 'templateDefaults' | 'templatesSet'> & {
-      templateDefaults: Array<ResolversTypes['TemplateDefault']>;
+    Omit<TemplatesManager, 'templatesSet'> & {
       templatesSet?: Maybe<ResolversTypes['TemplatesSet']>;
     }
   >;
@@ -10376,14 +12222,17 @@ export type ResolversTypes = {
   TransferAccountVirtualContributorInput: TransferAccountVirtualContributorInput;
   TransferCalloutInput: TransferCalloutInput;
   UUID: ResolverTypeWrapper<Scalars['UUID']['output']>;
+  UnsubscribeFromPushNotificationsInput: UnsubscribeFromPushNotificationsInput;
   UpdateAiPersonaInput: UpdateAiPersonaInput;
   UpdateApplicationFormOnRoleSetInput: UpdateApplicationFormOnRoleSetInput;
   UpdateBaselineLicensePlanOnAccount: UpdateBaselineLicensePlanOnAccount;
   UpdateCalendarEventInput: UpdateCalendarEventInput;
   UpdateCalloutContributionDefaultsInput: UpdateCalloutContributionDefaultsInput;
+  UpdateCalloutContributorsSettingsInput: UpdateCalloutContributorsSettingsInput;
   UpdateCalloutEntityInput: UpdateCalloutEntityInput;
   UpdateCalloutFramingInput: UpdateCalloutFramingInput;
   UpdateCalloutPublishInfoInput: UpdateCalloutPublishInfoInput;
+  UpdateCalloutSelectionSettingsInput: UpdateCalloutSelectionSettingsInput;
   UpdateCalloutSettingsContributionInput: UpdateCalloutSettingsContributionInput;
   UpdateCalloutSettingsFramingInput: UpdateCalloutSettingsFramingInput;
   UpdateCalloutSettingsInput: UpdateCalloutSettingsInput;
@@ -10391,9 +12240,11 @@ export type ResolversTypes = {
   UpdateCalloutsSortOrderInput: UpdateCalloutsSortOrderInput;
   UpdateClassificationInput: UpdateClassificationInput;
   UpdateClassificationSelectTagsetValueInput: UpdateClassificationSelectTagsetValueInput;
+  UpdateCollaboraDocumentInput: UpdateCollaboraDocumentInput;
   UpdateCollaborationFromSpaceTemplateInput: UpdateCollaborationFromSpaceTemplateInput;
   UpdateCommunityGuidelinesEntityInput: UpdateCommunityGuidelinesEntityInput;
   UpdateContributionCalloutsSortOrderInput: UpdateContributionCalloutsSortOrderInput;
+  UpdateConversationInput: UpdateConversationInput;
   UpdateDiscussionInput: UpdateDiscussionInput;
   UpdateDocumentInput: UpdateDocumentInput;
   UpdateFormInput: UpdateFormInput;
@@ -10420,6 +12271,9 @@ export type ResolversTypes = {
   UpdateOrganizationSettingsPrivacyInput: UpdateOrganizationSettingsPrivacyInput;
   UpdatePlatformSettingsInput: UpdatePlatformSettingsInput;
   UpdatePlatformSettingsIntegrationInput: UpdatePlatformSettingsIntegrationInput;
+  UpdatePollInput: UpdatePollInput;
+  UpdatePollOptionInput: UpdatePollOptionInput;
+  UpdatePollStatusInput: UpdatePollStatusInput;
   UpdatePostInput: UpdatePostInput;
   UpdateProfileDirectInput: UpdateProfileDirectInput;
   UpdateProfileInput: UpdateProfileInput;
@@ -10430,8 +12284,11 @@ export type ResolversTypes = {
   UpdateSpaceSettingsCollaborationInput: UpdateSpaceSettingsCollaborationInput;
   UpdateSpaceSettingsEntityInput: UpdateSpaceSettingsEntityInput;
   UpdateSpaceSettingsInput: UpdateSpaceSettingsInput;
+  UpdateSpaceSettingsLayoutInput: UpdateSpaceSettingsLayoutInput;
   UpdateSpaceSettingsMembershipInput: UpdateSpaceSettingsMembershipInput;
   UpdateSpaceSettingsPrivacyInput: UpdateSpaceSettingsPrivacyInput;
+  UpdateSubspacePinnedInput: UpdateSubspacePinnedInput;
+  UpdateSubspacesSortOrderInput: UpdateSubspacesSortOrderInput;
   UpdateTagsetInput: UpdateTagsetInput;
   UpdateTemplateContentSpaceInput: UpdateTemplateContentSpaceInput;
   UpdateTemplateDefaultTemplateInput: UpdateTemplateDefaultTemplateInput;
@@ -10440,13 +12297,16 @@ export type ResolversTypes = {
   UpdateUserGroupInput: UpdateUserGroupInput;
   UpdateUserInput: UpdateUserInput;
   UpdateUserPlatformSettingsInput: UpdateUserPlatformSettingsInput;
+  UpdateUserSettingsAssistantInput: UpdateUserSettingsAssistantInput;
   UpdateUserSettingsCommunicationInput: UpdateUserSettingsCommunicationInput;
   UpdateUserSettingsEntityInput: UpdateUserSettingsEntityInput;
+  UpdateUserSettingsHomeSpaceInput: UpdateUserSettingsHomeSpaceInput;
   UpdateUserSettingsInput: UpdateUserSettingsInput;
   UpdateUserSettingsNotificationInput: UpdateUserSettingsNotificationInput;
   UpdateUserSettingsNotificationOrganizationInput: UpdateUserSettingsNotificationOrganizationInput;
   UpdateUserSettingsNotificationPlatformAdminInput: UpdateUserSettingsNotificationPlatformAdminInput;
   UpdateUserSettingsNotificationPlatformInput: UpdateUserSettingsNotificationPlatformInput;
+  UpdateUserSettingsNotificationSoundInput: UpdateUserSettingsNotificationSoundInput;
   UpdateUserSettingsNotificationSpaceAdminInput: UpdateUserSettingsNotificationSpaceAdminInput;
   UpdateUserSettingsNotificationSpaceInput: UpdateUserSettingsNotificationSpaceInput;
   UpdateUserSettingsNotificationUserInput: UpdateUserSettingsNotificationUserInput;
@@ -10454,13 +12314,18 @@ export type ResolversTypes = {
   UpdateUserSettingsNotificationVirtualContributorInput: UpdateUserSettingsNotificationVirtualContributorInput;
   UpdateUserSettingsPrivacyInput: UpdateUserSettingsPrivacyInput;
   UpdateVirtualContributorInput: UpdateVirtualContributorInput;
+  UpdateVirtualContributorPlatformSettingsEntityInput: UpdateVirtualContributorPlatformSettingsEntityInput;
+  UpdateVirtualContributorPlatformSettingsInput: UpdateVirtualContributorPlatformSettingsInput;
   UpdateVirtualContributorSettingsEntityInput: UpdateVirtualContributorSettingsEntityInput;
   UpdateVirtualContributorSettingsInput: UpdateVirtualContributorSettingsInput;
   UpdateVirtualContributorSettingsPrivacyInput: UpdateVirtualContributorSettingsPrivacyInput;
   UpdateVisualInput: UpdateVisualInput;
   UpdateWhiteboardEntityInput: UpdateWhiteboardEntityInput;
+  UpdateWhiteboardGuestAccessInput: UpdateWhiteboardGuestAccessInput;
+  UpdateWhiteboardGuestAccessResult: ResolverTypeWrapper<UpdateWhiteboardGuestAccessResult>;
   UpdateWhiteboardPreviewSettingsInput: UpdateWhiteboardPreviewSettingsInput;
   Upload: ResolverTypeWrapper<Scalars['Upload']['output']>;
+  UrlResolverQueryClosestAncestor: ResolverTypeWrapper<UrlResolverQueryClosestAncestor>;
   UrlResolverQueryResultCalendar: ResolverTypeWrapper<UrlResolverQueryResultCalendar>;
   UrlResolverQueryResultCalloutsSet: ResolverTypeWrapper<UrlResolverQueryResultCalloutsSet>;
   UrlResolverQueryResultCollaboration: ResolverTypeWrapper<UrlResolverQueryResultCollaboration>;
@@ -10469,17 +12334,24 @@ export type ResolversTypes = {
   UrlResolverQueryResultTemplatesSet: ResolverTypeWrapper<UrlResolverQueryResultTemplatesSet>;
   UrlResolverQueryResultVirtualContributor: ResolverTypeWrapper<UrlResolverQueryResultVirtualContributor>;
   UrlResolverQueryResults: ResolverTypeWrapper<UrlResolverQueryResults>;
+  UrlResolverResultState: UrlResolverResultState;
   UrlType: UrlType;
   User: ResolverTypeWrapper<
-    Omit<User, 'account' | 'directRooms' | 'guidanceRoom' | 'profile'> & {
+    Omit<User, 'account' | 'actor' | 'credentials' | 'profile'> & {
       account?: Maybe<ResolversTypes['Account']>;
-      directRooms?: Maybe<Array<ResolversTypes['DirectRoom']>>;
-      guidanceRoom?: Maybe<ResolversTypes['Room']>;
-      profile: ResolversTypes['Profile'];
+      actor: ResolversTypes['Actor'];
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
+      profile?: Maybe<ResolversTypes['Profile']>;
     }
   >;
   UserAuthenticationResult: ResolverTypeWrapper<UserAuthenticationResult>;
   UserAuthorizationResetInput: UserAuthorizationResetInput;
+  UserEmailChangeAuditEntries: ResolverTypeWrapper<UserEmailChangeAuditEntries>;
+  UserEmailChangeAuditEntriesPageInfo: ResolverTypeWrapper<UserEmailChangeAuditEntriesPageInfo>;
+  UserEmailChangeAuditEntry: ResolverTypeWrapper<UserEmailChangeAuditEntry>;
+  UserEmailChangeAuditOutcome: UserEmailChangeAuditOutcome;
+  UserEmailChangeInitiatorRole: UserEmailChangeInitiatorRole;
+  UserEmailChangeResult: ResolverTypeWrapper<UserEmailChangeResult>;
   UserFilterInput: UserFilterInput;
   UserGroup: ResolverTypeWrapper<
     Omit<UserGroup, 'members' | 'parent' | 'profile'> & {
@@ -10488,14 +12360,18 @@ export type ResolversTypes = {
       profile?: Maybe<ResolversTypes['Profile']>;
     }
   >;
-  UserSendMessageInput: UserSendMessageInput;
+  UserInformationVisibility: UserInformationVisibility;
+  UserProfileSummary: ResolverTypeWrapper<UserProfileSummary>;
   UserSettings: ResolverTypeWrapper<UserSettings>;
+  UserSettingsAssistant: ResolverTypeWrapper<UserSettingsAssistant>;
   UserSettingsCommunication: ResolverTypeWrapper<UserSettingsCommunication>;
+  UserSettingsHomeSpace: ResolverTypeWrapper<UserSettingsHomeSpace>;
   UserSettingsNotification: ResolverTypeWrapper<UserSettingsNotification>;
   UserSettingsNotificationChannels: ResolverTypeWrapper<UserSettingsNotificationChannels>;
   UserSettingsNotificationOrganization: ResolverTypeWrapper<UserSettingsNotificationOrganization>;
   UserSettingsNotificationPlatform: ResolverTypeWrapper<UserSettingsNotificationPlatform>;
   UserSettingsNotificationPlatformAdmin: ResolverTypeWrapper<UserSettingsNotificationPlatformAdmin>;
+  UserSettingsNotificationSound: ResolverTypeWrapper<UserSettingsNotificationSound>;
   UserSettingsNotificationSpace: ResolverTypeWrapper<UserSettingsNotificationSpace>;
   UserSettingsNotificationSpaceAdmin: ResolverTypeWrapper<UserSettingsNotificationSpaceAdmin>;
   UserSettingsNotificationUser: ResolverTypeWrapper<UserSettingsNotificationUser>;
@@ -10508,21 +12384,29 @@ export type ResolversTypes = {
     }
   >;
   UsersWithAuthorizationCredentialInput: UsersWithAuthorizationCredentialInput;
-  VcInteraction: ResolverTypeWrapper<
-    Omit<VcInteraction, 'room'> & { room: ResolversTypes['Room'] }
+  VcInteraction: ResolverTypeWrapper<VcInteraction>;
+  VirtualAssistant: ResolverTypeWrapper<
+    Omit<VirtualAssistant, 'credentials' | 'profile'> & {
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
+      profile?: Maybe<ResolversTypes['Profile']>;
+    }
   >;
-  VerifiedCredential: ResolverTypeWrapper<VerifiedCredential>;
-  VerifiedCredentialClaim: ResolverTypeWrapper<VerifiedCredentialClaim>;
   VirtualContributor: ResolverTypeWrapper<
     Omit<
       VirtualContributor,
-      'account' | 'knowledgeBase' | 'knowledgeSpace' | 'profile' | 'provider'
+      | 'account'
+      | 'actor'
+      | 'credentials'
+      | 'knowledgeSpace'
+      | 'profile'
+      | 'provider'
     > & {
       account?: Maybe<ResolversTypes['Account']>;
-      knowledgeBase: ResolversTypes['KnowledgeBase'];
+      actor: ResolversTypes['Actor'];
+      credentials?: Maybe<Array<ResolversTypes['Credential']>>;
       knowledgeSpace?: Maybe<ResolversTypes['Space']>;
-      profile: ResolversTypes['Profile'];
-      provider: ResolversTypes['Contributor'];
+      profile?: Maybe<ResolversTypes['Profile']>;
+      provider: ResolversTypes['Actor'];
     }
   >;
   VirtualContributorBodyOfKnowledgeType: VirtualContributorBodyOfKnowledgeType;
@@ -10532,19 +12416,13 @@ export type ResolversTypes = {
   VirtualContributorModelCardEntry: VirtualContributorModelCardEntry;
   VirtualContributorModelCardEntryFlagName: VirtualContributorModelCardEntryFlagName;
   VirtualContributorModelCardFlag: ResolverTypeWrapper<VirtualContributorModelCardFlag>;
+  VirtualContributorPlatformSettings: ResolverTypeWrapper<VirtualContributorPlatformSettings>;
   VirtualContributorSettings: ResolverTypeWrapper<VirtualContributorSettings>;
   VirtualContributorSettingsPrivacy: ResolverTypeWrapper<VirtualContributorSettingsPrivacy>;
   VirtualContributorStatus: VirtualContributorStatus;
-  VirtualContributorUpdatedSubscriptionResult: ResolverTypeWrapper<
-    Omit<VirtualContributorUpdatedSubscriptionResult, 'virtualContributor'> & {
-      virtualContributor: ResolversTypes['VirtualContributor'];
-    }
-  >;
-  VirtualContributorsInRolesResponse: ResolverTypeWrapper<
-    Omit<VirtualContributorsInRolesResponse, 'virtualContributors'> & {
-      virtualContributors: Array<ResolversTypes['VirtualContributor']>;
-    }
-  >;
+  VirtualContributorUpdatedSubscriptionResult: ResolverTypeWrapper<VirtualContributorUpdatedSubscriptionResult>;
+  VirtualContributorWellKnown: VirtualContributorWellKnown;
+  VirtualContributorsInRolesResponse: ResolverTypeWrapper<VirtualContributorsInRolesResponse>;
   Visual: ResolverTypeWrapper<Visual>;
   VisualConstraints: ResolverTypeWrapper<VisualConstraints>;
   VisualType: VisualType;
@@ -10570,17 +12448,23 @@ export type ResolversParentTypes = {
   APM: Apm;
   Account: Omit<
     Account,
+    | 'actor'
+    | 'baselineLicensePlan'
+    | 'credentials'
     | 'host'
     | 'innovationHubs'
     | 'innovationPacks'
+    | 'profile'
     | 'spaces'
-    | 'virtualContributors'
   > & {
-    host?: Maybe<ResolversParentTypes['Contributor']>;
+    actor: ResolversParentTypes['Actor'];
+    baselineLicensePlan: ResolversParentTypes['AccountLicensePlan'];
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
+    host?: Maybe<ResolversParentTypes['Actor']>;
     innovationHubs: Array<ResolversParentTypes['InnovationHub']>;
     innovationPacks: Array<ResolversParentTypes['InnovationPack']>;
+    profile?: Maybe<ResolversParentTypes['Profile']>;
     spaces: Array<ResolversParentTypes['Space']>;
-    virtualContributors: Array<ResolversParentTypes['VirtualContributor']>;
   };
   AccountAuthorizationResetInput: AccountAuthorizationResetInput;
   AccountLicensePlan: AccountLicensePlan;
@@ -10591,9 +12475,8 @@ export type ResolversParentTypes = {
     ActivityCreatedSubscriptionResult,
     'activity'
   > & { activity: ResolversParentTypes['ActivityLogEntry'] };
-  ActivityFeed: Omit<ActivityFeed, 'activityFeed' | 'pageInfo'> & {
+  ActivityFeed: Omit<ActivityFeed, 'activityFeed'> & {
     activityFeed: Array<ResolversParentTypes['ActivityLogEntry']>;
-    pageInfo: ResolversParentTypes['PageInfo'];
   };
   ActivityFeedGroupedQueryArgs: ActivityFeedGroupedQueryArgs;
   ActivityFeedQueryArgs: ActivityFeedQueryArgs;
@@ -10617,28 +12500,33 @@ export type ResolversParentTypes = {
   };
   ActivityLogEntryCalloutLinkCreated: Omit<
     ActivityLogEntryCalloutLinkCreated,
-    'callout' | 'link' | 'space' | 'triggeredBy'
+    'callout' | 'space' | 'triggeredBy'
   > & {
     callout: ResolversParentTypes['Callout'];
-    link: ResolversParentTypes['Link'];
+    space?: Maybe<ResolversParentTypes['Space']>;
+    triggeredBy: ResolversParentTypes['User'];
+  };
+  ActivityLogEntryCalloutMemoCreated: Omit<
+    ActivityLogEntryCalloutMemoCreated,
+    'callout' | 'space' | 'triggeredBy'
+  > & {
+    callout: ResolversParentTypes['Callout'];
     space?: Maybe<ResolversParentTypes['Space']>;
     triggeredBy: ResolversParentTypes['User'];
   };
   ActivityLogEntryCalloutPostComment: Omit<
     ActivityLogEntryCalloutPostComment,
-    'callout' | 'post' | 'space' | 'triggeredBy'
+    'callout' | 'space' | 'triggeredBy'
   > & {
     callout: ResolversParentTypes['Callout'];
-    post: ResolversParentTypes['Post'];
     space?: Maybe<ResolversParentTypes['Space']>;
     triggeredBy: ResolversParentTypes['User'];
   };
   ActivityLogEntryCalloutPostCreated: Omit<
     ActivityLogEntryCalloutPostCreated,
-    'callout' | 'post' | 'space' | 'triggeredBy'
+    'callout' | 'space' | 'triggeredBy'
   > & {
     callout: ResolversParentTypes['Callout'];
-    post: ResolversParentTypes['Post'];
     space?: Maybe<ResolversParentTypes['Space']>;
     triggeredBy: ResolversParentTypes['User'];
   };
@@ -10652,28 +12540,26 @@ export type ResolversParentTypes = {
   };
   ActivityLogEntryCalloutWhiteboardContentModified: Omit<
     ActivityLogEntryCalloutWhiteboardContentModified,
-    'callout' | 'space' | 'triggeredBy' | 'whiteboard'
+    'callout' | 'space' | 'triggeredBy'
   > & {
     callout: ResolversParentTypes['Callout'];
     space?: Maybe<ResolversParentTypes['Space']>;
     triggeredBy: ResolversParentTypes['User'];
-    whiteboard: ResolversParentTypes['Whiteboard'];
   };
   ActivityLogEntryCalloutWhiteboardCreated: Omit<
     ActivityLogEntryCalloutWhiteboardCreated,
-    'callout' | 'space' | 'triggeredBy' | 'whiteboard'
+    'callout' | 'space' | 'triggeredBy'
   > & {
     callout: ResolversParentTypes['Callout'];
     space?: Maybe<ResolversParentTypes['Space']>;
     triggeredBy: ResolversParentTypes['User'];
-    whiteboard: ResolversParentTypes['Whiteboard'];
   };
   ActivityLogEntryMemberJoined: Omit<
     ActivityLogEntryMemberJoined,
-    'community' | 'contributor' | 'space' | 'triggeredBy'
+    'actor' | 'community' | 'space' | 'triggeredBy'
   > & {
+    actor: ResolversParentTypes['Actor'];
     community: ResolversParentTypes['Community'];
-    contributor: ResolversParentTypes['Contributor'];
     space?: Maybe<ResolversParentTypes['Space']>;
     triggeredBy: ResolversParentTypes['User'];
   };
@@ -10687,30 +12573,40 @@ export type ResolversParentTypes = {
   };
   ActivityLogEntryUpdateSent: Omit<
     ActivityLogEntryUpdateSent,
-    'space' | 'triggeredBy' | 'updates'
+    'space' | 'triggeredBy'
   > & {
     space?: Maybe<ResolversParentTypes['Space']>;
     triggeredBy: ResolversParentTypes['User'];
-    updates: ResolversParentTypes['Room'];
   };
   ActivityLogInput: ActivityLogInput;
-  Agent: Agent;
-  AgentBeginVerifiedCredentialOfferOutput: AgentBeginVerifiedCredentialOfferOutput;
-  AgentBeginVerifiedCredentialRequestOutput: AgentBeginVerifiedCredentialRequestOutput;
+  Actor: Omit<Actor, 'credentials' | 'profile'> & {
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
+    profile?: Maybe<ResolversParentTypes['Profile']>;
+  };
+  ActorFilterInput: ActorFilterInput;
+  ActorFull: ResolversInterfaceTypes<ResolversParentTypes>['ActorFull'];
+  ActorRolePolicy: ActorRolePolicy;
+  ActorRoles: ActorRoles;
+  AddPollOptionInput: AddPollOptionInput;
+  AddVisualToMediaGalleryInput: AddVisualToMediaGalleryInput;
+  AdminUserEmailChangeDriftResolveInput: AdminUserEmailChangeDriftResolveInput;
+  AdminUserEmailChangeInput: AdminUserEmailChangeInput;
   AiPersona: AiPersona;
   AiServer: AiServer;
-  Application: Omit<Application, 'contributor'> & {
-    contributor: ResolversParentTypes['Contributor'];
+  Application: Omit<Application, 'actor'> & {
+    actor: ResolversParentTypes['Actor'];
   };
   ApplicationEventInput: ApplicationEventInput;
   ApplyForEntryRoleOnRoleSetInput: ApplyForEntryRoleOnRoleSetInput;
+  AssignConversationMemberInput: AssignConversationMemberInput;
   AssignLicensePlanToAccount: AssignLicensePlanToAccount;
   AssignLicensePlanToSpace: AssignLicensePlanToSpace;
   AssignPlatformRoleInput: AssignPlatformRoleInput;
-  AssignRoleOnRoleSetToOrganizationInput: AssignRoleOnRoleSetToOrganizationInput;
-  AssignRoleOnRoleSetToUserInput: AssignRoleOnRoleSetToUserInput;
-  AssignRoleOnRoleSetToVirtualContributorInput: AssignRoleOnRoleSetToVirtualContributorInput;
+  AssignRoleOnRoleSetInput: AssignRoleOnRoleSetInput;
   AssignUserGroupMemberInput: AssignUserGroupMemberInput;
+  AssistantCapability: AssistantCapability;
+  AssistantCapabilityToggle: AssistantCapabilityToggle;
+  AssistantCapabilityToggleInput: AssistantCapabilityToggleInput;
   AuthenticationConfig: Omit<AuthenticationConfig, 'providers'> & {
     providers: Array<ResolversParentTypes['AuthenticationProviderConfig']>;
   };
@@ -10721,85 +12617,62 @@ export type ResolversParentTypes = {
   Authorization: Authorization;
   AuthorizationPolicyRuleCredential: AuthorizationPolicyRuleCredential;
   AuthorizationPolicyRulePrivilege: AuthorizationPolicyRulePrivilege;
-  AuthorizationPolicyRuleVerifiedCredential: AuthorizationPolicyRuleVerifiedCredential;
   Boolean: Scalars['Boolean']['output'];
   Calendar: Omit<Calendar, 'event' | 'events'> & {
     event?: Maybe<ResolversParentTypes['CalendarEvent']>;
     events: Array<ResolversParentTypes['CalendarEvent']>;
   };
-  CalendarEvent: Omit<
-    CalendarEvent,
-    'comments' | 'createdBy' | 'profile' | 'subspace'
-  > & {
-    comments: ResolversParentTypes['Room'];
+  CalendarEvent: Omit<CalendarEvent, 'createdBy' | 'profile' | 'subspace'> & {
     createdBy?: Maybe<ResolversParentTypes['User']>;
     profile: ResolversParentTypes['Profile'];
     subspace?: Maybe<ResolversParentTypes['Space']>;
   };
   Callout: Omit<
     Callout,
-    | 'classification'
-    | 'comments'
-    | 'contributions'
-    | 'createdBy'
-    | 'framing'
-    | 'posts'
-    | 'publishedBy'
+    'contributionDefaults' | 'createdBy' | 'framing' | 'publishedBy'
   > & {
-    classification?: Maybe<ResolversParentTypes['Classification']>;
-    comments?: Maybe<ResolversParentTypes['Room']>;
-    contributions: Array<ResolversParentTypes['CalloutContribution']>;
+    contributionDefaults: ResolversParentTypes['CalloutContributionDefaults'];
     createdBy?: Maybe<ResolversParentTypes['User']>;
     framing: ResolversParentTypes['CalloutFraming'];
-    posts?: Maybe<Array<ResolversParentTypes['Post']>>;
     publishedBy?: Maybe<ResolversParentTypes['User']>;
   };
-  CalloutContribution: Omit<
-    CalloutContribution,
-    'createdBy' | 'link' | 'post' | 'whiteboard'
-  > & {
+  CalloutContribution: Omit<CalloutContribution, 'createdBy'> & {
     createdBy?: Maybe<ResolversParentTypes['User']>;
-    link?: Maybe<ResolversParentTypes['Link']>;
-    post?: Maybe<ResolversParentTypes['Post']>;
-    whiteboard?: Maybe<ResolversParentTypes['Whiteboard']>;
   };
   CalloutContributionDefaults: CalloutContributionDefaults;
   CalloutContributionsCountOutput: CalloutContributionsCountOutput;
+  CalloutContributorsSettings: CalloutContributorsSettings;
   CalloutFraming: Omit<
     CalloutFraming,
-    'link' | 'memo' | 'profile' | 'whiteboard'
+    'contributorCounts' | 'profile' | 'subspaces'
   > & {
-    link?: Maybe<ResolversParentTypes['Link']>;
-    memo?: Maybe<ResolversParentTypes['Memo']>;
+    contributorCounts: ResolversParentTypes['ContributorCollectionCounts'];
     profile: ResolversParentTypes['Profile'];
-    whiteboard?: Maybe<ResolversParentTypes['Whiteboard']>;
+    subspaces: Array<ResolversParentTypes['Space']>;
   };
-  CalloutPostCreated: Omit<CalloutPostCreated, 'post'> & {
-    post: ResolversParentTypes['Post'];
-  };
+  CalloutPostCreated: CalloutPostCreated;
+  CalloutSelectionSettings: CalloutSelectionSettings;
   CalloutSettings: CalloutSettings;
   CalloutSettingsContribution: CalloutSettingsContribution;
   CalloutSettingsFraming: CalloutSettingsFraming;
   CalloutsSet: Omit<CalloutsSet, 'callouts'> & {
     callouts: Array<ResolversParentTypes['Callout']>;
   };
-  ChatGuidanceAnswerRelevanceInput: ChatGuidanceAnswerRelevanceInput;
-  ChatGuidanceInput: ChatGuidanceInput;
+  CastPollVoteInput: CastPollVoteInput;
   Classification: Classification;
-  Collaboration: Omit<
-    Collaboration,
-    'calloutsSet' | 'innovationFlow' | 'timeline'
-  > & {
-    calloutsSet: ResolversParentTypes['CalloutsSet'];
-    innovationFlow: ResolversParentTypes['InnovationFlow'];
+  CollaboraDocument: Omit<CollaboraDocument, 'createdBy' | 'profile'> & {
+    createdBy?: Maybe<ResolversParentTypes['User']>;
+    profile: ResolversParentTypes['Profile'];
+  };
+  CollaboraEditorUrlResult: CollaboraEditorUrlResult;
+  Collaboration: Omit<Collaboration, 'timeline'> & {
     timeline: ResolversParentTypes['Timeline'];
   };
-  Communication: Omit<Communication, 'updates'> & {
-    updates: ResolversParentTypes['Room'];
-  };
+  Communication: Communication;
   CommunicationAdminEnsureAccessInput: CommunicationAdminEnsureAccessInput;
   CommunicationAdminMembershipInput: CommunicationAdminMembershipInput;
   CommunicationAdminMembershipResult: CommunicationAdminMembershipResult;
+  CommunicationAdminMigrateRoomsResult: CommunicationAdminMigrateRoomsResult;
   CommunicationAdminOrphanedUsageResult: CommunicationAdminOrphanedUsageResult;
   CommunicationAdminRemoveOrphanedRoomInput: CommunicationAdminRemoveOrphanedRoomInput;
   CommunicationAdminRoomMembershipResult: CommunicationAdminRoomMembershipResult;
@@ -10820,9 +12693,8 @@ export type ResolversParentTypes = {
   CommunityApplicationForRoleResult: CommunityApplicationForRoleResult;
   CommunityApplicationResult: Omit<
     CommunityApplicationResult,
-    'application' | 'spacePendingMembershipInfo'
+    'spacePendingMembershipInfo'
   > & {
-    application: ResolversParentTypes['Application'];
     spacePendingMembershipInfo: ResolversParentTypes['SpacePendingMembershipInfo'];
   };
   CommunityGuidelines: Omit<CommunityGuidelines, 'profile'> & {
@@ -10847,10 +12719,53 @@ export type ResolversParentTypes = {
     authentication: ResolversParentTypes['AuthenticationConfig'];
   };
   ContributionsFilterInput: ContributionsFilterInput;
-  Contributor: ResolversInterfaceTypes<ResolversParentTypes>['Contributor'];
+  ContributorCollectionCounts: ContributorCollectionCounts;
+  ContributorCollectionItem: ContributorCollectionItem;
   ContributorFilterInput: ContributorFilterInput;
-  ContributorRolePolicy: ContributorRolePolicy;
-  ContributorRoles: ContributorRoles;
+  ContributorLocation: ContributorLocation;
+  Conversation: Omit<Conversation, 'members'> & {
+    members: Array<ResolversParentTypes['Actor']>;
+  };
+  ConversationCreatedEvent: Omit<ConversationCreatedEvent, 'conversation'> & {
+    conversation: ResolversParentTypes['Conversation'];
+  };
+  ConversationDeletedEvent: ConversationDeletedEvent;
+  ConversationEventSubscriptionResult: Omit<
+    ConversationEventSubscriptionResult,
+    | 'conversationCreated'
+    | 'conversationUpdated'
+    | 'memberAdded'
+    | 'memberRemoved'
+  > & {
+    conversationCreated?: Maybe<
+      ResolversParentTypes['ConversationCreatedEvent']
+    >;
+    conversationUpdated?: Maybe<
+      ResolversParentTypes['ConversationUpdatedEvent']
+    >;
+    memberAdded?: Maybe<ResolversParentTypes['ConversationMemberAddedEvent']>;
+    memberRemoved?: Maybe<
+      ResolversParentTypes['ConversationMemberRemovedEvent']
+    >;
+  };
+  ConversationMemberAddedEvent: Omit<
+    ConversationMemberAddedEvent,
+    'addedMember' | 'conversation'
+  > & {
+    addedMember: ResolversParentTypes['Actor'];
+    conversation: ResolversParentTypes['Conversation'];
+  };
+  ConversationMemberRemovedEvent: Omit<
+    ConversationMemberRemovedEvent,
+    'conversation'
+  > & { conversation: ResolversParentTypes['Conversation'] };
+  ConversationMessageReceivedEvent: ConversationMessageReceivedEvent;
+  ConversationMessageRemovedEvent: ConversationMessageRemovedEvent;
+  ConversationReadReceiptUpdatedEvent: ConversationReadReceiptUpdatedEvent;
+  ConversationUpdatedEvent: Omit<ConversationUpdatedEvent, 'conversation'> & {
+    conversation: ResolversParentTypes['Conversation'];
+  };
+  ConversationVcResetInput: ConversationVcResetInput;
   ConversionVcSpaceToVcKnowledgeBaseInput: ConversionVcSpaceToVcKnowledgeBaseInput;
   ConvertSpaceL1ToSpaceL0Input: ConvertSpaceL1ToSpaceL0Input;
   ConvertSpaceL1ToSpaceL2Input: ConvertSpaceL1ToSpaceL2Input;
@@ -10861,11 +12776,15 @@ export type ResolversParentTypes = {
   CreateCalloutContributionDefaultsData: CreateCalloutContributionDefaultsData;
   CreateCalloutContributionDefaultsInput: CreateCalloutContributionDefaultsInput;
   CreateCalloutContributionInput: CreateCalloutContributionInput;
+  CreateCalloutContributorsSettingsData: CreateCalloutContributorsSettingsData;
+  CreateCalloutContributorsSettingsInput: CreateCalloutContributorsSettingsInput;
   CreateCalloutData: CreateCalloutData;
   CreateCalloutFramingData: CreateCalloutFramingData;
   CreateCalloutFramingInput: CreateCalloutFramingInput;
   CreateCalloutInput: CreateCalloutInput;
   CreateCalloutOnCalloutsSetInput: CreateCalloutOnCalloutsSetInput;
+  CreateCalloutSelectionSettingsData: CreateCalloutSelectionSettingsData;
+  CreateCalloutSelectionSettingsInput: CreateCalloutSelectionSettingsInput;
   CreateCalloutSettingsContributionData: CreateCalloutSettingsContributionData;
   CreateCalloutSettingsContributionInput: CreateCalloutSettingsContributionInput;
   CreateCalloutSettingsData: CreateCalloutSettingsData;
@@ -10876,12 +12795,15 @@ export type ResolversParentTypes = {
   CreateCalloutsSetInput: CreateCalloutsSetInput;
   CreateClassificationData: CreateClassificationData;
   CreateClassificationInput: CreateClassificationInput;
+  CreateCollaboraDocumentData: CreateCollaboraDocumentData;
+  CreateCollaboraDocumentInput: CreateCollaboraDocumentInput;
   CreateCollaborationData: CreateCollaborationData;
   CreateCollaborationInput: CreateCollaborationInput;
   CreateCollaborationOnSpaceInput: CreateCollaborationOnSpaceInput;
   CreateCommunityGuidelinesData: CreateCommunityGuidelinesData;
   CreateCommunityGuidelinesInput: CreateCommunityGuidelinesInput;
   CreateContributionOnCalloutInput: CreateContributionOnCalloutInput;
+  CreateConversationInput: CreateConversationInput;
   CreateInnovationFlowData: CreateInnovationFlowData;
   CreateInnovationFlowInput: CreateInnovationFlowInput;
   CreateInnovationFlowStateData: CreateInnovationFlowStateData;
@@ -10901,6 +12823,8 @@ export type ResolversParentTypes = {
   CreateMemoInput: CreateMemoInput;
   CreateNVPInput: CreateNvpInput;
   CreateOrganizationInput: CreateOrganizationInput;
+  CreatePollData: CreatePollData;
+  CreatePollInput: CreatePollInput;
   CreatePostData: CreatePostData;
   CreatePostInput: CreatePostInput;
   CreateProfileData: CreateProfileData;
@@ -10912,6 +12836,7 @@ export type ResolversParentTypes = {
   CreateSpaceOnAccountInput: CreateSpaceOnAccountInput;
   CreateSpaceSettingsCollaborationInput: CreateSpaceSettingsCollaborationInput;
   CreateSpaceSettingsInput: CreateSpaceSettingsInput;
+  CreateSpaceSettingsLayoutInput: CreateSpaceSettingsLayoutInput;
   CreateSpaceSettingsMembershipInput: CreateSpaceSettingsMembershipInput;
   CreateSpaceSettingsPrivacyInput: CreateSpaceSettingsPrivacyInput;
   CreateStateOnInnovationFlowInput: CreateStateOnInnovationFlowInput;
@@ -10934,14 +12859,14 @@ export type ResolversParentTypes = {
   CreateWhiteboardPreviewSettingsInput: CreateWhiteboardPreviewSettingsInput;
   Credential: Credential;
   CredentialDefinition: CredentialDefinition;
-  CredentialMetadataOutput: CredentialMetadataOutput;
-  DID: Scalars['DID']['output'];
   DateTime: Scalars['DateTime']['output'];
   DeleteAiPersonaInput: DeleteAiPersonaInput;
   DeleteApplicationInput: DeleteApplicationInput;
   DeleteCalendarEventInput: DeleteCalendarEventInput;
   DeleteCalloutInput: DeleteCalloutInput;
+  DeleteCollaboraDocumentInput: DeleteCollaboraDocumentInput;
   DeleteContributionInput: DeleteContributionInput;
+  DeleteConversationInput: DeleteConversationInput;
   DeleteDiscussionInput: DeleteDiscussionInput;
   DeleteDocumentInput: DeleteDocumentInput;
   DeleteInnovationHubInput: DeleteInnovationHubInput;
@@ -10962,12 +12887,10 @@ export type ResolversParentTypes = {
   DeleteUserGroupInput: DeleteUserGroupInput;
   DeleteUserInput: DeleteUserInput;
   DeleteVirtualContributorInput: DeleteVirtualContributorInput;
+  DeleteVisualFromMediaGalleryInput: DeleteVisualFromMediaGalleryInput;
   DeleteWhiteboardInput: DeleteWhiteboardInput;
-  DirectRoom: Omit<DirectRoom, 'messages'> & {
-    messages: Array<ResolversParentTypes['Message']>;
-  };
-  Discussion: Omit<Discussion, 'comments' | 'profile'> & {
-    comments: ResolversParentTypes['Room'];
+  DirectMessageDeliveryResult: DirectMessageDeliveryResult;
+  Discussion: Omit<Discussion, 'profile'> & {
     profile: ResolversParentTypes['Profile'];
   };
   DiscussionDetails: DiscussionDetails;
@@ -10975,6 +12898,8 @@ export type ResolversParentTypes = {
   Document: Omit<Document, 'createdBy'> & {
     createdBy?: Maybe<ResolversParentTypes['User']>;
   };
+  EmailChangeApprover: EmailChangeApprover;
+  EmailChangeApproverInput: EmailChangeApproverInput;
   Emoji: Scalars['Emoji']['output'];
   ExploreSpacesInput: ExploreSpacesInput;
   ExternalConfig: ExternalConfig;
@@ -10983,50 +12908,57 @@ export type ResolversParentTypes = {
   Float: Scalars['Float']['output'];
   Form: Form;
   FormQuestion: FormQuestion;
-  Forum: Omit<Forum, 'discussion' | 'discussions'> & {
+  Forum: Omit<
+    Forum,
+    'discussion' | 'discussions' | 'mentionableContributors'
+  > & {
     discussion?: Maybe<ResolversParentTypes['Discussion']>;
     discussions?: Maybe<Array<ResolversParentTypes['Discussion']>>;
+    mentionableContributors: Array<ResolversParentTypes['ActorFull']>;
   };
   ForumCreateDiscussionInput: ForumCreateDiscussionInput;
   Geo: Geo;
   GeoLocation: GeoLocation;
+  GrantAssistantActorCapabilitiesInput: GrantAssistantActorCapabilitiesInput;
   GrantAuthorizationCredentialInput: GrantAuthorizationCredentialInput;
   GrantOrganizationAuthorizationCredentialInput: GrantOrganizationAuthorizationCredentialInput;
   Groupable: ResolversInterfaceTypes<ResolversParentTypes>['Groupable'];
+  ID: Scalars['ID']['output'];
   ISearchCategoryResult: Omit<ISearchCategoryResult, 'results'> & {
     results: Array<ResolversParentTypes['SearchResult']>;
   };
   ISearchResults: Omit<
     ISearchResults,
+    | 'actorResults'
     | 'calloutResults'
     | 'contributionResults'
-    | 'contributorResults'
+    | 'framingResults'
     | 'spaceResults'
   > & {
+    actorResults: ResolversParentTypes['ISearchCategoryResult'];
     calloutResults: ResolversParentTypes['ISearchCategoryResult'];
     contributionResults: ResolversParentTypes['ISearchCategoryResult'];
-    contributorResults: ResolversParentTypes['ISearchCategoryResult'];
+    framingResults: ResolversParentTypes['ISearchCategoryResult'];
     spaceResults: ResolversParentTypes['ISearchCategoryResult'];
   };
+  ImportCollaboraDocumentInput: ImportCollaboraDocumentInput;
   InAppNotification: Omit<
     InAppNotification,
     'payload' | 'receiver' | 'triggeredBy'
   > & {
     payload: ResolversParentTypes['InAppNotificationPayload'];
-    receiver: ResolversParentTypes['Contributor'];
-    triggeredBy?: Maybe<ResolversParentTypes['Contributor']>;
+    receiver: ResolversParentTypes['Actor'];
+    triggeredBy?: Maybe<ResolversParentTypes['Actor']>;
   };
   InAppNotificationPayload: ResolversInterfaceTypes<ResolversParentTypes>['InAppNotificationPayload'];
-  InAppNotificationPayloadOrganization: InAppNotificationPayloadOrganization;
   InAppNotificationPayloadOrganizationMessageDirect: Omit<
     InAppNotificationPayloadOrganizationMessageDirect,
     'organization'
-  > & { organization: ResolversParentTypes['Contributor'] };
+  > & { organization?: Maybe<ResolversParentTypes['Organization']> };
   InAppNotificationPayloadOrganizationMessageRoom: Omit<
     InAppNotificationPayloadOrganizationMessageRoom,
     'organization'
   > & { organization: ResolversParentTypes['Organization'] };
-  InAppNotificationPayloadPlatform: InAppNotificationPayloadPlatform;
   InAppNotificationPayloadPlatformForumDiscussion: InAppNotificationPayloadPlatformForumDiscussion;
   InAppNotificationPayloadPlatformGlobalRoleChange: Omit<
     InAppNotificationPayloadPlatformGlobalRoleChange,
@@ -11035,107 +12967,112 @@ export type ResolversParentTypes = {
   InAppNotificationPayloadPlatformUser: InAppNotificationPayloadPlatformUser;
   InAppNotificationPayloadPlatformUserMessageRoom: Omit<
     InAppNotificationPayloadPlatformUserMessageRoom,
-    'messageDetails' | 'user'
-  > & {
-    messageDetails?: Maybe<ResolversParentTypes['MessageDetails']>;
-    user?: Maybe<ResolversParentTypes['User']>;
-  };
+    'user'
+  > & { user: ResolversParentTypes['User'] };
   InAppNotificationPayloadPlatformUserProfileRemoved: InAppNotificationPayloadPlatformUserProfileRemoved;
   InAppNotificationPayloadSpace: Omit<
     InAppNotificationPayloadSpace,
     'space'
-  > & { space?: Maybe<ResolversParentTypes['Space']> };
+  > & { space: ResolversParentTypes['Space'] };
   InAppNotificationPayloadSpaceCollaborationCallout: Omit<
     InAppNotificationPayloadSpaceCollaborationCallout,
     'callout' | 'space'
   > & {
-    callout?: Maybe<ResolversParentTypes['Callout']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
   };
   InAppNotificationPayloadSpaceCollaborationCalloutComment: Omit<
     InAppNotificationPayloadSpaceCollaborationCalloutComment,
-    'callout' | 'messageDetails' | 'space'
+    'callout' | 'space'
   > & {
-    callout?: Maybe<ResolversParentTypes['Callout']>;
-    messageDetails?: Maybe<ResolversParentTypes['MessageDetails']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
   };
   InAppNotificationPayloadSpaceCollaborationCalloutPostComment: Omit<
     InAppNotificationPayloadSpaceCollaborationCalloutPostComment,
-    'callout' | 'messageDetails' | 'space'
+    'callout' | 'space'
   > & {
-    callout?: Maybe<ResolversParentTypes['Callout']>;
-    messageDetails?: Maybe<ResolversParentTypes['MessageDetails']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
+  };
+  InAppNotificationPayloadSpaceCollaborationPoll: Omit<
+    InAppNotificationPayloadSpaceCollaborationPoll,
+    'callout' | 'space'
+  > & {
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
   };
   InAppNotificationPayloadSpaceCommunicationMessageDirect: Omit<
     InAppNotificationPayloadSpaceCommunicationMessageDirect,
     'space'
-  > & { space?: Maybe<ResolversParentTypes['Space']> };
+  > & { space: ResolversParentTypes['Space'] };
   InAppNotificationPayloadSpaceCommunicationUpdate: Omit<
     InAppNotificationPayloadSpaceCommunicationUpdate,
     'space'
-  > & { space?: Maybe<ResolversParentTypes['Space']> };
+  > & { space: ResolversParentTypes['Space'] };
+  InAppNotificationPayloadSpaceCommunityActor: Omit<
+    InAppNotificationPayloadSpaceCommunityActor,
+    'actor' | 'space'
+  > & {
+    actor: ResolversParentTypes['Actor'];
+    space: ResolversParentTypes['Space'];
+  };
   InAppNotificationPayloadSpaceCommunityApplication: Omit<
     InAppNotificationPayloadSpaceCommunityApplication,
-    'application' | 'space'
-  > & {
-    application?: Maybe<ResolversParentTypes['Application']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
-  };
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
   InAppNotificationPayloadSpaceCommunityCalendarEvent: Omit<
     InAppNotificationPayloadSpaceCommunityCalendarEvent,
     'calendarEvent' | 'space'
   > & {
-    calendarEvent?: Maybe<ResolversParentTypes['CalendarEvent']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
+    calendarEvent: ResolversParentTypes['CalendarEvent'];
+    space: ResolversParentTypes['Space'];
   };
   InAppNotificationPayloadSpaceCommunityCalendarEventComment: Omit<
     InAppNotificationPayloadSpaceCommunityCalendarEventComment,
     'calendarEvent' | 'space'
   > & {
-    calendarEvent?: Maybe<ResolversParentTypes['CalendarEvent']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
-  };
-  InAppNotificationPayloadSpaceCommunityContributor: Omit<
-    InAppNotificationPayloadSpaceCommunityContributor,
-    'contributor' | 'space'
-  > & {
-    contributor?: Maybe<ResolversParentTypes['Contributor']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
+    calendarEvent: ResolversParentTypes['CalendarEvent'];
+    space: ResolversParentTypes['Space'];
   };
   InAppNotificationPayloadSpaceCommunityInvitation: Omit<
     InAppNotificationPayloadSpaceCommunityInvitation,
     'space'
-  > & { space?: Maybe<ResolversParentTypes['Space']> };
+  > & { space: ResolversParentTypes['Space'] };
   InAppNotificationPayloadSpaceCommunityInvitationPlatform: Omit<
     InAppNotificationPayloadSpaceCommunityInvitationPlatform,
     'space'
-  > & { space?: Maybe<ResolversParentTypes['Space']> };
+  > & { space: ResolversParentTypes['Space'] };
   InAppNotificationPayloadUserMessageDirect: Omit<
     InAppNotificationPayloadUserMessageDirect,
     'user'
   > & { user?: Maybe<ResolversParentTypes['User']> };
   InAppNotificationPayloadVirtualContributor: Omit<
     InAppNotificationPayloadVirtualContributor,
-    'contributor' | 'space'
-  > & {
-    contributor?: Maybe<ResolversParentTypes['VirtualContributor']>;
-    space?: Maybe<ResolversParentTypes['Space']>;
-  };
+    'space'
+  > & { space: ResolversParentTypes['Space'] };
   InnovationFlow: Omit<InnovationFlow, 'profile'> & {
     profile: ResolversParentTypes['Profile'];
   };
   InnovationFlowSettings: InnovationFlowSettings;
-  InnovationFlowState: InnovationFlowState;
+  InnovationFlowState: Omit<InnovationFlowState, 'defaultCalloutTemplate'> & {
+    defaultCalloutTemplate?: Maybe<ResolversParentTypes['Template']>;
+  };
   InnovationFlowStateSettings: InnovationFlowStateSettings;
   InnovationHub: Omit<
     InnovationHub,
-    'account' | 'profile' | 'provider' | 'spaceListFilter'
+    | 'account'
+    | 'innovationPackListFilter'
+    | 'profile'
+    | 'provider'
+    | 'spaceListFilter'
   > & {
     account: ResolversParentTypes['Account'];
+    innovationPackListFilter?: Maybe<
+      Array<ResolversParentTypes['InnovationPack']>
+    >;
     profile: ResolversParentTypes['Profile'];
-    provider: ResolversParentTypes['Contributor'];
+    provider: ResolversParentTypes['Actor'];
     spaceListFilter?: Maybe<Array<ResolversParentTypes['Space']>>;
   };
   InnovationPack: Omit<
@@ -11143,35 +13080,41 @@ export type ResolversParentTypes = {
     'profile' | 'provider' | 'templatesSet'
   > & {
     profile: ResolversParentTypes['Profile'];
-    provider: ResolversParentTypes['Contributor'];
+    provider: ResolversParentTypes['Actor'];
     templatesSet?: Maybe<ResolversParentTypes['TemplatesSet']>;
   };
   InnovationPacksInput: InnovationPacksInput;
   InputCreatorQueryResults: InputCreatorQueryResults;
   Int: Scalars['Int']['output'];
-  Invitation: Omit<Invitation, 'contributor' | 'createdBy'> & {
-    contributor: ResolversParentTypes['Contributor'];
+  Invitation: Omit<Invitation, 'actor' | 'createdBy'> & {
+    actor: ResolversParentTypes['Actor'];
     createdBy?: Maybe<ResolversParentTypes['User']>;
   };
   InvitationEventInput: InvitationEventInput;
   InviteForEntryRoleOnRoleSetInput: InviteForEntryRoleOnRoleSetInput;
-  JSON: Scalars['JSON']['output'];
   JoinAsEntryRoleOnRoleSetInput: JoinAsEntryRoleOnRoleSetInput;
-  KnowledgeBase: Omit<KnowledgeBase, 'calloutsSet' | 'profile'> & {
-    calloutsSet: ResolversParentTypes['CalloutsSet'];
+  KnowledgeBase: Omit<KnowledgeBase, 'profile'> & {
     profile: ResolversParentTypes['Profile'];
   };
   KratosIdentity: KratosIdentity;
+  LanguageConfig: LanguageConfig;
   LatestReleaseDiscussion: LatestReleaseDiscussion;
+  LeaveConversationInput: LeaveConversationInput;
   Library: Omit<
     Library,
-    'innovationHubs' | 'innovationPacks' | 'templates' | 'virtualContributors'
+    | 'innovationHubs'
+    | 'innovationPacks'
+    | 'innovationPacksPaginated'
+    | 'templates'
+    | 'templatesPaginated'
   > & {
     innovationHubs: Array<ResolversParentTypes['InnovationHub']>;
     innovationPacks: Array<ResolversParentTypes['InnovationPack']>;
+    innovationPacksPaginated: ResolversParentTypes['PaginatedInnovationPacks'];
     templates: Array<ResolversParentTypes['TemplateResult']>;
-    virtualContributors: Array<ResolversParentTypes['VirtualContributor']>;
+    templatesPaginated: ResolversParentTypes['PaginatedLibraryTemplateResults'];
   };
+  LibraryInnovationPacksFilterInput: LibraryInnovationPacksFilterInput;
   LibraryTemplatesFilterInput: LibraryTemplatesFilterInput;
   License: License;
   LicenseEntitlement: LicenseEntitlement;
@@ -11193,77 +13136,59 @@ export type ResolversParentTypes = {
     LookupQueryResults,
     | 'about'
     | 'account'
-    | 'application'
     | 'calendar'
     | 'calendarEvent'
     | 'callout'
-    | 'calloutsSet'
     | 'collaboration'
     | 'community'
     | 'communityGuidelines'
-    | 'contribution'
+    | 'conversation'
     | 'document'
-    | 'innovationFlow'
     | 'innovationHub'
     | 'innovationPack'
     | 'invitation'
-    | 'knowledgeBase'
-    | 'memo'
     | 'organization'
-    | 'platformInvitation'
-    | 'post'
     | 'profile'
     | 'roleSet'
-    | 'room'
     | 'space'
     | 'storageBucket'
     | 'template'
     | 'templateContentSpace'
-    | 'templatesManager'
     | 'templatesSet'
     | 'user'
-    | 'virtualContributor'
-    | 'whiteboard'
   > & {
     about?: Maybe<ResolversParentTypes['SpaceAbout']>;
     account?: Maybe<ResolversParentTypes['Account']>;
-    application?: Maybe<ResolversParentTypes['Application']>;
     calendar?: Maybe<ResolversParentTypes['Calendar']>;
     calendarEvent?: Maybe<ResolversParentTypes['CalendarEvent']>;
     callout?: Maybe<ResolversParentTypes['Callout']>;
-    calloutsSet?: Maybe<ResolversParentTypes['CalloutsSet']>;
     collaboration?: Maybe<ResolversParentTypes['Collaboration']>;
     community?: Maybe<ResolversParentTypes['Community']>;
     communityGuidelines?: Maybe<ResolversParentTypes['CommunityGuidelines']>;
-    contribution?: Maybe<ResolversParentTypes['CalloutContribution']>;
+    conversation?: Maybe<ResolversParentTypes['Conversation']>;
     document?: Maybe<ResolversParentTypes['Document']>;
-    innovationFlow?: Maybe<ResolversParentTypes['InnovationFlow']>;
     innovationHub?: Maybe<ResolversParentTypes['InnovationHub']>;
     innovationPack?: Maybe<ResolversParentTypes['InnovationPack']>;
     invitation?: Maybe<ResolversParentTypes['Invitation']>;
-    knowledgeBase: ResolversParentTypes['KnowledgeBase'];
-    memo?: Maybe<ResolversParentTypes['Memo']>;
     organization?: Maybe<ResolversParentTypes['Organization']>;
-    platformInvitation?: Maybe<ResolversParentTypes['PlatformInvitation']>;
-    post?: Maybe<ResolversParentTypes['Post']>;
     profile?: Maybe<ResolversParentTypes['Profile']>;
     roleSet?: Maybe<ResolversParentTypes['RoleSet']>;
-    room?: Maybe<ResolversParentTypes['Room']>;
     space?: Maybe<ResolversParentTypes['Space']>;
     storageBucket?: Maybe<ResolversParentTypes['StorageBucket']>;
     template?: Maybe<ResolversParentTypes['Template']>;
     templateContentSpace?: Maybe<ResolversParentTypes['TemplateContentSpace']>;
-    templatesManager?: Maybe<ResolversParentTypes['TemplatesManager']>;
     templatesSet?: Maybe<ResolversParentTypes['TemplatesSet']>;
     user?: Maybe<ResolversParentTypes['User']>;
-    virtualContributor?: Maybe<ResolversParentTypes['VirtualContributor']>;
-    whiteboard?: Maybe<ResolversParentTypes['Whiteboard']>;
   };
   Markdown: Scalars['Markdown']['output'];
+  MeConversationsResult: Omit<MeConversationsResult, 'conversations'> & {
+    conversations: Array<ResolversParentTypes['Conversation']>;
+  };
   MeQueryResults: Omit<
     MeQueryResults,
     | 'communityApplications'
     | 'communityInvitations'
+    | 'conversations'
     | 'mySpaces'
     | 'notifications'
     | 'spaceMembershipsFlat'
@@ -11276,6 +13201,7 @@ export type ResolversParentTypes = {
     communityInvitations: Array<
       ResolversParentTypes['CommunityInvitationResult']
     >;
+    conversations: ResolversParentTypes['MeConversationsResult'];
     mySpaces: Array<ResolversParentTypes['MySpaceResults']>;
     notifications: ResolversParentTypes['PaginatedInAppNotifications'];
     spaceMembershipsFlat: Array<
@@ -11286,27 +13212,29 @@ export type ResolversParentTypes = {
     >;
     user?: Maybe<ResolversParentTypes['User']>;
   };
+  MediaGallery: Omit<MediaGallery, 'storageBucket'> & {
+    storageBucket?: Maybe<ResolversParentTypes['StorageBucket']>;
+  };
   Memo: Omit<Memo, 'createdBy' | 'profile'> & {
     createdBy?: Maybe<ResolversParentTypes['User']>;
     profile: ResolversParentTypes['Profile'];
   };
-  Message: Omit<Message, 'reactions' | 'sender'> & {
-    reactions: Array<ResolversParentTypes['Reaction']>;
-    sender?: Maybe<ResolversParentTypes['Contributor']>;
+  Message: Omit<Message, 'sender'> & {
+    sender?: Maybe<ResolversParentTypes['Actor']>;
   };
-  MessageAnswerQuestion: MessageAnswerQuestion;
-  MessageDetails: Omit<MessageDetails, 'parent' | 'room'> & {
-    parent: ResolversParentTypes['MessageParent'];
-    room: ResolversParentTypes['Room'];
-  };
+  MessageDetails: MessageDetails;
   MessageID: Scalars['MessageID']['output'];
   MessageParent: MessageParent;
+  Messaging: Messaging;
   Metadata: Metadata;
   MigrateEmbeddings: MigrateEmbeddings;
   ModelCardAiEngineResult: ModelCardAiEngineResult;
   ModelCardMonitoringResult: ModelCardMonitoringResult;
   ModelCardSpaceUsageResult: ModelCardSpaceUsageResult;
   MoveCalloutContributionInput: MoveCalloutContributionInput;
+  MoveSpaceL1ToSpaceL0Input: MoveSpaceL1ToSpaceL0Input;
+  MoveSpaceL1ToSpaceL2Input: MoveSpaceL1ToSpaceL2Input;
+  MoveSpaceL2ToSpaceL1Input: MoveSpaceL2ToSpaceL1Input;
   Mutation: {};
   MySpaceResults: Omit<MySpaceResults, 'latestActivity' | 'space'> & {
     latestActivity?: Maybe<ResolversParentTypes['ActivityLogEntry']>;
@@ -11314,25 +13242,35 @@ export type ResolversParentTypes = {
   };
   NVP: Nvp;
   NameID: Scalars['NameID']['output'];
+  NotificationEmailAddressInput: NotificationEmailAddressInput;
   NotificationEventsFilterInput: NotificationEventsFilterInput;
   NotificationRecipientResult: Omit<
     NotificationRecipientResult,
-    'emailRecipients' | 'inAppRecipients' | 'triggeredBy'
+    'emailRecipients' | 'inAppRecipients' | 'pushRecipients' | 'triggeredBy'
   > & {
     emailRecipients: Array<ResolversParentTypes['User']>;
     inAppRecipients: Array<ResolversParentTypes['User']>;
+    pushRecipients: Array<ResolversParentTypes['User']>;
     triggeredBy?: Maybe<ResolversParentTypes['User']>;
   };
   NotificationRecipientsInput: NotificationRecipientsInput;
   NotificationSettingInput: NotificationSettingInput;
   Organization: Omit<
     Organization,
-    'account' | 'group' | 'groups' | 'profile' | 'roleSet'
+    | 'account'
+    | 'actor'
+    | 'credentials'
+    | 'group'
+    | 'groups'
+    | 'profile'
+    | 'roleSet'
   > & {
     account?: Maybe<ResolversParentTypes['Account']>;
+    actor: ResolversParentTypes['Actor'];
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
     group?: Maybe<ResolversParentTypes['UserGroup']>;
     groups?: Maybe<Array<ResolversParentTypes['UserGroup']>>;
-    profile: ResolversParentTypes['Profile'];
+    profile?: Maybe<ResolversParentTypes['Profile']>;
     roleSet: ResolversParentTypes['RoleSet'];
   };
   OrganizationAuthorizationResetInput: OrganizationAuthorizationResetInput;
@@ -11350,69 +13288,54 @@ export type ResolversParentTypes = {
   PageInfo: PageInfo;
   PaginatedInAppNotifications: Omit<
     PaginatedInAppNotifications,
-    'inAppNotifications' | 'pageInfo'
-  > & {
-    inAppNotifications: Array<ResolversParentTypes['InAppNotification']>;
-    pageInfo: ResolversParentTypes['PageInfo'];
-  };
-  PaginatedOrganization: Omit<
-    PaginatedOrganization,
-    'organization' | 'pageInfo'
-  > & {
+    'inAppNotifications'
+  > & { inAppNotifications: Array<ResolversParentTypes['InAppNotification']> };
+  PaginatedInnovationPacks: Omit<
+    PaginatedInnovationPacks,
+    'innovationPacks'
+  > & { innovationPacks: Array<ResolversParentTypes['InnovationPack']> };
+  PaginatedLibraryTemplateResults: Omit<
+    PaginatedLibraryTemplateResults,
+    'templateResults'
+  > & { templateResults: Array<ResolversParentTypes['TemplateResult']> };
+  PaginatedOrganization: Omit<PaginatedOrganization, 'organization'> & {
     organization: Array<ResolversParentTypes['Organization']>;
-    pageInfo: ResolversParentTypes['PageInfo'];
   };
-  PaginatedSpaces: Omit<PaginatedSpaces, 'pageInfo' | 'spaces'> & {
-    pageInfo: ResolversParentTypes['PageInfo'];
+  PaginatedSpaces: Omit<PaginatedSpaces, 'spaces'> & {
     spaces: Array<ResolversParentTypes['Space']>;
   };
-  PaginatedUsers: Omit<PaginatedUsers, 'pageInfo' | 'users'> & {
-    pageInfo: ResolversParentTypes['PageInfo'];
+  PaginatedUsers: Omit<PaginatedUsers, 'users'> & {
     users: Array<ResolversParentTypes['User']>;
   };
-  PaginatedVirtualContributor: Omit<
-    PaginatedVirtualContributor,
-    'pageInfo' | 'virtualContributors'
-  > & {
-    pageInfo: ResolversParentTypes['PageInfo'];
-    virtualContributors: Array<ResolversParentTypes['VirtualContributor']>;
-  };
+  PaginatedVirtualContributor: PaginatedVirtualContributor;
   Platform: Omit<
     Platform,
-    | 'chatGuidanceVirtualContributor'
-    | 'configuration'
-    | 'forum'
-    | 'innovationHub'
-    | 'library'
-    | 'roleSet'
-    | 'templatesManager'
+    'configuration' | 'forum' | 'innovationHub' | 'library' | 'roleSet'
   > & {
-    chatGuidanceVirtualContributor: ResolversParentTypes['VirtualContributor'];
     configuration: ResolversParentTypes['Config'];
     forum: ResolversParentTypes['Forum'];
     innovationHub?: Maybe<ResolversParentTypes['InnovationHub']>;
     library: ResolversParentTypes['Library'];
     roleSet: ResolversParentTypes['RoleSet'];
-    templatesManager?: Maybe<ResolversParentTypes['TemplatesManager']>;
   };
   PlatformAccessRole: PlatformAccessRole;
   PlatformAdminCommunicationQueryResults: PlatformAdminCommunicationQueryResults;
   PlatformAdminIdentityQueryResults: PlatformAdminIdentityQueryResults;
   PlatformAdminQueryResults: Omit<
     PlatformAdminQueryResults,
+    | 'accounts'
     | 'innovationHubs'
     | 'innovationPacks'
     | 'organizations'
     | 'spaces'
-    | 'users'
-    | 'virtualContributors'
+    | 'virtualAssistant'
   > & {
+    accounts: Array<ResolversParentTypes['Account']>;
     innovationHubs: Array<ResolversParentTypes['InnovationHub']>;
     innovationPacks: Array<ResolversParentTypes['InnovationPack']>;
     organizations: ResolversParentTypes['PaginatedOrganization'];
     spaces: Array<ResolversParentTypes['Space']>;
-    users: ResolversParentTypes['PaginatedUsers'];
-    virtualContributors: Array<ResolversParentTypes['VirtualContributor']>;
+    virtualAssistant: ResolversParentTypes['VirtualAssistant'];
   };
   PlatformFeatureFlag: PlatformFeatureFlag;
   PlatformIntegrationSettings: PlatformIntegrationSettings;
@@ -11422,8 +13345,19 @@ export type ResolversParentTypes = {
   PlatformLocations: PlatformLocations;
   PlatformRolesAccess: PlatformRolesAccess;
   PlatformSettings: PlatformSettings;
-  Post: Omit<Post, 'comments' | 'createdBy' | 'profile'> & {
-    comments: ResolversParentTypes['Room'];
+  PlatformWellKnownVirtualContributorMapping: PlatformWellKnownVirtualContributorMapping;
+  PlatformWellKnownVirtualContributors: PlatformWellKnownVirtualContributors;
+  Poll: Poll;
+  PollOption: Omit<PollOption, 'voters'> & {
+    voters?: Maybe<Array<ResolversParentTypes['User']>>;
+  };
+  PollOptionsChangedSubscriptionResult: PollOptionsChangedSubscriptionResult;
+  PollSettings: PollSettings;
+  PollSettingsData: PollSettingsData;
+  PollSettingsInput: PollSettingsInput;
+  PollVote: PollVote;
+  PollVoteUpdatedSubscriptionResult: PollVoteUpdatedSubscriptionResult;
+  Post: Omit<Post, 'createdBy' | 'profile'> & {
     createdBy?: Maybe<ResolversParentTypes['User']>;
     profile: ResolversParentTypes['Profile'];
   };
@@ -11431,7 +13365,6 @@ export type ResolversParentTypes = {
     references?: Maybe<Array<ResolversParentTypes['Reference']>>;
     storageBucket: ResolversParentTypes['StorageBucket'];
   };
-  ProfileCredentialVerified: ProfileCredentialVerified;
   PromptGraph: PromptGraph;
   PromptGraphDataPoint: PromptGraphDataPoint;
   PromptGraphDataPointInput: PromptGraphDataPointInput;
@@ -11448,6 +13381,7 @@ export type ResolversParentTypes = {
   PromptGraphNode: PromptGraphNode;
   PromptGraphNodeInput: PromptGraphNodeInput;
   PruneInAppNotificationAdminResult: PruneInAppNotificationAdminResult;
+  PushSubscription: PushSubscription;
   Query: {};
   Question: Question;
   Reaction: Omit<Reaction, 'sender'> & {
@@ -11459,30 +13393,40 @@ export type ResolversParentTypes = {
     RelayPaginatedSpace,
     | 'about'
     | 'account'
+    | 'actor'
     | 'collaboration'
     | 'community'
+    | 'credentials'
+    | 'mentionableContributors'
+    | 'profile'
     | 'subspaceByNameID'
     | 'subspaces'
-    | 'templatesManager'
   > & {
     about: ResolversParentTypes['SpaceAbout'];
     account: ResolversParentTypes['Account'];
+    actor: ResolversParentTypes['Actor'];
     collaboration: ResolversParentTypes['Collaboration'];
     community: ResolversParentTypes['Community'];
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
+    mentionableContributors: Array<ResolversParentTypes['ActorFull']>;
+    profile?: Maybe<ResolversParentTypes['Profile']>;
     subspaceByNameID: ResolversParentTypes['Space'];
     subspaces: Array<ResolversParentTypes['Space']>;
-    templatesManager?: Maybe<ResolversParentTypes['TemplatesManager']>;
   };
   RelayPaginatedSpaceEdge: Omit<RelayPaginatedSpaceEdge, 'node'> & {
     node: ResolversParentTypes['RelayPaginatedSpace'];
   };
   RelayPaginatedSpacePageInfo: RelayPaginatedSpacePageInfo;
   RemoveCommunityGuidelinesContentInput: RemoveCommunityGuidelinesContentInput;
+  RemoveConversationMemberInput: RemoveConversationMemberInput;
+  RemoveDefaultCalloutTemplateOnInnovationFlowStateInput: RemoveDefaultCalloutTemplateOnInnovationFlowStateInput;
   RemovePlatformRoleInput: RemovePlatformRoleInput;
-  RemoveRoleOnRoleSetFromOrganizationInput: RemoveRoleOnRoleSetFromOrganizationInput;
-  RemoveRoleOnRoleSetFromUserInput: RemoveRoleOnRoleSetFromUserInput;
-  RemoveRoleOnRoleSetFromVirtualContributorInput: RemoveRoleOnRoleSetFromVirtualContributorInput;
+  RemovePollOptionInput: RemovePollOptionInput;
+  RemovePollVoteInput: RemovePollVoteInput;
+  RemoveRoleOnRoleSetInput: RemoveRoleOnRoleSetInput;
   RemoveUserGroupMemberInput: RemoveUserGroupMemberInput;
+  ReorderPollOptionsInput: ReorderPollOptionsInput;
+  ReplaceCollaboraDocumentInput: ReplaceCollaboraDocumentInput;
   RevokeAuthorizationCredentialInput: RevokeAuthorizationCredentialInput;
   RevokeLicensePlanFromAccount: RevokeLicensePlanFromAccount;
   RevokeLicensePlanFromSpace: RevokeLicensePlanFromSpace;
@@ -11490,83 +13434,38 @@ export type ResolversParentTypes = {
   Role: Role;
   RoleSet: Omit<
     RoleSet,
-    | 'applications'
-    | 'availableUsersForElevatedRole'
-    | 'availableUsersForEntryRole'
-    | 'availableVirtualContributorsForEntryRole'
     | 'invitations'
     | 'organizationsInRole'
     | 'organizationsInRoles'
-    | 'platformInvitations'
     | 'usersInRole'
-    | 'usersInRoles'
-    | 'virtualContributorsInRole'
-    | 'virtualContributorsInRoleInHierarchy'
-    | 'virtualContributorsInRoles'
   > & {
-    applications: Array<ResolversParentTypes['Application']>;
-    availableUsersForElevatedRole: ResolversParentTypes['PaginatedUsers'];
-    availableUsersForEntryRole: ResolversParentTypes['PaginatedUsers'];
-    availableVirtualContributorsForEntryRole: ResolversParentTypes['PaginatedVirtualContributor'];
     invitations: Array<ResolversParentTypes['Invitation']>;
     organizationsInRole: Array<ResolversParentTypes['Organization']>;
     organizationsInRoles: Array<
       ResolversParentTypes['OrganizationsInRolesResponse']
     >;
-    platformInvitations: Array<ResolversParentTypes['PlatformInvitation']>;
     usersInRole: Array<ResolversParentTypes['User']>;
-    usersInRoles: Array<ResolversParentTypes['UsersInRolesResponse']>;
-    virtualContributorsInRole: Array<
-      ResolversParentTypes['VirtualContributor']
-    >;
-    virtualContributorsInRoleInHierarchy: Array<
-      ResolversParentTypes['VirtualContributor']
-    >;
-    virtualContributorsInRoles: Array<
-      ResolversParentTypes['VirtualContributorsInRolesResponse']
-    >;
   };
-  RoleSetInvitationResult: Omit<
-    RoleSetInvitationResult,
-    'invitation' | 'platformInvitation'
-  > & {
+  RoleSetInvitationResult: Omit<RoleSetInvitationResult, 'invitation'> & {
     invitation?: Maybe<ResolversParentTypes['Invitation']>;
-    platformInvitation?: Maybe<ResolversParentTypes['PlatformInvitation']>;
   };
-  RolesOrganizationInput: RolesOrganizationInput;
+  RolesActorInput: RolesActorInput;
   RolesResult: RolesResult;
   RolesResultCommunity: RolesResultCommunity;
   RolesResultOrganization: RolesResultOrganization;
   RolesResultSpace: RolesResultSpace;
-  RolesUserInput: RolesUserInput;
-  RolesVirtualContributorInput: RolesVirtualContributorInput;
-  Room: Omit<Room, 'messages' | 'vcInteractions'> & {
-    messages: Array<ResolversParentTypes['Message']>;
-    vcInteractions: Array<ResolversParentTypes['VcInteraction']>;
-  };
+  Room: Room;
   RoomAddReactionToMessageInput: RoomAddReactionToMessageInput;
-  RoomEventSubscriptionResult: Omit<
-    RoomEventSubscriptionResult,
-    'message' | 'reaction' | 'room'
-  > & {
-    message?: Maybe<ResolversParentTypes['RoomMessageEventSubscriptionResult']>;
-    reaction?: Maybe<
-      ResolversParentTypes['RoomMessageReactionEventSubscriptionResult']
-    >;
-    room: ResolversParentTypes['Room'];
-  };
-  RoomMessageEventSubscriptionResult: Omit<
-    RoomMessageEventSubscriptionResult,
-    'data'
-  > & { data: ResolversParentTypes['Message'] };
-  RoomMessageReactionEventSubscriptionResult: Omit<
-    RoomMessageReactionEventSubscriptionResult,
-    'data'
-  > & { data: ResolversParentTypes['Reaction'] };
+  RoomEventSubscriptionResult: RoomEventSubscriptionResult;
+  RoomMarkMessageReadInput: RoomMarkMessageReadInput;
+  RoomMessageEventSubscriptionResult: RoomMessageEventSubscriptionResult;
+  RoomMessageReactionEventSubscriptionResult: RoomMessageReactionEventSubscriptionResult;
   RoomRemoveMessageInput: RoomRemoveMessageInput;
   RoomRemoveReactionToMessageInput: RoomRemoveReactionToMessageInput;
   RoomSendMessageInput: RoomSendMessageInput;
   RoomSendMessageReplyInput: RoomSendMessageReplyInput;
+  RoomThreadUnreadCount: RoomThreadUnreadCount;
+  RoomUnreadCounts: RoomUnreadCounts;
   SearchCursor: Scalars['SearchCursor']['output'];
   SearchFilterInput: SearchFilterInput;
   SearchInput: SearchInput;
@@ -11575,12 +13474,22 @@ export type ResolversParentTypes = {
     callout: ResolversParentTypes['Callout'];
     space: ResolversParentTypes['Space'];
   };
+  SearchResultCollaboraDocument: Omit<
+    SearchResultCollaboraDocument,
+    'callout' | 'space'
+  > & {
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
+  };
+  SearchResultMemo: Omit<SearchResultMemo, 'callout' | 'space'> & {
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
+  };
   SearchResultOrganization: Omit<SearchResultOrganization, 'organization'> & {
     organization: ResolversParentTypes['Organization'];
   };
-  SearchResultPost: Omit<SearchResultPost, 'callout' | 'post' | 'space'> & {
+  SearchResultPost: Omit<SearchResultPost, 'callout' | 'space'> & {
     callout: ResolversParentTypes['Callout'];
-    post: ResolversParentTypes['Post'];
     space: ResolversParentTypes['Space'];
   };
   SearchResultSpace: Omit<SearchResultSpace, 'parentSpace' | 'space'> & {
@@ -11590,25 +13499,38 @@ export type ResolversParentTypes = {
   SearchResultUser: Omit<SearchResultUser, 'user'> & {
     user: ResolversParentTypes['User'];
   };
+  SearchResultWhiteboard: Omit<SearchResultWhiteboard, 'callout' | 'space'> & {
+    callout: ResolversParentTypes['Callout'];
+    space: ResolversParentTypes['Space'];
+  };
+  SendDirectMessageToUsersInput: SendDirectMessageToUsersInput;
   Sentry: Sentry;
   ServiceMetadata: ServiceMetadata;
+  SetDefaultCalloutTemplateOnInnovationFlowStateInput: SetDefaultCalloutTemplateOnInnovationFlowStateInput;
+  SetPlatformWellKnownVirtualContributorInput: SetPlatformWellKnownVirtualContributorInput;
   Space: Omit<
     Space,
     | 'about'
     | 'account'
+    | 'actor'
     | 'collaboration'
     | 'community'
+    | 'credentials'
+    | 'mentionableContributors'
+    | 'profile'
     | 'subspaceByNameID'
     | 'subspaces'
-    | 'templatesManager'
   > & {
     about: ResolversParentTypes['SpaceAbout'];
     account: ResolversParentTypes['Account'];
+    actor: ResolversParentTypes['Actor'];
     collaboration: ResolversParentTypes['Collaboration'];
     community: ResolversParentTypes['Community'];
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
+    mentionableContributors: Array<ResolversParentTypes['ActorFull']>;
+    profile?: Maybe<ResolversParentTypes['Profile']>;
     subspaceByNameID: ResolversParentTypes['Space'];
     subspaces: Array<ResolversParentTypes['Space']>;
-    templatesManager?: Maybe<ResolversParentTypes['TemplatesManager']>;
   };
   SpaceAbout: Omit<
     SpaceAbout,
@@ -11617,7 +13539,7 @@ export type ResolversParentTypes = {
     guidelines: ResolversParentTypes['CommunityGuidelines'];
     membership: ResolversParentTypes['SpaceAboutMembership'];
     profile: ResolversParentTypes['Profile'];
-    provider: ResolversParentTypes['Contributor'];
+    provider?: Maybe<ResolversParentTypes['Actor']>;
   };
   SpaceAboutMembership: Omit<
     SpaceAboutMembership,
@@ -11636,6 +13558,7 @@ export type ResolversParentTypes = {
   };
   SpaceSettings: SpaceSettings;
   SpaceSettingsCollaboration: SpaceSettingsCollaboration;
+  SpaceSettingsLayout: SpaceSettingsLayout;
   SpaceSettingsMembership: SpaceSettingsMembership;
   SpaceSettingsPrivacy: SpaceSettingsPrivacy;
   SpaceSubscription: SpaceSubscription;
@@ -11655,8 +13578,10 @@ export type ResolversParentTypes = {
   StorageBucketUploadFileInput: StorageBucketUploadFileInput;
   StorageBucketUploadFileOnLinkInput: StorageBucketUploadFileOnLinkInput;
   StorageBucketUploadFileOnReferenceInput: StorageBucketUploadFileOnReferenceInput;
+  StorageBucketUploadFileResult: StorageBucketUploadFileResult;
   StorageConfig: StorageConfig;
   String: Scalars['String']['output'];
+  SubscribeToPushNotificationsInput: SubscribeToPushNotificationsInput;
   Subscription: {};
   SubspaceCreated: Omit<SubspaceCreated, 'subspace'> & {
     subspace: ResolversParentTypes['Space'];
@@ -11667,17 +13592,12 @@ export type ResolversParentTypes = {
   Task: Task;
   Template: Omit<
     Template,
-    | 'callout'
-    | 'communityGuidelines'
-    | 'contentSpace'
-    | 'profile'
-    | 'whiteboard'
+    'callout' | 'communityGuidelines' | 'contentSpace' | 'profile'
   > & {
     callout?: Maybe<ResolversParentTypes['Callout']>;
     communityGuidelines?: Maybe<ResolversParentTypes['CommunityGuidelines']>;
     contentSpace?: Maybe<ResolversParentTypes['TemplateContentSpace']>;
     profile: ResolversParentTypes['Profile'];
-    whiteboard?: Maybe<ResolversParentTypes['Whiteboard']>;
   };
   TemplateContentSpace: Omit<
     TemplateContentSpace,
@@ -11694,11 +13614,7 @@ export type ResolversParentTypes = {
     innovationPack: ResolversParentTypes['InnovationPack'];
     template: ResolversParentTypes['Template'];
   };
-  TemplatesManager: Omit<
-    TemplatesManager,
-    'templateDefaults' | 'templatesSet'
-  > & {
-    templateDefaults: Array<ResolversParentTypes['TemplateDefault']>;
+  TemplatesManager: Omit<TemplatesManager, 'templatesSet'> & {
     templatesSet?: Maybe<ResolversParentTypes['TemplatesSet']>;
   };
   TemplatesSet: Omit<
@@ -11726,14 +13642,17 @@ export type ResolversParentTypes = {
   TransferAccountVirtualContributorInput: TransferAccountVirtualContributorInput;
   TransferCalloutInput: TransferCalloutInput;
   UUID: Scalars['UUID']['output'];
+  UnsubscribeFromPushNotificationsInput: UnsubscribeFromPushNotificationsInput;
   UpdateAiPersonaInput: UpdateAiPersonaInput;
   UpdateApplicationFormOnRoleSetInput: UpdateApplicationFormOnRoleSetInput;
   UpdateBaselineLicensePlanOnAccount: UpdateBaselineLicensePlanOnAccount;
   UpdateCalendarEventInput: UpdateCalendarEventInput;
   UpdateCalloutContributionDefaultsInput: UpdateCalloutContributionDefaultsInput;
+  UpdateCalloutContributorsSettingsInput: UpdateCalloutContributorsSettingsInput;
   UpdateCalloutEntityInput: UpdateCalloutEntityInput;
   UpdateCalloutFramingInput: UpdateCalloutFramingInput;
   UpdateCalloutPublishInfoInput: UpdateCalloutPublishInfoInput;
+  UpdateCalloutSelectionSettingsInput: UpdateCalloutSelectionSettingsInput;
   UpdateCalloutSettingsContributionInput: UpdateCalloutSettingsContributionInput;
   UpdateCalloutSettingsFramingInput: UpdateCalloutSettingsFramingInput;
   UpdateCalloutSettingsInput: UpdateCalloutSettingsInput;
@@ -11741,9 +13660,11 @@ export type ResolversParentTypes = {
   UpdateCalloutsSortOrderInput: UpdateCalloutsSortOrderInput;
   UpdateClassificationInput: UpdateClassificationInput;
   UpdateClassificationSelectTagsetValueInput: UpdateClassificationSelectTagsetValueInput;
+  UpdateCollaboraDocumentInput: UpdateCollaboraDocumentInput;
   UpdateCollaborationFromSpaceTemplateInput: UpdateCollaborationFromSpaceTemplateInput;
   UpdateCommunityGuidelinesEntityInput: UpdateCommunityGuidelinesEntityInput;
   UpdateContributionCalloutsSortOrderInput: UpdateContributionCalloutsSortOrderInput;
+  UpdateConversationInput: UpdateConversationInput;
   UpdateDiscussionInput: UpdateDiscussionInput;
   UpdateDocumentInput: UpdateDocumentInput;
   UpdateFormInput: UpdateFormInput;
@@ -11770,6 +13691,9 @@ export type ResolversParentTypes = {
   UpdateOrganizationSettingsPrivacyInput: UpdateOrganizationSettingsPrivacyInput;
   UpdatePlatformSettingsInput: UpdatePlatformSettingsInput;
   UpdatePlatformSettingsIntegrationInput: UpdatePlatformSettingsIntegrationInput;
+  UpdatePollInput: UpdatePollInput;
+  UpdatePollOptionInput: UpdatePollOptionInput;
+  UpdatePollStatusInput: UpdatePollStatusInput;
   UpdatePostInput: UpdatePostInput;
   UpdateProfileDirectInput: UpdateProfileDirectInput;
   UpdateProfileInput: UpdateProfileInput;
@@ -11780,8 +13704,11 @@ export type ResolversParentTypes = {
   UpdateSpaceSettingsCollaborationInput: UpdateSpaceSettingsCollaborationInput;
   UpdateSpaceSettingsEntityInput: UpdateSpaceSettingsEntityInput;
   UpdateSpaceSettingsInput: UpdateSpaceSettingsInput;
+  UpdateSpaceSettingsLayoutInput: UpdateSpaceSettingsLayoutInput;
   UpdateSpaceSettingsMembershipInput: UpdateSpaceSettingsMembershipInput;
   UpdateSpaceSettingsPrivacyInput: UpdateSpaceSettingsPrivacyInput;
+  UpdateSubspacePinnedInput: UpdateSubspacePinnedInput;
+  UpdateSubspacesSortOrderInput: UpdateSubspacesSortOrderInput;
   UpdateTagsetInput: UpdateTagsetInput;
   UpdateTemplateContentSpaceInput: UpdateTemplateContentSpaceInput;
   UpdateTemplateDefaultTemplateInput: UpdateTemplateDefaultTemplateInput;
@@ -11790,13 +13717,16 @@ export type ResolversParentTypes = {
   UpdateUserGroupInput: UpdateUserGroupInput;
   UpdateUserInput: UpdateUserInput;
   UpdateUserPlatformSettingsInput: UpdateUserPlatformSettingsInput;
+  UpdateUserSettingsAssistantInput: UpdateUserSettingsAssistantInput;
   UpdateUserSettingsCommunicationInput: UpdateUserSettingsCommunicationInput;
   UpdateUserSettingsEntityInput: UpdateUserSettingsEntityInput;
+  UpdateUserSettingsHomeSpaceInput: UpdateUserSettingsHomeSpaceInput;
   UpdateUserSettingsInput: UpdateUserSettingsInput;
   UpdateUserSettingsNotificationInput: UpdateUserSettingsNotificationInput;
   UpdateUserSettingsNotificationOrganizationInput: UpdateUserSettingsNotificationOrganizationInput;
   UpdateUserSettingsNotificationPlatformAdminInput: UpdateUserSettingsNotificationPlatformAdminInput;
   UpdateUserSettingsNotificationPlatformInput: UpdateUserSettingsNotificationPlatformInput;
+  UpdateUserSettingsNotificationSoundInput: UpdateUserSettingsNotificationSoundInput;
   UpdateUserSettingsNotificationSpaceAdminInput: UpdateUserSettingsNotificationSpaceAdminInput;
   UpdateUserSettingsNotificationSpaceInput: UpdateUserSettingsNotificationSpaceInput;
   UpdateUserSettingsNotificationUserInput: UpdateUserSettingsNotificationUserInput;
@@ -11804,13 +13734,18 @@ export type ResolversParentTypes = {
   UpdateUserSettingsNotificationVirtualContributorInput: UpdateUserSettingsNotificationVirtualContributorInput;
   UpdateUserSettingsPrivacyInput: UpdateUserSettingsPrivacyInput;
   UpdateVirtualContributorInput: UpdateVirtualContributorInput;
+  UpdateVirtualContributorPlatformSettingsEntityInput: UpdateVirtualContributorPlatformSettingsEntityInput;
+  UpdateVirtualContributorPlatformSettingsInput: UpdateVirtualContributorPlatformSettingsInput;
   UpdateVirtualContributorSettingsEntityInput: UpdateVirtualContributorSettingsEntityInput;
   UpdateVirtualContributorSettingsInput: UpdateVirtualContributorSettingsInput;
   UpdateVirtualContributorSettingsPrivacyInput: UpdateVirtualContributorSettingsPrivacyInput;
   UpdateVisualInput: UpdateVisualInput;
   UpdateWhiteboardEntityInput: UpdateWhiteboardEntityInput;
+  UpdateWhiteboardGuestAccessInput: UpdateWhiteboardGuestAccessInput;
+  UpdateWhiteboardGuestAccessResult: UpdateWhiteboardGuestAccessResult;
   UpdateWhiteboardPreviewSettingsInput: UpdateWhiteboardPreviewSettingsInput;
   Upload: Scalars['Upload']['output'];
+  UrlResolverQueryClosestAncestor: UrlResolverQueryClosestAncestor;
   UrlResolverQueryResultCalendar: UrlResolverQueryResultCalendar;
   UrlResolverQueryResultCalloutsSet: UrlResolverQueryResultCalloutsSet;
   UrlResolverQueryResultCollaboration: UrlResolverQueryResultCollaboration;
@@ -11819,28 +13754,35 @@ export type ResolversParentTypes = {
   UrlResolverQueryResultTemplatesSet: UrlResolverQueryResultTemplatesSet;
   UrlResolverQueryResultVirtualContributor: UrlResolverQueryResultVirtualContributor;
   UrlResolverQueryResults: UrlResolverQueryResults;
-  User: Omit<User, 'account' | 'directRooms' | 'guidanceRoom' | 'profile'> & {
+  User: Omit<User, 'account' | 'actor' | 'credentials' | 'profile'> & {
     account?: Maybe<ResolversParentTypes['Account']>;
-    directRooms?: Maybe<Array<ResolversParentTypes['DirectRoom']>>;
-    guidanceRoom?: Maybe<ResolversParentTypes['Room']>;
-    profile: ResolversParentTypes['Profile'];
+    actor: ResolversParentTypes['Actor'];
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
+    profile?: Maybe<ResolversParentTypes['Profile']>;
   };
   UserAuthenticationResult: UserAuthenticationResult;
   UserAuthorizationResetInput: UserAuthorizationResetInput;
+  UserEmailChangeAuditEntries: UserEmailChangeAuditEntries;
+  UserEmailChangeAuditEntriesPageInfo: UserEmailChangeAuditEntriesPageInfo;
+  UserEmailChangeAuditEntry: UserEmailChangeAuditEntry;
+  UserEmailChangeResult: UserEmailChangeResult;
   UserFilterInput: UserFilterInput;
   UserGroup: Omit<UserGroup, 'members' | 'parent' | 'profile'> & {
     members?: Maybe<Array<ResolversParentTypes['User']>>;
     parent?: Maybe<ResolversParentTypes['Groupable']>;
     profile?: Maybe<ResolversParentTypes['Profile']>;
   };
-  UserSendMessageInput: UserSendMessageInput;
+  UserProfileSummary: UserProfileSummary;
   UserSettings: UserSettings;
+  UserSettingsAssistant: UserSettingsAssistant;
   UserSettingsCommunication: UserSettingsCommunication;
+  UserSettingsHomeSpace: UserSettingsHomeSpace;
   UserSettingsNotification: UserSettingsNotification;
   UserSettingsNotificationChannels: UserSettingsNotificationChannels;
   UserSettingsNotificationOrganization: UserSettingsNotificationOrganization;
   UserSettingsNotificationPlatform: UserSettingsNotificationPlatform;
   UserSettingsNotificationPlatformAdmin: UserSettingsNotificationPlatformAdmin;
+  UserSettingsNotificationSound: UserSettingsNotificationSound;
   UserSettingsNotificationSpace: UserSettingsNotificationSpace;
   UserSettingsNotificationSpaceAdmin: UserSettingsNotificationSpaceAdmin;
   UserSettingsNotificationUser: UserSettingsNotificationUser;
@@ -11851,35 +13793,34 @@ export type ResolversParentTypes = {
     users: Array<ResolversParentTypes['User']>;
   };
   UsersWithAuthorizationCredentialInput: UsersWithAuthorizationCredentialInput;
-  VcInteraction: Omit<VcInteraction, 'room'> & {
-    room: ResolversParentTypes['Room'];
+  VcInteraction: VcInteraction;
+  VirtualAssistant: Omit<VirtualAssistant, 'credentials' | 'profile'> & {
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
+    profile?: Maybe<ResolversParentTypes['Profile']>;
   };
-  VerifiedCredential: VerifiedCredential;
-  VerifiedCredentialClaim: VerifiedCredentialClaim;
   VirtualContributor: Omit<
     VirtualContributor,
-    'account' | 'knowledgeBase' | 'knowledgeSpace' | 'profile' | 'provider'
+    | 'account'
+    | 'actor'
+    | 'credentials'
+    | 'knowledgeSpace'
+    | 'profile'
+    | 'provider'
   > & {
     account?: Maybe<ResolversParentTypes['Account']>;
-    knowledgeBase: ResolversParentTypes['KnowledgeBase'];
+    actor: ResolversParentTypes['Actor'];
+    credentials?: Maybe<Array<ResolversParentTypes['Credential']>>;
     knowledgeSpace?: Maybe<ResolversParentTypes['Space']>;
-    profile: ResolversParentTypes['Profile'];
-    provider: ResolversParentTypes['Contributor'];
+    profile?: Maybe<ResolversParentTypes['Profile']>;
+    provider: ResolversParentTypes['Actor'];
   };
   VirtualContributorModelCard: VirtualContributorModelCard;
   VirtualContributorModelCardFlag: VirtualContributorModelCardFlag;
+  VirtualContributorPlatformSettings: VirtualContributorPlatformSettings;
   VirtualContributorSettings: VirtualContributorSettings;
   VirtualContributorSettingsPrivacy: VirtualContributorSettingsPrivacy;
-  VirtualContributorUpdatedSubscriptionResult: Omit<
-    VirtualContributorUpdatedSubscriptionResult,
-    'virtualContributor'
-  > & { virtualContributor: ResolversParentTypes['VirtualContributor'] };
-  VirtualContributorsInRolesResponse: Omit<
-    VirtualContributorsInRolesResponse,
-    'virtualContributors'
-  > & {
-    virtualContributors: Array<ResolversParentTypes['VirtualContributor']>;
-  };
+  VirtualContributorUpdatedSubscriptionResult: VirtualContributorUpdatedSubscriptionResult;
+  VirtualContributorsInRolesResponse: VirtualContributorsInRolesResponse;
   Visual: Visual;
   VisualConstraints: VisualConstraints;
   VisualUploadImageInput: VisualUploadImageInput;
@@ -11893,15 +13834,6 @@ export type ResolversParentTypes = {
   WhiteboardPreviewCoordinatesInput: WhiteboardPreviewCoordinatesInput;
   WhiteboardPreviewSettings: WhiteboardPreviewSettings;
 };
-
-export type OneOfDirectiveArgs = {};
-
-export type OneOfDirectiveResolver<
-  Result,
-  Parent,
-  ContextType = any,
-  Args = OneOfDirectiveArgs,
-> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type ApmResolvers<
   ContextType = any,
@@ -11917,7 +13849,12 @@ export type AccountResolvers<
   ParentType extends ResolversParentTypes['Account'] =
     ResolversParentTypes['Account'],
 > = {
-  agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
+  accountType?: Resolver<
+    Maybe<ResolversTypes['AccountType']>,
+    ParentType,
+    ContextType
+  >;
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
     ParentType,
@@ -11929,28 +13866,33 @@ export type AccountResolvers<
     ContextType
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
+    ParentType,
+    ContextType
+  >;
   externalSubscriptionID?: Resolver<
     Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
-  host?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
-    ParentType,
-    ContextType
-  >;
+  host?: Resolver<Maybe<ResolversTypes['Actor']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   innovationHubs?: Resolver<
     Array<ResolversTypes['InnovationHub']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<AccountInnovationHubsArgs>
   >;
   innovationPacks?: Resolver<
     Array<ResolversTypes['InnovationPack']>,
     ParentType,
-    ContextType
+    ContextType,
+    Partial<AccountInnovationPacksArgs>
   >;
   license?: Resolver<ResolversTypes['License'], ParentType, ContextType>;
+  nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   spaces?: Resolver<Array<ResolversTypes['Space']>, ParentType, ContextType>;
   storageAggregator?: Resolver<
     ResolversTypes['StorageAggregator'],
@@ -11962,11 +13904,7 @@ export type AccountResolvers<
     ParentType,
     ContextType
   >;
-  type?: Resolver<
-    Maybe<ResolversTypes['AccountType']>,
-    ParentType,
-    ContextType
-  >;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   virtualContributors?: Resolver<
     Array<ResolversTypes['VirtualContributor']>,
@@ -12045,6 +13983,7 @@ export type ActivityLogEntryResolvers<
     | 'ActivityLogEntryCalendarEventCreated'
     | 'ActivityLogEntryCalloutDiscussionComment'
     | 'ActivityLogEntryCalloutLinkCreated'
+    | 'ActivityLogEntryCalloutMemoCreated'
     | 'ActivityLogEntryCalloutPostComment'
     | 'ActivityLogEntryCalloutPostCreated'
     | 'ActivityLogEntryCalloutPublished'
@@ -12135,6 +14074,30 @@ export type ActivityLogEntryCalloutLinkCreatedResolvers<
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   link?: Resolver<ResolversTypes['Link'], ParentType, ContextType>;
+  parentDisplayName?: Resolver<
+    ResolversTypes['String'],
+    ParentType,
+    ContextType
+  >;
+  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  triggeredBy?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['ActivityEventType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ActivityLogEntryCalloutMemoCreatedResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['ActivityLogEntryCalloutMemoCreated'] =
+    ResolversParentTypes['ActivityLogEntryCalloutMemoCreated'],
+> = {
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
+  child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  collaborationID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  memo?: Resolver<ResolversTypes['Memo'], ParentType, ContextType>;
   parentDisplayName?: Resolver<
     ResolversTypes['String'],
     ParentType,
@@ -12269,19 +14232,11 @@ export type ActivityLogEntryMemberJoinedResolvers<
   ParentType extends ResolversParentTypes['ActivityLogEntryMemberJoined'] =
     ResolversParentTypes['ActivityLogEntryMemberJoined'],
 > = {
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
+  actorType?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   child?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   collaborationID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   community?: Resolver<ResolversTypes['Community'], ParentType, ContextType>;
-  contributor?: Resolver<
-    ResolversTypes['Contributor'],
-    ParentType,
-    ContextType
-  >;
-  contributorType?: Resolver<
-    ResolversTypes['RoleSetContributorType'],
-    ParentType,
-    ContextType
-  >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
@@ -12342,10 +14297,10 @@ export type ActivityLogEntryUpdateSentResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AgentResolvers<
+export type ActorResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['Agent'] =
-    ResolversParentTypes['Agent'],
+  ParentType extends ResolversParentTypes['Actor'] =
+    ResolversParentTypes['Actor'],
 > = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
@@ -12358,37 +14313,86 @@ export type AgentResolvers<
     ParentType,
     ContextType
   >;
-  did?: Resolver<Maybe<ResolversTypes['DID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['AgentType'], ParentType, ContextType>;
+  nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  verifiedCredentials?: Resolver<
-    Maybe<Array<ResolversTypes['VerifiedCredential']>>,
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ActorFullResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ActorFull'] =
+    ResolversParentTypes['ActorFull'],
+> = {
+  __resolveType: TypeResolveFn<
+    | 'Account'
+    | 'Organization'
+    | 'RelayPaginatedSpace'
+    | 'Space'
+    | 'User'
+    | 'VirtualAssistant'
+    | 'VirtualContributor',
     ParentType,
     ContextType
   >;
+  authorization?: Resolver<
+    Maybe<ResolversTypes['Authorization']>,
+    ParentType,
+    ContextType
+  >;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+};
+
+export type ActorRolePolicyResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ActorRolePolicy'] =
+    ResolversParentTypes['ActorRolePolicy'],
+> = {
+  maximum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  minimum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AgentBeginVerifiedCredentialOfferOutputResolvers<
+export type ActorRolesResolvers<
   ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AgentBeginVerifiedCredentialOfferOutput'] =
-    ResolversParentTypes['AgentBeginVerifiedCredentialOfferOutput'],
+  ParentType extends ResolversParentTypes['ActorRoles'] =
+    ResolversParentTypes['ActorRoles'],
 > = {
-  jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  qrCodeImg?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type AgentBeginVerifiedCredentialRequestOutputResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AgentBeginVerifiedCredentialRequestOutput'] =
-    ResolversParentTypes['AgentBeginVerifiedCredentialRequestOutput'],
-> = {
-  jwt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  qrCodeImg?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  applications?: Resolver<
+    Array<ResolversTypes['CommunityApplicationForRoleResult']>,
+    ParentType,
+    ContextType,
+    Partial<ActorRolesApplicationsArgs>
+  >;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  invitations?: Resolver<
+    Array<ResolversTypes['CommunityInvitationForRoleResult']>,
+    ParentType,
+    ContextType,
+    Partial<ActorRolesInvitationsArgs>
+  >;
+  organizations?: Resolver<
+    Array<ResolversTypes['RolesResultOrganization']>,
+    ParentType,
+    ContextType
+  >;
+  spaces?: Resolver<
+    Array<ResolversTypes['RolesResultSpace']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -12462,13 +14466,9 @@ export type ApplicationResolvers<
   ParentType extends ResolversParentTypes['Application'] =
     ResolversParentTypes['Application'],
 > = {
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
-    ParentType,
-    ContextType
-  >;
-  contributor?: Resolver<
-    ResolversTypes['Contributor'],
     ParentType,
     ContextType
   >;
@@ -12488,6 +14488,32 @@ export type ApplicationResolvers<
   >;
   state?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AssistantCapabilityResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['AssistantCapability'] =
+    ResolversParentTypes['AssistantCapability'],
+> = {
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  kind?: Resolver<
+    ResolversTypes['AssistantCapabilityKind'],
+    ParentType,
+    ContextType
+  >;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type AssistantCapabilityToggleResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['AssistantCapabilityToggle'] =
+    ResolversParentTypes['AssistantCapabilityToggle'],
+> = {
+  capability?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -12563,11 +14589,6 @@ export type AuthorizationResolvers<
     ContextType
   >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  verifiedCredentialRules?: Resolver<
-    Maybe<Array<ResolversTypes['AuthorizationPolicyRuleVerifiedCredential']>>,
-    ParentType,
-    ContextType
-  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -12604,22 +14625,6 @@ export type AuthorizationPolicyRulePrivilegeResolvers<
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sourcePrivilege?: Resolver<
     ResolversTypes['AuthorizationPrivilege'],
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type AuthorizationPolicyRuleVerifiedCredentialResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['AuthorizationPolicyRuleVerifiedCredential'] =
-    ResolversParentTypes['AuthorizationPolicyRuleVerifiedCredential'],
-> = {
-  claimRule?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  credentialName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  grantedPrivileges?: Resolver<
-    Array<ResolversTypes['AuthorizationPrivilege']>,
     ParentType,
     ContextType
   >;
@@ -12672,9 +14677,24 @@ export type CalendarEventResolvers<
     ContextType
   >;
   durationMinutes?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  googleCalendarUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  icsDownloadUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   multipleDays?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  outlookCalendarUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   startDate?: Resolver<
     Maybe<ResolversTypes['DateTime']>,
@@ -12743,7 +14763,7 @@ export type CalloutResolvers<
     ContextType
   >;
   publishedDate?: Resolver<
-    Maybe<ResolversTypes['Float']>,
+    Maybe<ResolversTypes['DateTime']>,
     ParentType,
     ContextType
   >;
@@ -12767,10 +14787,16 @@ export type CalloutContributionResolvers<
     ParentType,
     ContextType
   >;
+  collaboraDocument?: Resolver<
+    Maybe<ResolversTypes['CollaboraDocument']>,
+    ParentType,
+    ContextType
+  >;
   createdBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   link?: Resolver<Maybe<ResolversTypes['Link']>, ParentType, ContextType>;
+  memo?: Resolver<Maybe<ResolversTypes['Memo']>, ParentType, ContextType>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType>;
   sortOrder?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -12813,10 +14839,38 @@ export type CalloutContributionsCountOutputResolvers<
   ParentType extends ResolversParentTypes['CalloutContributionsCountOutput'] =
     ResolversParentTypes['CalloutContributionsCountOutput'],
 > = {
+  collaboraDocument?: Resolver<
+    ResolversTypes['Float'],
+    ParentType,
+    ContextType
+  >;
   link?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   memo?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   post?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   whiteboard?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CalloutContributorsSettingsResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['CalloutContributorsSettings'] =
+    ResolversParentTypes['CalloutContributorsSettings'],
+> = {
+  contributorTypes?: Resolver<
+    Array<ResolversTypes['ActorType']>,
+    ParentType,
+    ContextType
+  >;
+  defaultContributorType?: Resolver<
+    ResolversTypes['ActorType'],
+    ParentType,
+    ContextType
+  >;
+  defaultView?: Resolver<
+    ResolversTypes['ContributorCollectionView'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -12830,11 +14884,34 @@ export type CalloutFramingResolvers<
     ParentType,
     ContextType
   >;
+  collaboraDocument?: Resolver<
+    Maybe<ResolversTypes['CollaboraDocument']>,
+    ParentType,
+    ContextType
+  >;
+  contributorCounts?: Resolver<
+    ResolversTypes['ContributorCollectionCounts'],
+    ParentType,
+    ContextType
+  >;
+  contributors?: Resolver<
+    Array<ResolversTypes['ContributorCollectionItem']>,
+    ParentType,
+    ContextType,
+    RequireFields<CalloutFramingContributorsArgs, 'type'>
+  >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   link?: Resolver<Maybe<ResolversTypes['Link']>, ParentType, ContextType>;
+  mediaGallery?: Resolver<
+    Maybe<ResolversTypes['MediaGallery']>,
+    ParentType,
+    ContextType
+  >;
   memo?: Resolver<Maybe<ResolversTypes['Memo']>, ParentType, ContextType>;
+  poll?: Resolver<Maybe<ResolversTypes['Poll']>, ParentType, ContextType>;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  subspaces?: Resolver<Array<ResolversTypes['Space']>, ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['CalloutFramingType'],
     ParentType,
@@ -12858,6 +14935,20 @@ export type CalloutPostCreatedResolvers<
   contributionID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   post?: Resolver<ResolversTypes['Post'], ParentType, ContextType>;
   sortOrder?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CalloutSelectionSettingsResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['CalloutSelectionSettings'] =
+    ResolversParentTypes['CalloutSelectionSettings'],
+> = {
+  mode?: Resolver<
+    ResolversTypes['CalloutSelectionMode'],
+    ParentType,
+    ContextType
+  >;
+  selectedIds?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -12895,7 +14986,7 @@ export type CalloutSettingsContributionResolvers<
     ContextType
   >;
   canAddContributions?: Resolver<
-    ResolversTypes['CalloutAllowedContributors'],
+    ResolversTypes['CalloutAllowedActors'],
     ParentType,
     ContextType
   >;
@@ -12915,6 +15006,16 @@ export type CalloutSettingsFramingResolvers<
 > = {
   commentsEnabled?: Resolver<
     ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  contributors?: Resolver<
+    Maybe<ResolversTypes['CalloutContributorsSettings']>,
+    ParentType,
+    ContextType
+  >;
+  selection?: Resolver<
+    Maybe<ResolversTypes['CalloutSelectionSettings']>,
     ParentType,
     ContextType
   >;
@@ -12939,6 +15040,12 @@ export type CalloutsSetResolvers<
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  tags?: Resolver<
+    Array<ResolversTypes['String']>,
+    ParentType,
+    ContextType,
+    Partial<CalloutsSetTagsArgs>
+  >;
   tagsetTemplates?: Resolver<
     Maybe<Array<ResolversTypes['TagsetTemplate']>>,
     ParentType,
@@ -12973,6 +15080,39 @@ export type ClassificationResolvers<
     ContextType
   >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CollaboraDocumentResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['CollaboraDocument'] =
+    ResolversParentTypes['CollaboraDocument'],
+> = {
+  authorization?: Resolver<
+    Maybe<ResolversTypes['Authorization']>,
+    ParentType,
+    ContextType
+  >;
+  createdBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  documentType?: Resolver<
+    ResolversTypes['CollaboraDocumentType'],
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CollaboraEditorUrlResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['CollaboraEditorUrlResult'] =
+    ResolversParentTypes['CollaboraEditorUrlResult'],
+> = {
+  accessTokenTTL?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  editorUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -13035,6 +15175,18 @@ export type CommunicationAdminMembershipResultResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CommunicationAdminMigrateRoomsResultResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['CommunicationAdminMigrateRoomsResult'] =
+    ResolversParentTypes['CommunicationAdminMigrateRoomsResult'],
+> = {
+  errors?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  failed?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  migrated?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -13177,13 +15329,8 @@ export type CommunityInvitationForRoleResultResolvers<
   ParentType extends ResolversParentTypes['CommunityInvitationForRoleResult'] =
     ResolversParentTypes['CommunityInvitationForRoleResult'],
 > = {
+  actorID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   communityID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  contributorID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  contributorType?: Resolver<
-    ResolversTypes['RoleSetContributorType'],
-    ParentType,
-    ContextType
-  >;
   createdBy?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -13253,6 +15400,11 @@ export type ConfigResolvers<
     ContextType
   >;
   geo?: Resolver<ResolversTypes['Geo'], ParentType, ContextType>;
+  language?: Resolver<
+    ResolversTypes['LanguageConfig'],
+    ParentType,
+    ContextType
+  >;
   locations?: Resolver<
     ResolversTypes['PlatformLocations'],
     ParentType,
@@ -13263,17 +15415,70 @@ export type ConfigResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ContributorResolvers<
+export type ContributorCollectionCountsResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['Contributor'] =
-    ResolversParentTypes['Contributor'],
+  ParentType extends ResolversParentTypes['ContributorCollectionCounts'] =
+    ResolversParentTypes['ContributorCollectionCounts'],
 > = {
-  __resolveType: TypeResolveFn<
-    'Organization' | 'User' | 'VirtualContributor',
+  organizations?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  users?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  virtualContributors?: Resolver<
+    ResolversTypes['Int'],
     ParentType,
     ContextType
   >;
-  agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ContributorCollectionItemResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ContributorCollectionItem'] =
+    ResolversParentTypes['ContributorCollectionItem'],
+> = {
+  avatarUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  location?: Resolver<
+    Maybe<ResolversTypes['ContributorLocation']>,
+    ParentType,
+    ContextType
+  >;
+  roleLabel?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
+  url?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ContributorLocationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ContributorLocation'] =
+    ResolversParentTypes['ContributorLocation'],
+> = {
+  city?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  country?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hasValidCoordinates?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  latitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  longitude?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Conversation'] =
+    ResolversParentTypes['Conversation'],
+> = {
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
     ParentType,
@@ -13281,46 +15486,160 @@ export type ContributorResolvers<
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  members?: Resolver<Array<ResolversTypes['Actor']>, ParentType, ContextType>;
+  messaging?: Resolver<ResolversTypes['Messaging'], ParentType, ContextType>;
+  room?: Resolver<ResolversTypes['Room'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-};
-
-export type ContributorRolePolicyResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['ContributorRolePolicy'] =
-    ResolversParentTypes['ContributorRolePolicy'],
-> = {
-  maximum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  minimum?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ContributorRolesResolvers<
+export type ConversationCreatedEventResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['ContributorRoles'] =
-    ResolversParentTypes['ContributorRoles'],
+  ParentType extends ResolversParentTypes['ConversationCreatedEvent'] =
+    ResolversParentTypes['ConversationCreatedEvent'],
 > = {
-  applications?: Resolver<
-    Array<ResolversTypes['CommunityApplicationForRoleResult']>,
-    ParentType,
-    ContextType,
-    Partial<ContributorRolesApplicationsArgs>
-  >;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  invitations?: Resolver<
-    Array<ResolversTypes['CommunityInvitationForRoleResult']>,
-    ParentType,
-    ContextType,
-    Partial<ContributorRolesInvitationsArgs>
-  >;
-  organizations?: Resolver<
-    Array<ResolversTypes['RolesResultOrganization']>,
+  conversation?: Resolver<
+    ResolversTypes['Conversation'],
     ParentType,
     ContextType
   >;
-  spaces?: Resolver<
-    Array<ResolversTypes['RolesResultSpace']>,
+  message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationDeletedEventResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ConversationDeletedEvent'] =
+    ResolversParentTypes['ConversationDeletedEvent'],
+> = {
+  conversationID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationEventSubscriptionResultResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['ConversationEventSubscriptionResult'] =
+    ResolversParentTypes['ConversationEventSubscriptionResult'],
+> = {
+  conversationCreated?: Resolver<
+    Maybe<ResolversTypes['ConversationCreatedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  conversationDeleted?: Resolver<
+    Maybe<ResolversTypes['ConversationDeletedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  conversationUpdated?: Resolver<
+    Maybe<ResolversTypes['ConversationUpdatedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  eventType?: Resolver<
+    ResolversTypes['ConversationEventType'],
+    ParentType,
+    ContextType
+  >;
+  memberAdded?: Resolver<
+    Maybe<ResolversTypes['ConversationMemberAddedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  memberRemoved?: Resolver<
+    Maybe<ResolversTypes['ConversationMemberRemovedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  messageReceived?: Resolver<
+    Maybe<ResolversTypes['ConversationMessageReceivedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  messageRemoved?: Resolver<
+    Maybe<ResolversTypes['ConversationMessageRemovedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  readReceiptUpdated?: Resolver<
+    Maybe<ResolversTypes['ConversationReadReceiptUpdatedEvent']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationMemberAddedEventResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ConversationMemberAddedEvent'] =
+    ResolversParentTypes['ConversationMemberAddedEvent'],
+> = {
+  addedMember?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
+  conversation?: Resolver<
+    ResolversTypes['Conversation'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationMemberRemovedEventResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ConversationMemberRemovedEvent'] =
+    ResolversParentTypes['ConversationMemberRemovedEvent'],
+> = {
+  conversation?: Resolver<
+    ResolversTypes['Conversation'],
+    ParentType,
+    ContextType
+  >;
+  removedMemberID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationMessageReceivedEventResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ConversationMessageReceivedEvent'] =
+    ResolversParentTypes['ConversationMessageReceivedEvent'],
+> = {
+  message?: Resolver<ResolversTypes['Message'], ParentType, ContextType>;
+  roomId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationMessageRemovedEventResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ConversationMessageRemovedEvent'] =
+    ResolversParentTypes['ConversationMessageRemovedEvent'],
+> = {
+  messageId?: Resolver<ResolversTypes['MessageID'], ParentType, ContextType>;
+  roomId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationReadReceiptUpdatedEventResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['ConversationReadReceiptUpdatedEvent'] =
+    ResolversParentTypes['ConversationReadReceiptUpdatedEvent'],
+> = {
+  lastReadEventId?: Resolver<
+    ResolversTypes['MessageID'],
+    ParentType,
+    ContextType
+  >;
+  roomId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ConversationUpdatedEventResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['ConversationUpdatedEvent'] =
+    ResolversParentTypes['ConversationUpdatedEvent'],
+> = {
+  conversation?: Resolver<
+    ResolversTypes['Conversation'],
     ParentType,
     ContextType
   >;
@@ -13332,6 +15651,11 @@ export type CreateCalloutContributionDataResolvers<
   ParentType extends ResolversParentTypes['CreateCalloutContributionData'] =
     ResolversParentTypes['CreateCalloutContributionData'],
 > = {
+  collaboraDocument?: Resolver<
+    Maybe<ResolversTypes['CreateCollaboraDocumentData']>,
+    ParentType,
+    ContextType
+  >;
   link?: Resolver<
     Maybe<ResolversTypes['CreateLinkData']>,
     ParentType,
@@ -13385,6 +15709,30 @@ export type CreateCalloutContributionDefaultsDataResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CreateCalloutContributorsSettingsDataResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['CreateCalloutContributorsSettingsData'] =
+    ResolversParentTypes['CreateCalloutContributorsSettingsData'],
+> = {
+  contributorTypes?: Resolver<
+    Array<ResolversTypes['ActorType']>,
+    ParentType,
+    ContextType
+  >;
+  defaultContributorType?: Resolver<
+    Maybe<ResolversTypes['ActorType']>,
+    ParentType,
+    ContextType
+  >;
+  defaultView?: Resolver<
+    Maybe<ResolversTypes['ContributorCollectionView']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CreateCalloutDataResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['CreateCalloutData'] =
@@ -13430,6 +15778,11 @@ export type CreateCalloutFramingDataResolvers<
   ParentType extends ResolversParentTypes['CreateCalloutFramingData'] =
     ResolversParentTypes['CreateCalloutFramingData'],
 > = {
+  collaboraDocument?: Resolver<
+    Maybe<ResolversTypes['CreateCollaboraDocumentData']>,
+    ParentType,
+    ContextType
+  >;
   link?: Resolver<
     Maybe<ResolversTypes['CreateLinkData']>,
     ParentType,
@@ -13437,6 +15790,11 @@ export type CreateCalloutFramingDataResolvers<
   >;
   memo?: Resolver<
     Maybe<ResolversTypes['CreateMemoData']>,
+    ParentType,
+    ContextType
+  >;
+  poll?: Resolver<
+    Maybe<ResolversTypes['CreatePollData']>,
     ParentType,
     ContextType
   >;
@@ -13463,6 +15821,25 @@ export type CreateCalloutFramingDataResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type CreateCalloutSelectionSettingsDataResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['CreateCalloutSelectionSettingsData'] =
+    ResolversParentTypes['CreateCalloutSelectionSettingsData'],
+> = {
+  mode?: Resolver<
+    Maybe<ResolversTypes['CalloutSelectionMode']>,
+    ParentType,
+    ContextType
+  >;
+  selectedIds?: Resolver<
+    Maybe<Array<ResolversTypes['ID']>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CreateCalloutSettingsContributionDataResolvers<
   ContextType = any,
   ParentType extends
@@ -13475,7 +15852,7 @@ export type CreateCalloutSettingsContributionDataResolvers<
     ContextType
   >;
   canAddContributions?: Resolver<
-    Maybe<ResolversTypes['CalloutAllowedContributors']>,
+    Maybe<ResolversTypes['CalloutAllowedActors']>,
     ParentType,
     ContextType
   >;
@@ -13521,6 +15898,16 @@ export type CreateCalloutSettingsFramingDataResolvers<
     ParentType,
     ContextType
   >;
+  contributors?: Resolver<
+    Maybe<ResolversTypes['CreateCalloutContributorsSettingsData']>,
+    ParentType,
+    ContextType
+  >;
+  selection?: Resolver<
+    Maybe<ResolversTypes['CreateCalloutSelectionSettingsData']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -13544,6 +15931,24 @@ export type CreateClassificationDataResolvers<
 > = {
   tagsets?: Resolver<
     Array<ResolversTypes['CreateTagsetData']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreateCollaboraDocumentDataResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['CreateCollaboraDocumentData'] =
+    ResolversParentTypes['CreateCollaboraDocumentData'],
+> = {
+  displayName?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  documentType?: Resolver<
+    Maybe<ResolversTypes['CollaboraDocumentType']>,
     ParentType,
     ContextType
   >;
@@ -13630,6 +16035,17 @@ export type CreateInnovationFlowStateSettingsDataResolvers<
     ParentType,
     ContextType
   >;
+  descriptionDisplayMode?: Resolver<
+    Maybe<ResolversTypes['CalloutDescriptionDisplayMode']>,
+    ParentType,
+    ContextType
+  >;
+  showPublishDetails?: Resolver<
+    Maybe<ResolversTypes['Boolean']>,
+    ParentType,
+    ContextType
+  >;
+  visible?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -13692,6 +16108,21 @@ export type CreateMemoDataResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type CreatePollDataResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['CreatePollData'] =
+    ResolversParentTypes['CreatePollData'],
+> = {
+  options?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  settings?: Resolver<
+    Maybe<ResolversTypes['PollSettingsData']>,
+    ParentType,
+    ContextType
+  >;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -13856,27 +16287,6 @@ export type CredentialDefinitionResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type CredentialMetadataOutputResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['CredentialMetadataOutput'] =
-    ResolversParentTypes['CredentialMetadataOutput'],
-> = {
-  context?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  schema?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  uniqueType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export interface DidScalarConfig extends GraphQLScalarTypeConfig<
-  ResolversTypes['DID'],
-  any
-> {
-  name: 'DID';
-}
-
 export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<
   ResolversTypes['DateTime'],
   any
@@ -13884,20 +16294,19 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<
   name: 'DateTime';
 }
 
-export type DirectRoomResolvers<
+export type DirectMessageDeliveryResultResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['DirectRoom'] =
-    ResolversParentTypes['DirectRoom'],
+  ParentType extends ResolversParentTypes['DirectMessageDeliveryResult'] =
+    ResolversParentTypes['DirectMessageDeliveryResult'],
 > = {
-  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  messages?: Resolver<
-    Array<ResolversTypes['Message']>,
+  conversationID?: Resolver<
+    Maybe<ResolversTypes['UUID']>,
     ParentType,
     ContextType
   >;
-  receiverID?: Resolver<
-    Maybe<ResolversTypes['String']>,
+  receiverID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  status?: Resolver<
+    ResolversTypes['DirectMessageDeliveryStatus'],
     ParentType,
     ContextType
   >;
@@ -13977,6 +16386,21 @@ export type DocumentResolvers<
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   uploadedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type EmailChangeApproverResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['EmailChangeApprover'] =
+    ResolversParentTypes['EmailChangeApprover'],
+> = {
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  organization?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  role?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -14074,6 +16498,12 @@ export type ForumResolvers<
     Partial<ForumDiscussionsArgs>
   >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  mentionableContributors?: Resolver<
+    Array<ResolversTypes['ActorFull']>,
+    ParentType,
+    ContextType,
+    Partial<ForumMentionableContributorsArgs>
+  >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -14138,6 +16568,11 @@ export type ISearchResultsResolvers<
   ParentType extends ResolversParentTypes['ISearchResults'] =
     ResolversParentTypes['ISearchResults'],
 > = {
+  actorResults?: Resolver<
+    ResolversTypes['ISearchCategoryResult'],
+    ParentType,
+    ContextType
+  >;
   calloutResults?: Resolver<
     ResolversTypes['ISearchCategoryResult'],
     ParentType,
@@ -14148,7 +16583,7 @@ export type ISearchResultsResolvers<
     ParentType,
     ContextType
   >;
-  contributorResults?: Resolver<
+  framingResults?: Resolver<
     ResolversTypes['ISearchCategoryResult'],
     ParentType,
     ContextType
@@ -14178,7 +16613,7 @@ export type InAppNotificationResolvers<
     ParentType,
     ContextType
   >;
-  receiver?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
+  receiver?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   state?: Resolver<
     ResolversTypes['NotificationEventInAppState'],
     ParentType,
@@ -14186,7 +16621,7 @@ export type InAppNotificationResolvers<
   >;
   triggeredAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   triggeredBy?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
+    Maybe<ResolversTypes['Actor']>,
     ParentType,
     ContextType
   >;
@@ -14201,10 +16636,8 @@ export type InAppNotificationPayloadResolvers<
     ResolversParentTypes['InAppNotificationPayload'],
 > = {
   __resolveType: TypeResolveFn<
-    | 'InAppNotificationPayloadOrganization'
     | 'InAppNotificationPayloadOrganizationMessageDirect'
     | 'InAppNotificationPayloadOrganizationMessageRoom'
-    | 'InAppNotificationPayloadPlatform'
     | 'InAppNotificationPayloadPlatformForumDiscussion'
     | 'InAppNotificationPayloadPlatformGlobalRoleChange'
     | 'InAppNotificationPayloadPlatformUser'
@@ -14214,12 +16647,13 @@ export type InAppNotificationPayloadResolvers<
     | 'InAppNotificationPayloadSpaceCollaborationCallout'
     | 'InAppNotificationPayloadSpaceCollaborationCalloutComment'
     | 'InAppNotificationPayloadSpaceCollaborationCalloutPostComment'
+    | 'InAppNotificationPayloadSpaceCollaborationPoll'
     | 'InAppNotificationPayloadSpaceCommunicationMessageDirect'
     | 'InAppNotificationPayloadSpaceCommunicationUpdate'
+    | 'InAppNotificationPayloadSpaceCommunityActor'
     | 'InAppNotificationPayloadSpaceCommunityApplication'
     | 'InAppNotificationPayloadSpaceCommunityCalendarEvent'
     | 'InAppNotificationPayloadSpaceCommunityCalendarEventComment'
-    | 'InAppNotificationPayloadSpaceCommunityContributor'
     | 'InAppNotificationPayloadSpaceCommunityInvitation'
     | 'InAppNotificationPayloadSpaceCommunityInvitationPlatform'
     | 'InAppNotificationPayloadUserMessageDirect'
@@ -14234,20 +16668,6 @@ export type InAppNotificationPayloadResolvers<
   >;
 };
 
-export type InAppNotificationPayloadOrganizationResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadOrganization'] =
-    ResolversParentTypes['InAppNotificationPayloadOrganization'],
-> = {
-  type?: Resolver<
-    ResolversTypes['NotificationEventPayload'],
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type InAppNotificationPayloadOrganizationMessageDirectResolvers<
   ContextType = any,
   ParentType extends
@@ -14256,7 +16676,7 @@ export type InAppNotificationPayloadOrganizationMessageDirectResolvers<
 > = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   organization?: Resolver<
-    ResolversTypes['Contributor'],
+    Maybe<ResolversTypes['Organization']>,
     ParentType,
     ContextType
   >;
@@ -14289,19 +16709,6 @@ export type InAppNotificationPayloadOrganizationMessageRoomResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type InAppNotificationPayloadPlatformResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['InAppNotificationPayloadPlatform'] =
-    ResolversParentTypes['InAppNotificationPayloadPlatform'],
-> = {
-  type?: Resolver<
-    ResolversTypes['NotificationEventPayload'],
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
 export type InAppNotificationPayloadPlatformForumDiscussionResolvers<
   ContextType = any,
   ParentType extends
@@ -14310,7 +16717,7 @@ export type InAppNotificationPayloadPlatformForumDiscussionResolvers<
 > = {
   comment?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   discussion?: Resolver<
-    Maybe<ResolversTypes['DiscussionDetails']>,
+    ResolversTypes['DiscussionDetails'],
     ParentType,
     ContextType
   >;
@@ -14328,7 +16735,7 @@ export type InAppNotificationPayloadPlatformGlobalRoleChangeResolvers<
     ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'] =
     ResolversParentTypes['InAppNotificationPayloadPlatformGlobalRoleChange'],
 > = {
-  role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  role?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14368,7 +16775,7 @@ export type InAppNotificationPayloadPlatformUserMessageRoomResolvers<
     ParentType,
     ContextType
   >;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -14383,16 +16790,8 @@ export type InAppNotificationPayloadPlatformUserProfileRemovedResolvers<
     ParentType,
     ContextType
   >;
-  userDisplayName?: Resolver<
-    Maybe<ResolversTypes['String']>,
-    ParentType,
-    ContextType
-  >;
-  userEmail?: Resolver<
-    Maybe<ResolversTypes['String']>,
-    ParentType,
-    ContextType
-  >;
+  userDisplayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -14401,7 +16800,7 @@ export type InAppNotificationPayloadSpaceResolvers<
   ParentType extends ResolversParentTypes['InAppNotificationPayloadSpace'] =
     ResolversParentTypes['InAppNotificationPayloadSpace'],
 > = {
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14416,8 +16815,8 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'] =
     ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCallout'],
 > = {
-  callout?: Resolver<Maybe<ResolversTypes['Callout']>, ParentType, ContextType>;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14432,13 +16831,13 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutCommentResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutComment'] =
     ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutComment'],
 > = {
-  callout?: Resolver<Maybe<ResolversTypes['Callout']>, ParentType, ContextType>;
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   messageDetails?: Resolver<
     Maybe<ResolversTypes['MessageDetails']>,
     ParentType,
     ContextType
   >;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14453,13 +16852,31 @@ export type InAppNotificationPayloadSpaceCollaborationCalloutPostCommentResolver
     ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutPostComment'] =
     ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationCalloutPostComment'],
 > = {
-  callout?: Resolver<Maybe<ResolversTypes['Callout']>, ParentType, ContextType>;
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   messageDetails?: Resolver<
     Maybe<ResolversTypes['MessageDetails']>,
     ParentType,
     ContextType
   >;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCollaborationPollResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPoll'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCollaborationPoll'],
+> = {
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
+  poll?: Resolver<ResolversTypes['Poll'], ParentType, ContextType>;
+  pollID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14475,7 +16892,7 @@ export type InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationMessageDirect'],
 > = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14490,13 +16907,29 @@ export type InAppNotificationPayloadSpaceCommunicationUpdateResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'] =
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunicationUpdate'],
 > = {
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
     ContextType
   >;
-  update?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  update?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type InAppNotificationPayloadSpaceCommunityActorResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityActor'] =
+    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityActor'],
+> = {
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  type?: Resolver<
+    ResolversTypes['NotificationEventPayload'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -14507,11 +16940,11 @@ export type InAppNotificationPayloadSpaceCommunityApplicationResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunityApplication'],
 > = {
   application?: Resolver<
-    Maybe<ResolversTypes['Application']>,
+    ResolversTypes['Application'],
     ParentType,
     ContextType
   >;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14527,12 +16960,11 @@ export type InAppNotificationPayloadSpaceCommunityCalendarEventResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEvent'],
 > = {
   calendarEvent?: Resolver<
-    Maybe<ResolversTypes['CalendarEvent']>,
+    ResolversTypes['CalendarEvent'],
     ParentType,
     ContextType
   >;
-  calendarEventID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14548,33 +16980,12 @@ export type InAppNotificationPayloadSpaceCommunityCalendarEventCommentResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunityCalendarEventComment'],
 > = {
   calendarEvent?: Resolver<
-    Maybe<ResolversTypes['CalendarEvent']>,
+    ResolversTypes['CalendarEvent'],
     ParentType,
     ContextType
   >;
-  calendarEventID?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   commentText?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
-  type?: Resolver<
-    ResolversTypes['NotificationEventPayload'],
-    ParentType,
-    ContextType
-  >;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type InAppNotificationPayloadSpaceCommunityContributorResolvers<
-  ContextType = any,
-  ParentType extends
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'] =
-    ResolversParentTypes['InAppNotificationPayloadSpaceCommunityContributor'],
-> = {
-  contributor?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
-    ParentType,
-    ContextType
-  >;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14589,7 +17000,7 @@ export type InAppNotificationPayloadSpaceCommunityInvitationResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'] =
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitation'],
 > = {
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14604,7 +17015,7 @@ export type InAppNotificationPayloadSpaceCommunityInvitationPlatformResolvers<
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'] =
     ResolversParentTypes['InAppNotificationPayloadSpaceCommunityInvitationPlatform'],
 > = {
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14619,7 +17030,7 @@ export type InAppNotificationPayloadUserMessageDirectResolvers<
     ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'] =
     ResolversParentTypes['InAppNotificationPayloadUserMessageDirect'],
 > = {
-  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
     ParentType,
@@ -14635,19 +17046,14 @@ export type InAppNotificationPayloadVirtualContributorResolvers<
     ResolversParentTypes['InAppNotificationPayloadVirtualContributor'] =
     ResolversParentTypes['InAppNotificationPayloadVirtualContributor'],
 > = {
-  contributor?: Resolver<
-    Maybe<ResolversTypes['VirtualContributor']>,
+  actor?: Resolver<
+    ResolversTypes['VirtualContributor'],
     ParentType,
     ContextType
   >;
-  space?: Resolver<Maybe<ResolversTypes['Space']>, ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   type?: Resolver<
     ResolversTypes['NotificationEventPayload'],
-    ParentType,
-    ContextType
-  >;
-  virtualContributorID?: Resolver<
-    ResolversTypes['String'],
     ParentType,
     ContextType
   >;
@@ -14715,6 +17121,11 @@ export type InnovationFlowStateResolvers<
     ContextType
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  defaultCalloutTemplate?: Resolver<
+    Maybe<ResolversTypes['Template']>,
+    ParentType,
+    ContextType
+  >;
   description?: Resolver<
     Maybe<ResolversTypes['Markdown']>,
     ParentType,
@@ -14742,6 +17153,17 @@ export type InnovationFlowStateSettingsResolvers<
     ParentType,
     ContextType
   >;
+  descriptionDisplayMode?: Resolver<
+    ResolversTypes['CalloutDescriptionDisplayMode'],
+    ParentType,
+    ContextType
+  >;
+  showPublishDetails?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  visible?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -14758,10 +17180,15 @@ export type InnovationHubResolvers<
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  innovationPackListFilter?: Resolver<
+    Maybe<Array<ResolversTypes['InnovationPack']>>,
+    ParentType,
+    ContextType
+  >;
   listedInStore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
-  provider?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
+  provider?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   searchVisibility?: Resolver<
     ResolversTypes['SearchVisibility'],
     ParentType,
@@ -14780,6 +17207,11 @@ export type InnovationHubResolvers<
   subdomain?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['InnovationHubType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  virtualContributorListFilter?: Resolver<
+    Maybe<Array<ResolversTypes['VirtualContributor']>>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -14798,7 +17230,7 @@ export type InnovationPackResolvers<
   listedInStore?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
-  provider?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
+  provider?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   searchVisibility?: Resolver<
     ResolversTypes['SearchVisibility'],
     ParentType,
@@ -14856,18 +17288,9 @@ export type InvitationResolvers<
   ParentType extends ResolversParentTypes['Invitation'] =
     ResolversParentTypes['Invitation'],
 > = {
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
-    ParentType,
-    ContextType
-  >;
-  contributor?: Resolver<
-    ResolversTypes['Contributor'],
-    ParentType,
-    ContextType
-  >;
-  contributorType?: Resolver<
-    ResolversTypes['RoleSetContributorType'],
     ParentType,
     ContextType
   >;
@@ -14892,6 +17315,11 @@ export type InvitationResolvers<
     ContextType
   >;
   state?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  suggestedLanguage?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   welcomeMessage?: Resolver<
     Maybe<ResolversTypes['String']>,
@@ -14900,13 +17328,6 @@ export type InvitationResolvers<
   >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
-
-export interface JsonScalarConfig extends GraphQLScalarTypeConfig<
-  ResolversTypes['JSON'],
-  any
-> {
-  name: 'JSON';
-}
 
 export type KnowledgeBaseResolvers<
   ContextType = any,
@@ -14953,6 +17374,16 @@ export type KratosIdentityResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type LanguageConfigResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['LanguageConfig'] =
+    ResolversParentTypes['LanguageConfig'],
+> = {
+  default?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  eligible?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LatestReleaseDiscussionResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['LatestReleaseDiscussion'] =
@@ -14986,11 +17417,23 @@ export type LibraryResolvers<
     ContextType,
     Partial<LibraryInnovationPacksArgs>
   >;
+  innovationPacksPaginated?: Resolver<
+    ResolversTypes['PaginatedInnovationPacks'],
+    ParentType,
+    ContextType,
+    Partial<LibraryInnovationPacksPaginatedArgs>
+  >;
   templates?: Resolver<
     Array<ResolversTypes['TemplateResult']>,
     ParentType,
     ContextType,
     Partial<LibraryTemplatesArgs>
+  >;
+  templatesPaginated?: Resolver<
+    ResolversTypes['PaginatedLibraryTemplateResults'],
+    ParentType,
+    ContextType,
+    Partial<LibraryTemplatesPaginatedArgs>
   >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   virtualContributors?: Resolver<
@@ -15575,6 +18018,12 @@ export type LookupQueryResultsResolvers<
     ContextType,
     RequireFields<LookupQueryResultsContributionArgs, 'ID'>
   >;
+  conversation?: Resolver<
+    Maybe<ResolversTypes['Conversation']>,
+    ParentType,
+    ContextType,
+    RequireFields<LookupQueryResultsConversationArgs, 'ID'>
+  >;
   document?: Resolver<
     Maybe<ResolversTypes['Document']>,
     ParentType,
@@ -15734,6 +18183,19 @@ export interface MarkdownScalarConfig extends GraphQLScalarTypeConfig<
   name: 'Markdown';
 }
 
+export type MeConversationsResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['MeConversationsResult'] =
+    ResolversParentTypes['MeConversationsResult'],
+> = {
+  conversations?: Resolver<
+    Array<ResolversTypes['Conversation']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MeQueryResultsResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['MeQueryResults'] =
@@ -15756,6 +18218,11 @@ export type MeQueryResultsResolvers<
     ParentType,
     ContextType,
     Partial<MeQueryResultsCommunityInvitationsCountArgs>
+  >;
+  conversations?: Resolver<
+    ResolversTypes['MeConversationsResult'],
+    ParentType,
+    ContextType
   >;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   mySpaces?: Resolver<
@@ -15787,6 +18254,33 @@ export type MeQueryResultsResolvers<
     Partial<MeQueryResultsSpaceMembershipsHierarchicalArgs>
   >;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MediaGalleryResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['MediaGallery'] =
+    ResolversParentTypes['MediaGallery'],
+> = {
+  authorization?: Resolver<
+    Maybe<ResolversTypes['Authorization']>,
+    ParentType,
+    ContextType
+  >;
+  createdBy?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  storageBucket?: Resolver<
+    Maybe<ResolversTypes['StorageBucket']>,
+    ParentType,
+    ContextType
+  >;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  visuals?: Resolver<Array<ResolversTypes['Visual']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -15833,25 +18327,13 @@ export type MessageResolvers<
     ParentType,
     ContextType
   >;
-  sender?: Resolver<
-    Maybe<ResolversTypes['Contributor']>,
+  sender?: Resolver<Maybe<ResolversTypes['Actor']>, ParentType, ContextType>;
+  threadID?: Resolver<
+    Maybe<ResolversTypes['MessageID']>,
     ParentType,
     ContextType
   >;
-  threadID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   timestamp?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type MessageAnswerQuestionResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['MessageAnswerQuestion'] =
-    ResolversParentTypes['MessageAnswerQuestion'],
-> = {
-  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  question?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -15881,6 +18363,22 @@ export type MessageParentResolvers<
   displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type MessagingResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Messaging'] =
+    ResolversParentTypes['Messaging'],
+> = {
+  authorization?: Resolver<
+    Maybe<ResolversTypes['Authorization']>,
+    ParentType,
+    ContextType
+  >;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -15983,11 +18481,29 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAddIframeAllowedUrlArgs, 'whitelistedURL'>
   >;
+  addNotificationEmailToBlacklist?: Resolver<
+    Array<ResolversTypes['String']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddNotificationEmailToBlacklistArgs, 'input'>
+  >;
+  addPollOption?: Resolver<
+    ResolversTypes['Poll'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddPollOptionArgs, 'optionData'>
+  >;
   addReactionToMessageInRoom?: Resolver<
     ResolversTypes['Reaction'],
     ParentType,
     ContextType,
     RequireFields<MutationAddReactionToMessageInRoomArgs, 'reactionData'>
+  >;
+  addVisualToMediaGallery?: Resolver<
+    ResolversTypes['Visual'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAddVisualToMediaGalleryArgs, 'addData'>
   >;
   adminCommunicationEnsureAccessToCommunications?: Resolver<
     ResolversTypes['Boolean'],
@@ -15998,6 +18514,11 @@ export type MutationResolvers<
       'communicationData'
     >
   >;
+  adminCommunicationMigrateOrphanedConversations?: Resolver<
+    ResolversTypes['CommunicationAdminMigrateRoomsResult'],
+    ParentType,
+    ContextType
+  >;
   adminCommunicationRemoveOrphanedRoom?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
@@ -16006,6 +18527,11 @@ export type MutationResolvers<
       MutationAdminCommunicationRemoveOrphanedRoomArgs,
       'orphanedRoomData'
     >
+  >;
+  adminCommunicationSyncSpaceHierarchy?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
   >;
   adminCommunicationUpdateRoomState?: Resolver<
     ResolversTypes['Boolean'],
@@ -16079,6 +18605,21 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationAdminUserAccountDeleteArgs, 'userID'>
   >;
+  adminUserEmailChange?: Resolver<
+    ResolversTypes['UserEmailChangeResult'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAdminUserEmailChangeArgs, 'adminUserEmailChangeData'>
+  >;
+  adminUserEmailChangeDriftResolve?: Resolver<
+    ResolversTypes['UserEmailChangeResult'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationAdminUserEmailChangeDriftResolveArgs,
+      'adminUserEmailChangeDriftResolveData'
+    >
+  >;
   adminWingbackCreateTestCustomer?: Resolver<
     ResolversTypes['String'],
     ParentType,
@@ -16122,11 +18663,11 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationApplyForEntryRoleOnRoleSetArgs, 'applicationData'>
   >;
-  askChatGuidanceQuestion?: Resolver<
-    ResolversTypes['MessageAnswerQuestion'],
+  assignConversationMember?: Resolver<
+    ResolversTypes['Boolean'],
     ParentType,
     ContextType,
-    RequireFields<MutationAskChatGuidanceQuestionArgs, 'chatData'>
+    RequireFields<MutationAssignConversationMemberArgs, 'memberData'>
   >;
   assignLicensePlanToAccount?: Resolver<
     ResolversTypes['Account'],
@@ -16145,6 +18686,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationAssignPlatformRoleToUserArgs, 'roleData'>
+  >;
+  assignRole?: Resolver<
+    ResolversTypes['Actor'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationAssignRoleArgs, 'roleData'>
   >;
   assignRoleToOrganization?: Resolver<
     ResolversTypes['Organization'],
@@ -16221,28 +18768,11 @@ export type MutationResolvers<
       'authorizationID'
     >
   >;
-  beginAlkemioUserVerifiedCredentialOfferInteraction?: Resolver<
-    ResolversTypes['AgentBeginVerifiedCredentialOfferOutput'],
-    ParentType,
-    ContextType
-  >;
-  beginCommunityMemberVerifiedCredentialOfferInteraction?: Resolver<
-    ResolversTypes['AgentBeginVerifiedCredentialOfferOutput'],
+  castPollVote?: Resolver<
+    ResolversTypes['Poll'],
     ParentType,
     ContextType,
-    RequireFields<
-      MutationBeginCommunityMemberVerifiedCredentialOfferInteractionArgs,
-      'communityID'
-    >
-  >;
-  beginVerifiedCredentialRequestInteraction?: Resolver<
-    ResolversTypes['AgentBeginVerifiedCredentialRequestOutput'],
-    ParentType,
-    ContextType,
-    RequireFields<
-      MutationBeginVerifiedCredentialRequestInteractionArgs,
-      'types'
-    >
+    RequireFields<MutationCastPollVoteArgs, 'voteData'>
   >;
   cleanupCollections?: Resolver<
     ResolversTypes['MigrateEmbeddings'],
@@ -16282,16 +18812,17 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateCalloutOnCalloutsSetArgs, 'calloutData'>
   >;
-  createChatGuidanceRoom?: Resolver<
-    Maybe<ResolversTypes['Room']>,
-    ParentType,
-    ContextType
-  >;
   createContributionOnCallout?: Resolver<
     ResolversTypes['CalloutContribution'],
     ParentType,
     ContextType,
     RequireFields<MutationCreateContributionOnCalloutArgs, 'contributionData'>
+  >;
+  createConversation?: Resolver<
+    ResolversTypes['Conversation'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateConversationArgs, 'conversationData'>
   >;
   createDiscussion?: Resolver<
     ResolversTypes['Discussion'],
@@ -16395,11 +18926,6 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateUserArgs, 'userData'>
   >;
-  createUserNewRegistration?: Resolver<
-    ResolversTypes['User'],
-    ParentType,
-    ContextType
-  >;
   createVirtualContributor?: Resolver<
     ResolversTypes['VirtualContributor'],
     ParentType,
@@ -16415,6 +18941,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateWingbackAccountArgs, 'accountID'>
   >;
+  deleteApplication?: Resolver<
+    ResolversTypes['Application'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteApplicationArgs, 'deleteData'>
+  >;
   deleteCalendarEvent?: Resolver<
     ResolversTypes['CalendarEvent'],
     ParentType,
@@ -16427,11 +18959,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationDeleteCalloutArgs, 'deleteData'>
   >;
+  deleteCollaboraDocument?: Resolver<
+    ResolversTypes['CollaboraDocument'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteCollaboraDocumentArgs, 'deleteData'>
+  >;
   deleteContribution?: Resolver<
     ResolversTypes['CalloutContribution'],
     ParentType,
     ContextType,
     RequireFields<MutationDeleteContributionArgs, 'deleteData'>
+  >;
+  deleteConversation?: Resolver<
+    ResolversTypes['Conversation'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteConversationArgs, 'deleteData'>
   >;
   deleteDiscussion?: Resolver<
     ResolversTypes['Discussion'],
@@ -16535,12 +19079,6 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationDeleteUserArgs, 'deleteData'>
   >;
-  deleteUserApplication?: Resolver<
-    ResolversTypes['Application'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteUserApplicationArgs, 'deleteData'>
-  >;
   deleteUserGroup?: Resolver<
     ResolversTypes['UserGroup'],
     ParentType,
@@ -16553,11 +19091,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationDeleteVirtualContributorArgs, 'deleteData'>
   >;
+  deleteVisualFromMediaGallery?: Resolver<
+    ResolversTypes['Visual'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteVisualFromMediaGalleryArgs, 'deleteData'>
+  >;
   deleteWhiteboard?: Resolver<
     ResolversTypes['Whiteboard'],
     ParentType,
     ContextType,
     RequireFields<MutationDeleteWhiteboardArgs, 'whiteboardData'>
+  >;
+  enablePushSubscription?: Resolver<
+    ResolversTypes['PushSubscription'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationEnablePushSubscriptionArgs, 'subscriptionData'>
   >;
   eventOnApplication?: Resolver<
     ResolversTypes['Application'],
@@ -16577,6 +19127,15 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationEventOnOrganizationVerificationArgs, 'eventData'>
   >;
+  grantCredentialToActor?: Resolver<
+    ResolversTypes['Credential'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationGrantCredentialToActorArgs,
+      'actorID' | 'credentialType'
+    >
+  >;
   grantCredentialToOrganization?: Resolver<
     ResolversTypes['Organization'],
     ParentType,
@@ -16592,6 +19151,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationGrantCredentialToUserArgs, 'grantCredentialData'>
   >;
+  importCollaboraDocument?: Resolver<
+    ResolversTypes['CalloutContribution'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationImportCollaboraDocumentArgs, 'file' | 'uploadData'>
+  >;
   inviteForEntryRoleOnRoleSet?: Resolver<
     Array<ResolversTypes['RoleSetInvitationResult']>,
     ParentType,
@@ -16604,11 +19169,23 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationJoinRoleSetArgs, 'joinData'>
   >;
+  leaveConversation?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationLeaveConversationArgs, 'leaveData'>
+  >;
   licenseResetOnAccount?: Resolver<
     ResolversTypes['Account'],
     ParentType,
     ContextType,
     RequireFields<MutationLicenseResetOnAccountArgs, 'resetData'>
+  >;
+  markMessageAsReadInRoom?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationMarkMessageAsReadInRoomArgs, 'messageData'>
   >;
   markNotificationsAsRead?: Resolver<
     ResolversTypes['Boolean'],
@@ -16627,6 +19204,24 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationMoveContributionToCalloutArgs, 'moveContributionData'>
+  >;
+  moveSpaceL1ToSpaceL0?: Resolver<
+    ResolversTypes['Space'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationMoveSpaceL1ToSpaceL0Args, 'moveData'>
+  >;
+  moveSpaceL1ToSpaceL2?: Resolver<
+    ResolversTypes['Space'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationMoveSpaceL1ToSpaceL2Args, 'moveData'>
+  >;
+  moveSpaceL2ToSpaceL1?: Resolver<
+    ResolversTypes['Space'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationMoveSpaceL2ToSpaceL1Args, 'moveData'>
   >;
   refreshAllBodiesOfKnowledge?: Resolver<
     ResolversTypes['Boolean'],
@@ -16651,6 +19246,21 @@ export type MutationResolvers<
       'communityGuidelinesData'
     >
   >;
+  removeConversationMember?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationRemoveConversationMemberArgs, 'memberData'>
+  >;
+  removeDefaultCalloutTemplateOnInnovationFlowState?: Resolver<
+    ResolversTypes['InnovationFlowState'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationRemoveDefaultCalloutTemplateOnInnovationFlowStateArgs,
+      'removeData'
+    >
+  >;
   removeIframeAllowedURL?: Resolver<
     Array<ResolversTypes['String']>,
     ParentType,
@@ -16663,17 +19273,41 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationRemoveMessageOnRoomArgs, 'messageData'>
   >;
+  removeNotificationEmailFromBlacklist?: Resolver<
+    Array<ResolversTypes['String']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationRemoveNotificationEmailFromBlacklistArgs, 'input'>
+  >;
   removePlatformRoleFromUser?: Resolver<
     ResolversTypes['User'],
     ParentType,
     ContextType,
     RequireFields<MutationRemovePlatformRoleFromUserArgs, 'roleData'>
   >;
+  removePollOption?: Resolver<
+    ResolversTypes['Poll'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationRemovePollOptionArgs, 'optionData'>
+  >;
+  removePollVote?: Resolver<
+    ResolversTypes['Poll'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationRemovePollVoteArgs, 'voteData'>
+  >;
   removeReactionToMessageInRoom?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType,
     RequireFields<MutationRemoveReactionToMessageInRoomArgs, 'reactionData'>
+  >;
+  removeRole?: Resolver<
+    ResolversTypes['Actor'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationRemoveRoleArgs, 'roleData'>
   >;
   removeRoleFromOrganization?: Resolver<
     ResolversTypes['Organization'],
@@ -16699,15 +19333,37 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationRemoveUserFromGroupArgs, 'membershipData'>
   >;
-  resetChatGuidance?: Resolver<
+  reorderPollOptions?: Resolver<
+    ResolversTypes['Poll'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationReorderPollOptionsArgs, 'optionData'>
+  >;
+  replaceCollaboraDocument?: Resolver<
+    ResolversTypes['CollaboraDocument'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationReplaceCollaboraDocumentArgs, 'file' | 'replaceData'>
+  >;
+  resetConversationVc?: Resolver<
+    ResolversTypes['Conversation'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationResetConversationVcArgs, 'input'>
+  >;
+  resetLicenseOnAccounts?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
-  resetLicenseOnAccounts?: Resolver<
-    ResolversTypes['Space'],
+  revokeCredentialFromActor?: Resolver<
+    ResolversTypes['Boolean'],
     ParentType,
-    ContextType
+    ContextType,
+    RequireFields<
+      MutationRevokeCredentialFromActorArgs,
+      'actorID' | 'credentialType'
+    >
   >;
   revokeCredentialFromOrganization?: Resolver<
     ResolversTypes['Organization'],
@@ -16736,6 +19392,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationRevokeLicensePlanFromSpaceArgs, 'planData'>
   >;
+  sendDirectMessageToUsers?: Resolver<
+    Array<ResolversTypes['DirectMessageDeliveryResult']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationSendDirectMessageToUsersArgs, 'messageData'>
+  >;
   sendMessageReplyToRoom?: Resolver<
     ResolversTypes['Message'],
     ParentType,
@@ -16760,17 +19422,35 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationSendMessageToRoomArgs, 'messageData'>
   >;
-  sendMessageToUserDirect?: Resolver<
-    ResolversTypes['String'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationSendMessageToUserDirectArgs, 'messageData'>
-  >;
   sendMessageToUsers?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType,
     RequireFields<MutationSendMessageToUsersArgs, 'messageData'>
+  >;
+  setDefaultCalloutTemplateOnInnovationFlowState?: Resolver<
+    ResolversTypes['InnovationFlowState'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationSetDefaultCalloutTemplateOnInnovationFlowStateArgs,
+      'setData'
+    >
+  >;
+  setPlatformWellKnownVirtualContributor?: Resolver<
+    ResolversTypes['PlatformWellKnownVirtualContributors'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationSetPlatformWellKnownVirtualContributorArgs,
+      'mappingData'
+    >
+  >;
+  subscribeToPushNotifications?: Resolver<
+    ResolversTypes['PushSubscription'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationSubscribeToPushNotificationsArgs, 'subscriptionData'>
   >;
   transferCallout?: Resolver<
     ResolversTypes['Callout'],
@@ -16805,11 +19485,14 @@ export type MutationResolvers<
       'transferData'
     >
   >;
-  updateAnswerRelevance?: Resolver<
-    ResolversTypes['Boolean'],
+  unsubscribeFromPushNotifications?: Resolver<
+    ResolversTypes['PushSubscription'],
     ParentType,
     ContextType,
-    RequireFields<MutationUpdateAnswerRelevanceArgs, 'input'>
+    RequireFields<
+      MutationUnsubscribeFromPushNotificationsArgs,
+      'subscriptionData'
+    >
   >;
   updateApplicationFormOnRoleSet?: Resolver<
     ResolversTypes['RoleSet'],
@@ -16819,6 +19502,12 @@ export type MutationResolvers<
       MutationUpdateApplicationFormOnRoleSetArgs,
       'applicationFormData'
     >
+  >;
+  updateAssistantActorCapabilities?: Resolver<
+    ResolversTypes['VirtualAssistant'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateAssistantActorCapabilitiesArgs, 'grantData'>
   >;
   updateBaselineLicensePlanOnAccount?: Resolver<
     ResolversTypes['Account'],
@@ -16862,6 +19551,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdateClassificationTagsetArgs, 'updateData'>
   >;
+  updateCollaboraDocument?: Resolver<
+    ResolversTypes['CollaboraDocument'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateCollaboraDocumentArgs, 'updateData'>
+  >;
   updateCollaborationFromSpaceTemplate?: Resolver<
     ResolversTypes['Collaboration'],
     ParentType,
@@ -16885,6 +19580,12 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateContributionsSortOrderArgs, 'sortOrderData'>
+  >;
+  updateConversation?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateConversationArgs, 'updateData'>
   >;
   updateDiscussion?: Resolver<
     ResolversTypes['Discussion'],
@@ -16991,6 +19692,18 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdatePlatformSettingsArgs, 'settingsData'>
   >;
+  updatePollOption?: Resolver<
+    ResolversTypes['Poll'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdatePollOptionArgs, 'optionData'>
+  >;
+  updatePollStatus?: Resolver<
+    ResolversTypes['Poll'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdatePollStatusArgs, 'statusData'>
+  >;
   updatePost?: Resolver<
     ResolversTypes['Post'],
     ParentType,
@@ -17026,6 +19739,18 @@ export type MutationResolvers<
     ParentType,
     ContextType,
     RequireFields<MutationUpdateSpaceSettingsArgs, 'settingsData'>
+  >;
+  updateSubspacePinned?: Resolver<
+    ResolversTypes['Space'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateSubspacePinnedArgs, 'pinnedData'>
+  >;
+  updateSubspacesSortOrder?: Resolver<
+    Array<ResolversTypes['Space']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateSubspacesSortOrderArgs, 'sortOrderData'>
   >;
   updateTagset?: Resolver<
     ResolversTypes['Tagset'],
@@ -17093,6 +19818,15 @@ export type MutationResolvers<
       'virtualContributorData'
     >
   >;
+  updateVirtualContributorPlatformSettings?: Resolver<
+    ResolversTypes['VirtualContributor'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      MutationUpdateVirtualContributorPlatformSettingsArgs,
+      'settingsData'
+    >
+  >;
   updateVirtualContributorSettings?: Resolver<
     ResolversTypes['VirtualContributor'],
     ParentType,
@@ -17111,6 +19845,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationUpdateWhiteboardArgs, 'whiteboardData'>
   >;
+  updateWhiteboardGuestAccess?: Resolver<
+    ResolversTypes['UpdateWhiteboardGuestAccessResult'],
+    ParentType,
+    ContextType,
+    RequireFields<MutationUpdateWhiteboardGuestAccessArgs, 'input'>
+  >;
   uploadFileOnLink?: Resolver<
     ResolversTypes['Link'],
     ParentType,
@@ -17124,7 +19864,7 @@ export type MutationResolvers<
     RequireFields<MutationUploadFileOnReferenceArgs, 'file' | 'uploadData'>
   >;
   uploadFileOnStorageBucket?: Resolver<
-    ResolversTypes['String'],
+    ResolversTypes['StorageBucketUploadFileResult'],
     ParentType,
     ContextType,
     RequireFields<MutationUploadFileOnStorageBucketArgs, 'file' | 'uploadData'>
@@ -17185,6 +19925,11 @@ export type NotificationRecipientResultResolvers<
     ParentType,
     ContextType
   >;
+  pushRecipients?: Resolver<
+    Array<ResolversTypes['User']>,
+    ParentType,
+    ContextType
+  >;
   triggeredBy?: Resolver<
     Maybe<ResolversTypes['User']>,
     ParentType,
@@ -17199,7 +19944,7 @@ export type OrganizationResolvers<
     ResolversParentTypes['Organization'],
 > = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
-  agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
     ParentType,
@@ -17211,6 +19956,11 @@ export type OrganizationResolvers<
     ContextType
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
+    ParentType,
+    ContextType
+  >;
   domain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   group?: Resolver<
     Maybe<ResolversTypes['UserGroup']>,
@@ -17235,7 +19985,7 @@ export type OrganizationResolvers<
     ContextType
   >;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   roleSet?: Resolver<ResolversTypes['RoleSet'], ParentType, ContextType>;
   settings?: Resolver<
     ResolversTypes['OrganizationSettings'],
@@ -17247,6 +19997,7 @@ export type OrganizationResolvers<
     ParentType,
     ContextType
   >;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   verification?: Resolver<
     ResolversTypes['OrganizationVerification'],
@@ -17397,6 +20148,36 @@ export type PaginatedInAppNotificationsResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PaginatedInnovationPacksResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PaginatedInnovationPacks'] =
+    ResolversParentTypes['PaginatedInnovationPacks'],
+> = {
+  innovationPacks?: Resolver<
+    Array<ResolversTypes['InnovationPack']>,
+    ParentType,
+    ContextType
+  >;
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PaginatedLibraryTemplateResultsResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PaginatedLibraryTemplateResults'] =
+    ResolversParentTypes['PaginatedLibraryTemplateResults'],
+> = {
+  pageInfo?: Resolver<ResolversTypes['PageInfo'], ParentType, ContextType>;
+  templateResults?: Resolver<
+    Array<ResolversTypes['TemplateResult']>,
+    ParentType,
+    ContextType
+  >;
+  total?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type PaginatedOrganizationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['PaginatedOrganization'] =
@@ -17459,11 +20240,6 @@ export type PlatformResolvers<
     ParentType,
     ContextType
   >;
-  chatGuidanceVirtualContributor?: Resolver<
-    ResolversTypes['VirtualContributor'],
-    ParentType,
-    ContextType
-  >;
   configuration?: Resolver<ResolversTypes['Config'], ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   forum?: Resolver<ResolversTypes['Forum'], ParentType, ContextType>;
@@ -17485,6 +20261,11 @@ export type PlatformResolvers<
     ParentType,
     ContextType
   >;
+  messaging?: Resolver<
+    Maybe<ResolversTypes['Messaging']>,
+    ParentType,
+    ContextType
+  >;
   metadata?: Resolver<ResolversTypes['Metadata'], ParentType, ContextType>;
   roleSet?: Resolver<ResolversTypes['RoleSet'], ParentType, ContextType>;
   settings?: Resolver<
@@ -17503,6 +20284,16 @@ export type PlatformResolvers<
     ContextType
   >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  virtualAssistantAccess?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  wellKnownVirtualContributors?: Resolver<
+    ResolversTypes['PlatformWellKnownVirtualContributors'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -17562,6 +20353,11 @@ export type PlatformAdminQueryResultsResolvers<
   ParentType extends ResolversParentTypes['PlatformAdminQueryResults'] =
     ResolversParentTypes['PlatformAdminQueryResults'],
 > = {
+  accounts?: Resolver<
+    Array<ResolversTypes['Account']>,
+    ParentType,
+    ContextType
+  >;
   communication?: Resolver<
     ResolversTypes['PlatformAdminCommunicationQueryResults'],
     ParentType,
@@ -17583,6 +20379,15 @@ export type PlatformAdminQueryResultsResolvers<
     ContextType,
     Partial<PlatformAdminQueryResultsInnovationPacksArgs>
   >;
+  latestUserEmailChangeAuditEntry?: Resolver<
+    Maybe<ResolversTypes['UserEmailChangeAuditEntry']>,
+    ParentType,
+    ContextType,
+    RequireFields<
+      PlatformAdminQueryResultsLatestUserEmailChangeAuditEntryArgs,
+      'userID'
+    >
+  >;
   organizations?: Resolver<
     ResolversTypes['PaginatedOrganization'],
     ParentType,
@@ -17595,11 +20400,25 @@ export type PlatformAdminQueryResultsResolvers<
     ContextType,
     Partial<PlatformAdminQueryResultsSpacesArgs>
   >;
+  userEmailChangeAuditEntries?: Resolver<
+    ResolversTypes['UserEmailChangeAuditEntries'],
+    ParentType,
+    ContextType,
+    RequireFields<
+      PlatformAdminQueryResultsUserEmailChangeAuditEntriesArgs,
+      'userID'
+    >
+  >;
   users?: Resolver<
     ResolversTypes['PaginatedUsers'],
     ParentType,
     ContextType,
     Partial<PlatformAdminQueryResultsUsersArgs>
+  >;
+  virtualAssistant?: Resolver<
+    ResolversTypes['VirtualAssistant'],
+    ParentType,
+    ContextType
   >;
   virtualContributors?: Resolver<
     Array<ResolversTypes['VirtualContributor']>,
@@ -17630,6 +20449,11 @@ export type PlatformIntegrationSettingsResolvers<
     ResolversParentTypes['PlatformIntegrationSettings'],
 > = {
   iframeAllowedUrls?: Resolver<
+    Array<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  notificationEmailBlacklist?: Resolver<
     Array<ResolversTypes['String']>,
     ParentType,
     ContextType
@@ -17670,6 +20494,11 @@ export type PlatformInvitationResolvers<
   >;
   roleSetInvitedToParent?: Resolver<
     ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  suggestedLanguage?: Resolver<
+    Maybe<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
@@ -17739,6 +20568,203 @@ export type PlatformSettingsResolvers<
 > = {
   integration?: Resolver<
     ResolversTypes['PlatformIntegrationSettings'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PlatformWellKnownVirtualContributorMappingResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['PlatformWellKnownVirtualContributorMapping'] =
+    ResolversParentTypes['PlatformWellKnownVirtualContributorMapping'],
+> = {
+  virtualContributorID?: Resolver<
+    ResolversTypes['UUID'],
+    ParentType,
+    ContextType
+  >;
+  wellKnown?: Resolver<
+    ResolversTypes['VirtualContributorWellKnown'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PlatformWellKnownVirtualContributorsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['PlatformWellKnownVirtualContributors'] =
+    ResolversParentTypes['PlatformWellKnownVirtualContributors'],
+> = {
+  mappings?: Resolver<
+    Array<ResolversTypes['PlatformWellKnownVirtualContributorMapping']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PollResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['Poll'] =
+    ResolversParentTypes['Poll'],
+> = {
+  authorization?: Resolver<
+    Maybe<ResolversTypes['Authorization']>,
+    ParentType,
+    ContextType
+  >;
+  canSeeDetailedResults?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  deadline?: Resolver<
+    Maybe<ResolversTypes['DateTime']>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  myVote?: Resolver<Maybe<ResolversTypes['PollVote']>, ParentType, ContextType>;
+  options?: Resolver<
+    Array<ResolversTypes['PollOption']>,
+    ParentType,
+    ContextType
+  >;
+  settings?: Resolver<ResolversTypes['PollSettings'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['PollStatus'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  totalVotes?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PollOptionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PollOption'] =
+    ResolversParentTypes['PollOption'],
+> = {
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  sortOrder?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  text?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  voteCount?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  votePercentage?: Resolver<
+    Maybe<ResolversTypes['Float']>,
+    ParentType,
+    ContextType
+  >;
+  voters?: Resolver<
+    Maybe<Array<ResolversTypes['User']>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PollOptionsChangedSubscriptionResultResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['PollOptionsChangedSubscriptionResult'] =
+    ResolversParentTypes['PollOptionsChangedSubscriptionResult'],
+> = {
+  poll?: Resolver<ResolversTypes['Poll'], ParentType, ContextType>;
+  pollEventType?: Resolver<
+    ResolversTypes['PollEventType'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PollSettingsResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PollSettings'] =
+    ResolversParentTypes['PollSettings'],
+> = {
+  allowContributorsAddOptions?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  maxResponses?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  minResponses?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  resultsDetail?: Resolver<
+    ResolversTypes['PollResultsDetail'],
+    ParentType,
+    ContextType
+  >;
+  resultsVisibility?: Resolver<
+    ResolversTypes['PollResultsVisibility'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PollSettingsDataResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PollSettingsData'] =
+    ResolversParentTypes['PollSettingsData'],
+> = {
+  allowContributorsAddOptions?: Resolver<
+    Maybe<ResolversTypes['Boolean']>,
+    ParentType,
+    ContextType
+  >;
+  maxResponses?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType
+  >;
+  minResponses?: Resolver<
+    Maybe<ResolversTypes['Int']>,
+    ParentType,
+    ContextType
+  >;
+  resultsDetail?: Resolver<
+    Maybe<ResolversTypes['PollResultsDetail']>,
+    ParentType,
+    ContextType
+  >;
+  resultsVisibility?: Resolver<
+    Maybe<ResolversTypes['PollResultsVisibility']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PollVoteResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PollVote'] =
+    ResolversParentTypes['PollVote'],
+> = {
+  createdBy?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  selectedOptions?: Resolver<
+    Array<ResolversTypes['PollOption']>,
+    ParentType,
+    ContextType
+  >;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type PollVoteUpdatedSubscriptionResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PollVoteUpdatedSubscriptionResult'] =
+    ResolversParentTypes['PollVoteUpdatedSubscriptionResult'],
+> = {
+  poll?: Resolver<ResolversTypes['Poll'], ParentType, ContextType>;
+  pollEventType?: Resolver<
+    ResolversTypes['PollEventType'],
     ParentType,
     ContextType
   >;
@@ -17824,16 +20850,6 @@ export type ProfileResolvers<
     RequireFields<ProfileVisualArgs, 'type'>
   >;
   visuals?: Resolver<Array<ResolversTypes['Visual']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type ProfileCredentialVerifiedResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['ProfileCredentialVerified'] =
-    ResolversParentTypes['ProfileCredentialVerified'],
-> = {
-  userEmail?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  vc?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -18042,16 +21058,36 @@ export type PruneInAppNotificationAdminResultResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type PushSubscriptionResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['PushSubscription'] =
+    ResolversParentTypes['PushSubscription'],
+> = {
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  lastActiveDate?: Resolver<
+    Maybe<ResolversTypes['DateTime']>,
+    ParentType,
+    ContextType
+  >;
+  status?: Resolver<
+    ResolversTypes['PushSubscriptionStatus'],
+    ParentType,
+    ContextType
+  >;
+  userAgent?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Query'] =
     ResolversParentTypes['Query'],
 > = {
-  accounts?: Resolver<
-    Array<ResolversTypes['Account']>,
-    ParentType,
-    ContextType
-  >;
   activityFeed?: Resolver<
     ResolversTypes['ActivityFeed'],
     ParentType,
@@ -18070,22 +21106,41 @@ export type QueryResolvers<
     ContextType,
     RequireFields<QueryActivityLogOnCollaborationArgs, 'queryData'>
   >;
+  actor?: Resolver<
+    Maybe<ResolversTypes['ActorFull']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryActorArgs, 'id'>
+  >;
+  actorsWithCredential?: Resolver<
+    Array<ResolversTypes['ActorFull']>,
+    ParentType,
+    ContextType,
+    RequireFields<QueryActorsWithCredentialArgs, 'credentialType'>
+  >;
   adminIdentitiesUnverified?: Resolver<
     Array<ResolversTypes['KratosIdentity']>,
     ParentType,
     ContextType
   >;
   aiServer?: Resolver<ResolversTypes['AiServer'], ParentType, ContextType>;
+  collaboraEditorUrl?: Resolver<
+    ResolversTypes['CollaboraEditorUrlResult'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryCollaboraEditorUrlArgs, 'collaboraDocumentID'>
+  >;
+  collaboraServiceAvailable?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType,
+    RequireFields<QueryCollaboraServiceAvailableArgs, 'collaboraDocumentID'>
+  >;
   exploreSpaces?: Resolver<
     Array<ResolversTypes['Space']>,
     ParentType,
     ContextType,
     Partial<QueryExploreSpacesArgs>
-  >;
-  getSupportedVerifiedCredentialMetadata?: Resolver<
-    Array<ResolversTypes['CredentialMetadataOutput']>,
-    ParentType,
-    ContextType
   >;
   inputCreator?: Resolver<
     ResolversTypes['InputCreatorQueryResults'],
@@ -18103,6 +21158,11 @@ export type QueryResolvers<
     ContextType
   >;
   me?: Resolver<ResolversTypes['MeQueryResults'], ParentType, ContextType>;
+  myPushSubscriptions?: Resolver<
+    Array<ResolversTypes['PushSubscription']>,
+    ParentType,
+    ContextType
+  >;
   notificationRecipients?: Resolver<
     ResolversTypes['NotificationRecipientResult'],
     ParentType,
@@ -18133,25 +21193,30 @@ export type QueryResolvers<
     ParentType,
     ContextType
   >;
+  platformCapabilities?: Resolver<
+    Array<ResolversTypes['AssistantCapability']>,
+    ParentType,
+    ContextType
+  >;
   restrictedSpaceNames?: Resolver<
     Array<ResolversTypes['String']>,
     ParentType,
     ContextType
   >;
   rolesOrganization?: Resolver<
-    ResolversTypes['ContributorRoles'],
+    ResolversTypes['ActorRoles'],
     ParentType,
     ContextType,
     RequireFields<QueryRolesOrganizationArgs, 'rolesData'>
   >;
   rolesUser?: Resolver<
-    ResolversTypes['ContributorRoles'],
+    ResolversTypes['ActorRoles'],
     ParentType,
     ContextType,
     RequireFields<QueryRolesUserArgs, 'rolesData'>
   >;
   rolesVirtualContributor?: Resolver<
-    ResolversTypes['ContributorRoles'],
+    ResolversTypes['ActorRoles'],
     ParentType,
     ContextType,
     RequireFields<QueryRolesVirtualContributorArgs, 'rolesData'>
@@ -18218,6 +21283,11 @@ export type QueryResolvers<
       QueryUsersWithAuthorizationCredentialArgs,
       'credentialsCriteriaData'
     >
+  >;
+  vapidPublicKey?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
   >;
   virtualContributor?: Resolver<
     ResolversTypes['VirtualContributor'],
@@ -18293,7 +21363,7 @@ export type RelayPaginatedSpaceResolvers<
     ParentType,
     ContextType
   >;
-  agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
     ParentType,
@@ -18306,7 +21376,17 @@ export type RelayPaginatedSpaceResolvers<
   >;
   community?: Resolver<ResolversTypes['Community'], ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  layout?: Resolver<
+    ResolversTypes['SpaceSettingsLayout'],
+    ParentType,
+    ContextType
+  >;
   level?: Resolver<ResolversTypes['SpaceLevel'], ParentType, ContextType>;
   levelZeroSpaceID?: Resolver<
     ResolversTypes['String'],
@@ -18314,13 +21394,23 @@ export type RelayPaginatedSpaceResolvers<
     ContextType
   >;
   license?: Resolver<ResolversTypes['License'], ParentType, ContextType>;
+  mentionableContributors?: Resolver<
+    Array<ResolversTypes['ActorFull']>,
+    ParentType,
+    ContextType,
+    Partial<RelayPaginatedSpaceMentionableContributorsArgs>
+  >;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  pinned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   platformAccess?: Resolver<
     ResolversTypes['PlatformRolesAccess'],
     ParentType,
     ContextType
   >;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['SpaceSettings'], ParentType, ContextType>;
+  sortMode?: Resolver<ResolversTypes['SpaceSortMode'], ParentType, ContextType>;
+  sortOrder?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   storageAggregator?: Resolver<
     ResolversTypes['StorageAggregator'],
     ParentType,
@@ -18348,6 +21438,7 @@ export type RelayPaginatedSpaceResolvers<
     ParentType,
     ContextType
   >;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   visibility?: Resolver<
     ResolversTypes['SpaceVisibility'],
@@ -18408,7 +21499,7 @@ export type RoleResolvers<
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['RoleName'], ParentType, ContextType>;
   organizationPolicy?: Resolver<
-    ResolversTypes['ContributorRolePolicy'],
+    ResolversTypes['ActorRolePolicy'],
     ParentType,
     ContextType
   >;
@@ -18429,12 +21520,12 @@ export type RoleResolvers<
   >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   userPolicy?: Resolver<
-    ResolversTypes['ContributorRolePolicy'],
+    ResolversTypes['ActorRolePolicy'],
     ParentType,
     ContextType
   >;
   virtualContributorPolicy?: Resolver<
-    ResolversTypes['ContributorRolePolicy'],
+    ResolversTypes['ActorRolePolicy'],
     ParentType,
     ContextType
   >;
@@ -18577,6 +21668,11 @@ export type RoleSetInvitationResultResolvers<
   ParentType extends ResolversParentTypes['RoleSetInvitationResult'] =
     ResolversParentTypes['RoleSetInvitationResult'],
 > = {
+  application?: Resolver<
+    Maybe<ResolversTypes['Application']>,
+    ParentType,
+    ContextType
+  >;
   invitation?: Resolver<
     Maybe<ResolversTypes['Invitation']>,
     ParentType,
@@ -18672,14 +21768,33 @@ export type RoomResolvers<
     ParentType,
     ContextType
   >;
+  avatarUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  lastMessage?: Resolver<
+    Maybe<ResolversTypes['Message']>,
+    ParentType,
+    ContextType
+  >;
   messages?: Resolver<
     Array<ResolversTypes['Message']>,
     ParentType,
     ContextType
   >;
-  messagesCount?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  messagesCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['RoomType'], ParentType, ContextType>;
+  unreadCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  unreadCounts?: Resolver<
+    ResolversTypes['RoomUnreadCounts'],
+    ParentType,
+    ContextType,
+    Partial<RoomUnreadCountsArgs>
+  >;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   vcInteractions?: Resolver<
     Array<ResolversTypes['VcInteraction']>,
@@ -18736,6 +21851,30 @@ export type RoomMessageReactionEventSubscriptionResultResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type RoomThreadUnreadCountResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['RoomThreadUnreadCount'] =
+    ResolversParentTypes['RoomThreadUnreadCount'],
+> = {
+  count?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  threadId?: Resolver<ResolversTypes['MessageID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type RoomUnreadCountsResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['RoomUnreadCounts'] =
+    ResolversParentTypes['RoomUnreadCounts'],
+> = {
+  roomUnreadCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  threadUnreadCounts?: Resolver<
+    Maybe<Array<ResolversTypes['RoomThreadUnreadCount']>>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface SearchCursorScalarConfig extends GraphQLScalarTypeConfig<
   ResolversTypes['SearchCursor'],
   any
@@ -18750,10 +21889,13 @@ export type SearchResultResolvers<
 > = {
   __resolveType: TypeResolveFn<
     | 'SearchResultCallout'
+    | 'SearchResultCollaboraDocument'
+    | 'SearchResultMemo'
     | 'SearchResultOrganization'
     | 'SearchResultPost'
     | 'SearchResultSpace'
-    | 'SearchResultUser',
+    | 'SearchResultUser'
+    | 'SearchResultWhiteboard',
     ParentType,
     ContextType
   >;
@@ -18770,6 +21912,42 @@ export type SearchResultCalloutResolvers<
 > = {
   callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  terms?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['SearchResultType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SearchResultCollaboraDocumentResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SearchResultCollaboraDocument'] =
+    ResolversParentTypes['SearchResultCollaboraDocument'],
+> = {
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
+  collaboraDocument?: Resolver<
+    ResolversTypes['CollaboraDocument'],
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  isContribution?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  terms?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['SearchResultType'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SearchResultMemoResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SearchResultMemo'] =
+    ResolversParentTypes['SearchResultMemo'],
+> = {
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  isContribution?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  memo?: Resolver<ResolversTypes['Memo'], ParentType, ContextType>;
   score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
   terms?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
@@ -18840,6 +22018,22 @@ export type SearchResultUserResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type SearchResultWhiteboardResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SearchResultWhiteboard'] =
+    ResolversParentTypes['SearchResultWhiteboard'],
+> = {
+  callout?: Resolver<ResolversTypes['Callout'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  isContribution?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  score?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  space?: Resolver<ResolversTypes['Space'], ParentType, ContextType>;
+  terms?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['SearchResultType'], ParentType, ContextType>;
+  whiteboard?: Resolver<ResolversTypes['Whiteboard'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type SentryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['Sentry'] =
@@ -18874,7 +22068,7 @@ export type SpaceResolvers<
     ParentType,
     ContextType
   >;
-  agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
     ParentType,
@@ -18887,7 +22081,17 @@ export type SpaceResolvers<
   >;
   community?: Resolver<ResolversTypes['Community'], ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  layout?: Resolver<
+    ResolversTypes['SpaceSettingsLayout'],
+    ParentType,
+    ContextType
+  >;
   level?: Resolver<ResolversTypes['SpaceLevel'], ParentType, ContextType>;
   levelZeroSpaceID?: Resolver<
     ResolversTypes['String'],
@@ -18895,13 +22099,23 @@ export type SpaceResolvers<
     ContextType
   >;
   license?: Resolver<ResolversTypes['License'], ParentType, ContextType>;
+  mentionableContributors?: Resolver<
+    Array<ResolversTypes['ActorFull']>,
+    ParentType,
+    ContextType,
+    Partial<SpaceMentionableContributorsArgs>
+  >;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  pinned?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   platformAccess?: Resolver<
     ResolversTypes['PlatformRolesAccess'],
     ParentType,
     ContextType
   >;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['SpaceSettings'], ParentType, ContextType>;
+  sortMode?: Resolver<ResolversTypes['SpaceSortMode'], ParentType, ContextType>;
+  sortOrder?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   storageAggregator?: Resolver<
     ResolversTypes['StorageAggregator'],
     ParentType,
@@ -18929,6 +22143,7 @@ export type SpaceResolvers<
     ParentType,
     ContextType
   >;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   visibility?: Resolver<
     ResolversTypes['SpaceVisibility'],
@@ -18971,7 +22186,7 @@ export type SpaceAboutResolvers<
     ContextType
   >;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
-  provider?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
+  provider?: Resolver<Maybe<ResolversTypes['Actor']>, ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   who?: Resolver<Maybe<ResolversTypes['Markdown']>, ParentType, ContextType>;
   why?: Resolver<Maybe<ResolversTypes['Markdown']>, ParentType, ContextType>;
@@ -19031,6 +22246,11 @@ export type SpaceSettingsResolvers<
     ParentType,
     ContextType
   >;
+  layout?: Resolver<
+    ResolversTypes['SpaceSettingsLayout'],
+    ParentType,
+    ContextType
+  >;
   membership?: Resolver<
     ResolversTypes['SpaceSettingsMembership'],
     ParentType,
@@ -19041,6 +22261,7 @@ export type SpaceSettingsResolvers<
     ParentType,
     ContextType
   >;
+  sortMode?: Resolver<ResolversTypes['SpaceSortMode'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -19050,6 +22271,11 @@ export type SpaceSettingsCollaborationResolvers<
     ResolversParentTypes['SpaceSettingsCollaboration'],
 > = {
   allowEventsFromSubspaces?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  allowGuestContributions?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
@@ -19071,6 +22297,19 @@ export type SpaceSettingsCollaborationResolvers<
   >;
   inheritMembershipRights?: Resolver<
     ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SpaceSettingsLayoutResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['SpaceSettingsLayout'] =
+    ResolversParentTypes['SpaceSettingsLayout'],
+> = {
+  calloutDescriptionDisplayMode?: Resolver<
+    ResolversTypes['CalloutDescriptionDisplayMode'],
     ParentType,
     ContextType
   >;
@@ -19111,6 +22350,11 @@ export type SpaceSettingsPrivacyResolvers<
     ContextType
   >;
   mode?: Resolver<ResolversTypes['SpacePrivacyMode'], ParentType, ContextType>;
+  userInformationVisibility?: Resolver<
+    Maybe<ResolversTypes['UserInformationVisibility']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -19242,6 +22486,16 @@ export type StorageBucketParentResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type StorageBucketUploadFileResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['StorageBucketUploadFileResult'] =
+    ResolversParentTypes['StorageBucketUploadFileResult'],
+> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type StorageConfigResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['StorageConfig'] =
@@ -19270,6 +22524,12 @@ export type SubscriptionResolvers<
     ContextType,
     RequireFields<SubscriptionCalloutPostCreatedArgs, 'calloutID'>
   >;
+  conversationEvents?: SubscriptionResolver<
+    ResolversTypes['ConversationEventSubscriptionResult'],
+    'conversationEvents',
+    ParentType,
+    ContextType
+  >;
   forumDiscussionUpdated?: SubscriptionResolver<
     ResolversTypes['Discussion'],
     'forumDiscussionUpdated',
@@ -19289,11 +22549,19 @@ export type SubscriptionResolvers<
     ParentType,
     ContextType
   >;
-  profileVerifiedCredential?: SubscriptionResolver<
-    ResolversTypes['ProfileCredentialVerified'],
-    'profileVerifiedCredential',
+  pollOptionsChanged?: SubscriptionResolver<
+    ResolversTypes['PollOptionsChangedSubscriptionResult'],
+    'pollOptionsChanged',
     ParentType,
-    ContextType
+    ContextType,
+    RequireFields<SubscriptionPollOptionsChangedArgs, 'pollID'>
+  >;
+  pollVoteUpdated?: SubscriptionResolver<
+    ResolversTypes['PollVoteUpdatedSubscriptionResult'],
+    'pollVoteUpdated',
+    ParentType,
+    ContextType,
+    RequireFields<SubscriptionPollVoteUpdatedArgs, 'pollID'>
   >;
   roomEvents?: SubscriptionResolver<
     ResolversTypes['RoomEventSubscriptionResult'],
@@ -19645,12 +22913,67 @@ export interface UuidScalarConfig extends GraphQLScalarTypeConfig<
   name: 'UUID';
 }
 
+export type UpdateWhiteboardGuestAccessResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UpdateWhiteboardGuestAccessResult'] =
+    ResolversParentTypes['UpdateWhiteboardGuestAccessResult'],
+> = {
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  whiteboard?: Resolver<
+    Maybe<ResolversTypes['Whiteboard']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface UploadScalarConfig extends GraphQLScalarTypeConfig<
   ResolversTypes['Upload'],
   any
 > {
   name: 'Upload';
 }
+
+export type UrlResolverQueryClosestAncestorResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UrlResolverQueryClosestAncestor'] =
+    ResolversParentTypes['UrlResolverQueryClosestAncestor'],
+> = {
+  discussionId?: Resolver<
+    Maybe<ResolversTypes['UUID']>,
+    ParentType,
+    ContextType
+  >;
+  innovationHubId?: Resolver<
+    Maybe<ResolversTypes['UUID']>,
+    ParentType,
+    ContextType
+  >;
+  innovationPack?: Resolver<
+    Maybe<ResolversTypes['UrlResolverQueryResultInnovationPack']>,
+    ParentType,
+    ContextType
+  >;
+  organizationId?: Resolver<
+    Maybe<ResolversTypes['UUID']>,
+    ParentType,
+    ContextType
+  >;
+  space?: Resolver<
+    Maybe<ResolversTypes['UrlResolverQueryResultSpace']>,
+    ParentType,
+    ContextType
+  >;
+  type?: Resolver<ResolversTypes['UrlType'], ParentType, ContextType>;
+  url?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  virtualContributor?: Resolver<
+    Maybe<ResolversTypes['UrlResolverQueryResultVirtualContributor']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type UrlResolverQueryResultCalendarResolvers<
   ContextType = any,
@@ -19678,6 +23001,7 @@ export type UrlResolverQueryResultCalloutsSetResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  memoId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   postId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   type?: Resolver<ResolversTypes['UrlType'], ParentType, ContextType>;
   whiteboardId?: Resolver<
@@ -19780,6 +23104,11 @@ export type UrlResolverQueryResultsResolvers<
   ParentType extends ResolversParentTypes['UrlResolverQueryResults'] =
     ResolversParentTypes['UrlResolverQueryResults'],
 > = {
+  closestAncestor?: Resolver<
+    Maybe<ResolversTypes['UrlResolverQueryClosestAncestor']>,
+    ParentType,
+    ContextType
+  >;
   discussionId?: Resolver<
     Maybe<ResolversTypes['UUID']>,
     ParentType,
@@ -19805,6 +23134,11 @@ export type UrlResolverQueryResultsResolvers<
     ParentType,
     ContextType
   >;
+  state?: Resolver<
+    ResolversTypes['UrlResolverResultState'],
+    ParentType,
+    ContextType
+  >;
   type?: Resolver<ResolversTypes['UrlType'], ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   virtualContributor?: Resolver<
@@ -19821,8 +23155,7 @@ export type UserResolvers<
     ResolversParentTypes['User'],
 > = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
-  accountUpn?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   authentication?: Resolver<
     Maybe<ResolversTypes['UserAuthenticationResult']>,
     ParentType,
@@ -19834,30 +23167,31 @@ export type UserResolvers<
     ContextType
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  directRooms?: Resolver<
-    Maybe<Array<ResolversTypes['DirectRoom']>>,
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
     ParentType,
     ContextType
   >;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  guidanceRoom?: Resolver<
-    Maybe<ResolversTypes['Room']>,
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  isContactable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  isContactableViaEmail?: Resolver<
+    ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  isContactable?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['UserSettings'], ParentType, ContextType>;
   storageAggregator?: Resolver<
     Maybe<ResolversTypes['StorageAggregator']>,
     ParentType,
     ContextType
   >;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -19882,6 +23216,103 @@ export type UserAuthenticationResultResolvers<
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserEmailChangeAuditEntriesResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserEmailChangeAuditEntries'] =
+    ResolversParentTypes['UserEmailChangeAuditEntries'],
+> = {
+  auditEntries?: Resolver<
+    Array<ResolversTypes['UserEmailChangeAuditEntry']>,
+    ParentType,
+    ContextType
+  >;
+  pageInfo?: Resolver<
+    ResolversTypes['UserEmailChangeAuditEntriesPageInfo'],
+    ParentType,
+    ContextType
+  >;
+  total?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserEmailChangeAuditEntriesPageInfoResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['UserEmailChangeAuditEntriesPageInfo'] =
+    ResolversParentTypes['UserEmailChangeAuditEntriesPageInfo'],
+> = {
+  endCursor?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  hasNextPage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  hasPreviousPage?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
+  startCursor?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserEmailChangeAuditEntryResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserEmailChangeAuditEntry'] =
+    ResolversParentTypes['UserEmailChangeAuditEntry'],
+> = {
+  approver?: Resolver<
+    Maybe<ResolversTypes['EmailChangeApprover']>,
+    ParentType,
+    ContextType
+  >;
+  failureReason?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  initiator?: Resolver<
+    Maybe<ResolversTypes['UserProfileSummary']>,
+    ParentType,
+    ContextType
+  >;
+  initiatorRole?: Resolver<
+    ResolversTypes['UserEmailChangeInitiatorRole'],
+    ParentType,
+    ContextType
+  >;
+  newEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  oldEmail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  outcome?: Resolver<
+    ResolversTypes['UserEmailChangeAuditOutcome'],
+    ParentType,
+    ContextType
+  >;
+  reason?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  subject?: Resolver<
+    ResolversTypes['UserProfileSummary'],
+    ParentType,
+    ContextType
+  >;
+  timestamp?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserEmailChangeResultResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserEmailChangeResult'] =
+    ResolversParentTypes['UserEmailChangeResult'],
+> = {
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -19912,11 +23343,26 @@ export type UserGroupResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserProfileSummaryResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserProfileSummary'] =
+    ResolversParentTypes['UserProfileSummary'],
+> = {
+  displayName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserSettingsResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['UserSettings'] =
     ResolversParentTypes['UserSettings'],
 > = {
+  assistant?: Resolver<
+    ResolversTypes['UserSettingsAssistant'],
+    ParentType,
+    ContextType
+  >;
   authorization?: Resolver<
     Maybe<ResolversTypes['Authorization']>,
     ParentType,
@@ -19928,7 +23374,19 @@ export type UserSettingsResolvers<
     ContextType
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  designVersion?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  homeSpace?: Resolver<
+    ResolversTypes['UserSettingsHomeSpace'],
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  language?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  languageOfferAnswered?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
   notification?: Resolver<
     ResolversTypes['UserSettingsNotification'],
     ParentType,
@@ -19943,16 +23401,44 @@ export type UserSettingsResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type UserSettingsAssistantResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserSettingsAssistant'] =
+    ResolversParentTypes['UserSettingsAssistant'],
+> = {
+  enabledCapabilities?: Resolver<
+    Array<ResolversTypes['AssistantCapabilityToggle']>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserSettingsCommunicationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes['UserSettingsCommunication'] =
     ResolversParentTypes['UserSettingsCommunication'],
 > = {
+  allowOtherUsersToContactViaEmail?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
   allowOtherUsersToSendMessages?: Resolver<
     ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsHomeSpaceResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserSettingsHomeSpace'] =
+    ResolversParentTypes['UserSettingsHomeSpace'],
+> = {
+  autoRedirect?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  spaceID?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -19968,6 +23454,11 @@ export type UserSettingsNotificationResolvers<
   >;
   platform?: Resolver<
     ResolversTypes['UserSettingsNotificationPlatform'],
+    ParentType,
+    ContextType
+  >;
+  sound?: Resolver<
+    ResolversTypes['UserSettingsNotificationSound'],
     ParentType,
     ContextType
   >;
@@ -19996,6 +23487,7 @@ export type UserSettingsNotificationChannelsResolvers<
 > = {
   email?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   inApp?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  push?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -20052,6 +23544,11 @@ export type UserSettingsNotificationPlatformAdminResolvers<
     ParentType,
     ContextType
   >;
+  userEmailChanged?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
   userGlobalRoleChanged?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
@@ -20064,6 +23561,20 @@ export type UserSettingsNotificationPlatformAdminResolvers<
   >;
   userProfileRemoved?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserSettingsNotificationSoundResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['UserSettingsNotificationSound'] =
+    ResolversParentTypes['UserSettingsNotificationSound'],
+> = {
+  chatMessage?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  inAppNotification?: Resolver<
+    ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
@@ -20096,6 +23607,26 @@ export type UserSettingsNotificationSpaceResolvers<
     ContextType
   >;
   collaborationCalloutPublished?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  collaborationPollModifiedOnPollIVotedOn?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  collaborationPollVoteAffectedByOptionChange?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  collaborationPollVoteCastOnOwnPoll?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  collaborationPollVoteCastOnPollIVotedOn?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
@@ -20139,6 +23670,11 @@ export type UserSettingsNotificationSpaceAdminResolvers<
     ParentType,
     ContextType
   >;
+  userEmailChanged?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -20148,6 +23684,16 @@ export type UserSettingsNotificationUserResolvers<
     ResolversParentTypes['UserSettingsNotificationUser'],
 > = {
   commentReply?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  conversationMessageDirect?: Resolver<
+    ResolversTypes['UserSettingsNotificationChannels'],
+    ParentType,
+    ContextType
+  >;
+  conversationMessageGroup?: Resolver<
     ResolversTypes['UserSettingsNotificationChannels'],
     ParentType,
     ContextType
@@ -20231,45 +23777,41 @@ export type VcInteractionResolvers<
   ParentType extends ResolversParentTypes['VcInteraction'] =
     ResolversParentTypes['VcInteraction'],
 > = {
-  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  room?: Resolver<ResolversTypes['Room'], ParentType, ContextType>;
-  threadID?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  threadID?: Resolver<ResolversTypes['MessageID'], ParentType, ContextType>;
   virtualContributorID?: Resolver<
-    ResolversTypes['UUID'],
+    ResolversTypes['String'],
     ParentType,
     ContextType
   >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type VerifiedCredentialResolvers<
+export type VirtualAssistantResolvers<
   ContextType = any,
-  ParentType extends ResolversParentTypes['VerifiedCredential'] =
-    ResolversParentTypes['VerifiedCredential'],
+  ParentType extends ResolversParentTypes['VirtualAssistant'] =
+    ResolversParentTypes['VirtualAssistant'],
 > = {
-  claims?: Resolver<
-    Array<ResolversTypes['VerifiedCredentialClaim']>,
+  authorization?: Resolver<
+    Maybe<ResolversTypes['Authorization']>,
     ParentType,
     ContextType
   >;
-  context?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
-  expires?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  issued?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  issuer?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type VerifiedCredentialClaimResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['VerifiedCredentialClaim'] =
-    ResolversParentTypes['VerifiedCredentialClaim'],
-> = {
-  name?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
-  value?: Resolver<ResolversTypes['JSON'], ParentType, ContextType>;
+  capabilityGrant?: Resolver<
+    Array<ResolversTypes['AssistantCapabilityToggle']>,
+    ParentType,
+    ContextType
+  >;
+  createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
+    ParentType,
+    ContextType
+  >;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
+  updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -20279,7 +23821,7 @@ export type VirtualContributorResolvers<
     ResolversParentTypes['VirtualContributor'],
 > = {
   account?: Resolver<Maybe<ResolversTypes['Account']>, ParentType, ContextType>;
-  agent?: Resolver<ResolversTypes['Agent'], ParentType, ContextType>;
+  actor?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   aiPersona?: Resolver<
     Maybe<ResolversTypes['AiPersona']>,
     ParentType,
@@ -20300,12 +23842,22 @@ export type VirtualContributorResolvers<
     ParentType,
     ContextType
   >;
+  bodyOfKnowledgeLastUpdated?: Resolver<
+    Maybe<ResolversTypes['DateTime']>,
+    ParentType,
+    ContextType
+  >;
   bodyOfKnowledgeType?: Resolver<
     ResolversTypes['VirtualContributorBodyOfKnowledgeType'],
     ParentType,
     ContextType
   >;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  credentials?: Resolver<
+    Maybe<Array<ResolversTypes['Credential']>>,
+    ParentType,
+    ContextType
+  >;
   dataAccessMode?: Resolver<
     ResolversTypes['VirtualContributorDataAccessMode'],
     ParentType,
@@ -20335,13 +23887,18 @@ export type VirtualContributorResolvers<
     ContextType
   >;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
+  platformSettings?: Resolver<
+    ResolversTypes['VirtualContributorPlatformSettings'],
+    ParentType,
+    ContextType
+  >;
+  profile?: Resolver<Maybe<ResolversTypes['Profile']>, ParentType, ContextType>;
   promptGraphDefinition?: Resolver<
     Maybe<ResolversTypes['PromptGraphDefinition']>,
     ParentType,
     ContextType
   >;
-  provider?: Resolver<ResolversTypes['Contributor'], ParentType, ContextType>;
+  provider?: Resolver<ResolversTypes['Actor'], ParentType, ContextType>;
   searchVisibility?: Resolver<
     ResolversTypes['SearchVisibility'],
     ParentType,
@@ -20357,7 +23914,13 @@ export type VirtualContributorResolvers<
     ParentType,
     ContextType
   >;
+  type?: Resolver<ResolversTypes['ActorType'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  wellKnownVirtualContributor?: Resolver<
+    Maybe<ResolversTypes['VirtualContributorWellKnown']>,
+    ParentType,
+    ContextType
+  >;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -20392,6 +23955,20 @@ export type VirtualContributorModelCardFlagResolvers<
   enabled?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   name?: Resolver<
     ResolversTypes['VirtualContributorModelCardEntryFlagName'],
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type VirtualContributorPlatformSettingsResolvers<
+  ContextType = any,
+  ParentType extends
+    ResolversParentTypes['VirtualContributorPlatformSettings'] =
+    ResolversParentTypes['VirtualContributorPlatformSettings'],
+> = {
+  promptGraphEditingEnabled?: Resolver<
+    ResolversTypes['Boolean'],
     ParentType,
     ContextType
   >;
@@ -20481,6 +24058,7 @@ export type VisualResolvers<
   minHeight?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   minWidth?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['VisualType'], ParentType, ContextType>;
+  sortOrder?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   uri?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -20526,6 +24104,11 @@ export type WhiteboardResolvers<
   >;
   createdBy?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   createdDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  guestContributionsAllowed?: Resolver<
+    ResolversTypes['Boolean'],
+    ParentType,
+    ContextType
+  >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   isMultiUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   nameID?: Resolver<ResolversTypes['NameID'], ParentType, ContextType>;
@@ -20599,6 +24182,7 @@ export type Resolvers<ContextType = any> = {
   ActivityLogEntryCalendarEventCreated?: ActivityLogEntryCalendarEventCreatedResolvers<ContextType>;
   ActivityLogEntryCalloutDiscussionComment?: ActivityLogEntryCalloutDiscussionCommentResolvers<ContextType>;
   ActivityLogEntryCalloutLinkCreated?: ActivityLogEntryCalloutLinkCreatedResolvers<ContextType>;
+  ActivityLogEntryCalloutMemoCreated?: ActivityLogEntryCalloutMemoCreatedResolvers<ContextType>;
   ActivityLogEntryCalloutPostComment?: ActivityLogEntryCalloutPostCommentResolvers<ContextType>;
   ActivityLogEntryCalloutPostCreated?: ActivityLogEntryCalloutPostCreatedResolvers<ContextType>;
   ActivityLogEntryCalloutPublished?: ActivityLogEntryCalloutPublishedResolvers<ContextType>;
@@ -20607,35 +24191,42 @@ export type Resolvers<ContextType = any> = {
   ActivityLogEntryMemberJoined?: ActivityLogEntryMemberJoinedResolvers<ContextType>;
   ActivityLogEntrySubspaceCreated?: ActivityLogEntrySubspaceCreatedResolvers<ContextType>;
   ActivityLogEntryUpdateSent?: ActivityLogEntryUpdateSentResolvers<ContextType>;
-  Agent?: AgentResolvers<ContextType>;
-  AgentBeginVerifiedCredentialOfferOutput?: AgentBeginVerifiedCredentialOfferOutputResolvers<ContextType>;
-  AgentBeginVerifiedCredentialRequestOutput?: AgentBeginVerifiedCredentialRequestOutputResolvers<ContextType>;
+  Actor?: ActorResolvers<ContextType>;
+  ActorFull?: ActorFullResolvers<ContextType>;
+  ActorRolePolicy?: ActorRolePolicyResolvers<ContextType>;
+  ActorRoles?: ActorRolesResolvers<ContextType>;
   AiPersona?: AiPersonaResolvers<ContextType>;
   AiServer?: AiServerResolvers<ContextType>;
   Application?: ApplicationResolvers<ContextType>;
+  AssistantCapability?: AssistantCapabilityResolvers<ContextType>;
+  AssistantCapabilityToggle?: AssistantCapabilityToggleResolvers<ContextType>;
   AuthenticationConfig?: AuthenticationConfigResolvers<ContextType>;
   AuthenticationProviderConfig?: AuthenticationProviderConfigResolvers<ContextType>;
   AuthenticationProviderConfigUnion?: AuthenticationProviderConfigUnionResolvers<ContextType>;
   Authorization?: AuthorizationResolvers<ContextType>;
   AuthorizationPolicyRuleCredential?: AuthorizationPolicyRuleCredentialResolvers<ContextType>;
   AuthorizationPolicyRulePrivilege?: AuthorizationPolicyRulePrivilegeResolvers<ContextType>;
-  AuthorizationPolicyRuleVerifiedCredential?: AuthorizationPolicyRuleVerifiedCredentialResolvers<ContextType>;
   Calendar?: CalendarResolvers<ContextType>;
   CalendarEvent?: CalendarEventResolvers<ContextType>;
   Callout?: CalloutResolvers<ContextType>;
   CalloutContribution?: CalloutContributionResolvers<ContextType>;
   CalloutContributionDefaults?: CalloutContributionDefaultsResolvers<ContextType>;
   CalloutContributionsCountOutput?: CalloutContributionsCountOutputResolvers<ContextType>;
+  CalloutContributorsSettings?: CalloutContributorsSettingsResolvers<ContextType>;
   CalloutFraming?: CalloutFramingResolvers<ContextType>;
   CalloutPostCreated?: CalloutPostCreatedResolvers<ContextType>;
+  CalloutSelectionSettings?: CalloutSelectionSettingsResolvers<ContextType>;
   CalloutSettings?: CalloutSettingsResolvers<ContextType>;
   CalloutSettingsContribution?: CalloutSettingsContributionResolvers<ContextType>;
   CalloutSettingsFraming?: CalloutSettingsFramingResolvers<ContextType>;
   CalloutsSet?: CalloutsSetResolvers<ContextType>;
   Classification?: ClassificationResolvers<ContextType>;
+  CollaboraDocument?: CollaboraDocumentResolvers<ContextType>;
+  CollaboraEditorUrlResult?: CollaboraEditorUrlResultResolvers<ContextType>;
   Collaboration?: CollaborationResolvers<ContextType>;
   Communication?: CommunicationResolvers<ContextType>;
   CommunicationAdminMembershipResult?: CommunicationAdminMembershipResultResolvers<ContextType>;
+  CommunicationAdminMigrateRoomsResult?: CommunicationAdminMigrateRoomsResultResolvers<ContextType>;
   CommunicationAdminOrphanedUsageResult?: CommunicationAdminOrphanedUsageResultResolvers<ContextType>;
   CommunicationAdminRoomMembershipResult?: CommunicationAdminRoomMembershipResultResolvers<ContextType>;
   CommunicationAdminRoomResult?: CommunicationAdminRoomResultResolvers<ContextType>;
@@ -20647,18 +24238,31 @@ export type Resolvers<ContextType = any> = {
   CommunityInvitationResult?: CommunityInvitationResultResolvers<ContextType>;
   CommunityMembershipResult?: CommunityMembershipResultResolvers<ContextType>;
   Config?: ConfigResolvers<ContextType>;
-  Contributor?: ContributorResolvers<ContextType>;
-  ContributorRolePolicy?: ContributorRolePolicyResolvers<ContextType>;
-  ContributorRoles?: ContributorRolesResolvers<ContextType>;
+  ContributorCollectionCounts?: ContributorCollectionCountsResolvers<ContextType>;
+  ContributorCollectionItem?: ContributorCollectionItemResolvers<ContextType>;
+  ContributorLocation?: ContributorLocationResolvers<ContextType>;
+  Conversation?: ConversationResolvers<ContextType>;
+  ConversationCreatedEvent?: ConversationCreatedEventResolvers<ContextType>;
+  ConversationDeletedEvent?: ConversationDeletedEventResolvers<ContextType>;
+  ConversationEventSubscriptionResult?: ConversationEventSubscriptionResultResolvers<ContextType>;
+  ConversationMemberAddedEvent?: ConversationMemberAddedEventResolvers<ContextType>;
+  ConversationMemberRemovedEvent?: ConversationMemberRemovedEventResolvers<ContextType>;
+  ConversationMessageReceivedEvent?: ConversationMessageReceivedEventResolvers<ContextType>;
+  ConversationMessageRemovedEvent?: ConversationMessageRemovedEventResolvers<ContextType>;
+  ConversationReadReceiptUpdatedEvent?: ConversationReadReceiptUpdatedEventResolvers<ContextType>;
+  ConversationUpdatedEvent?: ConversationUpdatedEventResolvers<ContextType>;
   CreateCalloutContributionData?: CreateCalloutContributionDataResolvers<ContextType>;
   CreateCalloutContributionDefaultsData?: CreateCalloutContributionDefaultsDataResolvers<ContextType>;
+  CreateCalloutContributorsSettingsData?: CreateCalloutContributorsSettingsDataResolvers<ContextType>;
   CreateCalloutData?: CreateCalloutDataResolvers<ContextType>;
   CreateCalloutFramingData?: CreateCalloutFramingDataResolvers<ContextType>;
+  CreateCalloutSelectionSettingsData?: CreateCalloutSelectionSettingsDataResolvers<ContextType>;
   CreateCalloutSettingsContributionData?: CreateCalloutSettingsContributionDataResolvers<ContextType>;
   CreateCalloutSettingsData?: CreateCalloutSettingsDataResolvers<ContextType>;
   CreateCalloutSettingsFramingData?: CreateCalloutSettingsFramingDataResolvers<ContextType>;
   CreateCalloutsSetData?: CreateCalloutsSetDataResolvers<ContextType>;
   CreateClassificationData?: CreateClassificationDataResolvers<ContextType>;
+  CreateCollaboraDocumentData?: CreateCollaboraDocumentDataResolvers<ContextType>;
   CreateCollaborationData?: CreateCollaborationDataResolvers<ContextType>;
   CreateCommunityGuidelinesData?: CreateCommunityGuidelinesDataResolvers<ContextType>;
   CreateInnovationFlowData?: CreateInnovationFlowDataResolvers<ContextType>;
@@ -20667,6 +24271,7 @@ export type Resolvers<ContextType = any> = {
   CreateLinkData?: CreateLinkDataResolvers<ContextType>;
   CreateLocationData?: CreateLocationDataResolvers<ContextType>;
   CreateMemoData?: CreateMemoDataResolvers<ContextType>;
+  CreatePollData?: CreatePollDataResolvers<ContextType>;
   CreatePostData?: CreatePostDataResolvers<ContextType>;
   CreateProfileData?: CreateProfileDataResolvers<ContextType>;
   CreateReferenceData?: CreateReferenceDataResolvers<ContextType>;
@@ -20676,13 +24281,12 @@ export type Resolvers<ContextType = any> = {
   CreateWhiteboardPreviewSettingsData?: CreateWhiteboardPreviewSettingsDataResolvers<ContextType>;
   Credential?: CredentialResolvers<ContextType>;
   CredentialDefinition?: CredentialDefinitionResolvers<ContextType>;
-  CredentialMetadataOutput?: CredentialMetadataOutputResolvers<ContextType>;
-  DID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
-  DirectRoom?: DirectRoomResolvers<ContextType>;
+  DirectMessageDeliveryResult?: DirectMessageDeliveryResultResolvers<ContextType>;
   Discussion?: DiscussionResolvers<ContextType>;
   DiscussionDetails?: DiscussionDetailsResolvers<ContextType>;
   Document?: DocumentResolvers<ContextType>;
+  EmailChangeApprover?: EmailChangeApproverResolvers<ContextType>;
   Emoji?: GraphQLScalarType;
   ExternalConfig?: ExternalConfigResolvers<ContextType>;
   FileStorageConfig?: FileStorageConfigResolvers<ContextType>;
@@ -20696,10 +24300,8 @@ export type Resolvers<ContextType = any> = {
   ISearchResults?: ISearchResultsResolvers<ContextType>;
   InAppNotification?: InAppNotificationResolvers<ContextType>;
   InAppNotificationPayload?: InAppNotificationPayloadResolvers<ContextType>;
-  InAppNotificationPayloadOrganization?: InAppNotificationPayloadOrganizationResolvers<ContextType>;
   InAppNotificationPayloadOrganizationMessageDirect?: InAppNotificationPayloadOrganizationMessageDirectResolvers<ContextType>;
   InAppNotificationPayloadOrganizationMessageRoom?: InAppNotificationPayloadOrganizationMessageRoomResolvers<ContextType>;
-  InAppNotificationPayloadPlatform?: InAppNotificationPayloadPlatformResolvers<ContextType>;
   InAppNotificationPayloadPlatformForumDiscussion?: InAppNotificationPayloadPlatformForumDiscussionResolvers<ContextType>;
   InAppNotificationPayloadPlatformGlobalRoleChange?: InAppNotificationPayloadPlatformGlobalRoleChangeResolvers<ContextType>;
   InAppNotificationPayloadPlatformUser?: InAppNotificationPayloadPlatformUserResolvers<ContextType>;
@@ -20709,12 +24311,13 @@ export type Resolvers<ContextType = any> = {
   InAppNotificationPayloadSpaceCollaborationCallout?: InAppNotificationPayloadSpaceCollaborationCalloutResolvers<ContextType>;
   InAppNotificationPayloadSpaceCollaborationCalloutComment?: InAppNotificationPayloadSpaceCollaborationCalloutCommentResolvers<ContextType>;
   InAppNotificationPayloadSpaceCollaborationCalloutPostComment?: InAppNotificationPayloadSpaceCollaborationCalloutPostCommentResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCollaborationPoll?: InAppNotificationPayloadSpaceCollaborationPollResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunicationMessageDirect?: InAppNotificationPayloadSpaceCommunicationMessageDirectResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunicationUpdate?: InAppNotificationPayloadSpaceCommunicationUpdateResolvers<ContextType>;
+  InAppNotificationPayloadSpaceCommunityActor?: InAppNotificationPayloadSpaceCommunityActorResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityApplication?: InAppNotificationPayloadSpaceCommunityApplicationResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityCalendarEvent?: InAppNotificationPayloadSpaceCommunityCalendarEventResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityCalendarEventComment?: InAppNotificationPayloadSpaceCommunityCalendarEventCommentResolvers<ContextType>;
-  InAppNotificationPayloadSpaceCommunityContributor?: InAppNotificationPayloadSpaceCommunityContributorResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityInvitation?: InAppNotificationPayloadSpaceCommunityInvitationResolvers<ContextType>;
   InAppNotificationPayloadSpaceCommunityInvitationPlatform?: InAppNotificationPayloadSpaceCommunityInvitationPlatformResolvers<ContextType>;
   InAppNotificationPayloadUserMessageDirect?: InAppNotificationPayloadUserMessageDirectResolvers<ContextType>;
@@ -20727,9 +24330,9 @@ export type Resolvers<ContextType = any> = {
   InnovationPack?: InnovationPackResolvers<ContextType>;
   InputCreatorQueryResults?: InputCreatorQueryResultsResolvers<ContextType>;
   Invitation?: InvitationResolvers<ContextType>;
-  JSON?: GraphQLScalarType;
   KnowledgeBase?: KnowledgeBaseResolvers<ContextType>;
   KratosIdentity?: KratosIdentityResolvers<ContextType>;
+  LanguageConfig?: LanguageConfigResolvers<ContextType>;
   LatestReleaseDiscussion?: LatestReleaseDiscussionResolvers<ContextType>;
   Library?: LibraryResolvers<ContextType>;
   License?: LicenseResolvers<ContextType>;
@@ -20747,13 +24350,15 @@ export type Resolvers<ContextType = any> = {
   LookupMyPrivilegesQueryResults?: LookupMyPrivilegesQueryResultsResolvers<ContextType>;
   LookupQueryResults?: LookupQueryResultsResolvers<ContextType>;
   Markdown?: GraphQLScalarType;
+  MeConversationsResult?: MeConversationsResultResolvers<ContextType>;
   MeQueryResults?: MeQueryResultsResolvers<ContextType>;
+  MediaGallery?: MediaGalleryResolvers<ContextType>;
   Memo?: MemoResolvers<ContextType>;
   Message?: MessageResolvers<ContextType>;
-  MessageAnswerQuestion?: MessageAnswerQuestionResolvers<ContextType>;
   MessageDetails?: MessageDetailsResolvers<ContextType>;
   MessageID?: GraphQLScalarType;
   MessageParent?: MessageParentResolvers<ContextType>;
+  Messaging?: MessagingResolvers<ContextType>;
   Metadata?: MetadataResolvers<ContextType>;
   MigrateEmbeddings?: MigrateEmbeddingsResolvers<ContextType>;
   ModelCardAiEngineResult?: ModelCardAiEngineResultResolvers<ContextType>;
@@ -20773,6 +24378,8 @@ export type Resolvers<ContextType = any> = {
   OryConfig?: OryConfigResolvers<ContextType>;
   PageInfo?: PageInfoResolvers<ContextType>;
   PaginatedInAppNotifications?: PaginatedInAppNotificationsResolvers<ContextType>;
+  PaginatedInnovationPacks?: PaginatedInnovationPacksResolvers<ContextType>;
+  PaginatedLibraryTemplateResults?: PaginatedLibraryTemplateResultsResolvers<ContextType>;
   PaginatedOrganization?: PaginatedOrganizationResolvers<ContextType>;
   PaginatedSpaces?: PaginatedSpacesResolvers<ContextType>;
   PaginatedUsers?: PaginatedUsersResolvers<ContextType>;
@@ -20788,9 +24395,17 @@ export type Resolvers<ContextType = any> = {
   PlatformLocations?: PlatformLocationsResolvers<ContextType>;
   PlatformRolesAccess?: PlatformRolesAccessResolvers<ContextType>;
   PlatformSettings?: PlatformSettingsResolvers<ContextType>;
+  PlatformWellKnownVirtualContributorMapping?: PlatformWellKnownVirtualContributorMappingResolvers<ContextType>;
+  PlatformWellKnownVirtualContributors?: PlatformWellKnownVirtualContributorsResolvers<ContextType>;
+  Poll?: PollResolvers<ContextType>;
+  PollOption?: PollOptionResolvers<ContextType>;
+  PollOptionsChangedSubscriptionResult?: PollOptionsChangedSubscriptionResultResolvers<ContextType>;
+  PollSettings?: PollSettingsResolvers<ContextType>;
+  PollSettingsData?: PollSettingsDataResolvers<ContextType>;
+  PollVote?: PollVoteResolvers<ContextType>;
+  PollVoteUpdatedSubscriptionResult?: PollVoteUpdatedSubscriptionResultResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Profile?: ProfileResolvers<ContextType>;
-  ProfileCredentialVerified?: ProfileCredentialVerifiedResolvers<ContextType>;
   PromptGraph?: PromptGraphResolvers<ContextType>;
   PromptGraphDataPoint?: PromptGraphDataPointResolvers<ContextType>;
   PromptGraphDataStruct?: PromptGraphDataStructResolvers<ContextType>;
@@ -20802,6 +24417,7 @@ export type Resolvers<ContextType = any> = {
   PromptGraphEdge?: PromptGraphEdgeResolvers<ContextType>;
   PromptGraphNode?: PromptGraphNodeResolvers<ContextType>;
   PruneInAppNotificationAdminResult?: PruneInAppNotificationAdminResultResolvers<ContextType>;
+  PushSubscription?: PushSubscriptionResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Question?: QuestionResolvers<ContextType>;
   Reaction?: ReactionResolvers<ContextType>;
@@ -20820,13 +24436,18 @@ export type Resolvers<ContextType = any> = {
   RoomEventSubscriptionResult?: RoomEventSubscriptionResultResolvers<ContextType>;
   RoomMessageEventSubscriptionResult?: RoomMessageEventSubscriptionResultResolvers<ContextType>;
   RoomMessageReactionEventSubscriptionResult?: RoomMessageReactionEventSubscriptionResultResolvers<ContextType>;
+  RoomThreadUnreadCount?: RoomThreadUnreadCountResolvers<ContextType>;
+  RoomUnreadCounts?: RoomUnreadCountsResolvers<ContextType>;
   SearchCursor?: GraphQLScalarType;
   SearchResult?: SearchResultResolvers<ContextType>;
   SearchResultCallout?: SearchResultCalloutResolvers<ContextType>;
+  SearchResultCollaboraDocument?: SearchResultCollaboraDocumentResolvers<ContextType>;
+  SearchResultMemo?: SearchResultMemoResolvers<ContextType>;
   SearchResultOrganization?: SearchResultOrganizationResolvers<ContextType>;
   SearchResultPost?: SearchResultPostResolvers<ContextType>;
   SearchResultSpace?: SearchResultSpaceResolvers<ContextType>;
   SearchResultUser?: SearchResultUserResolvers<ContextType>;
+  SearchResultWhiteboard?: SearchResultWhiteboardResolvers<ContextType>;
   Sentry?: SentryResolvers<ContextType>;
   ServiceMetadata?: ServiceMetadataResolvers<ContextType>;
   Space?: SpaceResolvers<ContextType>;
@@ -20835,6 +24456,7 @@ export type Resolvers<ContextType = any> = {
   SpacePendingMembershipInfo?: SpacePendingMembershipInfoResolvers<ContextType>;
   SpaceSettings?: SpaceSettingsResolvers<ContextType>;
   SpaceSettingsCollaboration?: SpaceSettingsCollaborationResolvers<ContextType>;
+  SpaceSettingsLayout?: SpaceSettingsLayoutResolvers<ContextType>;
   SpaceSettingsMembership?: SpaceSettingsMembershipResolvers<ContextType>;
   SpaceSettingsPrivacy?: SpaceSettingsPrivacyResolvers<ContextType>;
   SpaceSubscription?: SpaceSubscriptionResolvers<ContextType>;
@@ -20842,6 +24464,7 @@ export type Resolvers<ContextType = any> = {
   StorageAggregatorParent?: StorageAggregatorParentResolvers<ContextType>;
   StorageBucket?: StorageBucketResolvers<ContextType>;
   StorageBucketParent?: StorageBucketParentResolvers<ContextType>;
+  StorageBucketUploadFileResult?: StorageBucketUploadFileResultResolvers<ContextType>;
   StorageConfig?: StorageConfigResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SubspaceCreated?: SubspaceCreatedResolvers<ContextType>;
@@ -20856,7 +24479,9 @@ export type Resolvers<ContextType = any> = {
   TemplatesSet?: TemplatesSetResolvers<ContextType>;
   Timeline?: TimelineResolvers<ContextType>;
   UUID?: GraphQLScalarType;
+  UpdateWhiteboardGuestAccessResult?: UpdateWhiteboardGuestAccessResultResolvers<ContextType>;
   Upload?: GraphQLScalarType;
+  UrlResolverQueryClosestAncestor?: UrlResolverQueryClosestAncestorResolvers<ContextType>;
   UrlResolverQueryResultCalendar?: UrlResolverQueryResultCalendarResolvers<ContextType>;
   UrlResolverQueryResultCalloutsSet?: UrlResolverQueryResultCalloutsSetResolvers<ContextType>;
   UrlResolverQueryResultCollaboration?: UrlResolverQueryResultCollaborationResolvers<ContextType>;
@@ -20867,14 +24492,22 @@ export type Resolvers<ContextType = any> = {
   UrlResolverQueryResults?: UrlResolverQueryResultsResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
   UserAuthenticationResult?: UserAuthenticationResultResolvers<ContextType>;
+  UserEmailChangeAuditEntries?: UserEmailChangeAuditEntriesResolvers<ContextType>;
+  UserEmailChangeAuditEntriesPageInfo?: UserEmailChangeAuditEntriesPageInfoResolvers<ContextType>;
+  UserEmailChangeAuditEntry?: UserEmailChangeAuditEntryResolvers<ContextType>;
+  UserEmailChangeResult?: UserEmailChangeResultResolvers<ContextType>;
   UserGroup?: UserGroupResolvers<ContextType>;
+  UserProfileSummary?: UserProfileSummaryResolvers<ContextType>;
   UserSettings?: UserSettingsResolvers<ContextType>;
+  UserSettingsAssistant?: UserSettingsAssistantResolvers<ContextType>;
   UserSettingsCommunication?: UserSettingsCommunicationResolvers<ContextType>;
+  UserSettingsHomeSpace?: UserSettingsHomeSpaceResolvers<ContextType>;
   UserSettingsNotification?: UserSettingsNotificationResolvers<ContextType>;
   UserSettingsNotificationChannels?: UserSettingsNotificationChannelsResolvers<ContextType>;
   UserSettingsNotificationOrganization?: UserSettingsNotificationOrganizationResolvers<ContextType>;
   UserSettingsNotificationPlatform?: UserSettingsNotificationPlatformResolvers<ContextType>;
   UserSettingsNotificationPlatformAdmin?: UserSettingsNotificationPlatformAdminResolvers<ContextType>;
+  UserSettingsNotificationSound?: UserSettingsNotificationSoundResolvers<ContextType>;
   UserSettingsNotificationSpace?: UserSettingsNotificationSpaceResolvers<ContextType>;
   UserSettingsNotificationSpaceAdmin?: UserSettingsNotificationSpaceAdminResolvers<ContextType>;
   UserSettingsNotificationUser?: UserSettingsNotificationUserResolvers<ContextType>;
@@ -20883,11 +24516,11 @@ export type Resolvers<ContextType = any> = {
   UserSettingsPrivacy?: UserSettingsPrivacyResolvers<ContextType>;
   UsersInRolesResponse?: UsersInRolesResponseResolvers<ContextType>;
   VcInteraction?: VcInteractionResolvers<ContextType>;
-  VerifiedCredential?: VerifiedCredentialResolvers<ContextType>;
-  VerifiedCredentialClaim?: VerifiedCredentialClaimResolvers<ContextType>;
+  VirtualAssistant?: VirtualAssistantResolvers<ContextType>;
   VirtualContributor?: VirtualContributorResolvers<ContextType>;
   VirtualContributorModelCard?: VirtualContributorModelCardResolvers<ContextType>;
   VirtualContributorModelCardFlag?: VirtualContributorModelCardFlagResolvers<ContextType>;
+  VirtualContributorPlatformSettings?: VirtualContributorPlatformSettingsResolvers<ContextType>;
   VirtualContributorSettings?: VirtualContributorSettingsResolvers<ContextType>;
   VirtualContributorSettingsPrivacy?: VirtualContributorSettingsPrivacyResolvers<ContextType>;
   VirtualContributorUpdatedSubscriptionResult?: VirtualContributorUpdatedSubscriptionResultResolvers<ContextType>;
@@ -20901,8 +24534,13 @@ export type Resolvers<ContextType = any> = {
   WhiteboardPreviewSettings?: WhiteboardPreviewSettingsResolvers<ContextType>;
 };
 
-export type DirectiveResolvers<ContextType = any> = {
-  oneOf?: OneOfDirectiveResolver<any, any, ContextType>;
+export type BlacklistLookupQueryVariables = Exact<{ [key: string]: never }>;
+
+export type BlacklistLookupQuery = {
+  platform: {
+    id: string;
+    settings: { integration: { notificationEmailBlacklist: Array<string> } };
+  };
 };
 
 export type UserLookupQueryVariables = Exact<{
@@ -20916,6 +24554,6 @@ export type UserLookupQuery = {
     lastName: string;
     email: string;
     nameID: string;
-    profile: { id: string; displayName: string; url: string };
+    profile?: { id: string; displayName: string; url: string } | undefined;
   };
 };

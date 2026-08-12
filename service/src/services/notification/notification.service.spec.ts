@@ -473,6 +473,11 @@ describe('NotificationService', () => {
       jest
         .spyOn(templateBuilder, 'buildTemplate')
         .mockResolvedValue(MINIMAL_TEMPLATE);
+      // The requeue path now backs off before rejecting. Stub it out so these
+      // tests stay fast; the backoff itself is asserted in its own test below.
+      jest
+        .spyOn(notificationService as any, 'delayBeforeRequeue')
+        .mockResolvedValue(undefined);
     });
 
     it('acks when all notifications sent successfully', async () => {
@@ -521,6 +526,214 @@ describe('NotificationService', () => {
       expect(channel.ack).not.toHaveBeenCalled();
     });
 
+    // -----------------------------------------------------------------------
+    // A send can fail by REJECTING or by RESOLVING with notifme's
+    // `{ status: 'error' }` — `sendNotification` catches every transport error
+    // and returns the latter. Classifying only rejections as failures meant a
+    // total SMTP outage was logged as "successfully sent" and ACKED, silently
+    // discarding the notification, and made the bounded-retry path below
+    // unreachable for the transient outage it exists to handle.
+    // -----------------------------------------------------------------------
+    describe('a resolved-but-errored send counts as a failure', () => {
+      it('does NOT ack when every send resolves with status=error', async () => {
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'error' } as any);
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processNotificationEvent(
+          mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          context
+        );
+
+        expect(channel.ack).not.toHaveBeenCalled();
+        expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
+      });
+
+      it('nacks without requeue when only SOME sends resolve with status=error', async () => {
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValueOnce({ status: 'error' } as any)
+          .mockResolvedValue({ status: 'success' } as any);
+        const payload = {
+          ...mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          recipients: [{ email: 'a@alkem.io' }, { email: 'b@alkem.io' }] as any,
+        };
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processNotificationEvent(payload, context);
+
+        expect(channel.ack).not.toHaveBeenCalled();
+        expect(channel.nack).toHaveBeenCalledWith(
+          expect.anything(),
+          false,
+          false
+        );
+      });
+
+      it('backs off before requeueing, so the attempt cap is not burned instantly', async () => {
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'error' } as any);
+        const backoff = jest.spyOn(
+          notificationService as any,
+          'delayBeforeRequeue'
+        );
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processNotificationEvent(
+          mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          context
+        );
+
+        expect(backoff).toHaveBeenCalledWith(1);
+        // And the backoff completes before the requeue is issued.
+        expect(backoff.mock.invocationCallOrder[0]).toBeLessThan(
+          (channel.reject as jest.Mock).mock.invocationCallOrder[0]
+        );
+      });
+    });
+
+    // -----------------------------------------------------------------------
+    // 034-messaging-notifications (FR-015/D-16), fixed per review findings
+    // corr/spec/qual/sec-notifications-2/3: bounded redelivery on the
+    // all-failed path. RabbitMQ never stamps `x-death` on this queue (no
+    // dead-letter-exchange is configured), so the bound is now tracked
+    // in-process, keyed by message identity — these tests drive it by
+    // calling processNotificationEvent repeatedly with a context whose
+    // message carries the SAME `messageId`, exactly mirroring how the
+    // broker would redeliver the identical message, rather than hand-
+    // injecting a header the broker cannot produce here.
+    // -----------------------------------------------------------------------
+    describe('bounded redelivery (FR-015/D-16)', () => {
+      /** RmqContext whose message carries the given stable identity. */
+      const createRmqContextWithMessageId = (messageId: string) => {
+        const channel = {
+          ack: jest.fn(),
+          nack: jest.fn(),
+          reject: jest.fn(),
+        };
+        const message = { properties: { messageId } };
+        const context = {
+          getChannelRef: () => channel,
+          getMessage: () => message,
+        } as unknown as RmqContext;
+        return { context, channel };
+      };
+
+      beforeEach(() => {
+        jest.spyOn(templateBuilder, 'buildTemplate').mockResolvedValue({
+          ...MINIMAL_TEMPLATE,
+          channels: {},
+        });
+      });
+
+      it('requeues on the first delivery of a message (first attempt)', async () => {
+        const { context, channel } =
+          createRmqContextWithMessageId('msg-first-attempt');
+
+        await notificationService.processNotificationEvent(
+          mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          context
+        );
+
+        expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
+      });
+
+      it('still requeues redeliveries 2 and 3 of the same message (below the cap)', async () => {
+        const messageId = 'msg-below-cap';
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          const { context, channel } = createRmqContextWithMessageId(messageId);
+
+          await notificationService.processNotificationEvent(
+            mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+            context
+          );
+
+          expect(channel.reject).toHaveBeenCalledWith(expect.anything(), true);
+        }
+      });
+
+      it('rejects WITHOUT requeue once the same message has been attempted MAX_REDELIVERY_ATTEMPTS times, and logs an error', async () => {
+        const messageId = 'msg-at-cap';
+        let lastChannel!: { reject: jest.Mock };
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          const { context, channel } = createRmqContextWithMessageId(messageId);
+          lastChannel = channel;
+
+          await notificationService.processNotificationEvent(
+            mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+            context
+          );
+        }
+
+        expect(lastChannel.reject).toHaveBeenCalledWith(
+          expect.anything(),
+          false
+        );
+      });
+
+      it('tracks attempts independently per message identity', async () => {
+        // Drive message A through 2 attempts (still below the cap)...
+        for (let attempt = 1; attempt <= 2; attempt++) {
+          const { context } =
+            createRmqContextWithMessageId('msg-independent-a');
+          await notificationService.processNotificationEvent(
+            mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+            context
+          );
+        }
+
+        // ...message B's own FIRST attempt is unaffected by A's count and
+        // still requeues rather than inheriting A's attempt total.
+        const { context: contextB, channel: channelB } =
+          createRmqContextWithMessageId('msg-independent-b');
+        await notificationService.processNotificationEvent(
+          mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          contextB
+        );
+
+        expect(channelB.reject).toHaveBeenCalledWith(expect.anything(), true);
+      });
+
+      it('leaves the partial-failure (nack) path unchanged regardless of prior attempts', async () => {
+        let buildCount = 0;
+        jest
+          .spyOn(templateBuilder, 'buildTemplate')
+          .mockImplementation(async () => {
+            buildCount++;
+            return buildCount === 1
+              ? MINIMAL_TEMPLATE
+              : { ...MINIMAL_TEMPLATE, channels: {} };
+          });
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'success' });
+
+        const payload = {
+          ...mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+          recipients: [
+            MINIMAL_RECIPIENT,
+            { ...MINIMAL_RECIPIENT, id: 'r2', email: 'r2@example.com' },
+          ],
+        };
+        const { context, channel } = createRmqContextWithMessageId(
+          'msg-partial-failure'
+        );
+
+        await notificationService.processNotificationEvent(payload, context);
+
+        expect(channel.nack).toHaveBeenCalledWith(
+          expect.anything(),
+          false,
+          false
+        );
+        expect(channel.reject).not.toHaveBeenCalled();
+      });
+    });
+
     it('nacks (without requeue) when SOME notifications failed', async () => {
       // First buildTemplate succeeds (valid channels), second returns empty channels
       // → second sendNotification throws → partial rejection
@@ -558,7 +771,16 @@ describe('NotificationService', () => {
       expect(channel.reject).not.toHaveBeenCalled();
     });
 
-    it('nacks (without requeue) on unexpected exception inside the try block', async () => {
+    // 034-messaging-notifications review fix (corr-notifications-2,
+    // qual-notifications-2, sec-notifications-1): an unexpected exception —
+    // whether thrown while building/sending (e.g. a schema-drift bug) or,
+    // as simulated here, while doing the ack/nack bookkeeping — is a
+    // deterministic code/schema bug that will very likely recur on every
+    // redelivery. It is now caught and discarded immediately (nack, no
+    // requeue) rather than requeued, bounded or not, matching the pre-034
+    // fail-safe behaviour: retrying a bug offers no value and risks an
+    // unbounded hot loop on this single-replica consumer.
+    it('discards (nack, no requeue) on unexpected exception, and never requeues even on repeated occurrences', async () => {
       // channel.ack throwing inside the try block triggers the catch handler
       jest
         .spyOn(notifmeService, 'send')
@@ -575,16 +797,24 @@ describe('NotificationService', () => {
         getMessage: () => ({}),
       } as unknown as RmqContext;
 
+      // Run it twice — a deterministic bug would throw identically on
+      // redelivery; it must be discarded every time, never requeued.
+      await notificationService.processNotificationEvent(
+        mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
+        context
+      );
       await notificationService.processNotificationEvent(
         mkPayload(NotificationEvent.SpaceAdminCommunityApplication),
         context
       );
 
+      expect(channel.nack).toHaveBeenCalledTimes(2);
       expect(channel.nack).toHaveBeenCalledWith(
         expect.anything(),
         false,
         false
       );
+      expect(channel.reject).not.toHaveBeenCalled();
     });
   });
 
