@@ -9,6 +9,8 @@ import {
   CommunityNewMemberEmailPayload,
   CommunicationUpdateCreatedEmailPayload,
   CommunicationUserMessageEmailPayload,
+  UserConversationMessageDirectEmailPayload,
+  UserConversationMessageGroupEmailPayload,
   CommunicationOrganizationMessageEmailPayload,
   CommunicationOrganizationMentionEmailPayload,
   CommunicationUserMentionEmailPayload,
@@ -70,12 +72,23 @@ import {
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
   NotificationEventPayloadUserPasswordChangeSecuritySignal,
+  ConversationDigestEntry,
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
 } from '@alkemio/notifications-lib';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { LogContext } from '@src/common/enums';
-import { RoleSetContributorType } from '@src/generated/alkemio-schema';
+// NotificationEvent-adjacent `RoleSetContributorType` (previously imported
+// from the generated schema) was removed from the schema entirely as part
+// of the wave-1 Actor/Account refactor, with no like-for-like replacement —
+// `ActorType.VirtualContributor` serializes to 'VIRTUAL_CONTRIBUTOR', not
+// the 'VIRTUAL' wire value this comparison has always been written against
+// (see notification.email.payload.builder.community.spec.ts). Hardcoding the
+// literal here reconciles the compile-time break from schema drift without
+// changing this pre-existing (pre-034) comparison's behavior.
+const VIRTUAL_CONTRIBUTOR_TYPE = 'VIRTUAL';
 
 @Injectable()
 export class NotificationEmailPayloadBuilderService {
@@ -226,8 +239,7 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type.toLowerCase() ===
-      RoleSetContributorType.Virtual.toLowerCase()
+      newMember.type.toLowerCase() === VIRTUAL_CONTRIBUTOR_TYPE.toLowerCase()
         ? 'Virtual Contributor'
         : newMember.type;
 
@@ -247,8 +259,7 @@ export class NotificationEmailPayloadBuilderService {
   ): CommunityNewMemberEmailPayload {
     const newMember = eventPayload.contributor;
     const typeName =
-      newMember.type.toLowerCase() ===
-      RoleSetContributorType.Virtual.toLowerCase()
+      newMember.type.toLowerCase() === VIRTUAL_CONTRIBUTOR_TYPE.toLowerCase()
         ? 'Virtual Contributor'
         : newMember.type;
 
@@ -570,6 +581,97 @@ export class NotificationEmailPayloadBuilderService {
       message: eventPayload.message,
     };
   }
+  // 034-messaging-notifications (contract C-2, FR-008/FR-009/D-15), revised for
+  // Operator Ruling R4: both builders deliberately read ONLY the digest entry
+  // fields (displayName/count/url) plus totalCount off the wire payload — never
+  // `message`, never `triggeredBy` (which on a digest is provenance only), never
+  // any email address — so an event payload smuggling extra fields (e.g.
+  // `message`) can never reach the template/rendered output (risk R-3/R-7).
+  public createEmailTemplatePayloadUserConversationMessageDirect(
+    eventPayload: NotificationEventPayloadUserConversationMessageDirect,
+    recipient: User
+  ): UserConversationMessageDirectEmailPayload {
+    const senders = this.mapConversationDigestEntries(eventPayload.senders);
+
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      senders,
+      totalCount: eventPayload.totalCount,
+      entryCount: senders.length,
+      subjectLine: this.createConversationDigestSubjectLine(
+        senders,
+        eventPayload.totalCount,
+        'direct'
+      ),
+    };
+  }
+
+  public createEmailTemplatePayloadUserConversationMessageGroup(
+    eventPayload: NotificationEventPayloadUserConversationMessageGroup,
+    recipient: User
+  ): UserConversationMessageGroupEmailPayload {
+    const conversations = this.mapConversationDigestEntries(
+      eventPayload.conversations
+    );
+
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      conversations,
+      totalCount: eventPayload.totalCount,
+      entryCount: conversations.length,
+      subjectLine: this.createConversationDigestSubjectLine(
+        conversations,
+        eventPayload.totalCount,
+        'group'
+      ),
+    };
+  }
+
+  // Field-by-field copy (never a spread) so nothing beyond the three contract
+  // fields can ride an entry into the render.
+  private mapConversationDigestEntries(
+    entries: ConversationDigestEntry[]
+  ): ConversationDigestEntry[] {
+    return (entries ?? []).map(entry => ({
+      displayName: entry.displayName,
+      count: entry.count,
+      url: entry.url,
+    }));
+  }
+
+  // 034-messaging-notifications, data-model §9.1 copy matrix. Resolved HERE
+  // rather than in the template because the subject/title is re-rendered
+  // through the bare non-autoescaping nunjucks Environment in
+  // `notification.templates.builder.ts`, which only guarantees `{{ }}`
+  // interpolation — plural branching must not depend on it.
+  //
+  // The single-entry/count-1 direct case reproduces the pre-R4 subject verbatim
+  // so the shipped US1-AS2 copy assertion stays meaningful.
+  //
+  // An empty entry list is a contract violation upstream (a track that finds
+  // nothing unread emits nothing at all — FR-018), not a case to render.
+  private createConversationDigestSubjectLine(
+    entries: ConversationDigestEntry[],
+    totalCount: number,
+    kind: 'direct' | 'group'
+  ): string {
+    if (entries.length === 1) {
+      const entry = entries[0];
+      if (kind === 'direct') {
+        return entry.count === 1
+          ? `${entry.displayName} sent you a message`
+          : `${entry.displayName} sent you ${entry.count} messages`;
+      }
+      return entry.count === 1
+        ? `New message in ${entry.displayName}`
+        : `${entry.count} new messages in ${entry.displayName}`;
+    }
+
+    return kind === 'direct'
+      ? `${totalCount} new messages from ${entries.length} people`
+      : `${totalCount} new messages in ${entries.length} conversations`;
+  }
+
   public createEmailTemplatePayloadOrganizationMessage(
     eventPayload: NotificationEventPayloadOrganizationMessageDirect,
     recipient: User
