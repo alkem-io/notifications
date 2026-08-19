@@ -19,6 +19,7 @@ import {
   SpaceCollaborationCalloutCommentEmailPayload,
   CollaborationPostCommentEmailPayload,
   CollaborationCalloutPublishedEmailPayload,
+  SpaceCollaborationCalloutReactionEmailPayload,
   CommentReplyEmailPayload,
   PlatformUserRegisteredEmailPayload,
   PlatformForumDiscussionCreatedEmailPayload,
@@ -75,6 +76,7 @@ import {
   ConversationDigestEntry,
   NotificationEventPayloadUserConversationMessageDirect,
   NotificationEventPayloadUserConversationMessageGroup,
+  NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
@@ -862,6 +864,46 @@ export class NotificationEmailPayloadBuilderService {
       },
     };
     return result;
+  }
+
+  // Maps the 7 allowed reaction slugs to their Unicode glyphs. An unknown
+  // slug (e.g. from a future allow-list extension) renders as a humanized
+  // text fallback so the email still makes sense without crashing.
+  private static readonly SLUG_TO_GLYPH: Record<string, string> = {
+    heart: '❤️',
+    'hugging-face': '🤗',
+    'clapping-hands': '👏',
+    'light-bulb': '💡',
+    bullseye: '🎯',
+    'check-mark': '✅',
+    rocket: '🚀',
+  };
+
+  private resolveEmojiGlyph(slug: string): string {
+    return (
+      NotificationEmailPayloadBuilderService.SLUG_TO_GLYPH[slug] ??
+      slug.replace(/-/g, ' ')
+    );
+  }
+
+  public createEmailTemplatePayloadSpaceCollaborationCalloutReaction(
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutReaction,
+    recipient: User
+  ): SpaceCollaborationCalloutReactionEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      reactor: {
+        displayName: eventPayload.triggeredBy.profile.displayName,
+      },
+      reaction: {
+        emoji: eventPayload.reaction.emoji,
+        emojiGlyph: this.resolveEmojiGlyph(eventPayload.reaction.emoji),
+      },
+      callout: {
+        displayName: eventPayload.callout.framing.displayName,
+        url: eventPayload.callout.framing.url,
+      },
+    };
   }
 
   public createEmailTemplatePayloadUserCommentReply(

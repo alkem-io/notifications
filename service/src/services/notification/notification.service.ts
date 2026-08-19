@@ -38,6 +38,7 @@ import {
   NotificationEventPayloadUserPasswordChangeSecuritySignal,
   NotificationEventPayloadUserConversationMessageDirect,
   NotificationEventPayloadUserConversationMessageGroup,
+  NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -561,6 +562,11 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCollaborationCallout,
           recipient
         );
+      case NotificationEvent.SpaceCollaborationCalloutReaction:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCollaborationCalloutReaction(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCalloutReaction,
+          recipient
+        );
       case NotificationEvent.UserCommentReply:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserCommentReply(
           eventPayload as NotificationEventPayloadUserMessageRoomReply,
@@ -705,6 +711,8 @@ export class NotificationService {
         return 'space.collaboration.callout.post.contribution.comment';
       case NotificationEvent.SpaceCollaborationCalloutPublished:
         return 'space.collaboration.callout.published';
+      case NotificationEvent.SpaceCollaborationCalloutReaction:
+        return 'space.collaboration.callout.reaction';
       case NotificationEvent.UserCommentReply:
         return 'user.comment.reply';
       case NotificationEvent.PlatformAdminSpaceCreated:

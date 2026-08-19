@@ -17,6 +17,7 @@ export * from './space.community.application.created.email.payload';
 export * from './space.communication.update.created.email.payload';
 export * from './space.communication.message.direct.email.payload';
 export * from './space.collaboration.callout.published.email.payload';
+export * from './space.collaboration.callout.reaction.email.payload';
 export * from './space.collaboration.callout.post.contribution.comment.email.payload';
 export * from './space.collaboration.callout.contribution.email.payload';
 export * from './space.collaboration.callout.comment.email.payload';
