@@ -29,26 +29,10 @@
 # NODE_MODULE_VERSION (127) is unchanged; the debian12 → debian13 runtime
 # move is CVE hygiene, not an ABI necessity.
 #
-# lib-pack stage: builds @alkemio/notifications-lib from source and packs a
-# tarball. The service lockfile resolves the lib via a local file path while
-# 0.20.0 is pending publication to npm. Once 0.20.0 is on the registry and
-# the lockfile is regenerated against it, this stage and its COPY lines in
-# the builder/prod-deps stages can be removed.
-
-# ======================
-# lib-pack stage (build lib from source, produce the tgz)
-# ======================
-FROM node:22.23.2-trixie@sha256:97337fb5b20347953eb4b9aa0183c73259a0e21934b07845f04278e4954ae61a AS lib-pack
-
-WORKDIR /lib-src
-
-COPY lib/package*.json ./
-RUN npm ci
-
-COPY lib/src ./src
-COPY lib/tsconfig*.json ./
-
-RUN npm run build && npm pack
+# @alkemio/notifications-lib is consumed from the npm registry (pinned 0.20.0,
+# integrity-locked in service/package-lock.json). No local lib build stage is
+# needed — the pre-publish lib-pack/tgz bridge was removed once 0.20.0 shipped
+# to the registry (workspace#041-callout-reaction-notifications).
 
 # ======================
 # Builder stage (with dev deps)
@@ -58,10 +42,6 @@ FROM node:22.23.2-trixie@sha256:97337fb5b20347953eb4b9aa0183c73259a0e21934b07845
 WORKDIR /app
 
 COPY service/package*.json ./
-# Supply the packed lib tarball so the lockfile's file: resolution works inside
-# the container. The npm install workdir is /app, so file:../lib/... resolves
-# to /lib/.
-COPY --from=lib-pack /lib-src/alkemio-notifications-lib-*.tgz /lib/
 RUN npm ci
 
 COPY service/tsconfig*.json ./
@@ -79,7 +59,6 @@ FROM node:22.23.2-trixie@sha256:97337fb5b20347953eb4b9aa0183c73259a0e21934b07845
 WORKDIR /app
 
 COPY service/package*.json ./
-COPY --from=lib-pack /lib-src/alkemio-notifications-lib-*.tgz /lib/
 RUN npm ci --omit=dev && npm cache clean --force
 
 
