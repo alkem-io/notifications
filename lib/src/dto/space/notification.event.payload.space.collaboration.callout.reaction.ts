@@ -1,7 +1,6 @@
 import { NotificationEventPayloadSpace } from './notification.event.payload.space';
 
-export interface NotificationEventPayloadSpaceCollaborationCalloutReaction
-  extends NotificationEventPayloadSpace {
+export interface NotificationEventPayloadSpaceCollaborationCalloutReaction extends NotificationEventPayloadSpace {
   callout: {
     id: string;
     framing: {
