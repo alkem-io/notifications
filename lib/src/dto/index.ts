@@ -5,6 +5,8 @@ export * from './organization/notification.event.payload.organization.message.ro
 export * from './user/notification.event.payload.user.message.direct';
 export * from './user/notification.event.payload.user.message.room';
 export * from './user/notification.event.payload.user.message.room.reply';
+export * from './user/notification.event.payload.user.conversation.message.direct';
+export * from './user/notification.event.payload.user.conversation.message.group';
 export * from './platform/notification.event.payload.platform.global.role';
 export * from './platform/notification.event.payload.platform.user.registration';
 export * from './platform/notification.event.payload.platform.user.removed';

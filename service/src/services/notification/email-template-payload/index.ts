@@ -1,4 +1,6 @@
 export * from './user.message.email.payload';
+export * from './user.conversation.message.direct.email.payload';
+export * from './user.conversation.message.group.email.payload';
 export * from './user.mention.email.payload';
 export * from './user.comment.reply.email.payload';
 export * from './space.poll.vote.cast.email.payload';

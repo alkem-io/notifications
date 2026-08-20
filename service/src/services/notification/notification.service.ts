@@ -36,6 +36,8 @@ import {
   NotificationEventPayloadUserEmailChangeGlobalAdmin,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
   NotificationEventPayloadUserPasswordChangeSecuritySignal,
+  NotificationEventPayloadUserConversationMessageDirect,
+  NotificationEventPayloadUserConversationMessageGroup,
 } from '@alkemio/notifications-lib';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
@@ -49,8 +51,34 @@ import { NotificationBlacklistService } from './notification.blacklist.service';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 import { Channel, Message } from 'amqplib';
 import { Ctx, Payload, RmqContext } from '@nestjs/microservices';
+import { createHash } from 'crypto';
 @Injectable()
 export class NotificationService {
+  // 034-messaging-notifications (FR-015/D-16): redeliveries beyond this cap
+  // are rejected without requeue rather than looped forever.
+  private static readonly MAX_REDELIVERY_ATTEMPTS = 3;
+
+  // Multiplied by the attempt number for the pre-requeue backoff, so the three
+  // attempts span ~2s + ~4s rather than completing inside a few milliseconds.
+  // A requeued message is redelivered to this same consumer immediately, so
+  // without this the cap gave a transient outage no time to recover.
+  private static readonly REQUEUE_BACKOFF_STEP_MS = 2_000;
+
+  // 034-messaging-notifications review fix (corr/spec/qual/sec
+  // notifications-2/3): RabbitMQ only stamps an `x-death` header when a
+  // message is actually dead-lettered — reject/nack with requeue=false into
+  // a queue that carries an `x-dead-letter-exchange`, or TTL/queue-length
+  // expiry. The `alkemio-notifications` queue (service/src/main.ts) declares
+  // no dead-letter exchange, so `x-death` is NEVER present here and a count
+  // read from it is always 0 — a cap keyed on it can never fire. The only
+  // broker-native signal on this topology is `message.fields.redelivered`,
+  // a boolean with no attempt count. The bound is therefore tracked
+  // in-process, keyed by message identity (messageId/correlationId/content
+  // hash). This resets on pod restart — a deliberate, minimal-effort bound;
+  // a durable bound would need a queue-level dead-letter-exchange, which is
+  // an infra change outside this repo.
+  private readonly deliveryAttempts = new Map<string, number>();
+
   constructor(
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
@@ -72,59 +100,131 @@ export class NotificationService {
       LogContext.NOTIFICATIONS
     );
 
-    const sentNotifications =
-      await this.buildAndSendEmailNotifications(eventPayload);
-
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
 
+    // 034-messaging-notifications (D-16 hardening, US1-AS2/AS3/US2-AS2
+    // finding): buildAndSendEmailNotifications used to be awaited OUTSIDE
+    // this try block, so an unexpected throw from it (e.g. the schema-drift
+    // `.valueOf()` TypeError) propagated uncaught out of this handler
+    // instead of being nack'd — leaving the message neither acked nor
+    // nacked, which is what produced the unbounded implicit RabbitMQ
+    // redelivery loop observed live. It is now inside the try, so any
+    // unexpected error — from building/sending OR from the ack/nack
+    // bookkeeping below — is always caught and the message is discarded
+    // immediately (see the catch block below): a code/schema bug is very
+    // likely to recur identically on every redelivery, so bounding-and-
+    // retrying it buys nothing and risks a tight hot loop on this
+    // single-replica consumer. Only the transient, all-recipients-failed
+    // send path (e.g. an SMTP outage) is worth a few bounded retries.
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     try {
-      const x = await sentNotifications;
+      const x = await this.buildAndSendEmailNotifications(eventPayload);
       if (x.length === 0) {
         this.logger.verbose?.(
           `[${eventPayload.eventType}] No messages to send!`,
           LogContext.NOTIFICATIONS
         );
+        this.clearDeliveryAttempts(originalMsg);
         channel.ack(originalMsg);
         return;
       }
-      const nacked = x.filter(
-        (y: { status: string }) => y.status === 'rejected'
-      ) as PromiseRejectedResult[];
+      // A send FAILS in two distinct ways and both must count:
+      //  - the promise rejected (e.g. NotificationNoChannelsException), or
+      //  - it resolved with notifme's `{ status: 'error' }`.
+      // Only the first used to be counted. `sendNotification` catches every
+      // transport error and RETURNS `{ status: 'error' }` (see its catch), so
+      // a resolved-but-failed send arrived here as
+      // `{ status: 'fulfilled', value: { status: 'error' } }` and passed the
+      // old `y.status === 'rejected'` test. The consequence was severe and
+      // silent: a total SMTP outage produced zero "rejected" entries, took the
+      // `nacked.length === 0` branch, logged "N messages successfully sent!"
+      // and ACKED — discarding the notification while reporting delivery. It
+      // also made the bounded-retry path below unreachable for the one case it
+      // was written for.
+      const failed = x.filter(
+        result =>
+          result.status === 'rejected' || result.value?.status === 'error'
+      );
+      const failureReason = (result: (typeof failed)[number]): unknown =>
+        result.status === 'rejected'
+          ? result.reason
+          : `notifme reported status=error: ${JSON.stringify(result.value?.errors ?? {})}`;
 
-      if (nacked.length === 0) {
+      if (failed.length === 0) {
         this.logger.verbose?.(
           `[${eventPayload.eventType}] ${x.length} messages successfully sent!`,
           LogContext.NOTIFICATIONS
         );
         // if all is fine, acknowledge the given message. allUpTo (second, optional parameter) defaults to false,
         // so only the message supplied is acknowledged.
+        this.clearDeliveryAttempts(originalMsg);
         channel.ack(originalMsg);
       } else {
-        if (nacked.length === x.length) {
-          this.logger.verbose?.('All messages failed to be sent!');
-          // if all messages failed to be sent, we reject the message but we make sure the message is
-          // not discarded so we provide 'true' to requeue parameter
-          channel.reject(originalMsg, true);
+        if (failed.length === x.length) {
+          // 034-messaging-notifications (FR-015/D-16, risk R-12) — fixed
+          // per corr/spec/qual/sec notifications-2/3 findings: the all-
+          // failed path used to requeue unconditionally, which on a
+          // single-replica consumer is an infinite redelivery loop. Bound
+          // it using an in-process attempt count keyed by message identity
+          // (see the class-level comment for why `x-death` cannot be used
+          // on this queue); once that reaches the cap, reject WITHOUT
+          // requeue (drop + log) instead of looping forever.
+          const attempts = this.recordDeliveryAttempt(originalMsg);
+          if (attempts >= NotificationService.MAX_REDELIVERY_ATTEMPTS) {
+            this.logger.error(
+              `[${eventPayload.eventType}] All messages failed to be sent after ${attempts} delivery attempts — rejecting without requeue to avoid an infinite redelivery loop.`,
+              LogContext.NOTIFICATIONS
+            );
+            this.clearDeliveryAttempts(originalMsg);
+            channel.reject(originalMsg, false);
+          } else {
+            this.logger.verbose?.('All messages failed to be sent!');
+            // Back off BEFORE requeueing. RabbitMQ redelivers a requeued
+            // message to this same single-replica consumer immediately, so an
+            // instant `reject(msg, true)` burned all MAX_REDELIVERY_ATTEMPTS
+            // inside a few milliseconds — turning any transient outage into a
+            // permanent drop. The delay holds the message unacked for a few
+            // seconds, which is acceptable on an outage path and is what makes
+            // the attempt cap mean "retried over ~seconds" rather than "retried
+            // three times instantly". A DLX + per-message-TTL retry queue is
+            // the proper fix, but it needs broker topology this service does
+            // not own.
+            await this.delayBeforeRequeue(attempts);
+            // if all messages failed to be sent, we reject the message but we make sure the message is
+            // not discarded so we provide 'true' to requeue parameter
+            channel.reject(originalMsg, true);
+          }
         } else {
           this.logger.verbose?.(
-            `${nacked.length} messages out of total ${x.length} messages failed to be sent!`,
+            `${failed.length} messages out of total ${x.length} messages failed to be sent!`,
             LogContext.NOTIFICATIONS
           );
           // if at least one message is sent successfully, we acknowledge just this message but we make sure the message is
           // dead-lettered / discarded, providing 'false' to the 3rd parameter, requeue
+          this.clearDeliveryAttempts(originalMsg);
           channel.nack(originalMsg, false, false);
         }
-        // print all rejected notifications
-        nacked.forEach(x => this.logger?.warn(x.reason));
+        // print all failed notifications
+        failed.forEach(result => this.logger?.warn(failureReason(result)));
       }
     } catch (err) {
-      // if there is an unhandled bug in the flow, we reject the message but we make sure the message is
-      // not discarded so we provide 'true' to requeue parameter
-      // channel.reject(originalMsg, true);
-      channel.nack(originalMsg, false, false);
+      // 034-messaging-notifications review fix (corr-notifications-2,
+      // qual-notifications-2, sec-notifications-1): an unexpected error
+      // here (a code/schema bug, not a transient per-recipient send
+      // failure — those are handled above via Promise.allSettled) is very
+      // likely to recur identically on every redelivery. Requeueing it —
+      // bounded or not — buys nothing and risks an unbounded hot loop on
+      // this single-replica consumer, so discard immediately, matching the
+      // pre-034 fail-safe behaviour on this path.
       this.logger.error(err);
+      // The message is discarded here and will never be redelivered, so its
+      // attempt entry is dead weight. Without this, a message that recorded an
+      // attempt on the all-failed path and then threw on a later redelivery
+      // left an entry that survived for the pod's lifetime — a slow leak in an
+      // unbounded, TTL-less map on a long-lived single-replica consumer.
+      this.clearDeliveryAttempts(originalMsg);
+      channel.nack(originalMsg, false, false);
     }
   }
 
@@ -331,12 +431,12 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCommunityApplication,
           recipient
         );
-      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation:
+      case NotificationEvent.VirtualAdminSpaceCommunityInvitation:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitation(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
           recipient
         );
-      case NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined:
+      case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitationDeclined(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
           recipient
@@ -406,9 +506,14 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadUserMessageDirect,
           recipient
         );
-      case NotificationEvent.UserMessageSender:
-        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserMessageSender(
-          eventPayload as NotificationEventPayloadUserMessageDirect,
+      case NotificationEvent.UserConversationMessageDirect:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserConversationMessageDirect(
+          eventPayload as NotificationEventPayloadUserConversationMessageDirect,
+          recipient
+        );
+      case NotificationEvent.UserConversationMessageGroup:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserConversationMessageGroup(
+          eventPayload as NotificationEventPayloadUserConversationMessageGroup,
           recipient
         );
       case NotificationEvent.OrganizationAdminMessage:
@@ -527,87 +632,100 @@ export class NotificationService {
     }
   }
 
+  // 034-messaging-notifications (D-16 hardening, prompted by US1-AS2/AS3/
+  // US2-AS2/US4-AS5 live-verification findings): plain enum-member case
+  // expressions, NOT `NotificationEvent.<Member>.valueOf()`. JS evaluates
+  // switch case expressions top-to-bottom until a match; `.valueOf()` on a
+  // stale/renamed/removed member throws `TypeError: Cannot read properties
+  // of undefined (reading 'valueOf')` while evaluating THAT case, aborting
+  // the whole switch — silently breaking every case listed after it (this is
+  // exactly how a schema-drift typo here took out USER_CONVERSATION_MESSAGE_
+  // DIRECT/GROUP, which sit later in source order). A bare enum reference
+  // just yields `undefined` for a missing member — a case that can never
+  // match, not a throw — so drift here can no longer cascade.
   private getEmailTemplateToUseForEvent(event: NotificationEvent): string {
     switch (event) {
-      case NotificationEvent.SpaceAdminCommunityApplication.valueOf():
+      case NotificationEvent.SpaceAdminCommunityApplication:
         return 'space.admin.community.user.application.received';
-      case NotificationEvent.UserSpaceCommunityInvitation.valueOf():
+      case NotificationEvent.UserSpaceCommunityInvitation:
         return 'user.space.community.invitation.received';
-      case NotificationEvent.UserSpaceCommunityApplicationDeclined.valueOf():
+      case NotificationEvent.UserSpaceCommunityApplicationDeclined:
         return 'user.space.community.application.declined';
-      case NotificationEvent.VirtualContributorAdminSpaceCommunityInvitation.valueOf():
+      case NotificationEvent.VirtualAdminSpaceCommunityInvitation:
         return 'virtual.contributor.invitation.received';
-      case NotificationEvent.SpaceAdminVirtualContributorCommunityInvitationDeclined.valueOf():
+      case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return 'virtual.contributor.invitation.declined';
-      case NotificationEvent.SpaceCommunityInvitationUserPlatform.valueOf():
+      case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return 'user.space.community.invitation.received';
-      case NotificationEvent.UserSpaceCommunityJoined.valueOf():
+      case NotificationEvent.UserSpaceCommunityJoined:
         return 'user.space.community.joined';
-      case NotificationEvent.SpaceAdminCommunityNewMember.valueOf():
+      case NotificationEvent.SpaceAdminCommunityNewMember:
         return 'space.admin.community.new.member';
-      case NotificationEvent.SpaceCommunityCalendarEventCreated.valueOf():
+      case NotificationEvent.SpaceCommunityCalendarEventCreated:
         return 'space.community.calendar.event.created';
-      case NotificationEvent.SpaceCommunityCalendarEventComment.valueOf():
+      case NotificationEvent.SpaceCommunityCalendarEventComment:
         return 'space.community.calendar.event.comment';
-      case NotificationEvent.PlatformAdminGlobalRoleChanged.valueOf():
+      case NotificationEvent.PlatformAdminGlobalRoleChanged:
         return 'platform.admin.user.global.role.change';
-      case NotificationEvent.UserSignUpWelcome.valueOf():
+      case NotificationEvent.UserSignUpWelcome:
         return 'user.sign.up.welcome';
-      case NotificationEvent.PlatformAdminUserProfileCreated.valueOf():
+      case NotificationEvent.PlatformAdminUserProfileCreated:
         return 'platform.admin.user.profile.created';
-      case NotificationEvent.PlatformAdminUserProfileRemoved.valueOf():
+      case NotificationEvent.PlatformAdminUserProfileRemoved:
         return 'platform.admin.user.profile.removed';
-      case NotificationEvent.SpaceCommunicationUpdate.valueOf():
+      case NotificationEvent.SpaceCommunicationUpdate:
         return 'space.communication.update.member';
-      case NotificationEvent.PlatformForumDiscussionCreated.valueOf():
+      case NotificationEvent.PlatformForumDiscussionCreated:
         return 'platform.forum.discussion.created';
-      case NotificationEvent.PlatformForumDiscussionComment.valueOf():
+      case NotificationEvent.PlatformForumDiscussionComment:
         return 'platform.forum.discussion.comment';
-      case NotificationEvent.UserMessage.valueOf():
+      case NotificationEvent.UserMessage:
         return 'user.message.recipient';
-      case NotificationEvent.UserMessageSender.valueOf():
-        return 'user.message.sender';
-      case NotificationEvent.OrganizationAdminMessage.valueOf():
+      case NotificationEvent.UserConversationMessageDirect:
+        return 'user.conversation.message.direct';
+      case NotificationEvent.UserConversationMessageGroup:
+        return 'user.conversation.message.group';
+      case NotificationEvent.OrganizationAdminMessage:
         return 'organization.message.recipient';
-      case NotificationEvent.OrganizationMessageSender.valueOf():
+      case NotificationEvent.OrganizationMessageSender:
         return 'organization.message.sender';
-      case NotificationEvent.SpaceLeadCommunicationMessage.valueOf():
+      case NotificationEvent.SpaceLeadCommunicationMessage:
         return 'space.lead.communication.message.direct.receiver';
-      case NotificationEvent.UserMentioned.valueOf():
+      case NotificationEvent.UserMentioned:
         return 'user.mention';
-      case NotificationEvent.OrganizationAdminMentioned.valueOf():
+      case NotificationEvent.OrganizationAdminMentioned:
         return 'organization.mention';
-      case NotificationEvent.SpaceCollaborationCalloutComment.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutComment:
         return 'space.collaboration.callout.comment';
-      case NotificationEvent.SpaceCollaborationCalloutContribution.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutContribution:
         return 'space.collaboration.callout.contribution';
-      case NotificationEvent.SpaceAdminCollaborationCalloutContribution.valueOf():
+      case NotificationEvent.SpaceAdminCollaborationCalloutContribution:
         return 'space.admin.collaboration.callout.contribution';
-      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutPostContributionComment:
         return 'space.collaboration.callout.post.contribution.comment';
-      case NotificationEvent.SpaceCollaborationCalloutPublished.valueOf():
+      case NotificationEvent.SpaceCollaborationCalloutPublished:
         return 'space.collaboration.callout.published';
-      case NotificationEvent.UserCommentReply.valueOf():
+      case NotificationEvent.UserCommentReply:
         return 'user.comment.reply';
-      case NotificationEvent.PlatformAdminSpaceCreated.valueOf():
+      case NotificationEvent.PlatformAdminSpaceCreated:
         return 'platform.admin.space.created';
-      case NotificationEvent.SpaceCollaborationPollVoteCastOnOwnPoll.valueOf():
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnOwnPoll:
         return 'space.collaboration.poll.vote.cast.on.own.poll';
-      case NotificationEvent.SpaceCollaborationPollVoteCastOnPollIVotedOn.valueOf():
+      case NotificationEvent.SpaceCollaborationPollVoteCastOnPollIVotedOn:
         return 'space.collaboration.poll.vote.cast.on.poll.i.voted.on';
-      case NotificationEvent.SpaceCollaborationPollModifiedOnPollIVotedOn.valueOf():
+      case NotificationEvent.SpaceCollaborationPollModifiedOnPollIVotedOn:
         return 'space.collaboration.poll.modified.on.poll.i.voted.on';
-      case NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange.valueOf():
+      case NotificationEvent.SpaceCollaborationPollVoteAffectedByOptionChange:
         return 'space.collaboration.poll.vote.affected.by.option.change';
-      case NotificationEvent.UserEmailChangeSecuritySignal.valueOf():
+      case NotificationEvent.UserEmailChangeSecuritySignal:
         return 'user.email.change.security.signal';
-      case NotificationEvent.UserEmailChangeNewAddressNotification.valueOf():
+      case NotificationEvent.UserEmailChangeNewAddressNotification:
         return 'user.email.change.new.address';
-      case NotificationEvent.UserEmailChangeGlobalAdminNotification.valueOf():
+      case NotificationEvent.UserEmailChangeGlobalAdminNotification:
         return 'platform.admin.user.email.change';
-      case NotificationEvent.UserEmailChangeSpaceAdminNotification.valueOf():
+      case NotificationEvent.UserEmailChangeSpaceAdminNotification:
         return 'space.admin.user.email.change';
-      case NotificationEvent.UserPasswordChangeSecuritySignal.valueOf():
+      case NotificationEvent.UserPasswordChangeSecuritySignal:
         return 'user.password.change.security.signal';
       default:
         throw new EventPayloadNotProvidedException(
@@ -620,4 +738,56 @@ export class NotificationService {
   private isPromiseFulfilledResult = (
     result: PromiseSettledResult<any>
   ): result is PromiseFulfilledResult<any> => result.status === 'fulfilled';
+
+  // 034-messaging-notifications review fix (corr/spec/qual/sec
+  // notifications-2/3): derives a stable identity for `message` so repeat
+  // deliveries of the same event can be correlated in-process. Prefers the
+  // AMQP `messageId`/`correlationId` properties (set by a well-behaved
+  // publisher); falls back to a content hash so redeliveries of the exact
+  // same payload still share a bound even without either property. A
+  // message with neither an id nor a body (should not occur for a real
+  // AMQP delivery) falls into one shared bucket rather than retrying
+  // unbounded.
+  private getMessageKey(message: Message): string {
+    const properties = message?.properties as
+      { messageId?: string; correlationId?: string } | undefined;
+    if (properties?.messageId) {
+      return `id:${properties.messageId}`;
+    }
+    if (properties?.correlationId) {
+      return `corr:${properties.correlationId}`;
+    }
+    const content = (message as unknown as { content?: Buffer })?.content;
+    if (content && content.length > 0) {
+      return `content:${createHash('sha256').update(content).digest('hex')}`;
+    }
+    return 'unidentified';
+  }
+
+  /**
+   * Records one more delivery/processing attempt for `message` and returns
+   * the running count for its identity. See `getMessageKey` and the
+   * class-level comment for why this is tracked in-process rather than via
+   * RabbitMQ's `x-death` header (never populated on this queue).
+   */
+  private recordDeliveryAttempt(message: Message): number {
+    const key = this.getMessageKey(message);
+    const attempts = (this.deliveryAttempts.get(key) ?? 0) + 1;
+    this.deliveryAttempts.set(key, attempts);
+    return attempts;
+  }
+
+  /** Drops the tracked attempt count once a message will not be redelivered (acked, or given up on), bounding map growth. */
+  private clearDeliveryAttempts(message: Message): void {
+    this.deliveryAttempts.delete(this.getMessageKey(message));
+  }
+
+  /**
+   * Linear backoff before requeueing an all-recipients-failed message, so the
+   * attempt cap spans seconds rather than milliseconds. Overridable in tests.
+   */
+  protected delayBeforeRequeue(attempt: number): Promise<void> {
+    const delayMs = attempt * NotificationService.REQUEUE_BACKOFF_STEP_MS;
+    return new Promise(resolve => setTimeout(resolve, delayMs));
+  }
 }
