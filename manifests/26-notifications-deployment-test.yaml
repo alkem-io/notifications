@@ -7,7 +7,7 @@ metadata:
     app: alkemio-notifications
     k8s-app: alkemio-notifications
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: alkemio-notifications
@@ -57,27 +57,12 @@ spec:
             limits:
               cpu: 250m
               memory: 250Mi
-          # probes
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 4004
-              httpHeaders:
-                - name: Host
-                  value: '127.0.0.1'
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 4004
-              httpHeaders:
-                - name: Host
-                  value: '127.0.0.1'
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            failureThreshold: 3
+          # No HTTP probes (ops-lead decision, 2026-08-21). Nothing routes HTTP to
+          # this service — it is a RabbitMQ consumer and /health existed only for
+          # the probes — so a probe adds kill authority without information. Under
+          # a queue backlog the starved event loop missed the 1s default timeout
+          # and liveness killed the pod mid-drain on every restart, a
+          # self-sustaining CrashLoopBackOff with zero consumers (PR #581).
       affinity:
         podAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
