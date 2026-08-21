@@ -28,6 +28,11 @@
 # farmhash → build/Release/farmhash.node. Node major stays 22, so
 # NODE_MODULE_VERSION (127) is unchanged; the debian12 → debian13 runtime
 # move is CVE hygiene, not an ABI necessity.
+#
+# @alkemio/notifications-lib is consumed from the npm registry (pinned 0.20.0,
+# integrity-locked in service/package-lock.json). No local lib build stage is
+# needed — the pre-publish lib-pack/tgz bridge was removed once 0.20.0 shipped
+# to the registry (workspace#041-callout-reaction-notifications).
 
 # ======================
 # Builder stage (with dev deps)

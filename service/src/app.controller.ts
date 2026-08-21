@@ -38,6 +38,7 @@ import {
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
   NotificationEventPayloadUserConversationMessageDirect,
   NotificationEventPayloadUserConversationMessageGroup,
+  NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
@@ -405,6 +406,21 @@ export class AppController {
   )
   async sendCalloutPublishedNotifications(
     @Payload() eventPayload: NotificationEventPayloadSpaceCollaborationCallout,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(
+    NotificationEvent.SpaceCollaborationCalloutReaction,
+    Transport.RMQ
+  )
+  async sendSpaceCollaborationCalloutReactionNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutReaction,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(

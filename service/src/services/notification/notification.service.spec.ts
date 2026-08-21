@@ -698,6 +698,29 @@ describe('NotificationService', () => {
         expect(channelB.reject).toHaveBeenCalledWith(expect.anything(), true);
       });
 
+      // R-2 mitigating test for callout reaction events: confirms that a
+      // persistently-failing SPACE_COLLABORATION_CALLOUT_REACTION message is
+      // bounded at the same MAX_REDELIVERY_ATTEMPTS cap as all other events.
+      it('applies the redelivery cap to callout reaction events as to all others', async () => {
+        const messageId = 'msg-reaction-at-cap';
+        let lastChannel!: { reject: jest.Mock };
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          const { context, channel } = createRmqContextWithMessageId(messageId);
+          lastChannel = channel;
+
+          await notificationService.processNotificationEvent(
+            mkPayload(NotificationEvent.SpaceCollaborationCalloutReaction),
+            context
+          );
+        }
+
+        expect(lastChannel.reject).toHaveBeenCalledWith(
+          expect.anything(),
+          false
+        );
+      });
+
       it('leaves the partial-failure (nack) path unchanged regardless of prior attempts', async () => {
         let buildCount = 0;
         jest
