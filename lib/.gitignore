@@ -3,6 +3,11 @@
 /node_modules
 /dist
 
+# npm pack output — the local pre-publish tarball the server resolves via
+# file:../notifications/lib/*.tgz (forge 041 rollout ordering). Must exist on
+# disk for local install, but the published artifact goes to npm — never commit it.
+*.tgz
+
 *.log
 .env
 .~*

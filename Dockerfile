@@ -28,11 +28,16 @@
 # farmhash → build/Release/farmhash.node. Node major stays 22, so
 # NODE_MODULE_VERSION (127) is unchanged; the debian12 → debian13 runtime
 # move is CVE hygiene, not an ABI necessity.
+#
+# @alkemio/notifications-lib is consumed from the npm registry (pinned 0.20.0,
+# integrity-locked in service/package-lock.json). No local lib build stage is
+# needed — the pre-publish lib-pack/tgz bridge was removed once 0.20.0 shipped
+# to the registry (workspace#041-callout-reaction-notifications).
 
 # ======================
 # Builder stage (with dev deps)
 # ======================
-FROM node:22.23.2-trixie@sha256:97337fb5b20347953eb4b9aa0183c73259a0e21934b07845f04278e4954ae61a AS builder
+FROM node:22.23.2-trixie@sha256:2082d2bf902c8835655c6bcfee3594c00ea900498a9f6e2b96d3352536f9e8d8 AS builder
 
 WORKDIR /app
 
@@ -49,7 +54,7 @@ RUN npm run build
 # ======================
 # Prod deps stage (NO dev deps)
 # ======================
-FROM node:22.23.2-trixie@sha256:97337fb5b20347953eb4b9aa0183c73259a0e21934b07845f04278e4954ae61a AS prod-deps
+FROM node:22.23.2-trixie@sha256:2082d2bf902c8835655c6bcfee3594c00ea900498a9f6e2b96d3352536f9e8d8 AS prod-deps
 
 WORKDIR /app
 
@@ -60,7 +65,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 # ======================
 # Runtime stage (distroless)
 # ======================
-FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:939d6f1671529d230f50b563578e9b5d206af58f038b10ebd7e1233023d4e167
+FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:22d2f0480e59548ad14cf10d8921b24ef809780e7a61b162838f3d15a4a92e3d
 
 WORKDIR /app
 ENV NODE_ENV=production
