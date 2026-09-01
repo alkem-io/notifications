@@ -1,6 +1,6 @@
 {
   "name": "alkemio-notifications",
-  "version": "0.37.0",
+  "version": "0.38.1",
   "description": "Alkemio notifications service",
   "author": "Alkemio Foundation",
   "private": false,
@@ -22,9 +22,9 @@
     "start:debug": "nest start --debug=0.0.0.0:9230 --watch",
     "start:prod": "node dist/main",
     "start:services": "docker-compose -f quickstart-mailslurper.yml up --build --force-recreate",
-    "lint": "npm run typecheck:native && eslint src/**/*.ts{,x}",
-    "lint:prod": "npm run typecheck:native && cross-env NODE_ENV=production eslint src/**/*.ts{,x}",
-    "lint:fix": "npm run typecheck:native && eslint src/**/*.ts{,x} --fix",
+    "lint": "npm run typecheck:native && eslint src/**/*.ts --no-warn-ignored",
+    "lint:prod": "npm run typecheck:native && cross-env NODE_ENV=production eslint src/**/*.ts --no-warn-ignored",
+    "lint:fix": "npm run typecheck:native && eslint src/**/*.ts --no-warn-ignored --fix",
     "typecheck:native": "tsc -p tsconfig.json --noEmit",
     "test": "jest --config=./test/config/jest.config.js",
     "test:dev": "jest --config=./test/config/jest.config.js --no-cache --coverage=true --detectOpenHandles --runInBand --logHeapUsage",
@@ -37,7 +37,7 @@
     "validate-connection": "ts-node src/utils/validate-connection.ts"
   },
   "dependencies": {
-    "@alkemio/notifications-lib": "0.19.0",
+    "@alkemio/notifications-lib": "0.20.0",
     "@nestjs/common": "^11.1.6",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.6",
