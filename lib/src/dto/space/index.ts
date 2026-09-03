@@ -5,6 +5,7 @@ export * from './notification.event.payload.space.communication.update';
 export * from './notification.event.payload.space.community.application';
 export * from './notification.event.payload.space.community.contributor';
 export * from './notification.event.payload.space.community.invitation';
+export * from './notification.event.payload.space.community.invitation.organization';
 export * from './notification.event.payload.space.community.invitation.platform';
 export * from './notification.event.payload.space.collaboration.callout';
 export * from './notification.event.payload.space.collaboration.callout.reaction';
