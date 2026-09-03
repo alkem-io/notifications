@@ -11,8 +11,10 @@ import {
 import {
   NotificationEventPayloadSpaceCommunityApplication,
   NotificationEventPayloadUserEmailChangeSpaceAdmin,
+  NotificationEventPayloadSpaceCommunityInvitation,
   BaseEventPayload,
 } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
 import { NotificationBlacklistService } from './notification.blacklist.service';
@@ -20,6 +22,8 @@ import { NOTIFICATIONS_PROVIDER } from '@src/common/enums/providers';
 import { NotificationEvent } from '@src/generated/alkemio-schema';
 import { RmqContext } from '@nestjs/microservices';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
+import { BaseEmailPayload } from '@src/services/notification/email-template-payload';
+import { LogContext } from '@common/enums';
 
 // ---------------------------------------------------------------------------
 // Shared fixtures
@@ -111,6 +115,7 @@ describe('NotificationService', () => {
   let configService: ConfigService;
   let builderService: NotificationEmailPayloadBuilderService;
   let templateBuilder: NotificationTemplateBuilder;
+  let blacklistService: NotificationBlacklistService;
   let moduleRef: TestingModule;
 
   beforeAll(async () => {
@@ -132,6 +137,7 @@ describe('NotificationService', () => {
     configService = moduleRef.get(ConfigService);
     builderService = moduleRef.get(NotificationEmailPayloadBuilderService);
     templateBuilder = moduleRef.get(NotificationTemplateBuilder);
+    blacklistService = moduleRef.get(NotificationBlacklistService);
   });
 
   afterAll(async () => {
@@ -721,6 +727,30 @@ describe('NotificationService', () => {
         );
       });
 
+      // R-2 mitigating test: confirms the redelivery cap applies to the new
+      // organization-invited event exactly as to every other event.
+      it('applies the redelivery cap to the organization-invited event as to all others', async () => {
+        const messageId = 'msg-org-invited-at-cap';
+        let lastChannel!: { reject: jest.Mock };
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          const { context, channel } = createRmqContextWithMessageId(messageId);
+          lastChannel = channel;
+
+          await notificationService.processNotificationEvent(
+            mkPayload(
+              NotificationEvent.OrganizationAdminSpaceCommunityInvitation
+            ),
+            context
+          );
+        }
+
+        expect(lastChannel.reject).toHaveBeenCalledWith(
+          expect.anything(),
+          false
+        );
+      });
+
       it('leaves the partial-failure (nack) path unchanged regardless of prior attempts', async () => {
         let buildCount = 0;
         jest
@@ -914,6 +944,310 @@ describe('NotificationService', () => {
     it('renders changedAt in UTC with an explicit UTC label', () => {
       const payload = build();
       expect(payload.changedAt).toBe('20 May 2026, 14:32 UTC');
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // applySupportRecipientIfNoRecipients — organization zero-admin escalation
+  // -------------------------------------------------------------------------
+
+  describe('applySupportRecipientIfNoRecipients (organization zero-admin escalation)', () => {
+    const orgInvitee = {
+      id: 'org-1',
+      profile: {
+        displayName: 'Acme Org',
+        url: 'https://alkemio.dev/organization/acme',
+      },
+      type: 'ORGANIZATION',
+    };
+
+    const mkOrgPayload = (
+      overrides: Record<string, unknown> = {}
+    ): NotificationEventPayloadSpaceCommunityInvitationOrganization =>
+      ({
+        ...MINIMAL_BASE,
+        eventType: NotificationEvent.OrganizationAdminSpaceCommunityInvitation,
+        recipients: [],
+        invitee: orgInvitee,
+        organizationInvitationsUrl:
+          'https://alkemio.dev/organization/acme/settings/invitations',
+        extraRoles: [],
+        spacesToJoin: [],
+        ...overrides,
+      }) as unknown as NotificationEventPayloadSpaceCommunityInvitationOrganization;
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('escalates to a single synthetic recipient (firstName "") when recipients is empty and recipientEmail is set', () => {
+      const result = notificationService.applySupportRecipientIfNoRecipients(
+        mkOrgPayload({ recipientEmail: 'support@alkem.io' })
+      );
+
+      expect(result.recipients).toEqual([
+        {
+          email: 'support@alkem.io',
+          firstName: '',
+          lastName: '',
+          profile: { displayName: '', url: '' },
+        },
+      ]);
+    });
+
+    it('leaves a non-empty recipients list untouched', () => {
+      const payload = mkOrgPayload({
+        recipients: [MINIMAL_RECIPIENT],
+        recipientEmail: 'support@alkem.io',
+      });
+
+      const result =
+        notificationService.applySupportRecipientIfNoRecipients(payload);
+
+      expect(result.recipients).toEqual([MINIMAL_RECIPIENT]);
+    });
+
+    it('returns the payload unchanged when recipients is empty and no recipientEmail is set', () => {
+      const payload = mkOrgPayload();
+
+      const result =
+        notificationService.applySupportRecipientIfNoRecipients(payload);
+
+      expect(result.recipients).toEqual([]);
+    });
+
+    it('logs a warning (and does not throw) when the support address is blacklisted', () => {
+      jest.spyOn(blacklistService, 'isBlacklisted').mockReturnValue(true);
+      const warnMock = notificationService['logger'].warn as jest.Mock;
+      warnMock.mockClear();
+
+      const result = notificationService.applySupportRecipientIfNoRecipients(
+        mkOrgPayload({ recipientEmail: 'support@alkem.io' })
+      );
+
+      // The blacklist still filters it downstream in the normal pipeline —
+      // this call only escalates and warns, it does not itself exempt or
+      // drop the recipient.
+      expect(result.recipients).toHaveLength(1);
+      expect(warnMock).toHaveBeenCalledWith(
+        expect.stringContaining('Acme Org'),
+        LogContext.NOTIFICATIONS
+      );
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Organization space-invitation email templates — render-level coverage
+  // -------------------------------------------------------------------------
+
+  describe('organization space-invitation email templates', () => {
+    beforeEach(() => jest.restoreAllMocks());
+
+    const inviter = {
+      id: 'inviter-1',
+      firstName: 'Ivy',
+      lastName: 'Inviter',
+      email: 'ivy@example.com',
+      type: 'USER',
+      profile: {
+        displayName: 'Ivy Inviter',
+        url: 'https://alkemio.dev/users/inviter-1',
+      },
+    };
+
+    const acceptDeclineActor = {
+      id: 'actor-1',
+      firstName: 'Adam',
+      lastName: 'Actor',
+      email: 'adam@example.com',
+      type: 'USER',
+      profile: {
+        displayName: 'Adam Actor',
+        url: 'https://alkemio.dev/users/actor-1',
+      },
+    };
+
+    const orgInvitee = {
+      id: 'org-1',
+      profile: {
+        displayName: 'Acme Org',
+        url: 'https://alkemio.dev/organization/acme',
+      },
+      type: 'ORGANIZATION',
+    };
+
+    const space = {
+      id: 's-1',
+      level: '0',
+      profile: {
+        displayName: 'Climate Space',
+        url: 'https://alkemio.dev/climate',
+      },
+      adminURL: 'https://alkemio.dev/climate/settings',
+    };
+
+    // recipient with a firstName, for the "Hi <name>," greeting branch
+    const recipientForRender = {
+      id: 'r1',
+      firstName: 'Rita',
+      lastName: 'Recipient',
+      email: 'rita@example.com',
+      profile: {
+        displayName: 'Rita Recipient',
+        url: 'https://alkemio.dev/users/r1',
+      },
+    };
+
+    // the synthetic support recipient — no id, no firstName
+    const syntheticRecipient: typeof recipientForRender = {
+      id: '',
+      firstName: '',
+      lastName: '',
+      email: 'support@alkem.io',
+      profile: { displayName: '', url: '' },
+    } as typeof recipientForRender;
+
+    const renderReceived = (
+      overrides: Record<string, unknown> = {},
+      recipient = recipientForRender
+    ) => {
+      const eventPayload = {
+        ...MINIMAL_BASE,
+        eventType: NotificationEvent.OrganizationAdminSpaceCommunityInvitation,
+        triggeredBy: inviter,
+        recipients: [MINIMAL_RECIPIENT],
+        space,
+        invitee: orgInvitee,
+        organizationInvitationsUrl:
+          'https://alkemio.dev/organization/acme/settings/invitations',
+        extraRoles: [] as string[],
+        spacesToJoin: [] as { displayName: string; url: string }[],
+        welcomeMessage: 'Secret welcome text',
+        ...overrides,
+      } as unknown as NotificationEventPayloadSpaceCommunityInvitationOrganization;
+
+      return templateBuilder.buildTemplate(
+        'organization.space.community.invitation.received',
+        builderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitation(
+          eventPayload,
+          recipient as any
+        ) as unknown as BaseEmailPayload
+      );
+    };
+
+    const renderOutcome = (
+      templateName:
+        | 'organization.space.community.invitation.accepted'
+        | 'organization.space.community.invitation.declined',
+      builderMethod:
+        | 'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted'
+        | 'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined',
+      overrides: Record<string, unknown> = {},
+      recipient = recipientForRender
+    ) => {
+      const eventPayload = {
+        ...MINIMAL_BASE,
+        eventType: templateName,
+        triggeredBy: acceptDeclineActor,
+        recipients: [MINIMAL_RECIPIENT],
+        space,
+        invitee: orgInvitee,
+        ...overrides,
+      } as unknown as NotificationEventPayloadSpaceCommunityInvitation;
+
+      return templateBuilder.buildTemplate(
+        templateName,
+        builderService[builderMethod](
+          eventPayload,
+          recipient as any
+        ) as unknown as BaseEmailPayload
+      );
+    };
+
+    describe('organization.space.community.invitation.received', () => {
+      it('never puts welcomeMessage in the subject or title', async () => {
+        const result = await renderReceived();
+        expect(result?.channels?.email?.subject).not.toContain(
+          'Secret welcome text'
+        );
+        expect(result?.title).not.toContain('Secret welcome text');
+      });
+
+      it('renders the organization name, offered role and CTA URL in the body', async () => {
+        const result = await renderReceived({ extraRoles: ['LEAD'] });
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('Acme Org');
+        expect(html).toContain('Member + Lead');
+        expect(html).toContain(
+          'https://alkemio.dev/organization/acme/settings/invitations'
+        );
+      });
+
+      it('offers plain Member when no LEAD extra role is requested', async () => {
+        const result = await renderReceived({ extraRoles: [] });
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('as Member.');
+        expect(html).not.toContain('Member + Lead');
+      });
+
+      it('lists every spacesToJoin entry in the body', async () => {
+        const result = await renderReceived({
+          spacesToJoin: [
+            {
+              displayName: 'Climate Space',
+              url: 'https://alkemio.dev/climate',
+            },
+            { displayName: 'Ocean Space', url: 'https://alkemio.dev/ocean' },
+          ],
+        });
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('Climate Space');
+        expect(html).toContain('Ocean Space');
+        expect(html).toContain('https://alkemio.dev/ocean');
+      });
+
+      it('greets "Hello," for the synthetic support recipient', async () => {
+        const result = await renderReceived({}, syntheticRecipient);
+        expect(result?.channels?.email?.html).toContain('Hello,');
+        expect(result?.channels?.email?.html).not.toContain('Hi ,');
+      });
+
+      it('greets "Hi <name>," for a named recipient', async () => {
+        const result = await renderReceived({}, recipientForRender);
+        expect(result?.channels?.email?.html).toContain('Hi Rita,');
+      });
+    });
+
+    describe('organization.space.community.invitation.accepted / .declined', () => {
+      it('accepted: renders the organization and actor names and the community settings URL', async () => {
+        const result = await renderOutcome(
+          'organization.space.community.invitation.accepted',
+          'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted'
+        );
+        expect(result?.channels?.email?.subject).toBe(
+          'Acme Org accepted your invitation'
+        );
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('Acme Org');
+        expect(html).toContain('Adam');
+        expect(html).toContain(
+          'https://alkemio.dev/climate/settings/community'
+        );
+      });
+
+      it('declined: renders the organization and actor names and the community settings URL', async () => {
+        const result = await renderOutcome(
+          'organization.space.community.invitation.declined',
+          'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined'
+        );
+        expect(result?.channels?.email?.subject).toBe(
+          'Acme Org declined your invitation'
+        );
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('Acme Org');
+        expect(html).toContain('Adam');
+        expect(html).toContain(
+          'https://alkemio.dev/climate/settings/community'
+        );
+      });
     });
   });
 });
