@@ -24,9 +24,6 @@ export async function notifmeSdkFactory(
               secure: configService.get(
                 ConfigurationTypes.NOTIFICATION_PROVIDERS
               )?.email?.smtp?.secure,
-              requireTLS: configService.get(
-                ConfigurationTypes.NOTIFICATION_PROVIDERS
-              )?.email?.smtp?.requireTLS,
               auth: {
                 user: configService.get(
                   ConfigurationTypes.NOTIFICATION_PROVIDERS
