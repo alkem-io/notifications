@@ -232,7 +232,9 @@ export class NotificationEmailPayloadBuilderService {
         name: eventPayload.invitee.profile.displayName,
         url: eventPayload.invitee.profile.url,
       },
-      offeredRole: eventPayload.extraRoles.includes('LEAD')
+      offeredRole: eventPayload.extraRoles.some(
+        role => role.toLowerCase() === 'lead'
+      )
         ? 'Member + Lead'
         : 'Member',
       spacesToJoin: eventPayload.spacesToJoin,

@@ -1172,7 +1172,7 @@ describe('NotificationService', () => {
       });
 
       it('renders the organization name, offered role and CTA URL in the body', async () => {
-        const result = await renderReceived({ extraRoles: ['LEAD'] });
+        const result = await renderReceived({ extraRoles: ['lead'] });
         const html = result?.channels?.email?.html ?? '';
         expect(html).toContain('Acme Org');
         expect(html).toContain('Member + Lead');
