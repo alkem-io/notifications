@@ -40,6 +40,7 @@ import {
   NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from './types/notifications.lib.organization.invitation.bridge';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
 
@@ -102,6 +103,52 @@ export class AppController {
   async sendSpaceCommunityVirtualContributorInvitationDeclinedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAdminSpaceCommunityInvitation)
+  async sendOrganizationSpaceCommunityInvitationNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationOrganization,
+    @Ctx() context: RmqContext
+  ) {
+    // A zero-admin organization has no in-platform recipient, so the server
+    // sends an empty recipients list plus a raw support-team address —
+    // normalize that into a single synthetic recipient before the standard
+    // pipeline runs, exactly like the other raw-email escalation paths.
+    const normalized =
+      this.notificationService.applySupportRecipientIfNoRecipients(
+        eventPayload
+      );
+    return this.notificationService.processNotificationEvent(
+      normalized,
+      context
+    );
+  }
+
+  // prettier-ignore
+  @EventPattern(NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted)
+  async sendSpaceCommunityOrganizationInvitationAcceptedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  // prettier-ignore
+  @EventPattern(NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined)
+  async sendSpaceCommunityOrganizationInvitationDeclinedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(

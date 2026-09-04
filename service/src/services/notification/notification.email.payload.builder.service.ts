@@ -41,6 +41,9 @@ import {
   PlatformAdminUserEmailChangeEmailPayload,
   SpaceAdminUserEmailChangeEmailPayload,
   UserPasswordChangeSecuritySignalEmailPayload,
+  OrganizationSpaceCommunityInvitationCreatedEmailPayload,
+  OrganizationSpaceCommunityInvitationAcceptedEmailPayload,
+  OrganizationSpaceCommunityInvitationDeclinedEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -78,6 +81,7 @@ import {
   NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
@@ -209,6 +213,71 @@ export class NotificationEmailPayloadBuilderService {
         url: eventPayload.host.profile.url,
       },
       spaceURL: eventPayload.space.profile.url,
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitation(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationOrganization,
+    recipient: User
+  ): OrganizationSpaceCommunityInvitationCreatedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      inviter: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+      offeredRole: eventPayload.extraRoles.some(
+        role => role.toLowerCase() === 'lead'
+      )
+        ? 'Member + Lead'
+        : 'Member',
+      spacesToJoin: eventPayload.spacesToJoin,
+      welcomeMessage: eventPayload.welcomeMessage,
+      organizationInvitationsUrl: eventPayload.organizationInvitationsUrl,
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    recipient: User
+  ): OrganizationSpaceCommunityInvitationAcceptedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      actor: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+      spaceCommunitySettingsURL: `${eventPayload.space.adminURL}/community`,
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    recipient: User
+  ): OrganizationSpaceCommunityInvitationDeclinedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      actor: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+      spaceCommunitySettingsURL: `${eventPayload.space.adminURL}/community`,
     };
   }
 

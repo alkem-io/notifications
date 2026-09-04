@@ -40,6 +40,7 @@ import {
   NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
@@ -257,12 +258,7 @@ export class NotificationService {
       this.configService.get(ConfigurationTypes.ALKEMIO)?.webclient_endpoint ??
       '';
 
-    const syntheticRecipient = {
-      email: recipientEmail,
-      firstName: '',
-      lastName: '',
-      profile: { displayName: '', url: '' },
-    } as BaseEventPayload['recipients'][number];
+    const syntheticRecipient = this.createSyntheticRecipient(recipientEmail);
 
     return {
       ...rawPayload,
@@ -277,6 +273,54 @@ export class NotificationService {
       },
       recipients: [syntheticRecipient],
       platform: { url: webclientEndpoint },
+    };
+  }
+
+  /**
+   * Builds the placeholder recipient used for a raw, out-of-band email
+   * address that has no corresponding platform user — no id, so the
+   * builder's notification-preferences URL resolves to '', and no name,
+   * so email greetings fall back to their name-less form.
+   */
+  private createSyntheticRecipient(
+    email: string
+  ): BaseEventPayload['recipients'][number] {
+    return {
+      email,
+      firstName: '',
+      lastName: '',
+      profile: { displayName: '', url: '' },
+    } as BaseEventPayload['recipients'][number];
+  }
+
+  /**
+   * A Space community invitation to an organization with no admins/owners
+   * carries an empty `recipients` list plus a raw support-team address
+   * (`recipientEmail`) instead. Escalates that into a single synthetic
+   * recipient so the standard pipeline can send it like any other email —
+   * non-empty `recipients` pass through untouched. The blacklist still
+   * filters the synthetic recipient downstream in the normal way; this only
+   * logs a warning so a silently-dropped escalation is visible in the logs.
+   */
+  public applySupportRecipientIfNoRecipients(
+    payload: NotificationEventPayloadSpaceCommunityInvitationOrganization
+  ): BaseEventPayload {
+    if (payload.recipients.length > 0 || !payload.recipientEmail) {
+      return payload;
+    }
+
+    if (
+      this.notificationBlacklistService.isBlacklisted(payload.recipientEmail)
+    ) {
+      this.logger.warn?.(
+        `Organization invitation escalation for ${payload.invitee.profile.displayName} dropped: support address is blacklisted`,
+        LogContext.NOTIFICATIONS
+      );
+    }
+
+    return {
+      ...payload,
+      recipients: [this.createSyntheticRecipient(payload.recipientEmail)],
     };
   }
 
@@ -440,6 +484,21 @@ export class NotificationService {
       case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitationDeclined(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+          recipient
+        );
+      case NotificationEvent.OrganizationAdminSpaceCommunityInvitation:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitation(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitationOrganization,
+          recipient
+        );
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
+          recipient
+        );
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
           recipient
         );
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
@@ -661,6 +720,12 @@ export class NotificationService {
         return 'virtual.contributor.invitation.received';
       case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return 'virtual.contributor.invitation.declined';
+      case NotificationEvent.OrganizationAdminSpaceCommunityInvitation:
+        return 'organization.space.community.invitation.received';
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted:
+        return 'organization.space.community.invitation.accepted';
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined:
+        return 'organization.space.community.invitation.declined';
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return 'user.space.community.invitation.received';
       case NotificationEvent.UserSpaceCommunityJoined:
