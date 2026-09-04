@@ -70,8 +70,13 @@ notification_providers:
       auth:
         user: ${EMAIL_SMTP_USER}:test
         pass: ${EMAIL_SMTP_PASSWORD}:test
+      # Require the SMTP session to successfully upgrade to TLS via STARTTLS
+      # when `secure` is false, instead of silently falling back to
+      # cleartext if the server (or an on-path attacker) drops the
+      # STARTTLS offer.
+      requireTLS: ${EMAIL_SMTP_REQUIRE_TLS}:true
       tls:
-        rejectUnauthorized: ${EMAIL_SMTP_REJECT_UNAUTHORIZED}:false
+        rejectUnauthorized: ${EMAIL_SMTP_REJECT_UNAUTHORIZED}:true
   in_app:
     # The name of the queue used for sending in-app notifications
     queue: ${IN_APP_QUEUE_NAME}:alkemio-in-app-notifications
