@@ -266,7 +266,11 @@ export class NotificationEmailPayloadBuilderService {
         name: eventPayload.invitee.profile.displayName,
         url: eventPayload.invitee.profile.url,
       },
-      spaceCommunitySettingsURL: `${eventPayload.space.adminURL}/community`,
+      // `space.adminURL` IS the Space settings > Community URL — the server
+      // builds it with createSpaceAdminCommunityURL, which already appends
+      // the `community` segment. Appending it again produced
+      // `/settings/community/community`, a dead route.
+      spaceCommunitySettingsURL: eventPayload.space.adminURL,
     };
   }
 
@@ -280,7 +284,11 @@ export class NotificationEmailPayloadBuilderService {
         name: eventPayload.invitee.profile.displayName,
         profile: eventPayload.invitee.profile.url,
       },
-      spaceCommunitySettingsURL: `${eventPayload.space.adminURL}/community`,
+      // `space.adminURL` IS the Space settings > Community URL — the server
+      // builds it with createSpaceAdminCommunityURL, which already appends
+      // the `community` segment. Appending it again produced
+      // `/settings/community/community`, a dead route.
+      spaceCommunitySettingsURL: eventPayload.space.adminURL,
     };
   }
 

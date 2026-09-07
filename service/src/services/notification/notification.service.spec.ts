@@ -893,7 +893,9 @@ describe('NotificationService', () => {
             displayName: 'Climate Space',
             url: 'https://alkemio.dev/climate',
           },
-          adminURL: 'https://alkemio.dev/climate/settings',
+          // Exactly what the server sends: createSpaceAdminCommunityURL
+          // already appends the `community` segment.
+          adminURL: 'https://alkemio.dev/climate/settings/community',
         },
         subjectProfileSummary: { id: 'u-subj', displayName: 'Sam Subject' },
         oldEmail: 'old.address@example.com',
@@ -1081,7 +1083,9 @@ describe('NotificationService', () => {
         displayName: 'Climate Space',
         url: 'https://alkemio.dev/climate',
       },
-      adminURL: 'https://alkemio.dev/climate/settings',
+      // Exactly what the server sends: createSpaceAdminCommunityURL
+      // already appends the `community` segment.
+      adminURL: 'https://alkemio.dev/climate/settings/community',
     };
 
     // recipient with a firstName, for the "Hi <name>," greeting branch
@@ -1219,7 +1223,7 @@ describe('NotificationService', () => {
           'organization.space.community.invitation.accepted'
         );
         expect(result?.channels?.email?.subject).toBe(
-          'Acme Org accepted your invitation'
+          'Acme Org accepted the invitation to Climate Space'
         );
         const html = result?.channels?.email?.html ?? '';
         expect(html).toContain('Acme Org');
@@ -1234,7 +1238,7 @@ describe('NotificationService', () => {
           'organization.space.community.invitation.declined'
         );
         expect(result?.channels?.email?.subject).toBe(
-          'Acme Org declined your invitation'
+          'Acme Org declined the invitation to Climate Space'
         );
         const html = result?.channels?.email?.html ?? '';
         expect(html).toContain('Acme Org');
@@ -1297,7 +1301,7 @@ describe('NotificationService', () => {
           'user.space.community.invitation.accepted'
         );
         expect(result?.channels?.email?.subject).toBe(
-          'Nadia Lopez accepted your invitation'
+          'Nadia Lopez accepted the invitation to Climate Space'
         );
         expect(result?.channels?.email?.html).toContain(
           'https://alkemio.dev/climate/settings/community'
@@ -1309,7 +1313,7 @@ describe('NotificationService', () => {
           'user.space.community.invitation.declined'
         );
         expect(result?.channels?.email?.subject).toBe(
-          'Nadia Lopez declined your invitation'
+          'Nadia Lopez declined the invitation to Climate Space'
         );
       });
     });

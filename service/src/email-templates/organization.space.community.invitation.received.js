@@ -15,7 +15,7 @@ module.exports = () => ({
           <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited <a href="{{organization.url}}">{{organization.name}}</a> to join <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a> as {{offeredRole}}.
           {% if spacesToJoin.length > 1 %}
           <br>
-          Accepting also joins: {% for entry in spacesToJoin %}<a href="{{entry.url}}">{{entry.displayName}}</a>{% if not loop.last %}, {% endif %}{% endfor %}.
+          Accepting joins: {% for entry in spacesToJoin %}<a href="{{entry.url}}">{{entry.displayName}}</a>{% if not loop.last %}, {% endif %}{% endfor %}.
           {% endif %}
           <br>
           <pre><i>{{welcomeMessage}}</i></pre>
