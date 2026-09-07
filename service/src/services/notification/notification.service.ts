@@ -294,7 +294,7 @@ export class NotificationService {
   }
 
   /**
-   * A Space community invitation to an organization with no admins/owners
+   * A Space community invitation to an organization with no admins
    * carries an empty `recipients` list plus a raw support-team address
    * (`recipientEmail`) instead. Escalates that into a single synthetic
    * recipient so the standard pipeline can send it like any other email —
