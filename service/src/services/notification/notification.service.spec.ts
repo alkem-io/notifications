@@ -1253,12 +1253,12 @@ describe('NotificationService', () => {
           syntheticRecipient
         );
         expect(escalated?.channels?.email?.html).toContain(
-          'has no administrators or owners'
+          'has no administrators'
         );
 
         const normal = await renderReceived();
         expect(normal?.channels?.email?.html).not.toContain(
-          'has no administrators or owners'
+          'has no administrators'
         );
       });
     });
