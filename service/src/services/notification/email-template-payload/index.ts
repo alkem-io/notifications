@@ -11,6 +11,8 @@ export * from './space.community.invitation.virtual.contributor.created.email.pa
 export * from './space.community.invitation.organization.created.email.payload';
 export * from './space.community.invitation.organization.accepted.email.payload';
 export * from './space.community.invitation.organization.declined.email.payload';
+export * from './space.community.invitation.user.outcome.email.payload';
+export * from './organization.space.community.joined.email.payload';
 export * from './space.community.invitation.platform.created.email.payload';
 export * from './space.community.invitation.created.email.payload';
 export * from './space.community.calendar.event.created.email.payload';

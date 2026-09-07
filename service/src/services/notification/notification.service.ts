@@ -501,6 +501,17 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
           recipient
         );
+      case NotificationEvent.SpaceAdminUserCommunityInvitationAccepted:
+      case NotificationEvent.SpaceAdminUserCommunityInvitationDeclined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSpaceCommunityInvitationOutcome(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
+          recipient
+        );
+      case NotificationEvent.OrganizationAdminSpaceCommunityJoined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityJoined(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
+          recipient
+        );
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityInvitationPlatform(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationPlatform,
@@ -726,6 +737,12 @@ export class NotificationService {
         return 'organization.space.community.invitation.accepted';
       case NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined:
         return 'organization.space.community.invitation.declined';
+      case NotificationEvent.SpaceAdminUserCommunityInvitationAccepted:
+        return 'user.space.community.invitation.accepted';
+      case NotificationEvent.SpaceAdminUserCommunityInvitationDeclined:
+        return 'user.space.community.invitation.declined';
+      case NotificationEvent.OrganizationAdminSpaceCommunityJoined:
+        return 'organization.space.community.joined';
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return 'user.space.community.invitation.received';
       case NotificationEvent.UserSpaceCommunityJoined:

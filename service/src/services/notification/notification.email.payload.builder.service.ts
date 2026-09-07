@@ -44,6 +44,8 @@ import {
   OrganizationSpaceCommunityInvitationCreatedEmailPayload,
   OrganizationSpaceCommunityInvitationAcceptedEmailPayload,
   OrganizationSpaceCommunityInvitationDeclinedEmailPayload,
+  UserSpaceCommunityInvitationOutcomeEmailPayload,
+  OrganizationSpaceCommunityJoinedEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -240,6 +242,9 @@ export class NotificationEmailPayloadBuilderService {
       spacesToJoin: eventPayload.spacesToJoin,
       welcomeMessage: eventPayload.welcomeMessage,
       organizationInvitationsUrl: eventPayload.organizationInvitationsUrl,
+      // `recipientEmail` is only ever set on the zero-admin escalation path,
+      // so its presence is what distinguishes the support copy.
+      isSupportEscalation: Boolean(eventPayload.recipientEmail),
     };
   }
 
@@ -278,6 +283,38 @@ export class NotificationEmailPayloadBuilderService {
         url: eventPayload.invitee.profile.url,
       },
       spaceCommunitySettingsURL: `${eventPayload.space.adminURL}/community`,
+    };
+  }
+
+  public createEmailTemplatePayloadUserSpaceCommunityInvitationOutcome(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    recipient: User
+  ): UserSpaceCommunityInvitationOutcomeEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      invitee: {
+        name: eventPayload.invitee.profile.displayName,
+        profile: eventPayload.invitee.profile.url,
+      },
+      spaceCommunitySettingsURL: `${eventPayload.space.adminURL}/community`,
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationSpaceCommunityJoined(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    recipient: User
+  ): OrganizationSpaceCommunityJoinedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      actor: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
     };
   }
 

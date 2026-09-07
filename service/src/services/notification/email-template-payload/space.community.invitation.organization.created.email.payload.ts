@@ -15,4 +15,11 @@ export interface OrganizationSpaceCommunityInvitationCreatedEmailPayload extends
   spacesToJoin: { displayName: string; url: string }[];
   welcomeMessage?: string;
   organizationInvitationsUrl: string;
+  /**
+   * True when this copy is the platform-support escalation sent because the
+   * invited organization has no administrators or owners to receive it. The
+   * template says so, otherwise support has no way to tell why the mail
+   * reached them.
+   */
+  isSupportEscalation: boolean;
 }

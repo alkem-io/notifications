@@ -157,6 +157,44 @@ export class AppController {
     );
   }
 
+  // prettier-ignore
+  @EventPattern(NotificationEvent.SpaceAdminUserCommunityInvitationAccepted)
+  async sendSpaceCommunityUserInvitationAcceptedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  // prettier-ignore
+  @EventPattern(NotificationEvent.SpaceAdminUserCommunityInvitationDeclined)
+  async sendSpaceCommunityUserInvitationDeclinedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAdminSpaceCommunityJoined)
+  async sendOrganizationSpaceCommunityJoinedNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
   @EventPattern(NotificationEvent.SpaceCommunityInvitationUserPlatform)
   async sendCommunityPlatformInvitationNotification(
     @Payload()

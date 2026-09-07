@@ -11,6 +11,7 @@ module.exports = () => ({
       subject: 'Invitation for {{organization.name}} to join {{space.displayName}}',
       html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}{% if recipient.firstName %}Hi {{recipient.firstName}},{% else %}Hello,{% endif %}<br>
+          {% if isSupportEscalation %}<b>This invitation was sent to platform support because {{organization.name}} has no administrators or owners to receive it.</b><br><br>{% endif %}
           <a href="{{inviter.profile}}">{{inviter.firstName}}</a> has invited <a href="{{organization.url}}">{{organization.name}}</a> to join <a style="color:#1d384a; text-decoration: none;" href="{{space.url}}">{{space.displayName}}</a> as {{offeredRole}}.
           {% if spacesToJoin.length > 1 %}
           <br>

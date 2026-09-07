@@ -1248,6 +1248,101 @@ describe('NotificationService', () => {
           'https://alkemio.dev/climate/settings/community'
         );
       });
+      it('received: tells platform support why it got the escalation copy', async () => {
+        const escalated = await renderReceived(
+          { recipientEmail: 'support@alkem.io' },
+          syntheticRecipient
+        );
+        expect(escalated?.channels?.email?.html).toContain(
+          'has no administrators or owners'
+        );
+
+        const normal = await renderReceived();
+        expect(normal?.channels?.email?.html).not.toContain(
+          'has no administrators or owners'
+        );
+      });
+    });
+
+    describe('user.space.community.invitation.accepted / .declined', () => {
+      const userInvitee = {
+        id: 'user-9',
+        profile: {
+          displayName: 'Nadia Lopez',
+          url: 'https://alkemio.dev/user/nadia',
+        },
+        type: 'USER',
+      };
+
+      const renderUserOutcome = (
+        templateName:
+          | 'user.space.community.invitation.accepted'
+          | 'user.space.community.invitation.declined'
+      ) => {
+        const eventPayload = {
+          ...MINIMAL_BASE,
+          eventType: templateName,
+          triggeredBy: acceptDeclineActor,
+          recipients: [MINIMAL_RECIPIENT],
+          space,
+          invitee: userInvitee,
+        } as unknown as NotificationEventPayloadSpaceCommunityInvitation;
+
+        return templateBuilder.buildTemplate(
+          templateName,
+          builderService.createEmailTemplatePayloadUserSpaceCommunityInvitationOutcome(
+            eventPayload,
+            recipientForRender as any
+          ) as unknown as BaseEmailPayload
+        );
+      };
+
+      it('accepted: names the invitee and links to the community settings', async () => {
+        const result = await renderUserOutcome(
+          'user.space.community.invitation.accepted'
+        );
+        expect(result?.channels?.email?.subject).toBe(
+          'Nadia Lopez accepted your invitation'
+        );
+        expect(result?.channels?.email?.html).toContain(
+          'https://alkemio.dev/climate/settings/community'
+        );
+      });
+
+      it('declined: names the invitee', async () => {
+        const result = await renderUserOutcome(
+          'user.space.community.invitation.declined'
+        );
+        expect(result?.channels?.email?.subject).toBe(
+          'Nadia Lopez declined your invitation'
+        );
+      });
+    });
+
+    describe('organization.space.community.joined', () => {
+      it('names the organization, the accepting admin and says no action is needed', async () => {
+        const eventPayload = {
+          ...MINIMAL_BASE,
+          eventType: 'organization.space.community.joined',
+          triggeredBy: acceptDeclineActor,
+          recipients: [MINIMAL_RECIPIENT],
+          space,
+          invitee: orgInvitee,
+        } as unknown as NotificationEventPayloadSpaceCommunityInvitation;
+
+        const result = await templateBuilder.buildTemplate(
+          'organization.space.community.joined',
+          builderService.createEmailTemplatePayloadOrganizationSpaceCommunityJoined(
+            eventPayload,
+            recipientForRender as any
+          ) as unknown as BaseEmailPayload
+        );
+
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('Acme Org');
+        expect(html).toContain('Adam');
+        expect(html).toContain('No further action is needed');
+      });
     });
   });
 });
