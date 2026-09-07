@@ -1137,9 +1137,6 @@ describe('NotificationService', () => {
       templateName:
         | 'organization.space.community.invitation.accepted'
         | 'organization.space.community.invitation.declined',
-      builderMethod:
-        | 'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted'
-        | 'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined',
       overrides: Record<string, unknown> = {},
       recipient = recipientForRender
     ) => {
@@ -1155,7 +1152,7 @@ describe('NotificationService', () => {
 
       return templateBuilder.buildTemplate(
         templateName,
-        builderService[builderMethod](
+        builderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitationOutcome(
           eventPayload,
           recipient as any
         ) as unknown as BaseEmailPayload
@@ -1219,8 +1216,7 @@ describe('NotificationService', () => {
     describe('organization.space.community.invitation.accepted / .declined', () => {
       it('accepted: renders the organization and actor names and the community settings URL', async () => {
         const result = await renderOutcome(
-          'organization.space.community.invitation.accepted',
-          'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted'
+          'organization.space.community.invitation.accepted'
         );
         expect(result?.channels?.email?.subject).toBe(
           'Acme Org accepted your invitation'
@@ -1235,8 +1231,7 @@ describe('NotificationService', () => {
 
       it('declined: renders the organization and actor names and the community settings URL', async () => {
         const result = await renderOutcome(
-          'organization.space.community.invitation.declined',
-          'createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined'
+          'organization.space.community.invitation.declined'
         );
         expect(result?.channels?.email?.subject).toBe(
           'Acme Org declined your invitation'

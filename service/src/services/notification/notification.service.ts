@@ -492,12 +492,8 @@ export class NotificationService {
           recipient
         );
       case NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted:
-        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted(
-          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
-          recipient
-        );
       case NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined:
-        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined(
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitationOutcome(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
           recipient
         );

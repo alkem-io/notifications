@@ -42,8 +42,7 @@ import {
   SpaceAdminUserEmailChangeEmailPayload,
   UserPasswordChangeSecuritySignalEmailPayload,
   OrganizationSpaceCommunityInvitationCreatedEmailPayload,
-  OrganizationSpaceCommunityInvitationAcceptedEmailPayload,
-  OrganizationSpaceCommunityInvitationDeclinedEmailPayload,
+  OrganizationSpaceCommunityInvitationOutcomeEmailPayload,
   UserSpaceCommunityInvitationOutcomeEmailPayload,
   OrganizationSpaceCommunityJoinedEmailPayload,
 } from '@src/services/notification/email-template-payload';
@@ -248,29 +247,14 @@ export class NotificationEmailPayloadBuilderService {
     };
   }
 
-  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitationAccepted(
+  /**
+   * Accept and decline carry identical data — only the template differs, and
+   * that is chosen from the event type — so one builder serves both.
+   */
+  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitationOutcome(
     eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
     recipient: User
-  ): OrganizationSpaceCommunityInvitationAcceptedEmailPayload {
-    return {
-      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
-      actor: {
-        firstName: eventPayload.triggeredBy.firstName,
-        name: eventPayload.triggeredBy.profile.displayName,
-        profile: eventPayload.triggeredBy.profile.url,
-      },
-      organization: {
-        name: eventPayload.invitee.profile.displayName,
-        url: eventPayload.invitee.profile.url,
-      },
-      spaceCommunitySettingsURL: `${eventPayload.space.adminURL}/community`,
-    };
-  }
-
-  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitationDeclined(
-    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
-    recipient: User
-  ): OrganizationSpaceCommunityInvitationDeclinedEmailPayload {
+  ): OrganizationSpaceCommunityInvitationOutcomeEmailPayload {
     return {
       ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
       actor: {
