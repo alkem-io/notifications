@@ -305,7 +305,7 @@ export class NotificationService {
   public applySupportRecipientIfNoRecipients(
     payload: NotificationEventPayloadSpaceCommunityInvitationOrganization
   ): BaseEventPayload {
-    if (payload.recipients.length > 0 || !payload.recipientEmail) {
+    if ((payload.recipients?.length ?? 0) > 0 || !payload.recipientEmail) {
       return payload;
     }
 
