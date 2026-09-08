@@ -96,7 +96,13 @@ export class NotificationService {
     @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext
   ) {
-    const eventName = eventPayload.eventType;
+    // Optional-chained: this read is outside the try below that owns the
+    // ack/nack, so a null/undefined body here would throw out of the
+    // `@EventPattern` handler and leave the message neither acked nor nacked
+    // — the unbounded redelivery loop described in the comment below. Let it
+    // reach the try instead, where it is caught and discarded like any other
+    // schema drift.
+    const eventName = eventPayload?.eventType;
     this.logger.verbose?.(
       `[Event received: ${eventName}]: ${JSON.stringify(eventPayload)}`,
       LogContext.NOTIFICATIONS
@@ -305,7 +311,10 @@ export class NotificationService {
   public applySupportRecipientIfNoRecipients(
     payload: NotificationEventPayloadSpaceCommunityInvitationOrganization
   ): BaseEventPayload {
-    if ((payload.recipients?.length ?? 0) > 0 || !payload.recipientEmail) {
+    // `payload` itself is optional-chained for the same reason the log line
+    // below is: this helper runs outside the ack/nack try (see the comment
+    // there), so a null/undefined body must not be able to throw out of it.
+    if ((payload?.recipients?.length ?? 0) > 0 || !payload?.recipientEmail) {
       return payload;
     }
 

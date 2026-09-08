@@ -131,8 +131,9 @@ export class AppController {
     );
   }
 
-  // prettier-ignore
-  @EventPattern(NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted)
+  @EventPattern(
+    NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted
+  )
   async sendSpaceCommunityOrganizationInvitationAcceptedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
@@ -144,8 +145,9 @@ export class AppController {
     );
   }
 
-  // prettier-ignore
-  @EventPattern(NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined)
+  @EventPattern(
+    NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined
+  )
   async sendSpaceCommunityOrganizationInvitationDeclinedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
@@ -157,7 +159,6 @@ export class AppController {
     );
   }
 
-  // prettier-ignore
   @EventPattern(NotificationEvent.SpaceAdminUserCommunityInvitationAccepted)
   async sendSpaceCommunityUserInvitationAcceptedNotifications(
     @Payload()
@@ -170,7 +171,6 @@ export class AppController {
     );
   }
 
-  // prettier-ignore
   @EventPattern(NotificationEvent.SpaceAdminUserCommunityInvitationDeclined)
   async sendSpaceCommunityUserInvitationDeclinedNotifications(
     @Payload()

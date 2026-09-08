@@ -1040,6 +1040,26 @@ describe('NotificationService', () => {
       );
     });
 
+    it.each([
+      ['null', null],
+      ['undefined', undefined],
+    ])(
+      'does not throw on a %s payload — it must reach the ack/nack try intact',
+      (_label, body) => {
+        // Same reasoning as the missing-invitee case one level up: a body that
+        // is absent entirely (a malformed/hand-published message) must not
+        // throw out of the `@EventPattern` handler before
+        // `processNotificationEvent` opens its try, or the message is left
+        // neither acked nor nacked and RabbitMQ redelivers it forever on this
+        // single-replica consumer.
+        expect(() =>
+          notificationService.applySupportRecipientIfNoRecipients(
+            body as unknown as NotificationEventPayloadSpaceCommunityInvitationOrganization
+          )
+        ).not.toThrow();
+      }
+    );
+
     it('logs a warning (and does not throw) when the support address is blacklisted', () => {
       jest.spyOn(blacklistService, 'isBlacklisted').mockReturnValue(true);
       const warnMock = notificationService['logger'].warn as jest.Mock;
