@@ -41,6 +41,10 @@ import {
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from './types/notifications.lib.organization.invitation.bridge';
+import {
+  NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateActor,
+} from './types/notifications.lib.organization.associate.bridge';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
 
@@ -187,6 +191,93 @@ export class AppController {
   async sendOrganizationSpaceCommunityJoinedNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserOrganizationAssociateInvitation)
+  async sendUserOrganizationAssociateInvitationNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadOrganizationAssociateInvitation,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAdminAssociateInvitationAccepted)
+  async sendOrganizationAdminAssociateInvitationAcceptedNotification(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationAssociateActor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAdminAssociateInvitationDeclined)
+  async sendOrganizationAdminAssociateInvitationDeclinedNotification(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationAssociateActor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAdminAssociateApplication)
+  async sendOrganizationAdminAssociateApplicationNotification(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationAssociateActor,
+    @Ctx() context: RmqContext
+  ) {
+    // Same zero-admin escalation shape as the 061 organization Space
+    // invitation: an organization with no admins carries an empty
+    // `recipients` list plus a raw support-team address instead. Normalize
+    // it into a single synthetic recipient before the standard pipeline
+    // runs.
+    const normalized =
+      this.notificationService.applySupportRecipientIfNoRecipients(
+        eventPayload
+      );
+    return this.notificationService.processNotificationEvent(
+      normalized,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserOrganizationAssociateApplicationApproved)
+  async sendUserOrganizationAssociateApplicationApprovedNotification(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationAssociateActor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserOrganizationAssociateApplicationDeclined)
+  async sendUserOrganizationAssociateApplicationDeclinedNotification(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationAssociateActor,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAdminAssociateJoined)
+  async sendOrganizationAdminAssociateJoinedNotification(
+    @Payload() eventPayload: NotificationEventPayloadOrganizationAssociateActor,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
