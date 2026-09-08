@@ -38,5 +38,7 @@ export * from './platform.forum.discussion.created.email.payload';
 export * from './platform.forum.discussion.comment.email.payload';
 export * from './organization.message.email.payload';
 export * from './organization.mention.email.payload';
+export * from './organization.associate.invitation.email.payload';
+export * from './organization.associate.actor.email.payload';
 export * from './base.space.email.payload';
 export * from './base.email.payload';
