@@ -1016,6 +1016,30 @@ describe('NotificationService', () => {
       expect(result.recipients).toEqual([]);
     });
 
+    it('does not throw when the payload has no invitee — the handler runs outside the ack/nack try', () => {
+      // This helper is invoked from `app.controller` BEFORE
+      // `processNotificationEvent`, so a throw here escapes the message
+      // handler entirely and leaves the message neither acked nor nacked —
+      // the shape that produced the unbounded redelivery loop documented in
+      // `processNotificationEvent`. A schema-drifted payload (old server mid
+      // rolling deploy, hand-published message) must degrade to a log line.
+      jest.spyOn(blacklistService, 'isBlacklisted').mockReturnValue(true);
+      const warnMock = notificationService['logger'].warn as jest.Mock;
+      warnMock.mockClear();
+
+      const payload = mkOrgPayload({ recipientEmail: 'support@alkem.io' });
+      // biome-ignore lint/performance/noDelete: reproducing a drifted wire payload
+      delete (payload as unknown as Record<string, unknown>).invitee;
+
+      expect(() =>
+        notificationService.applySupportRecipientIfNoRecipients(payload)
+      ).not.toThrow();
+      expect(warnMock).toHaveBeenCalledWith(
+        expect.stringContaining('unknown organization'),
+        LogContext.NOTIFICATIONS
+      );
+    });
+
     it('logs a warning (and does not throw) when the support address is blacklisted', () => {
       jest.spyOn(blacklistService, 'isBlacklisted').mockReturnValue(true);
       const warnMock = notificationService['logger'].warn as jest.Mock;

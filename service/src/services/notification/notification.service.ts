@@ -312,8 +312,17 @@ export class NotificationService {
     if (
       this.notificationBlacklistService.isBlacklisted(payload.recipientEmail)
     ) {
+      // Optional-chained deliberately. This helper runs in `app.controller`
+      // BEFORE `processNotificationEvent`, i.e. outside the try that owns the
+      // ack/nack — the exact placement whose last occurrence produced "the
+      // unbounded implicit RabbitMQ redelivery loop observed live" (see the
+      // comment in processNotificationEvent). A payload whose `invitee` or
+      // `profile` is absent — a schema drift, an old server mid rolling
+      // deploy, a hand-published message — would throw out of the handler and
+      // leave the message neither acked nor nacked. A log line must never be
+      // able to do that, so this helper is total by construction.
       this.logger.warn?.(
-        `Organization invitation escalation for ${payload.invitee.profile.displayName} dropped: support address is blacklisted`,
+        `Organization invitation escalation for ${payload.invitee?.profile?.displayName ?? 'unknown organization'} dropped: support address is blacklisted`,
         LogContext.NOTIFICATIONS
       );
     }

@@ -20,7 +20,9 @@ module.exports = () => ({
           <br>
           <pre><i>{{welcomeMessage}}</i></pre>
           <br>
-          <a class="action-button" href="{{organizationInvitationsUrl}}">Review the invitation</a><br><br>
+          {% if isSupportEscalation %}<a class="action-button" href="{{organization.url}}">View {{organization.name}}</a><br><br>
+          {% else %}<a class="action-button" href="{{organizationInvitationsUrl}}">Review the invitation</a><br><br>
+          {% endif %}
         {% endblock %}
         ${templates.footerBlock}`,
     },
