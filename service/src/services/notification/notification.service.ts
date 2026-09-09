@@ -314,13 +314,19 @@ export class NotificationService {
     // `payload` itself is optional-chained for the same reason the log line
     // below is: this helper runs outside the ack/nack try (see the comment
     // there), so a null/undefined body must not be able to throw out of it.
-    if ((payload?.recipients?.length ?? 0) > 0 || !payload?.recipientEmail) {
+    // Trimmed for the same reason `normalizeRawRecipientEmailEvent` trims the
+    // other raw-email entry point: this value comes from an env var / ConfigMap
+    // literal, where a trailing newline is easy to introduce. Blacklist entries
+    // are trimmed at load and both `isBlacklisted` and `filterRecipients` only
+    // lowercase, so an untrimmed address would miss the blacklist on BOTH hops
+    // and be mailed anyway, with no "dropped" log line to show for it. A
+    // whitespace-only value also has to read as absent, not as an address.
+    const recipientEmail = payload?.recipientEmail?.trim();
+    if ((payload?.recipients?.length ?? 0) > 0 || !recipientEmail) {
       return payload;
     }
 
-    if (
-      this.notificationBlacklistService.isBlacklisted(payload.recipientEmail)
-    ) {
+    if (this.notificationBlacklistService.isBlacklisted(recipientEmail)) {
       // Optional-chained deliberately. This helper runs in `app.controller`
       // BEFORE `processNotificationEvent`, i.e. outside the try that owns the
       // ack/nack — the exact placement whose last occurrence produced "the
@@ -338,7 +344,7 @@ export class NotificationService {
 
     return {
       ...payload,
-      recipients: [this.createSyntheticRecipient(payload.recipientEmail)],
+      recipients: [this.createSyntheticRecipient(recipientEmail)],
     };
   }
 
