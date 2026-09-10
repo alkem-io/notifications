@@ -20,7 +20,8 @@ module.exports = () => ({
           <br>
           <pre><i>{{welcomeMessage}}</i></pre>
           <br>
-          {% if isSupportEscalation %}<a class="action-button" href="{{organization.url}}">View {{organization.name}}</a><br><br>
+          {% if isSupportEscalation %}Only an administrator of {{organization.name}} can answer this invitation — platform administrators cannot accept or decline it on the organisation's behalf. To unblock it, assign an administrator to the organisation, who can then respond from the organisation's Invitations tab. If the invitation should not stand, the inviting Space admin can revoke it.<br><br>
+          <a class="action-button" href="{{organization.url}}">View {{organization.name}}</a><br><br>
           {% else %}<a class="action-button" href="{{organizationInvitationsUrl}}">Review the invitation</a><br><br>
           {% endif %}
         {% endblock %}
