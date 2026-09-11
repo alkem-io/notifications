@@ -40,6 +40,7 @@ import {
   NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
@@ -95,7 +96,13 @@ export class NotificationService {
     @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext
   ) {
-    const eventName = eventPayload.eventType;
+    // Optional-chained: this read is outside the try below that owns the
+    // ack/nack, so a null/undefined body here would throw out of the
+    // `@EventPattern` handler and leave the message neither acked nor nacked
+    // — the unbounded redelivery loop described in the comment below. Let it
+    // reach the try instead, where it is caught and discarded like any other
+    // schema drift.
+    const eventName = eventPayload?.eventType;
     this.logger.verbose?.(
       `[Event received: ${eventName}]: ${JSON.stringify(eventPayload)}`,
       LogContext.NOTIFICATIONS
@@ -257,12 +264,7 @@ export class NotificationService {
       this.configService.get(ConfigurationTypes.ALKEMIO)?.webclient_endpoint ??
       '';
 
-    const syntheticRecipient = {
-      email: recipientEmail,
-      firstName: '',
-      lastName: '',
-      profile: { displayName: '', url: '' },
-    } as BaseEventPayload['recipients'][number];
+    const syntheticRecipient = this.createSyntheticRecipient(recipientEmail);
 
     return {
       ...rawPayload,
@@ -277,6 +279,72 @@ export class NotificationService {
       },
       recipients: [syntheticRecipient],
       platform: { url: webclientEndpoint },
+    };
+  }
+
+  /**
+   * Builds the placeholder recipient used for a raw, out-of-band email
+   * address that has no corresponding platform user — no id, so the
+   * builder's notification-preferences URL resolves to '', and no name,
+   * so email greetings fall back to their name-less form.
+   */
+  private createSyntheticRecipient(
+    email: string
+  ): BaseEventPayload['recipients'][number] {
+    return {
+      email,
+      firstName: '',
+      lastName: '',
+      profile: { displayName: '', url: '' },
+    } as BaseEventPayload['recipients'][number];
+  }
+
+  /**
+   * A Space community invitation to an organization with no admins
+   * carries an empty `recipients` list plus a raw support-team address
+   * (`recipientEmail`) instead. Escalates that into a single synthetic
+   * recipient so the standard pipeline can send it like any other email —
+   * non-empty `recipients` pass through untouched. The blacklist still
+   * filters the synthetic recipient downstream in the normal way; this only
+   * logs a warning so a silently-dropped escalation is visible in the logs.
+   */
+  public applySupportRecipientIfNoRecipients(
+    payload: NotificationEventPayloadSpaceCommunityInvitationOrganization
+  ): BaseEventPayload {
+    // `payload` itself is optional-chained for the same reason the log line
+    // below is: this helper runs outside the ack/nack try (see the comment
+    // there), so a null/undefined body must not be able to throw out of it.
+    // Trimmed for the same reason `normalizeRawRecipientEmailEvent` trims the
+    // other raw-email entry point: this value comes from an env var / ConfigMap
+    // literal, where a trailing newline is easy to introduce. Blacklist entries
+    // are trimmed at load and both `isBlacklisted` and `filterRecipients` only
+    // lowercase, so an untrimmed address would miss the blacklist on BOTH hops
+    // and be mailed anyway, with no "dropped" log line to show for it. A
+    // whitespace-only value also has to read as absent, not as an address.
+    const recipientEmail = payload?.recipientEmail?.trim();
+    if ((payload?.recipients?.length ?? 0) > 0 || !recipientEmail) {
+      return payload;
+    }
+
+    if (this.notificationBlacklistService.isBlacklisted(recipientEmail)) {
+      // Optional-chained deliberately. This helper runs in `app.controller`
+      // BEFORE `processNotificationEvent`, i.e. outside the try that owns the
+      // ack/nack — the exact placement whose last occurrence produced "the
+      // unbounded implicit RabbitMQ redelivery loop observed live" (see the
+      // comment in processNotificationEvent). A payload whose `invitee` or
+      // `profile` is absent — a schema drift, an old server mid rolling
+      // deploy, a hand-published message — would throw out of the handler and
+      // leave the message neither acked nor nacked. A log line must never be
+      // able to do that, so this helper is total by construction.
+      this.logger.warn?.(
+        `Organization invitation escalation for ${payload.invitee?.profile?.displayName ?? 'unknown organization'} dropped: support address is blacklisted`,
+        LogContext.NOTIFICATIONS
+      );
+    }
+
+    return {
+      ...payload,
+      recipients: [this.createSyntheticRecipient(recipientEmail)],
     };
   }
 
@@ -440,6 +508,28 @@ export class NotificationService {
       case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadVirtualContributorInvitationDeclined(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitationVirtualContributor,
+          recipient
+        );
+      case NotificationEvent.OrganizationAdminSpaceCommunityInvitation:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitation(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitationOrganization,
+          recipient
+        );
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted:
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityInvitationOutcome(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
+          recipient
+        );
+      case NotificationEvent.SpaceAdminUserCommunityInvitationAccepted:
+      case NotificationEvent.SpaceAdminUserCommunityInvitationDeclined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSpaceCommunityInvitationOutcome(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
+          recipient
+        );
+      case NotificationEvent.OrganizationAdminSpaceCommunityJoined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityJoined(
+          eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
           recipient
         );
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
@@ -661,6 +751,18 @@ export class NotificationService {
         return 'virtual.contributor.invitation.received';
       case NotificationEvent.SpaceAdminVirtualCommunityInvitationDeclined:
         return 'virtual.contributor.invitation.declined';
+      case NotificationEvent.OrganizationAdminSpaceCommunityInvitation:
+        return 'organization.space.community.invitation.received';
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationAccepted:
+        return 'organization.space.community.invitation.accepted';
+      case NotificationEvent.SpaceAdminOrganizationCommunityInvitationDeclined:
+        return 'organization.space.community.invitation.declined';
+      case NotificationEvent.SpaceAdminUserCommunityInvitationAccepted:
+        return 'user.space.community.invitation.accepted';
+      case NotificationEvent.SpaceAdminUserCommunityInvitationDeclined:
+        return 'user.space.community.invitation.declined';
+      case NotificationEvent.OrganizationAdminSpaceCommunityJoined:
+        return 'organization.space.community.joined';
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return 'user.space.community.invitation.received';
       case NotificationEvent.UserSpaceCommunityJoined:
