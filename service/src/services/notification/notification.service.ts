@@ -41,6 +41,10 @@ import {
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
+import {
+  NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateActor,
+} from '@src/types/notifications.lib.organization.associate.bridge';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
@@ -300,16 +304,24 @@ export class NotificationService {
   }
 
   /**
-   * A Space community invitation to an organization with no admins
-   * carries an empty `recipients` list plus a raw support-team address
-   * (`recipientEmail`) instead. Escalates that into a single synthetic
-   * recipient so the standard pipeline can send it like any other email —
-   * non-empty `recipients` pass through untouched. The blacklist still
-   * filters the synthetic recipient downstream in the normal way; this only
-   * logs a warning so a silently-dropped escalation is visible in the logs.
+   * A Space community invitation to an organization with no admins, or an
+   * organization-associates application on an organization with no admins
+   * (062), carries an empty `recipients` list plus a raw support-team
+   * address (`recipientEmail`) instead. Escalates that into a single
+   * synthetic recipient so the standard pipeline can send it like any other
+   * email — non-empty `recipients` pass through untouched. The blacklist
+   * still filters the synthetic recipient downstream in the normal way;
+   * this only logs a warning so a silently-dropped escalation is visible in
+   * the logs.
+   *
+   * The two payload shapes name "the organization" differently — the
+   * 061 shape carries it as `invitee`, the 062 associate-actor shape as
+   * `organization` — so the log line below checks both.
    */
   public applySupportRecipientIfNoRecipients(
-    payload: NotificationEventPayloadSpaceCommunityInvitationOrganization
+    payload:
+      | NotificationEventPayloadSpaceCommunityInvitationOrganization
+      | NotificationEventPayloadOrganizationAssociateActor
   ): BaseEventPayload {
     // `payload` itself is optional-chained for the same reason the log line
     // below is: this helper runs outside the ack/nack try (see the comment
@@ -331,13 +343,21 @@ export class NotificationService {
       // BEFORE `processNotificationEvent`, i.e. outside the try that owns the
       // ack/nack — the exact placement whose last occurrence produced "the
       // unbounded implicit RabbitMQ redelivery loop observed live" (see the
-      // comment in processNotificationEvent). A payload whose `invitee` or
-      // `profile` is absent — a schema drift, an old server mid rolling
-      // deploy, a hand-published message — would throw out of the handler and
-      // leave the message neither acked nor nacked. A log line must never be
-      // able to do that, so this helper is total by construction.
+      // comment in processNotificationEvent). A payload whose `invitee`/
+      // `organization` or `profile` is absent — a schema drift, an old
+      // server mid rolling deploy, a hand-published message — would throw
+      // out of the handler and leave the message neither acked nor nacked.
+      // A log line must never be able to do that, so this helper is total
+      // by construction.
+      const organizationName =
+        (payload as NotificationEventPayloadOrganizationAssociateActor)
+          ?.organization?.profile?.displayName ??
+        (
+          payload as NotificationEventPayloadSpaceCommunityInvitationOrganization
+        )?.invitee?.profile?.displayName ??
+        'unknown organization';
       this.logger.warn?.(
-        `Organization invitation escalation for ${payload.invitee?.profile?.displayName ?? 'unknown organization'} dropped: support address is blacklisted`,
+        `Organization invitation escalation for ${organizationName} dropped: support address is blacklisted`,
         LogContext.NOTIFICATIONS
       );
     }
@@ -531,6 +551,47 @@ export class NotificationService {
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationSpaceCommunityJoined(
           eventPayload as NotificationEventPayloadSpaceCommunityInvitation,
           recipient
+        );
+      case NotificationEvent.UserOrganizationAssociateInvitation:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateInvitation(
+          eventPayload as NotificationEventPayloadOrganizationAssociateInvitation,
+          recipient
+        );
+      case NotificationEvent.OrganizationAdminAssociateInvitationAccepted:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
+          eventPayload as NotificationEventPayloadOrganizationAssociateActor,
+          recipient,
+          'invitationAccepted'
+        );
+      case NotificationEvent.OrganizationAdminAssociateInvitationDeclined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
+          eventPayload as NotificationEventPayloadOrganizationAssociateActor,
+          recipient,
+          'invitationDeclined'
+        );
+      case NotificationEvent.OrganizationAdminAssociateApplication:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
+          eventPayload as NotificationEventPayloadOrganizationAssociateActor,
+          recipient,
+          'applicationReceived'
+        );
+      case NotificationEvent.UserOrganizationAssociateApplicationApproved:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
+          eventPayload as NotificationEventPayloadOrganizationAssociateActor,
+          recipient,
+          'applicationApproved'
+        );
+      case NotificationEvent.UserOrganizationAssociateApplicationDeclined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
+          eventPayload as NotificationEventPayloadOrganizationAssociateActor,
+          recipient,
+          'applicationDeclined'
+        );
+      case NotificationEvent.OrganizationAdminAssociateJoined:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
+          eventPayload as NotificationEventPayloadOrganizationAssociateActor,
+          recipient,
+          'joined'
         );
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceCommunityInvitationPlatform(
@@ -763,6 +824,20 @@ export class NotificationService {
         return 'user.space.community.invitation.declined';
       case NotificationEvent.OrganizationAdminSpaceCommunityJoined:
         return 'organization.space.community.joined';
+      case NotificationEvent.UserOrganizationAssociateInvitation:
+        return 'user.organization.associate.invitation.received';
+      case NotificationEvent.OrganizationAdminAssociateInvitationAccepted:
+        return 'organization.associate.invitation.accepted';
+      case NotificationEvent.OrganizationAdminAssociateInvitationDeclined:
+        return 'organization.associate.invitation.declined';
+      case NotificationEvent.OrganizationAdminAssociateApplication:
+        return 'organization.associate.application.received';
+      case NotificationEvent.UserOrganizationAssociateApplicationApproved:
+        return 'user.organization.associate.application.approved';
+      case NotificationEvent.UserOrganizationAssociateApplicationDeclined:
+        return 'user.organization.associate.application.declined';
+      case NotificationEvent.OrganizationAdminAssociateJoined:
+        return 'organization.associate.joined';
       case NotificationEvent.SpaceCommunityInvitationUserPlatform:
         return 'user.space.community.invitation.received';
       case NotificationEvent.UserSpaceCommunityJoined:

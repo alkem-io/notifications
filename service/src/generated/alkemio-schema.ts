@@ -6467,6 +6467,10 @@ export type NotificationEmailAddressInput = {
 };
 
 export enum NotificationEvent {
+  OrganizationAdminAssociateApplication = 'ORGANIZATION_ADMIN_ASSOCIATE_APPLICATION',
+  OrganizationAdminAssociateInvitationAccepted = 'ORGANIZATION_ADMIN_ASSOCIATE_INVITATION_ACCEPTED',
+  OrganizationAdminAssociateInvitationDeclined = 'ORGANIZATION_ADMIN_ASSOCIATE_INVITATION_DECLINED',
+  OrganizationAdminAssociateJoined = 'ORGANIZATION_ADMIN_ASSOCIATE_JOINED',
   OrganizationAdminMentioned = 'ORGANIZATION_ADMIN_MENTIONED',
   OrganizationAdminMessage = 'ORGANIZATION_ADMIN_MESSAGE',
   OrganizationAdminSpaceCommunityInvitation = 'ORGANIZATION_ADMIN_SPACE_COMMUNITY_INVITATION',
@@ -6509,6 +6513,9 @@ export enum NotificationEvent {
   UserEmailChangeSpaceAdminNotification = 'USER_EMAIL_CHANGE_SPACE_ADMIN_NOTIFICATION',
   UserMentioned = 'USER_MENTIONED',
   UserMessage = 'USER_MESSAGE',
+  UserOrganizationAssociateApplicationApproved = 'USER_ORGANIZATION_ASSOCIATE_APPLICATION_APPROVED',
+  UserOrganizationAssociateApplicationDeclined = 'USER_ORGANIZATION_ASSOCIATE_APPLICATION_DECLINED',
+  UserOrganizationAssociateInvitation = 'USER_ORGANIZATION_ASSOCIATE_INVITATION',
   UserPasswordChangeSecuritySignal = 'USER_PASSWORD_CHANGE_SECURITY_SIGNAL',
   UserSignUpWelcome = 'USER_SIGN_UP_WELCOME',
   UserSpaceCommunityApplicationDeclined = 'USER_SPACE_COMMUNITY_APPLICATION_DECLINED',
