@@ -13,7 +13,7 @@ module.exports = () => ({
         {% block content %}{% if recipient.firstName %}Hi {{recipient.firstName}},{% else %}Hello,{% endif %}<br>
           <a href="{{actor.profile}}">{{actor.name}}</a> accepted the invitation to associate with <a href="{{organization.url}}">{{organization.name}}</a>.
           {% if rolesWithheld.length %}<br><br>
-          {% for role in rolesWithheld %}The {{role}} role could not be granted because the limit was reached.<br>{% endfor %}
+          {% for role in rolesWithheld %}The {{role}} role could not be granted.<br>{% endfor %}
           {% endif %}
           <br><br>
           <a class="action-button" href="{{organizationAssociatesUrl}}">Have a look</a><br><br>

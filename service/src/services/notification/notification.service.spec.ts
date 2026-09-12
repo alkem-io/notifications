@@ -1733,8 +1733,14 @@ describe('NotificationService', () => {
           'invitationAccepted',
           { extraRolesWithheld: ['OWNER'] }
         );
+        // No cause is stated: the server fills extraRolesWithheld from an
+        // unconditional catch, so a cap refusal and any other grant failure are
+        // indistinguishable by the time this template renders.
         expect(withOwner?.channels?.email?.html).toContain(
-          'The Owner role could not be granted because the limit was reached'
+          'The Owner role could not be granted.'
+        );
+        expect(withOwner?.channels?.email?.html).not.toContain(
+          'the limit was reached'
         );
 
         const withoutWithheld = await renderActor(
