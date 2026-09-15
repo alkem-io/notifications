@@ -45,6 +45,8 @@ import {
   OrganizationSpaceCommunityInvitationOutcomeEmailPayload,
   UserSpaceCommunityInvitationOutcomeEmailPayload,
   OrganizationSpaceCommunityJoinedEmailPayload,
+  OrganizationAssociateInvitationEmailPayload,
+  OrganizationAssociateActorEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -83,6 +85,10 @@ import {
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
+import {
+  NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateActor,
+} from '@src/types/notifications.lib.organization.associate.bridge';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
@@ -307,6 +313,68 @@ export class NotificationEmailPayloadBuilderService {
         name: eventPayload.invitee.profile.displayName,
         url: eventPayload.invitee.profile.url,
       },
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationAssociateInvitation(
+    eventPayload: NotificationEventPayloadOrganizationAssociateInvitation,
+    recipient: User
+  ): OrganizationAssociateInvitationEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      inviter: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.organization.profile.displayName,
+        url: eventPayload.organization.profile.url,
+      },
+      offeredRole: this.formatOfferedAssociateRole(eventPayload.extraRoles),
+      welcomeMessage: eventPayload.welcomeMessage,
+      organizationUrl: eventPayload.organizationUrl,
+    };
+  }
+
+  /**
+   * Shared builder for the six "actor" organization-associate events —
+   * `variant` selects only which template renders the result (chosen by the
+   * caller in `notification.service.ts`); the payload shape is identical.
+   * `isSupportEscalation` is additionally gated on `variant` so a stray
+   * `recipientEmail` on the wrong event can never flip it on.
+   */
+  public createEmailTemplatePayloadOrganizationAssociateActor(
+    eventPayload: NotificationEventPayloadOrganizationAssociateActor,
+    recipient: User,
+    variant:
+      | 'invitationAccepted'
+      | 'invitationDeclined'
+      | 'applicationReceived'
+      | 'applicationApproved'
+      | 'applicationDeclined'
+      | 'joined'
+  ): OrganizationAssociateActorEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      actor: {
+        name: eventPayload.actor.profile.displayName,
+        profile: eventPayload.actor.profile.url,
+      },
+      organization: {
+        name: eventPayload.organization.profile.displayName,
+        url: eventPayload.organization.profile.url,
+      },
+      offeredRole: this.formatOfferedAssociateRole(eventPayload.extraRoles),
+      rolesWithheld: this.formatWithheldAssociateRoles(
+        eventPayload.extraRolesWithheld
+      ),
+      applicationMessage: eventPayload.applicationMessage,
+      organizationAssociatesUrl: eventPayload.organizationAssociatesUrl,
+      organizationUrl: eventPayload.organizationUrl,
+      isSupportEscalation:
+        variant === 'applicationReceived' &&
+        Boolean(eventPayload.recipientEmail),
     };
   }
 
@@ -1199,5 +1267,28 @@ export class NotificationEmailPayloadBuilderService {
       hour12: false,
     });
     return `${datePart}, ${timePart} UTC`;
+  }
+
+  /**
+   * `extraRoles` on an organization-associate wire payload holds at most one
+   * of ADMIN/OWNER (R1: an invitation offers a single extra role), so the
+   * readable label only ever needs to check for one or the other.
+   */
+  private formatOfferedAssociateRole(extraRoles: string[]): string {
+    const upper = extraRoles.map(role => role.toUpperCase());
+    if (upper.includes('OWNER')) {
+      return 'Associate + Owner';
+    }
+    if (upper.includes('ADMIN')) {
+      return 'Associate + Admin';
+    }
+    return 'Associate';
+  }
+
+  /** Readable ["Owner"] / ["Admin"] list for the extra roles an over-cap invitation could not grant. */
+  private formatWithheldAssociateRoles(extraRolesWithheld: string[]): string[] {
+    return extraRolesWithheld.map(
+      role => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
+    );
   }
 }
