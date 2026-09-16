@@ -1285,7 +1285,7 @@ export class NotificationEmailPayloadBuilderService {
     return 'Associate';
   }
 
-  /** Readable ["Owner"] / ["Admin"] list for the extra roles an over-cap invitation could not grant. */
+  /** Readable ["Owner"] / ["Admin"] labels for extra roles that could not be granted. */
   private formatWithheldAssociateRoles(extraRolesWithheld: string[]): string[] {
     return extraRolesWithheld.map(
       role => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
