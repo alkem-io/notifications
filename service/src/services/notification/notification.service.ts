@@ -357,7 +357,7 @@ export class NotificationService {
         )?.invitee?.profile?.displayName ??
         'unknown organization';
       this.logger.warn?.(
-        `Organization notification escalation for ${organizationName} dropped: support address is blacklisted`
+        `Organization notification escalation for ${organizationName} dropped: support address is blacklisted`,
         LogContext.NOTIFICATIONS
       );
     }
