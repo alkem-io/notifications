@@ -22,7 +22,7 @@
     "typecheck:native": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@alkemio/client-lib": "0.36.0"
+    "@alkemio/client-lib": "0.37.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",

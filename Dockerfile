@@ -37,7 +37,7 @@
 # ======================
 # Builder stage (with dev deps)
 # ======================
-FROM node:22.23.2-trixie@sha256:2082d2bf902c8835655c6bcfee3594c00ea900498a9f6e2b96d3352536f9e8d8 AS builder
+FROM node:22.23.2-trixie@sha256:ae3b84a81a94a99f50110663c936ccda31a3bbf1e91bb6b23c638669f777a6f2 AS builder
 
 WORKDIR /app
 
@@ -54,7 +54,7 @@ RUN npm run build
 # ======================
 # Prod deps stage (NO dev deps)
 # ======================
-FROM node:22.23.2-trixie@sha256:2082d2bf902c8835655c6bcfee3594c00ea900498a9f6e2b96d3352536f9e8d8 AS prod-deps
+FROM node:22.23.2-trixie@sha256:ae3b84a81a94a99f50110663c936ccda31a3bbf1e91bb6b23c638669f777a6f2 AS prod-deps
 
 WORKDIR /app
 
@@ -65,7 +65,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 # ======================
 # Runtime stage (distroless)
 # ======================
-FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:22d2f0480e59548ad14cf10d8921b24ef809780e7a61b162838f3d15a4a92e3d
+FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:5ef534d3db0ac0c43bee379af4ae49cfbfc0ef38a46c94c52d87c68f32f34d8a
 
 WORKDIR /app
 ENV NODE_ENV=production

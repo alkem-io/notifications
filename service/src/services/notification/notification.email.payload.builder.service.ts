@@ -41,6 +41,12 @@ import {
   PlatformAdminUserEmailChangeEmailPayload,
   SpaceAdminUserEmailChangeEmailPayload,
   UserPasswordChangeSecuritySignalEmailPayload,
+  OrganizationSpaceCommunityInvitationCreatedEmailPayload,
+  OrganizationSpaceCommunityInvitationOutcomeEmailPayload,
+  UserSpaceCommunityInvitationOutcomeEmailPayload,
+  OrganizationSpaceCommunityJoinedEmailPayload,
+  OrganizationAssociateInvitationEmailPayload,
+  OrganizationAssociateActorEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
   NotificationEventPayloadSpaceCommunityApplication,
@@ -78,6 +84,11 @@ import {
   NotificationEventPayloadUserConversationMessageGroup,
   NotificationEventPayloadSpaceCollaborationCalloutReaction,
 } from '@alkemio/notifications-lib';
+import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
+import {
+  NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateActor,
+} from '@src/types/notifications.lib.organization.associate.bridge';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
@@ -209,6 +220,161 @@ export class NotificationEmailPayloadBuilderService {
         url: eventPayload.host.profile.url,
       },
       spaceURL: eventPayload.space.profile.url,
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitation(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitationOrganization,
+    recipient: User
+  ): OrganizationSpaceCommunityInvitationCreatedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      inviter: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        email: eventPayload.triggeredBy.email,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+      offeredRole: eventPayload.extraRoles.some(
+        role => role.toLowerCase() === 'lead'
+      )
+        ? 'Member + Lead'
+        : 'Member',
+      spacesToJoin: eventPayload.spacesToJoin,
+      welcomeMessage: eventPayload.welcomeMessage,
+      organizationInvitationsUrl: eventPayload.organizationInvitationsUrl,
+      // `recipientEmail` is only ever set on the zero-admin escalation path,
+      // so its presence is what distinguishes the support copy.
+      isSupportEscalation: Boolean(eventPayload.recipientEmail),
+    };
+  }
+
+  /**
+   * Accept and decline carry identical data — only the template differs, and
+   * that is chosen from the event type — so one builder serves both.
+   */
+  public createEmailTemplatePayloadOrganizationSpaceCommunityInvitationOutcome(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    recipient: User
+  ): OrganizationSpaceCommunityInvitationOutcomeEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      actor: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+      // `space.adminURL` IS the Space settings > Community URL — the server
+      // builds it with createSpaceAdminCommunityURL, which already appends
+      // the `community` segment. Appending it again produced
+      // `/settings/community/community`, a dead route.
+      spaceCommunitySettingsURL: eventPayload.space.adminURL,
+    };
+  }
+
+  public createEmailTemplatePayloadUserSpaceCommunityInvitationOutcome(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    recipient: User
+  ): UserSpaceCommunityInvitationOutcomeEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      invitee: {
+        name: eventPayload.invitee.profile.displayName,
+        profile: eventPayload.invitee.profile.url,
+      },
+      // `space.adminURL` IS the Space settings > Community URL — the server
+      // builds it with createSpaceAdminCommunityURL, which already appends
+      // the `community` segment. Appending it again produced
+      // `/settings/community/community`, a dead route.
+      spaceCommunitySettingsURL: eventPayload.space.adminURL,
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationSpaceCommunityJoined(
+    eventPayload: NotificationEventPayloadSpaceCommunityInvitation,
+    recipient: User
+  ): OrganizationSpaceCommunityJoinedEmailPayload {
+    return {
+      ...this.createSpaceBaseEmailPayload(eventPayload, recipient),
+      actor: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.invitee.profile.displayName,
+        url: eventPayload.invitee.profile.url,
+      },
+    };
+  }
+
+  public createEmailTemplatePayloadOrganizationAssociateInvitation(
+    eventPayload: NotificationEventPayloadOrganizationAssociateInvitation,
+    recipient: User
+  ): OrganizationAssociateInvitationEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      inviter: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.organization.profile.displayName,
+        url: eventPayload.organization.profile.url,
+      },
+      offeredRole: this.formatOfferedAssociateRole(eventPayload.extraRoles),
+      welcomeMessage: eventPayload.welcomeMessage,
+      organizationUrl: eventPayload.organizationUrl,
+    };
+  }
+
+  /**
+   * Shared builder for the six "actor" organization-associate events —
+   * `variant` selects only which template renders the result (chosen by the
+   * caller in `notification.service.ts`); the payload shape is identical.
+   * `isSupportEscalation` is additionally gated on `variant` so a stray
+   * `recipientEmail` on the wrong event can never flip it on.
+   */
+  public createEmailTemplatePayloadOrganizationAssociateActor(
+    eventPayload: NotificationEventPayloadOrganizationAssociateActor,
+    recipient: User,
+    variant:
+      | 'invitationAccepted'
+      | 'invitationDeclined'
+      | 'applicationReceived'
+      | 'applicationApproved'
+      | 'applicationDeclined'
+      | 'joined'
+  ): OrganizationAssociateActorEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      actor: {
+        name: eventPayload.actor.profile.displayName,
+        profile: eventPayload.actor.profile.url,
+      },
+      organization: {
+        name: eventPayload.organization.profile.displayName,
+        url: eventPayload.organization.profile.url,
+      },
+      offeredRole: this.formatOfferedAssociateRole(eventPayload.extraRoles),
+      rolesWithheld: this.formatWithheldAssociateRoles(
+        eventPayload.extraRolesWithheld
+      ),
+      applicationMessage: eventPayload.applicationMessage,
+      organizationAssociatesUrl: eventPayload.organizationAssociatesUrl,
+      organizationUrl: eventPayload.organizationUrl,
+      isSupportEscalation:
+        variant === 'applicationReceived' &&
+        Boolean(eventPayload.recipientEmail),
     };
   }
 
@@ -1101,5 +1267,28 @@ export class NotificationEmailPayloadBuilderService {
       hour12: false,
     });
     return `${datePart}, ${timePart} UTC`;
+  }
+
+  /**
+   * `extraRoles` on an organization-associate wire payload holds at most one
+   * of ADMIN/OWNER (R1: an invitation offers a single extra role), so the
+   * readable label only ever needs to check for one or the other.
+   */
+  private formatOfferedAssociateRole(extraRoles: string[]): string {
+    const upper = extraRoles.map(role => role.toUpperCase());
+    if (upper.includes('OWNER')) {
+      return 'Associate + Owner';
+    }
+    if (upper.includes('ADMIN')) {
+      return 'Associate + Admin';
+    }
+    return 'Associate';
+  }
+
+  /** Readable ["Owner"] / ["Admin"] labels for extra roles that could not be granted. */
+  private formatWithheldAssociateRoles(extraRolesWithheld: string[]): string[] {
+    return extraRolesWithheld.map(
+      role => role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()
+    );
   }
 }
