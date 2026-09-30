@@ -43,6 +43,7 @@ import {
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from './types/notifications.lib.organization.invitation.bridge';
 import {
   NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from './types/notifications.lib.organization.associate.bridge';
 import { NotificationService } from './services/notification/notification.service';
@@ -290,6 +291,18 @@ export class AppController {
   async sendCommunityPlatformInvitationNotification(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAssociateInvitationUserPlatform)
+  async sendOrganizationAssociatePlatformInvitationNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadOrganizationAssociateInvitationPlatform,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
