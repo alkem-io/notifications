@@ -1431,7 +1431,7 @@ export type CalloutFormResponses = {
   /** Whether the viewer can read every response of the Form. */
   canReadAll: Scalars['Boolean']['output'];
   formID: Scalars['UUID']['output'];
-  /** The viewer's own responses. */
+  /** The viewer's own responses, oldest first; at most the 50 newest. */
   mine: Array<CalloutFormResponse>;
 };
 
@@ -1707,6 +1707,8 @@ export type CollaboraDocument = {
   documentType: CollaboraDocumentType;
   /** The ID of the entity */
   id: Scalars['UUID']['output'];
+  /** An authorized, same-origin preview image endpoint for the current saved document, or null when there is no backing file to preview. NOT a bearer URL: every request against it is independently authorized against the current document READ policy. */
+  previewUrl?: Maybe<Scalars['String']['output']>;
   /** The Profile for this CollaboraDocument. */
   profile: Profile;
   /** The date at which the entity was last updated. */
@@ -3436,6 +3438,11 @@ export type DeleteVisualFromMediaGalleryInput = {
 
 export type DeleteWhiteboardInput = {
   ID: Scalars['UUID']['input'];
+};
+
+export type DeletedCalloutFormResponse = {
+  /** The id of the deleted Form response. */
+  id: Scalars['UUID']['output'];
 };
 
 export type DirectMessageDeliveryResult = {
@@ -5639,7 +5646,7 @@ export type Mutation = {
   /** Delete a Callout. */
   deleteCallout: Callout;
   /** Delete a Form response. The member who submitted it can always withdraw it (also on a closed Form); otherwise the privilege to create callouts on the collection the Post is in (space admin) is required. */
-  deleteCalloutFormResponse: CalloutFormResponse;
+  deleteCalloutFormResponse: DeletedCalloutFormResponse;
   /** Permanently removes a Classification from a Space. No template and no other Space is affected. */
   deleteClassificationEntry: ClassificationEntry;
   /** Deletes the specified CollaboraDocument. */
@@ -12727,6 +12734,7 @@ export type ResolversTypes = {
   DeleteVirtualContributorInput: DeleteVirtualContributorInput;
   DeleteVisualFromMediaGalleryInput: DeleteVisualFromMediaGalleryInput;
   DeleteWhiteboardInput: DeleteWhiteboardInput;
+  DeletedCalloutFormResponse: ResolverTypeWrapper<DeletedCalloutFormResponse>;
   DirectMessageDeliveryResult: ResolverTypeWrapper<DirectMessageDeliveryResult>;
   DirectMessageDeliveryStatus: DirectMessageDeliveryStatus;
   Discussion: ResolverTypeWrapper<
@@ -14419,6 +14427,7 @@ export type ResolversParentTypes = {
   DeleteVirtualContributorInput: DeleteVirtualContributorInput;
   DeleteVisualFromMediaGalleryInput: DeleteVisualFromMediaGalleryInput;
   DeleteWhiteboardInput: DeleteWhiteboardInput;
+  DeletedCalloutFormResponse: DeletedCalloutFormResponse;
   DirectMessageDeliveryResult: DirectMessageDeliveryResult;
   Discussion: Omit<Discussion, 'profile'> & {
     profile: ResolversParentTypes['Profile'];
@@ -17031,6 +17040,11 @@ export type CollaboraDocumentResolvers<
     ContextType
   >;
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  previewUrl?: Resolver<
+    Maybe<ResolversTypes['String']>,
+    ParentType,
+    ContextType
+  >;
   profile?: Resolver<ResolversTypes['Profile'], ParentType, ContextType>;
   updatedDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -18441,6 +18455,15 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<
 > {
   name: 'DateTime';
 }
+
+export type DeletedCalloutFormResponseResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes['DeletedCalloutFormResponse'] =
+    ResolversParentTypes['DeletedCalloutFormResponse'],
+> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type DirectMessageDeliveryResultResolvers<
   ContextType = any,
@@ -21449,7 +21472,7 @@ export type MutationResolvers<
     RequireFields<MutationDeleteCalloutArgs, 'deleteData'>
   >;
   deleteCalloutFormResponse?: Resolver<
-    ResolversTypes['CalloutFormResponse'],
+    ResolversTypes['DeletedCalloutFormResponse'],
     ParentType,
     ContextType,
     RequireFields<MutationDeleteCalloutFormResponseArgs, 'deleteData'>
@@ -27132,6 +27155,7 @@ export type Resolvers<ContextType = any> = {
   Credential?: CredentialResolvers<ContextType>;
   CredentialDefinition?: CredentialDefinitionResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
+  DeletedCalloutFormResponse?: DeletedCalloutFormResponseResolvers<ContextType>;
   DirectMessageDeliveryResult?: DirectMessageDeliveryResultResolvers<ContextType>;
   Discussion?: DiscussionResolvers<ContextType>;
   DiscussionDetails?: DiscussionDetailsResolvers<ContextType>;
