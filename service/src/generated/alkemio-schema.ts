@@ -6475,6 +6475,7 @@ export enum NotificationEvent {
   OrganizationAdminMessage = 'ORGANIZATION_ADMIN_MESSAGE',
   OrganizationAdminSpaceCommunityInvitation = 'ORGANIZATION_ADMIN_SPACE_COMMUNITY_INVITATION',
   OrganizationAdminSpaceCommunityJoined = 'ORGANIZATION_ADMIN_SPACE_COMMUNITY_JOINED',
+  OrganizationAssociateInvitationUserPlatform = 'ORGANIZATION_ASSOCIATE_INVITATION_USER_PLATFORM',
   OrganizationMessageSender = 'ORGANIZATION_MESSAGE_SENDER',
   PlatformAdminGlobalRoleChanged = 'PLATFORM_ADMIN_GLOBAL_ROLE_CHANGED',
   PlatformAdminSpaceCreated = 'PLATFORM_ADMIN_SPACE_CREATED',
