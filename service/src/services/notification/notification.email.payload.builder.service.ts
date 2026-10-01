@@ -354,8 +354,15 @@ export class NotificationEmailPayloadBuilderService {
       this.invitationsPath
     }`;
 
+    const basePayload = this.createBaseEmailPayload(eventPayload, recipient);
+
     return {
-      ...this.createBaseEmailPayload(eventPayload, recipient),
+      ...basePayload,
+      // The invitee has no account, so there are no notification preferences
+      // to manage: an empty value makes the footer omit the settings link
+      // (the server's placeholder recipient carries an empty, non-undefined id
+      // that would otherwise yield a dead relative link).
+      recipient: { ...basePayload.recipient, notificationPreferences: '' },
       inviter: {
         firstName: eventPayload.triggeredBy.firstName,
         name: eventPayload.triggeredBy.profile.displayName,

@@ -1759,6 +1759,45 @@ describe('NotificationService', () => {
         expect(html).not.toContain('<b>hi</b>');
       });
 
+      it('omits the notification-preferences footer link for the account-less recipient', async () => {
+        const result = await renderPlatformInvitation();
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).not.toContain('/settings/notifications');
+        expect(html).not.toContain('Notification settings');
+      });
+
+      it('routes the event through the platform builder and its own template', async () => {
+        mockSuccessConfig();
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'success' });
+        const builderSpy = jest.spyOn(
+          builderService,
+          'createEmailTemplatePayloadOrganizationAssociateInvitationPlatform'
+        );
+        const templateSpy = jest
+          .spyOn(templateBuilder, 'buildTemplate')
+          .mockResolvedValue(MINIMAL_TEMPLATE);
+
+        await notificationService.buildAndSendEmailNotifications({
+          ...MINIMAL_BASE,
+          eventType:
+            NotificationEvent.OrganizationAssociateInvitationUserPlatform,
+          recipients: [syntheticRecipient],
+          organization,
+          extraRoles: [] as string[],
+          welcomeMessage: 'hi',
+        } as unknown as BaseEventPayload);
+
+        expect(builderSpy).toHaveBeenCalledTimes(1);
+        expect(templateSpy).toHaveBeenCalledTimes(1);
+        expect(templateSpy.mock.calls[0][0]).toBe(
+          'user.organization.associate.invitation.platform.received'
+        );
+        builderSpy.mockRestore();
+        templateSpy.mockRestore();
+      });
+
       it('greets "Hello," for the synthetic recipient, never "Hi ,"', async () => {
         const result = await renderPlatformInvitation();
         const html = result?.channels?.email?.html ?? '';
