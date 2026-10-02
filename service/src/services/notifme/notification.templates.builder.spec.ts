@@ -71,6 +71,35 @@ describe('NotificationTemplateBuilder', () => {
     expect(result).toBeUndefined();
   });
 
+  it('renders the canonical footer identity in the email body', async () => {
+    const result = await builder.buildTemplate(
+      'user.space.community.joined',
+      payloadWithEntities
+    );
+    const html = result?.channels?.email?.html;
+
+    expect(html).toContain(
+      'Alkemio is a European digital platform for collaboration in the spaces between organisations.'
+    );
+    expect(html).toContain('Designed for trust and resilience.');
+    expect(html).toContain('href="https://github.com/alkem-io"');
+    expect(html).toContain('href="https://www.linkedin.com/company/alkemio"');
+    expect(html).toContain(
+      'src="https://welcome.alkem.io/email/icon-github.png"'
+    );
+    expect(html).toContain(
+      'src="https://welcome.alkem.io/email/icon-linkedin.png"'
+    );
+
+    expect(html).not.toContain('Safe Spaces for Collaboration');
+    expect(html).not.toContain('PURPOSE DRIVEN');
+    expect(html).not.toContain('githubassets.com');
+    expect(html).not.toContain('content.linkedin.com');
+    expect(html).not.toContain('alkemio-foundation');
+    expect(html).not.toContain('alt="174857"');
+    expect(html).not.toContain('alt="2048px');
+  });
+
   it('rejects template names that traverse outside the templates folder', async () => {
     const result = await builder.buildTemplate(
       '../../config/some-secret',
