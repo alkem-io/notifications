@@ -100,6 +100,30 @@ describe('NotificationTemplateBuilder', () => {
     expect(html).not.toContain('alt="2048px');
   });
 
+  // 079 T004a: https://alkem.io/logo.png is served with
+  // `Cross-Origin-Resource-Policy: same-site`, which browser-based mail clients
+  // can refuse, so the logo would silently fail to render in webmail. Every
+  // email image must come from the welcome.alkem.io/email/ path, which carries
+  // no CORP header. The two copies of the logo are byte-identical.
+  it('serves every email image from the CORP-unrestricted Alkemio path', async () => {
+    const result = await builder.buildTemplate(
+      'user.space.community.joined',
+      payloadWithEntities
+    );
+    const html = result?.channels?.email?.html ?? '';
+
+    expect(html).toContain(
+      'src="https://welcome.alkem.io/email/alkemio-logo.png"'
+    );
+    expect(html).not.toContain('https://alkem.io/logo.png');
+
+    const srcs = [...html.matchAll(/src="(https?:\/\/[^"]+)"/g)].map(m => m[1]);
+    expect(srcs.length).toBeGreaterThan(0);
+    for (const src of srcs) {
+      expect(src.startsWith('https://welcome.alkem.io/email/')).toBe(true);
+    }
+  });
+
   it('rejects template names that traverse outside the templates folder', async () => {
     const result = await builder.buildTemplate(
       '../../config/some-secret',
