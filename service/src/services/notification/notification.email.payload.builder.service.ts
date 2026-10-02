@@ -20,6 +20,7 @@ import {
   CollaborationPostCommentEmailPayload,
   CollaborationCalloutPublishedEmailPayload,
   SpaceCollaborationCalloutReactionEmailPayload,
+  CollaborationCalloutFormResponseEmailPayload,
   CommentReplyEmailPayload,
   PlatformUserRegisteredEmailPayload,
   PlatformForumDiscussionCreatedEmailPayload,
@@ -91,6 +92,7 @@ import {
   NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
+import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from '@src/types/notifications.lib.callout.form.response.bridge';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
@@ -1110,6 +1112,50 @@ export class NotificationEmailPayloadBuilderService {
         displayName: eventPayload.callout.framing.displayName,
         url: eventPayload.callout.framing.url,
       },
+    };
+  }
+
+  public createEmailTemplatePayloadSpaceAdminCollaborationCalloutFormResponse(
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+    recipient: User
+  ): CollaborationCalloutFormResponseEmailPayload {
+    return this.createCalloutFormResponseEmailPayload(eventPayload, recipient);
+  }
+
+  public createEmailTemplatePayloadUserCollaborationCalloutFormResponseReceipt(
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+    recipient: User
+  ): CollaborationCalloutFormResponseEmailPayload {
+    return this.createCalloutFormResponseEmailPayload(eventPayload, recipient);
+  }
+
+  // Link-only by construction: copies names and URLs, never any answer,
+  // prompt or question text.
+  private createCalloutFormResponseEmailPayload(
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+    recipient: User
+  ): CollaborationCalloutFormResponseEmailPayload {
+    const base = this.createSpaceBaseEmailPayload(eventPayload, recipient);
+    const spaceName = base.space.displayName;
+    const visibility = eventPayload.formResponse.visibility;
+    const whoCanRead =
+      visibility === 'MEMBERS'
+        ? `Members of ${spaceName} can read your response`
+        : `Only the admins of ${spaceName} can read your response`;
+    return {
+      ...base,
+      callout: {
+        displayName: eventPayload.callout.displayName,
+        url: eventPayload.callout.url,
+      },
+      submitter: {
+        displayName: eventPayload.submitter.profile.displayName,
+      },
+      formResponse: {
+        submittedAt: eventPayload.formResponse.submittedAt,
+        visibility,
+      },
+      whoCanRead,
     };
   }
 
