@@ -46,6 +46,7 @@ import {
   UserSpaceCommunityInvitationOutcomeEmailPayload,
   OrganizationSpaceCommunityJoinedEmailPayload,
   OrganizationAssociateInvitationEmailPayload,
+  OrganizationAssociateInvitationPlatformEmailPayload,
   OrganizationAssociateActorEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
@@ -87,6 +88,7 @@ import {
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import {
   NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
@@ -334,6 +336,45 @@ export class NotificationEmailPayloadBuilderService {
       offeredRole: this.formatOfferedAssociateRole(eventPayload.extraRoles),
       welcomeMessage: eventPayload.welcomeMessage,
       organizationUrl: eventPayload.organizationUrl,
+    };
+  }
+
+  /**
+   * Organization invitation addressed to an email with no account yet. The
+   * single synthetic recipient carries only an address, so the greeting is
+   * conditional in the template; the call to action is the platform
+   * invitations page (same target as the Space email-invitation path), where
+   * the invitee signs up and then responds.
+   */
+  public createEmailTemplatePayloadOrganizationAssociateInvitationPlatform(
+    eventPayload: NotificationEventPayloadOrganizationAssociateInvitationPlatform,
+    recipient: User
+  ): OrganizationAssociateInvitationPlatformEmailPayload {
+    const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
+      this.invitationsPath
+    }`;
+
+    const basePayload = this.createBaseEmailPayload(eventPayload, recipient);
+
+    return {
+      ...basePayload,
+      // The invitee has no account, so there are no notification preferences
+      // to manage: an empty value makes the footer omit the settings link
+      // (the server's placeholder recipient carries an empty, non-undefined id
+      // that would otherwise yield a dead relative link).
+      recipient: { ...basePayload.recipient, notificationPreferences: '' },
+      inviter: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.organization.profile.displayName,
+        url: eventPayload.organization.profile.url,
+      },
+      offeredRole: this.formatOfferedAssociateRole(eventPayload.extraRoles),
+      welcomeMessage: eventPayload.welcomeMessage,
+      invitationsURL,
     };
   }
 

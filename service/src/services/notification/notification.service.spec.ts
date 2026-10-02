@@ -17,6 +17,7 @@ import {
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import {
   NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
@@ -1707,6 +1708,126 @@ describe('NotificationService', () => {
           (result?.channels?.email?.subject ?? '') +
           (result?.title ?? '');
         expect(rendered.toLowerCase()).not.toMatch(/\bmembers?\b/);
+      });
+    });
+
+    describe('user.organization.associate.invitation.platform.received', () => {
+      const renderPlatformInvitation = (
+        overrides: Record<string, unknown> = {},
+        recipient = syntheticRecipient
+      ) => {
+        const eventPayload = {
+          ...MINIMAL_BASE,
+          eventType:
+            NotificationEvent.OrganizationAssociateInvitationUserPlatform,
+          triggeredBy: inviter,
+          recipients: [MINIMAL_RECIPIENT],
+          organization,
+          extraRoles: [] as string[],
+          welcomeMessage: '<b>hi</b> secret',
+          organizationUrl: 'https://alkemio.dev/organization/beacon',
+          ...overrides,
+        } as unknown as NotificationEventPayloadOrganizationAssociateInvitationPlatform;
+
+        return templateBuilder.buildTemplate(
+          'user.organization.associate.invitation.platform.received',
+          builderService.createEmailTemplatePayloadOrganizationAssociateInvitationPlatform(
+            eventPayload,
+            recipient as any
+          ) as unknown as BaseEmailPayload
+        );
+      };
+
+      it('subject names only the organization, never the message or the inviter', async () => {
+        const result = await renderPlatformInvitation();
+        expect(result?.channels?.email?.subject).toBe(
+          'You are invited to join Beacon Collective on Alkemio'
+        );
+        expect(result?.title).toBe(
+          'You are invited to join Beacon Collective on Alkemio'
+        );
+        expect(result?.channels?.email?.subject).not.toContain('secret');
+        expect(result?.channels?.email?.subject).not.toContain(
+          'Ingrid Inviter'
+        );
+      });
+
+      it('escapes the welcome message in the body', async () => {
+        const result = await renderPlatformInvitation();
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('&lt;b&gt;hi&lt;/b&gt; secret');
+        expect(html).not.toContain('<b>hi</b>');
+      });
+
+      it('omits the notification-preferences footer link for the account-less recipient', async () => {
+        const result = await renderPlatformInvitation();
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).not.toContain('/settings/notifications');
+        expect(html).not.toContain('Notification settings');
+      });
+
+      it('routes the event through the platform builder and its own template', async () => {
+        mockSuccessConfig();
+        jest
+          .spyOn(notifmeService, 'send')
+          .mockResolvedValue({ status: 'success' });
+        const builderSpy = jest.spyOn(
+          builderService,
+          'createEmailTemplatePayloadOrganizationAssociateInvitationPlatform'
+        );
+        const templateSpy = jest
+          .spyOn(templateBuilder, 'buildTemplate')
+          .mockResolvedValue(MINIMAL_TEMPLATE);
+
+        await notificationService.buildAndSendEmailNotifications({
+          ...MINIMAL_BASE,
+          eventType:
+            NotificationEvent.OrganizationAssociateInvitationUserPlatform,
+          recipients: [syntheticRecipient],
+          organization,
+          extraRoles: [] as string[],
+          welcomeMessage: 'hi',
+        } as unknown as BaseEventPayload);
+
+        expect(builderSpy).toHaveBeenCalledTimes(1);
+        expect(templateSpy).toHaveBeenCalledTimes(1);
+        expect(templateSpy.mock.calls[0][0]).toBe(
+          'user.organization.associate.invitation.platform.received'
+        );
+        builderSpy.mockRestore();
+        templateSpy.mockRestore();
+      });
+
+      it('greets "Hello," for the synthetic recipient, never "Hi ,"', async () => {
+        const result = await renderPlatformInvitation();
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('Hello,');
+        expect(html).not.toContain('Hi ,');
+      });
+
+      it('renders inviter, organization and the offered role', async () => {
+        const result = await renderPlatformInvitation({
+          extraRoles: ['ADMIN'],
+        });
+        const html = result?.channels?.email?.html ?? '';
+        expect(html).toContain('Ingrid Inviter');
+        expect(html).toContain('Beacon Collective');
+        expect(html).toContain('Associate + Admin');
+      });
+
+      it('points the call to action at the platform invitations page', async () => {
+        const previous = builderService.invitationsPath;
+        builderService.invitationsPath = '/home?dialog=invitations';
+        try {
+          const result = await renderPlatformInvitation({
+            platform: { url: 'https://alkemio.dev/' },
+          });
+          expect(result?.channels?.email?.html).toContain(
+            'href="https://alkemio.dev/home?dialog=invitations"'
+          );
+        } finally {
+          builderService.invitationsPath = previous;
+        }
       });
     });
 

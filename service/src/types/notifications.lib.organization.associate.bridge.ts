@@ -4,9 +4,9 @@ import {
 } from '@alkemio/notifications-lib';
 
 /**
- * Locally-declared wire payloads for the seven organization-associates
+ * Locally-declared wire payloads for the eight organization-associates
  * notification events. `@alkemio/notifications-lib` stays pinned at its
- * published version — these two interfaces are declared verbatim in ONE
+ * published version — these three interfaces are declared verbatim in ONE
  * bridge file on each side (the server's own copy is
  * `notification.event.payload.organization.associate.bridge.ts`) so a
  * mechanical field-identity check is the contract, and publishing the lib
@@ -18,9 +18,12 @@ import {
  * inlined here rather than imported (061 precedent for the same gap).
  *
  * Event -> payload: the invitation event carries
- * NotificationEventPayloadOrganizationAssociateInvitation; the other six
- * (the two response events, the three application events, the joined
- * event) carry NotificationEventPayloadOrganizationAssociateActor.
+ * NotificationEventPayloadOrganizationAssociateInvitation; the invitation to
+ * an email address with no account yet carries
+ * NotificationEventPayloadOrganizationAssociateInvitationPlatform (one
+ * synthetic recipient, no invitee); the other six (the two response events,
+ * the three application events, the joined event) carry
+ * NotificationEventPayloadOrganizationAssociateActor.
  */
 interface NotificationEventPayloadOrganization extends BaseEventPayload {
   organization: ContributorPayload;
@@ -28,6 +31,12 @@ interface NotificationEventPayloadOrganization extends BaseEventPayload {
 
 export interface NotificationEventPayloadOrganizationAssociateInvitation extends NotificationEventPayloadOrganization {
   invitee: ContributorPayload;
+  extraRoles: string[];
+  welcomeMessage?: string;
+  organizationUrl: string;
+}
+
+export interface NotificationEventPayloadOrganizationAssociateInvitationPlatform extends NotificationEventPayloadOrganization {
   extraRoles: string[];
   welcomeMessage?: string;
   organizationUrl: string;
