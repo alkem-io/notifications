@@ -43,6 +43,7 @@ import {
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import {
   NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
 import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from '@src/types/notifications.lib.callout.form.response.bridge';
@@ -558,6 +559,11 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadOrganizationAssociateInvitation,
           recipient
         );
+      case NotificationEvent.OrganizationAssociateInvitationUserPlatform:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateInvitationPlatform(
+          eventPayload as NotificationEventPayloadOrganizationAssociateInvitationPlatform,
+          recipient
+        );
       case NotificationEvent.OrganizationAdminAssociateInvitationAccepted:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
           eventPayload as NotificationEventPayloadOrganizationAssociateActor,
@@ -837,6 +843,8 @@ export class NotificationService {
         return 'organization.space.community.joined';
       case NotificationEvent.UserOrganizationAssociateInvitation:
         return 'user.organization.associate.invitation.received';
+      case NotificationEvent.OrganizationAssociateInvitationUserPlatform:
+        return 'user.organization.associate.invitation.platform.received';
       case NotificationEvent.OrganizationAdminAssociateInvitationAccepted:
         return 'organization.associate.invitation.accepted';
       case NotificationEvent.OrganizationAdminAssociateInvitationDeclined:
