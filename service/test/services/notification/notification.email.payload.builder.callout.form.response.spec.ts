@@ -118,11 +118,21 @@ describe('NotificationEmailPayloadBuilderService — Form response notifications
         url: 'https://alkemio.dev/spaces/innovation/collaboration/onboarding-survey',
       });
       expect(result.submitter.displayName).toBe('Sam Submitter');
+      // Formatted with the file's UTC convention, never raw ISO-8601.
       expect(result.formResponse).toEqual({
-        submittedAt: '2026-09-29T10:00:00.000Z',
+        submittedAt: '29 September 2026, 10:00 UTC',
         visibility: 'ADMINS',
       });
       expect(result.recipient.email).toBe('ada@example.com');
+    });
+
+    it('formats submittedAt as a UTC date/time with an explicit UTC label', () => {
+      const payload = buildPayload('ADMINS');
+      payload.formResponse.submittedAt = '2026-10-05T12:34:56.789Z';
+
+      expect(build(payload).formResponse.submittedAt).toBe(
+        '5 October 2026, 12:34 UTC'
+      );
     });
 
     it('states that only the space admins can read an ADMINS response', () => {

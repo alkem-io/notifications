@@ -94,7 +94,7 @@ describe('NotificationTemplateBuilder', () => {
         },
         submitter: { displayName: 'Sam Submitter' },
         formResponse: {
-          submittedAt: '2026-09-29T10:00:00.000Z',
+          submittedAt: '29 September 2026, 10:00 UTC',
           visibility,
         },
         whoCanRead:
@@ -138,7 +138,7 @@ describe('NotificationTemplateBuilder', () => {
       expect(email?.html).toContain(
         'Only the admins of Innovation Hub can read your response.'
       );
-      expect(email?.html).toContain('2026-09-29T10:00:00.000Z');
+      expect(email?.html).toContain('on 29 September 2026, 10:00 UTC.');
       expect(email?.subject).not.toContain('LEAK');
       expect(email?.html).not.toContain('LEAK');
     });

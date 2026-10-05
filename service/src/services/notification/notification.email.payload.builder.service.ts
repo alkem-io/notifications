@@ -1152,7 +1152,9 @@ export class NotificationEmailPayloadBuilderService {
         displayName: eventPayload.submitter.profile.displayName,
       },
       formResponse: {
-        submittedAt: eventPayload.formResponse.submittedAt,
+        submittedAt: this.formatChangeTimestampUTC(
+          eventPayload.formResponse.submittedAt
+        ),
         visibility,
       },
       whoCanRead,
