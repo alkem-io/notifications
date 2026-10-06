@@ -465,6 +465,49 @@ describe('NotificationService', () => {
     );
   });
 
+  describe('Form response events', () => {
+    beforeEach(() => {
+      mockSuccessConfig();
+      jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
+    });
+
+    it.each([
+      [
+        NotificationEvent.SpaceAdminCollaborationCalloutFormResponse,
+        'createEmailTemplatePayloadSpaceAdminCollaborationCalloutFormResponse',
+        'space.admin.collaboration.callout.form.response',
+      ],
+      [
+        NotificationEvent.UserCollaborationCalloutFormResponseReceipt,
+        'createEmailTemplatePayloadUserCollaborationCalloutFormResponseReceipt',
+        'user.collaboration.callout.form.response.receipt',
+      ],
+    ])(
+      'routes %s to its own builder and template',
+      async (eventType, builderMethod, templateName) => {
+        const builderSpy = jest
+          .spyOn(builderService, builderMethod as any)
+          .mockReturnValue(MINIMAL_EMAIL_PAYLOAD as any);
+        builderSpy.mockClear();
+        const templateSpy = jest
+          .spyOn(templateBuilder, 'buildTemplate')
+          .mockResolvedValue(MINIMAL_TEMPLATE);
+
+        await notificationService.buildAndSendEmailNotifications(
+          mkPayload(eventType)
+        );
+
+        expect(builderSpy).toHaveBeenCalledTimes(1);
+        expect(templateSpy).toHaveBeenCalledWith(
+          templateName,
+          MINIMAL_EMAIL_PAYLOAD
+        );
+      }
+    );
+  });
+
   // -------------------------------------------------------------------------
   // processNotificationEvent — channel ACK/NACK/reject branches
   // -------------------------------------------------------------------------

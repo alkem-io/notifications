@@ -132,4 +132,79 @@ describe('NotificationTemplateBuilder', () => {
 
     expect(result).toBeUndefined();
   });
+  describe('Form response templates', () => {
+    const MARKER = 'HOSTILE-CALLOUT-MARKER';
+    const formPayload = (visibility: 'ADMINS' | 'MEMBERS') =>
+      ({
+        recipient: { firstName: 'Al', email: 'al@example.com' },
+        space: {
+          displayName: 'Innovation Hub',
+          url: 'https://alkemio.test/spaces/innovation',
+        },
+        callout: {
+          displayName: MARKER,
+          url: 'https://alkemio.test/spaces/innovation/callouts/form',
+        },
+        submitter: { displayName: 'Sam Submitter' },
+        formResponse: {
+          submittedAt: '29 September 2026, 10:00 UTC',
+          visibility,
+        },
+        whoCanRead:
+          visibility === 'ADMINS'
+            ? 'Only the admins of Innovation Hub can read your response'
+            : 'Members of Innovation Hub can read your response',
+        // Not part of the real payload; proves templates never interpolate
+        // anything that could carry an answer.
+        answers: 'LEAK',
+        prompt: 'LEAK',
+      }) as unknown as BaseEmailPayload;
+
+    it('renders the admin template with the pinned subject and never any answer text', async () => {
+      const result = await builder.buildTemplate(
+        'space.admin.collaboration.callout.form.response',
+        formPayload('ADMINS')
+      );
+
+      const email = result?.channels?.email;
+      expect(email?.subject).toBe(
+        `Innovation Hub - New Form response to "${MARKER}"`
+      );
+      expect(email?.html).toContain('Sam Submitter');
+      expect(email?.html).toContain(
+        'href="https://alkemio.test/spaces/innovation/callouts/form"'
+      );
+      expect(email?.subject).not.toContain('LEAK');
+      expect(email?.html).not.toContain('LEAK');
+    });
+
+    it('renders the receipt template with the pinned subject and the ADMINS who-can-read sentence', async () => {
+      const result = await builder.buildTemplate(
+        'user.collaboration.callout.form.response.receipt',
+        formPayload('ADMINS')
+      );
+
+      const email = result?.channels?.email;
+      expect(email?.subject).toBe(
+        `Innovation Hub - Your response to "${MARKER}" was received`
+      );
+      expect(email?.html).toContain(
+        'Only the admins of Innovation Hub can read your response.'
+      );
+      expect(email?.html).toContain('on 29 September 2026, 10:00 UTC.');
+      expect(email?.subject).not.toContain('LEAK');
+      expect(email?.html).not.toContain('LEAK');
+    });
+
+    it('renders the receipt template with the MEMBERS who-can-read sentence', async () => {
+      const result = await builder.buildTemplate(
+        'user.collaboration.callout.form.response.receipt',
+        formPayload('MEMBERS')
+      );
+
+      expect(result?.channels?.email?.html).toContain(
+        'Members of Innovation Hub can read your response.'
+      );
+    });
+  });
 });
