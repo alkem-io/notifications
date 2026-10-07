@@ -561,7 +561,6 @@ export class NotificationEmailPayloadBuilderService {
       user: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
-        email: eventPayload.user.email,
         profile: eventPayload.user.profile.url,
       },
       actor: {
@@ -1076,9 +1075,9 @@ export class NotificationEmailPayloadBuilderService {
   }
 
   // Maps well-known platform/feature role slugs to a human-readable label
-  // for the role-change email. An unknown slug — a future role, or a
-  // legacy credential type string emitted by the retiring Slice A
-  // credential mutations — renders through the humanized fallback below so
+  // for the role-change email. An unknown or retired slug — a role added
+  // after this list, or one on an event written before 027 Slice B —
+  // renders through the humanized fallback below so
   // the email never shows a raw slug and never throws. The role stays the
   // raw slug on the wire; only this rendering resolves a label.
   private static readonly ROLE_SLUG_TO_LABEL: Record<string, string> = {

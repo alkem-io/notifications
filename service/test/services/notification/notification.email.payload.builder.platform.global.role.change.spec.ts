@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { ConfigService } from '@nestjs/config';
 import { NotificationEmailPayloadBuilderService } from '@src/services/notification/notification.email.payload.builder.service';
 import {
@@ -147,7 +149,7 @@ describe('NotificationEmailPayloadBuilderService — platform global role change
       }).not.toThrow();
     });
 
-    it('resolves a legacy credential slug (retiring Slice A credential mutations) to a humanized fallback, never throws', () => {
+    it('resolves a retired slug to a humanized fallback, never throws', () => {
       const service = createService();
       expect(() => {
         const result =
@@ -178,9 +180,35 @@ describe('NotificationEmailPayloadBuilderService — platform global role change
 
       expect(result.type).toBe(RoleChangeType.ADDED);
       expect(result.user.displayName).toBe('Uma User');
-      expect(result.user.email).toBe('uma@example.com');
       expect(result.actor.displayName).toBe('Alice Actor');
       expect(result.triggeredBy).toBe('actor-1');
+    });
+
+    // workspace#065 sec-server-5: this email goes to Platform Roles Admin,
+    // which holds no READ_USER_PII — the subject's login email must not reach it.
+    it('never carries the subject login email into the email payload', () => {
+      const service = createService();
+      const result = service.createEmailTemplatePayloadPlatformGlobalRoleChange(
+        buildPayload('platform-support'),
+        recipient
+      );
+
+      expect(result.user).not.toHaveProperty('email');
+      expect(JSON.stringify(result)).not.toContain('uma@example.com');
+    });
+  });
+
+  describe('platform-admin-user-global-role-change template', () => {
+    it('never renders the subject login email', () => {
+      const template = readFileSync(
+        join(
+          __dirname,
+          '../../../src/email-templates/platform.admin.user.global.role.change.js'
+        ),
+        'utf8'
+      );
+
+      expect(template).not.toMatch(/\{\{\s*user\.email\s*\}\}/);
     });
   });
 });
