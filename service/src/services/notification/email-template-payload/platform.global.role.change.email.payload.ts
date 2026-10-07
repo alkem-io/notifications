@@ -5,7 +5,6 @@ export interface PlatformGlobalRoleChangeEmailPayload extends BaseEmailPayload {
   user: {
     displayName: string;
     firstName: string;
-    email: string;
     profile: string;
   };
   actor: {

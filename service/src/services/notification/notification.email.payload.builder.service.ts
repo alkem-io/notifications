@@ -561,14 +561,13 @@ export class NotificationEmailPayloadBuilderService {
       user: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
-        email: eventPayload.user.email,
         profile: eventPayload.user.profile.url,
       },
       actor: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         url: eventPayload.triggeredBy.profile.url,
       },
-      role: eventPayload.role,
+      role: this.resolveRoleLabel(eventPayload.role),
       type: eventPayload.type,
       triggeredBy: eventPayload.triggeredBy.id,
     };
@@ -1073,6 +1072,43 @@ export class NotificationEmailPayloadBuilderService {
       },
     };
     return result;
+  }
+
+  // Maps well-known platform/feature role slugs to a human-readable label
+  // for the role-change email. An unknown or retired slug — a role added
+  // after this list, or one on an event written before 027 Slice B —
+  // renders through the humanized fallback below so
+  // the email never shows a raw slug and never throws. The role stays the
+  // raw slug on the wire; only this rendering resolves a label.
+  private static readonly ROLE_SLUG_TO_LABEL: Record<string, string> = {
+    'platform-roles-admin': 'Platform Roles Admin',
+    'platform-content-full-access': 'Platform Content Full Access',
+    'platform-resource-admin': 'Platform Resource Admin',
+    'platform-settings-admin': 'Platform Settings Admin',
+    'platform-users-admin': 'Platform Users Admin',
+    'platform-support': 'Platform Support',
+    'platform-license-manager': 'Platform License Manager',
+    'platform-spaces-reader': 'Platform Spaces Reader',
+    'platform-audit-reader': 'Platform Audit Reader',
+    'platform-operations-admin': 'Platform Operations Admin',
+    'feature-beta-tester': 'Feature Beta Tester',
+    'feature-virtual-assistant': 'Feature Virtual Assistant',
+    'feature-organization-creator': 'Feature Organization Creator',
+    'feature-vc-campaign': 'Feature VC Campaign',
+  };
+
+  private humanizeRoleSlug(slug: string): string {
+    return slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  private resolveRoleLabel(slug: string): string {
+    return (
+      NotificationEmailPayloadBuilderService.ROLE_SLUG_TO_LABEL[slug] ??
+      this.humanizeRoleSlug(slug)
+    );
   }
 
   // Maps the 7 allowed reaction slugs to their Unicode glyphs. An unknown
