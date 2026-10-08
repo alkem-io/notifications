@@ -1,0 +1,5 @@
+# Keep the Organization UI settings and only layer the overrides below on top.
+inheritance: true
+reviews:
+  # Approve once all CodeRabbit comments are resolved; request changes while any are open.
+  request_changes_workflow: true
