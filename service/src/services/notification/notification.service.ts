@@ -43,8 +43,10 @@ import {
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import {
   NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
+import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from '@src/types/notifications.lib.callout.form.response.bridge';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
@@ -557,6 +559,11 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadOrganizationAssociateInvitation,
           recipient
         );
+      case NotificationEvent.OrganizationAssociateInvitationUserPlatform:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateInvitationPlatform(
+          eventPayload as NotificationEventPayloadOrganizationAssociateInvitationPlatform,
+          recipient
+        );
       case NotificationEvent.OrganizationAdminAssociateInvitationAccepted:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadOrganizationAssociateActor(
           eventPayload as NotificationEventPayloadOrganizationAssociateActor,
@@ -718,6 +725,16 @@ export class NotificationService {
           eventPayload as NotificationEventPayloadSpaceCollaborationCalloutReaction,
           recipient
         );
+      case NotificationEvent.SpaceAdminCollaborationCalloutFormResponse:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadSpaceAdminCollaborationCalloutFormResponse(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+          recipient
+        );
+      case NotificationEvent.UserCollaborationCalloutFormResponseReceipt:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserCollaborationCalloutFormResponseReceipt(
+          eventPayload as NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+          recipient
+        );
       case NotificationEvent.UserCommentReply:
         return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserCommentReply(
           eventPayload as NotificationEventPayloadUserMessageRoomReply,
@@ -826,6 +843,8 @@ export class NotificationService {
         return 'organization.space.community.joined';
       case NotificationEvent.UserOrganizationAssociateInvitation:
         return 'user.organization.associate.invitation.received';
+      case NotificationEvent.OrganizationAssociateInvitationUserPlatform:
+        return 'user.organization.associate.invitation.platform.received';
       case NotificationEvent.OrganizationAdminAssociateInvitationAccepted:
         return 'organization.associate.invitation.accepted';
       case NotificationEvent.OrganizationAdminAssociateInvitationDeclined:
@@ -890,6 +909,10 @@ export class NotificationService {
         return 'space.collaboration.callout.published';
       case NotificationEvent.SpaceCollaborationCalloutReaction:
         return 'space.collaboration.callout.reaction';
+      case NotificationEvent.SpaceAdminCollaborationCalloutFormResponse:
+        return 'space.admin.collaboration.callout.form.response';
+      case NotificationEvent.UserCollaborationCalloutFormResponseReceipt:
+        return 'user.collaboration.callout.form.response.receipt';
       case NotificationEvent.UserCommentReply:
         return 'user.comment.reply';
       case NotificationEvent.PlatformAdminSpaceCreated:

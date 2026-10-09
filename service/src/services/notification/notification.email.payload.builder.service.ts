@@ -20,6 +20,7 @@ import {
   CollaborationPostCommentEmailPayload,
   CollaborationCalloutPublishedEmailPayload,
   SpaceCollaborationCalloutReactionEmailPayload,
+  CollaborationCalloutFormResponseEmailPayload,
   CommentReplyEmailPayload,
   PlatformUserRegisteredEmailPayload,
   PlatformForumDiscussionCreatedEmailPayload,
@@ -46,6 +47,7 @@ import {
   UserSpaceCommunityInvitationOutcomeEmailPayload,
   OrganizationSpaceCommunityJoinedEmailPayload,
   OrganizationAssociateInvitationEmailPayload,
+  OrganizationAssociateInvitationPlatformEmailPayload,
   OrganizationAssociateActorEmailPayload,
 } from '@src/services/notification/email-template-payload';
 import {
@@ -87,8 +89,10 @@ import {
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from '@src/types/notifications.lib.organization.invitation.bridge';
 import {
   NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
+import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from '@src/types/notifications.lib.callout.form.response.bridge';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
@@ -338,6 +342,45 @@ export class NotificationEmailPayloadBuilderService {
   }
 
   /**
+   * Organization invitation addressed to an email with no account yet. The
+   * single synthetic recipient carries only an address, so the greeting is
+   * conditional in the template; the call to action is the platform
+   * invitations page (same target as the Space email-invitation path), where
+   * the invitee signs up and then responds.
+   */
+  public createEmailTemplatePayloadOrganizationAssociateInvitationPlatform(
+    eventPayload: NotificationEventPayloadOrganizationAssociateInvitationPlatform,
+    recipient: User
+  ): OrganizationAssociateInvitationPlatformEmailPayload {
+    const invitationsURL = `${eventPayload.platform.url.replace(/\/+$/, '')}${
+      this.invitationsPath
+    }`;
+
+    const basePayload = this.createBaseEmailPayload(eventPayload, recipient);
+
+    return {
+      ...basePayload,
+      // The invitee has no account, so there are no notification preferences
+      // to manage: an empty value makes the footer omit the settings link
+      // (the server's placeholder recipient carries an empty, non-undefined id
+      // that would otherwise yield a dead relative link).
+      recipient: { ...basePayload.recipient, notificationPreferences: '' },
+      inviter: {
+        firstName: eventPayload.triggeredBy.firstName,
+        name: eventPayload.triggeredBy.profile.displayName,
+        profile: eventPayload.triggeredBy.profile.url,
+      },
+      organization: {
+        name: eventPayload.organization.profile.displayName,
+        url: eventPayload.organization.profile.url,
+      },
+      offeredRole: this.formatOfferedAssociateRole(eventPayload.extraRoles),
+      welcomeMessage: eventPayload.welcomeMessage,
+      invitationsURL,
+    };
+  }
+
+  /**
    * Shared builder for the six "actor" organization-associate events —
    * `variant` selects only which template renders the result (chosen by the
    * caller in `notification.service.ts`); the payload shape is identical.
@@ -518,14 +561,13 @@ export class NotificationEmailPayloadBuilderService {
       user: {
         displayName: eventPayload.user.profile.displayName,
         firstName: eventPayload.user.firstName,
-        email: eventPayload.user.email,
         profile: eventPayload.user.profile.url,
       },
       actor: {
         displayName: eventPayload.triggeredBy.profile.displayName,
         url: eventPayload.triggeredBy.profile.url,
       },
-      role: eventPayload.role,
+      role: this.resolveRoleLabel(eventPayload.role),
       type: eventPayload.type,
       triggeredBy: eventPayload.triggeredBy.id,
     };
@@ -1032,6 +1074,43 @@ export class NotificationEmailPayloadBuilderService {
     return result;
   }
 
+  // Maps well-known platform/feature role slugs to a human-readable label
+  // for the role-change email. An unknown or retired slug — a role added
+  // after this list, or one on an event written before 027 Slice B —
+  // renders through the humanized fallback below so
+  // the email never shows a raw slug and never throws. The role stays the
+  // raw slug on the wire; only this rendering resolves a label.
+  private static readonly ROLE_SLUG_TO_LABEL: Record<string, string> = {
+    'platform-roles-admin': 'Platform Roles Admin',
+    'platform-content-full-access': 'Platform Content Full Access',
+    'platform-resource-admin': 'Platform Resource Admin',
+    'platform-settings-admin': 'Platform Settings Admin',
+    'platform-users-admin': 'Platform Users Admin',
+    'platform-support': 'Platform Support',
+    'platform-license-manager': 'Platform License Manager',
+    'platform-spaces-reader': 'Platform Spaces Reader',
+    'platform-audit-reader': 'Platform Audit Reader',
+    'platform-operations-admin': 'Platform Operations Admin',
+    'feature-beta-tester': 'Feature Beta Tester',
+    'feature-virtual-assistant': 'Feature Virtual Assistant',
+    'feature-organization-creator': 'Feature Organization Creator',
+    'feature-vc-campaign': 'Feature VC Campaign',
+  };
+
+  private humanizeRoleSlug(slug: string): string {
+    return slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  private resolveRoleLabel(slug: string): string {
+    return (
+      NotificationEmailPayloadBuilderService.ROLE_SLUG_TO_LABEL[slug] ??
+      this.humanizeRoleSlug(slug)
+    );
+  }
+
   // Maps the 7 allowed reaction slugs to their Unicode glyphs. An unknown
   // slug (e.g. from a future allow-list extension) renders as a humanized
   // text fallback so the email still makes sense without crashing.
@@ -1069,6 +1148,52 @@ export class NotificationEmailPayloadBuilderService {
         displayName: eventPayload.callout.framing.displayName,
         url: eventPayload.callout.framing.url,
       },
+    };
+  }
+
+  public createEmailTemplatePayloadSpaceAdminCollaborationCalloutFormResponse(
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+    recipient: User
+  ): CollaborationCalloutFormResponseEmailPayload {
+    return this.createCalloutFormResponseEmailPayload(eventPayload, recipient);
+  }
+
+  public createEmailTemplatePayloadUserCollaborationCalloutFormResponseReceipt(
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+    recipient: User
+  ): CollaborationCalloutFormResponseEmailPayload {
+    return this.createCalloutFormResponseEmailPayload(eventPayload, recipient);
+  }
+
+  // Link-only by construction: copies names and URLs, never any answer,
+  // prompt or question text.
+  private createCalloutFormResponseEmailPayload(
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+    recipient: User
+  ): CollaborationCalloutFormResponseEmailPayload {
+    const base = this.createSpaceBaseEmailPayload(eventPayload, recipient);
+    const spaceName = base.space.displayName;
+    const visibility = eventPayload.formResponse.visibility;
+    const whoCanRead =
+      visibility === 'MEMBERS'
+        ? `Members of ${spaceName} can read your response`
+        : `Only the admins of ${spaceName} can read your response`;
+    return {
+      ...base,
+      callout: {
+        displayName: eventPayload.callout.displayName,
+        url: eventPayload.callout.url,
+      },
+      submitter: {
+        displayName: eventPayload.submitter.profile.displayName,
+      },
+      formResponse: {
+        submittedAt: this.formatChangeTimestampUTC(
+          eventPayload.formResponse.submittedAt
+        ),
+        visibility,
+      },
+      whoCanRead,
     };
   }
 

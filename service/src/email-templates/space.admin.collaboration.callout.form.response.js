@@ -2,19 +2,18 @@
 var templates = require('./alkemio.template.blocks');
 /* eslint-disable quotes */
 module.exports = () => ({
-  name: 'platform-admin-user-global-role-change',
-  title: '[Alkemio] Global role change: {{user.name}} - {{type}} - {{role}}',
+  name: 'space.admin.collaboration.callout.form.response',
   version: 1,
   channels: {
     email: {
       to: '{{recipient.email}}',
-      subject: 'Global role change on Alkemio: {{user.displayName}} - {{type}} - {{role}}',
+      subject:
+        '{{space.displayName}} - New Form response to "{{callout.displayName}}"',
       html: `{% extends "src/email-templates/_layouts/email-transactional.html" %}
         {% block content %}Hi {{recipient.firstName}},<br><br>
-        {{user.displayName}} - {{type}} - {{role}}.
+        <b>{{submitter.displayName}}</b> responded to the Form "<a style="color:#1d384a; text-decoration: none;" href={{callout.url}}>{{callout.displayName}}</a>" in {{space.displayName}}.
         <br><br>
-        Action carried out by: {{actor.displayName}}.
-        <br><br>
+        <a class="action-button" href="{{callout.url}}">HAVE A LOOK!</a><br><br>
         {% endblock %}
         ${templates.footerBlock}`,
     },

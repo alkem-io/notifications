@@ -43,8 +43,10 @@ import {
 import { NotificationEventPayloadSpaceCommunityInvitationOrganization } from './types/notifications.lib.organization.invitation.bridge';
 import {
   NotificationEventPayloadOrganizationAssociateInvitation,
+  NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from './types/notifications.lib.organization.associate.bridge';
+import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from './types/notifications.lib.callout.form.response.bridge';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
 
@@ -290,6 +292,18 @@ export class AppController {
   async sendCommunityPlatformInvitationNotification(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCommunityInvitationPlatform,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.OrganizationAssociateInvitationUserPlatform)
+  async sendOrganizationAssociatePlatformInvitationNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadOrganizationAssociateInvitationPlatform,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(
@@ -597,6 +611,30 @@ export class AppController {
   async sendSpaceCollaborationCalloutReactionNotifications(
     @Payload()
     eventPayload: NotificationEventPayloadSpaceCollaborationCalloutReaction,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.SpaceAdminCollaborationCalloutFormResponse)
+  async sendSpaceAdminCollaborationCalloutFormResponseNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      eventPayload,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserCollaborationCalloutFormResponseReceipt)
+  async sendUserCollaborationCalloutFormResponseReceiptNotifications(
+    @Payload()
+    eventPayload: NotificationEventPayloadSpaceCollaborationCalloutFormResponse,
     @Ctx() context: RmqContext
   ) {
     return this.notificationService.processNotificationEvent(

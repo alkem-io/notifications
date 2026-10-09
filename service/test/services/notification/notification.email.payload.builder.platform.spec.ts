@@ -212,7 +212,7 @@ describe('NotificationEmailPayloadBuilderService — platform notifications', ()
 
       expect(result.user.displayName).toBe('New User');
       expect(result.user.firstName).toBe('New');
-      expect(result.user.email).toBe('newuser@example.com');
+      expect(result.user).not.toHaveProperty('email');
       expect(result.user.profile).toBe('https://alkemio.dev/users/new-user-1');
     });
 
