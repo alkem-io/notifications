@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { WinstonModule } from 'nest-winston';
+import { AmqpConsumerState } from './amqp.consumer.state';
 import { AppController } from './app.controller';
 import { WinstonConfigService } from './config';
 import configuration from './config/configuration';
@@ -24,6 +25,7 @@ import { NotificationModule } from './services/notification/notifIcation.module'
     NotificationModule,
   ],
   providers: [
+    AmqpConsumerState,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionsFilter,
