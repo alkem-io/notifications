@@ -10,8 +10,8 @@
 #   - no src/*.ts tree, no ts-node/typescript/pnpm in node_modules
 #   - the deliberately-copied runtime assets ARE present
 #     (dist/main.js, src/email-templates/, notifications.yml, package.json)
-#   - the native sentinel `farmhash` loads — the direct test of the
-#     trixie-builder / trixie-runtime glibc pairing
+#   - the compiled mail adapter and nodemailer load; unused push packages
+#     are absent from the runtime dependency graph
 #   - the Dockerfile carries no floating FROM (both bases digest-pinned)
 #   - emits IMAGE_DIGEST= / IMAGE_SIZE_BYTES=
 #
@@ -111,17 +111,18 @@ for f in /app/dist/main.js /app/src/email-templates /app/notifications.yml /app/
 done
 pass "dist/main.js, src/email-templates/, notifications.yml, package.json all present"
 
-# --- native sentinel: farmhash (glibc pairing proof) ------------------------
-# farmhash is the ONLY module in the production tree shipping a compiled
-# .node binary (verified against service/package-lock.json hasInstallScript
-# entries + a filesystem sweep of the built image). bcrypt / bufferutil /
-# utf-8-validate are NOT in this repo's production dependency tree.
-FARMHASH_OUT="$(run_node -e "
-const fh=require('/app/node_modules/farmhash');
-if (typeof fh.hash32('abc') !== 'number') throw new Error('farmhash returned non-number');
-console.log('farmhash-ok');")"
-[ "$FARMHASH_OUT" = "farmhash-ok" ] || fail "expected farmhash to load, got: $FARMHASH_OUT"
-pass "farmhash loads and computes (glibc-matched native binary)"
+# --- actual email runtime and removed unused push dependencies -------------
+EMAIL_OUT="$(run_node -e "
+const {EmailSender}=require('/app/dist/services/notifme/email.sender');
+const {createTransport}=require('/app/node_modules/nodemailer');
+if(typeof EmailSender!=='function'||typeof createTransport!=='function') throw new Error('email runtime unavailable');
+const fs=require('fs');
+for(const name of ['notifme-sdk','node-pushnotifications','firebase-admin','@parse/node-apn','node-forge','farmhash']) {
+  if(fs.existsSync('/app/node_modules/'+name)) throw new Error('unused push package remains: '+name);
+}
+console.log('email-runtime-ok');")"
+[ "$EMAIL_OUT" = "email-runtime-ok" ] || fail "expected email runtime to load, got: $EMAIL_OUT"
+pass "compiled email sender loads; unused push packages are absent"
 
 NODE_ABI="$(run_node -e "console.log(process.versions.modules)")"
 [ "$NODE_ABI" = "127" ] || note "NODE_MODULE_VERSION is $NODE_ABI (expected 127 for Node 22)"
