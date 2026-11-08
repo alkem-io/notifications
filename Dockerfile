@@ -37,7 +37,7 @@
 # ======================
 # Builder stage (with dev deps)
 # ======================
-FROM node:22.23.3-trixie@sha256:38b079b7c6272515bd435ca3d7bcb54b468db0cfdcc395829608569249836621 AS builder
+FROM node:22.23.4-trixie@sha256:c46850e69b4fab3c4f225aa36b777c8cc001d1cd5b2136e1ea024796f6d3bbbb AS builder
 
 WORKDIR /app
 
@@ -54,7 +54,7 @@ RUN npm run build
 # ======================
 # Prod deps stage (NO dev deps)
 # ======================
-FROM node:22.23.3-trixie@sha256:38b079b7c6272515bd435ca3d7bcb54b468db0cfdcc395829608569249836621 AS prod-deps
+FROM node:22.23.4-trixie@sha256:c46850e69b4fab3c4f225aa36b777c8cc001d1cd5b2136e1ea024796f6d3bbbb AS prod-deps
 
 WORKDIR /app
 
