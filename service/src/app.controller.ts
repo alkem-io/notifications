@@ -47,6 +47,7 @@ import {
   NotificationEventPayloadOrganizationAssociateActor,
 } from './types/notifications.lib.organization.associate.bridge';
 import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from './types/notifications.lib.callout.form.response.bridge';
+import { NotificationEventPayloadUserSecondFactorChangeSecuritySignal } from './types/notifications.lib.second.factor.change.bridge';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
 
@@ -780,6 +781,21 @@ export class AppController {
       this.notificationService.normalizeRawRecipientEmailEvent(
         eventPayload,
         NotificationEvent.UserPasswordChangeSecuritySignal
+      ),
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserSecondFactorChangeSecuritySignal)
+  async sendUserSecondFactorChangeSecuritySignalNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserSecondFactorChangeSecuritySignal,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processNotificationEvent(
+      this.notificationService.normalizeRawRecipientEmailEvent(
+        eventPayload,
+        NotificationEvent.UserSecondFactorChangeSecuritySignal
       ),
       context
     );

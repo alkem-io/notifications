@@ -20,6 +20,7 @@ import {
   NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
+import { NotificationEventPayloadUserSecondFactorChangeSecuritySignal } from '@src/types/notifications.lib.second.factor.change.bridge';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
 import { NotificationBlacklistService } from './notification.blacklist.service';
@@ -29,6 +30,7 @@ import { RmqContext } from '@nestjs/microservices';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { BaseEmailPayload } from '@src/services/notification/email-template-payload';
 import { LogContext } from '@common/enums';
+import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 
 // ---------------------------------------------------------------------------
 // Shared fixtures
@@ -2022,6 +2024,66 @@ describe('NotificationService', () => {
         expect(html).toContain('Amara Associate');
         expect(html).toContain('No further action is needed');
       });
+    });
+  });
+
+  describe('second-factor change security signal', () => {
+    const event = NotificationEvent.UserSecondFactorChangeSecuritySignal;
+
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      mockSuccessConfig();
+    });
+
+    it('sends one email to the recipient address with the time and no factor details', async () => {
+      const send = jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
+      send.mockClear();
+
+      const raw: NotificationEventPayloadUserSecondFactorChangeSecuritySignal =
+        {
+          recipientEmail: 'member@example.org',
+          observedAtISO8601: '2026-11-11T10:00:00.000Z',
+        };
+      const res = await notificationService.buildAndSendEmailNotifications(
+        notificationService.normalizeRawRecipientEmailEvent(raw, event)
+      );
+
+      expect(res).toHaveLength(1);
+      expect(send).toHaveBeenCalledTimes(1);
+      const email = send.mock.calls[0][0].email as {
+        to: string;
+        subject: string;
+        html: string;
+      };
+      expect(email.to).toBe('member@example.org');
+      expect(email.subject).toBe(
+        'Security alert: two-step verification on your Alkemio account was changed'
+      );
+      expect(email.html).toContain('11 November 2026, 10:00 UTC');
+      expect(email.html).toContain('Forgot your password?');
+      expect(email.html).toContain('contact Alkemio support');
+      const text = `${email.subject} ${email.html}`.toLowerCase();
+      for (const term of [
+        'totp',
+        'authenticator',
+        'security key',
+        'recovery code',
+      ]) {
+        expect(text).not.toContain(term);
+      }
+    });
+
+    it('refuses a payload with no recipientEmail', () => {
+      expect(() =>
+        notificationService.normalizeRawRecipientEmailEvent(
+          { observedAtISO8601: '2026-11-11T10:00:00.000Z' } as unknown as {
+            recipientEmail: string;
+          },
+          event
+        )
+      ).toThrow(EventPayloadNotProvidedException);
     });
   });
 });

@@ -47,6 +47,7 @@ import {
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
 import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from '@src/types/notifications.lib.callout.form.response.bridge';
+import { NotificationEventPayloadUserSecondFactorChangeSecuritySignal } from '@src/types/notifications.lib.second.factor.change.bridge';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
@@ -244,7 +245,7 @@ export class NotificationService {
 
   /**
    * Some events (the email-change security signal + new-address, and the
-   * password-change security signal) are published raw — a flat
+   * password- and second-factor-change security signals) are published raw — a flat
    * `{ recipientEmail, ... }` body without the BaseEventPayload envelope —
    * because the publishing service does not have a triggering user it can
    * cite. This wrapper injects the envelope so the raw payload flows through
@@ -798,6 +799,12 @@ export class NotificationService {
             BaseEventPayload,
           recipient
         );
+      case NotificationEvent.UserSecondFactorChangeSecuritySignal:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSecondFactorChangeSecuritySignal(
+          eventPayload as NotificationEventPayloadUserSecondFactorChangeSecuritySignal &
+            BaseEventPayload,
+          recipient
+        );
       default:
         throw new EventPayloadNotProvidedException(
           `EmailPayload: Unable to recognize event:  ${eventPayload.eventType}`,
@@ -935,6 +942,8 @@ export class NotificationService {
         return 'space.admin.user.email.change';
       case NotificationEvent.UserPasswordChangeSecuritySignal:
         return 'user.password.change.security.signal';
+      case NotificationEvent.UserSecondFactorChangeSecuritySignal:
+        return 'user.second.factor.change.security.signal';
       default:
         throw new EventPayloadNotProvidedException(
           `Email template: Unable to recognize event: ${event}`,
