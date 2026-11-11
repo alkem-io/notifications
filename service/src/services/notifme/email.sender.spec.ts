@@ -158,18 +158,54 @@ describe('email delivery', () => {
   it('keeps logger fallback success when the SMTP provider rejects mail', async () => {
     const smtp = await smtpFixture({ rejectMail: true });
     const logs = logger();
+    const fullEmail: EmailRequest = {
+      ...email,
+      cc: ['copy@example.test', 'copy2@example.test'],
+      bcc: ['hidden@example.test'],
+      replyTo: 'reply@example.test',
+      text: 'plain body',
+      headers: { 'X-Fixture': 'header-value' },
+      attachments: [
+        {
+          filename: 'fixture.bin',
+          contentType: 'application/octet-stream',
+          content: Buffer.from('attachment bytes\n'),
+        },
+      ],
+    };
     try {
       const result = await new EmailSender(
         smtp.transport,
         'fallback',
         logs
-      ).send({ email });
+      ).send({ email: fullEmail });
       expect(result.status).toBe('success');
       expect(result.channels?.email).toEqual({
         id: expect.stringMatching(/^id-\d+$/),
         providerId: 'email-logger-provider',
       });
-      expect(logs.log).toHaveBeenCalledWith(email);
+      expect(logs.log).toHaveBeenCalledWith(
+        '[EMAIL] Sent by "email-logger-provider": to=1 cc=2 bcc=1 attachments=1 bytes=53'
+      );
+      const logged = [logs.log, logs.warn, logs.error]
+        .flatMap(fn => fn.mock.calls.flat())
+        .map(arg => (typeof arg === 'string' ? arg : JSON.stringify(arg)))
+        .join('\n');
+      for (const secret of [
+        'sender@example.test',
+        'recipient@example.test',
+        'copy@example.test',
+        'copy2@example.test',
+        'hidden@example.test',
+        'reply@example.test',
+        'A & B',
+        'Hello',
+        'plain body',
+        'header-value',
+        'fixture.bin',
+      ]) {
+        expect(logged).not.toContain(secret);
+      }
       expect(logs.warn).toHaveBeenCalled();
       expect(smtp.messages).toHaveLength(0);
     } finally {

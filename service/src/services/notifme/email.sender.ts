@@ -13,6 +13,17 @@ export type NotificationStatus = {
   errors?: { email: string };
 };
 
+const count = (value?: string | string[]) =>
+  Array.isArray(value) ? value.length : value ? 1 : 0;
+
+const deliverySummary = (email: EmailRequest) => {
+  const attachments = email.attachments ?? [];
+  const bytes = [email.html, email.text, ...attachments.map(a => a.content)]
+    .filter(part => part !== undefined)
+    .reduce((total, part) => total + Buffer.byteLength(part), 0);
+  return `to=${count(email.to)} cc=${count(email.cc)} bcc=${count(email.bcc)} attachments=${attachments.length} bytes=${bytes}`;
+};
+
 export class EmailSender {
   private readonly transport: Transporter<SMTPTransport.SentMessageInfo>;
   private nextProvider = 0;
@@ -41,8 +52,11 @@ export class EmailSender {
       try {
         let id: string;
         if (provider === 'logger') {
-          this.logger.log(`[EMAIL] Sent by "${providerId}":`);
-          this.logger.log(email);
+          // The app logger ships to Elasticsearch, so only counts and sizes
+          // are logged here: never addresses, subject, content or headers.
+          this.logger.log(
+            `[EMAIL] Sent by "${providerId}": ${deliverySummary(email)}`
+          );
           id = `id-${Math.round(Math.random() * 1000000000)}`;
         } else {
           const result = await this.transport.sendMail(email);
