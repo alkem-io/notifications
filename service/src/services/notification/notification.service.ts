@@ -361,7 +361,7 @@ export class NotificationService {
       // BEFORE `processNotificationEvent`, i.e. outside the try that owns the
       // ack/nack — the exact placement whose last occurrence produced "the
       // unbounded implicit RabbitMQ redelivery loop observed live" (see the
-      // comment in processNotificationEvent). A payload whose `invitee`/
+      // comment in settleNotificationEvent). A payload whose `invitee`/
       // `organization` or `profile` is absent — a schema drift, an old
       // server mid rolling deploy, a hand-published message — would throw
       // out of the handler and leave the message neither acked nor nacked.

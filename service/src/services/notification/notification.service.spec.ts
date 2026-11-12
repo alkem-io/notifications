@@ -1094,7 +1094,7 @@ describe('NotificationService', () => {
       // `processNotificationEvent`, so a throw here escapes the message
       // handler entirely and leaves the message neither acked nor nacked —
       // the shape that produced the unbounded redelivery loop documented in
-      // `processNotificationEvent`. A schema-drifted payload (old server mid
+      // `settleNotificationEvent`. A schema-drifted payload (old server mid
       // rolling deploy, hand-published message) must degrade to a log line.
       jest.spyOn(blacklistService, 'isBlacklisted').mockReturnValue(true);
       const warnMock = notificationService['logger'].warn as jest.Mock;
@@ -1122,7 +1122,7 @@ describe('NotificationService', () => {
         // Same reasoning as the missing-invitee case one level up: a body that
         // is absent entirely (a malformed/hand-published message) must not
         // throw out of the `@EventPattern` handler before
-        // `processNotificationEvent` opens its try, or the message is left
+        // `settleNotificationEvent` opens its try, or the message is left
         // neither acked nor nacked and RabbitMQ redelivers it forever on this
         // single-replica consumer.
         expect(() =>
