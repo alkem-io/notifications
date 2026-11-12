@@ -17,7 +17,7 @@ const TEMPLATE_LANG = 'en-US';
 // the HTML body (injection safety) but wrong for the plain-text fields: a mail
 // client shows the subject/title literally, so "A & B" leaks as "A &amp; B".
 // We keep autoescaping for html and re-render only the plain-text fields from the
-// raw template through this non-escaping environment. Subject/title are single
+// raw template through this non-escaping environment. To/subject/title are single
 // lines with only {{ }} interpolation — no {% extends/include %}, which would
 // need a loader this environment does not have.
 const plainTextEnv = new Environment(undefined, { autoescape: false });
@@ -72,8 +72,10 @@ export class NotificationTemplateBuilder {
     }
   }
 
-  // Overwrite the plain-text fields (title, email subject) with a non-autoescaped
-  // render of the raw template, so HTML entities in display names are not leaked.
+  // Overwrite the plain-text fields (title, email subject, email recipient) with
+  // a non-autoescaped render of the raw template. HTML entities in a display
+  // name would be shown literally; in the recipient they change the address
+  // the mailer parses (o'brien@ becomes o&#39;brien@, read as brien@).
   private renderPlainTextFields(
     template: string,
     templatePayload: BaseEmailPayload,
@@ -91,12 +93,19 @@ export class NotificationTemplateBuilder {
         templatePayload
       );
     }
-    const rawSubject = rawTemplate?.channels?.email?.subject;
-    if (rawSubject != null && result.channels?.email) {
-      result.channels.email.subject = plainTextEnv.renderString(
-        rawSubject,
+    const rawEmail = rawTemplate?.channels?.email;
+    const email = result.channels?.email;
+    if (!email) {
+      return;
+    }
+    if (rawEmail?.subject != null) {
+      email.subject = plainTextEnv.renderString(
+        rawEmail.subject,
         templatePayload
       );
+    }
+    if (rawEmail?.to != null) {
+      email.to = plainTextEnv.renderString(rawEmail.to, templatePayload);
     }
   }
 }

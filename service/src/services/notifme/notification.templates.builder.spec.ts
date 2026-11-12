@@ -52,6 +52,23 @@ describe('NotificationTemplateBuilder', () => {
     expect(result?.title).not.toContain(ESCAPED_DISPLAY_NAME);
   });
 
+  // \u0027 is an apostrophe (o'brien@): the lint quote rule and prettier
+  // disagree on every plain literal of it.
+  it.each(['o\u0027brien@example.org', 'a&b@example.org', '"a b"@example.org'])(
+    'addresses the email to %s verbatim, not HTML-escaped',
+    async email => {
+      const result = await builder.buildTemplate(
+        'user.second.factor.change.security.signal',
+        {
+          ...payloadWithEntities,
+          recipient: { firstName: '', email },
+        } as unknown as BaseEmailPayload
+      );
+
+      expect(result?.channels?.email?.to).toBe(email);
+    }
+  );
+
   it('still HTML-escapes display names in the email body (injection safety)', async () => {
     const result = await builder.buildTemplate(
       'user.space.community.joined',
