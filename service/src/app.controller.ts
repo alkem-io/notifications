@@ -723,11 +723,9 @@ export class AppController {
     eventPayload: NotificationEventPayloadUserEmailChangeSecuritySignal,
     @Ctx() context: RmqContext
   ) {
-    return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawRecipientEmailEvent(
-        eventPayload,
-        NotificationEvent.UserEmailChangeSecuritySignal
-      ),
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserEmailChangeSecuritySignal,
       context
     );
   }
@@ -738,11 +736,9 @@ export class AppController {
     eventPayload: NotificationEventPayloadUserEmailChangeNewAddress,
     @Ctx() context: RmqContext
   ) {
-    return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawRecipientEmailEvent(
-        eventPayload,
-        NotificationEvent.UserEmailChangeNewAddressNotification
-      ),
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserEmailChangeNewAddressNotification,
       context
     );
   }
@@ -777,11 +773,9 @@ export class AppController {
     eventPayload: NotificationEventPayloadUserPasswordChangeSecuritySignal,
     @Ctx() context: RmqContext
   ) {
-    return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawRecipientEmailEvent(
-        eventPayload,
-        NotificationEvent.UserPasswordChangeSecuritySignal
-      ),
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserPasswordChangeSecuritySignal,
       context
     );
   }
@@ -792,11 +786,9 @@ export class AppController {
     eventPayload: NotificationEventPayloadUserSecondFactorChangeSecuritySignal,
     @Ctx() context: RmqContext
   ) {
-    return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawRecipientEmailEvent(
-        eventPayload,
-        NotificationEvent.UserSecondFactorChangeSecuritySignal
-      ),
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserSecondFactorChangeSecuritySignal,
       context
     );
   }

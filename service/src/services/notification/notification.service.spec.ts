@@ -2085,5 +2085,51 @@ describe('NotificationService', () => {
         )
       ).toThrow(EventPayloadNotProvidedException);
     });
+
+    it.each([
+      ['an empty', {}],
+      ['a blank-recipient', { recipientEmail: '   ' }],
+      ['a non-string-recipient', { recipientEmail: 42 }],
+      ['a null', null],
+    ])(
+      'discards %s body exactly once (nack, no requeue) instead of leaving it unsettled',
+      async (_label, body) => {
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processRawRecipientEmailEvent(
+          body as unknown as { recipientEmail: string },
+          event,
+          context
+        );
+
+        expect(channel.nack).toHaveBeenCalledTimes(1);
+        expect(channel.nack).toHaveBeenCalledWith(
+          context.getMessage(),
+          false,
+          false
+        );
+        expect(channel.ack).not.toHaveBeenCalled();
+        expect(channel.reject).not.toHaveBeenCalled();
+      }
+    );
+
+    it('acks a well-formed body once the email is sent', async () => {
+      jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
+      const { context, channel } = createRmqContext();
+
+      await notificationService.processRawRecipientEmailEvent(
+        {
+          recipientEmail: 'member@example.org',
+          observedAtISO8601: '2026-11-11T10:00:00.000Z',
+        } as NotificationEventPayloadUserSecondFactorChangeSecuritySignal,
+        event,
+        context
+      );
+
+      expect(channel.ack).toHaveBeenCalledTimes(1);
+      expect(channel.nack).not.toHaveBeenCalled();
+    });
   });
 });

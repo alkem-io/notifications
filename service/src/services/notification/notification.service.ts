@@ -99,22 +99,32 @@ export class NotificationService {
     private notificationBlacklistService: NotificationBlacklistService
   ) {}
 
-  public async processNotificationEvent(
+  public processNotificationEvent(
     @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext
   ) {
-    // Optional-chained: this read is outside the try below that owns the
-    // ack/nack, so a null/undefined body here would throw out of the
-    // `@EventPattern` handler and leave the message neither acked nor nacked
-    // — the unbounded redelivery loop described in the comment below. Let it
-    // reach the try instead, where it is caught and discarded like any other
-    // schema drift.
-    const eventName = eventPayload?.eventType;
-    this.logger.verbose?.(
-      `[Event received: ${eventName}]: ${JSON.stringify(eventPayload)}`,
-      LogContext.NOTIFICATIONS
-    );
+    return this.settleNotificationEvent(() => eventPayload, context);
+  }
 
+  /** Entry point for the raw `{ recipientEmail, ... }` events; see normalizeRawRecipientEmailEvent. */
+  public processRawRecipientEmailEvent(
+    rawPayload: { recipientEmail: string },
+    eventType: NotificationEvent,
+    context: RmqContext
+  ) {
+    return this.settleNotificationEvent(
+      () => this.normalizeRawRecipientEmailEvent(rawPayload, eventType),
+      context
+    );
+  }
+
+  // `resolvePayload` runs inside the try that owns the ack/nack, so a body that
+  // cannot be turned into a payload is discarded like any other schema drift
+  // instead of throwing out of the `@EventPattern` handler unsettled.
+  private async settleNotificationEvent(
+    resolvePayload: () => BaseEventPayload,
+    context: RmqContext
+  ) {
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
 
@@ -134,6 +144,11 @@ export class NotificationService {
     // send path (e.g. an SMTP outage) is worth a few bounded retries.
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     try {
+      const eventPayload = resolvePayload();
+      this.logger.verbose?.(
+        `[Event received: ${eventPayload?.eventType}]: ${JSON.stringify(eventPayload)}`,
+        LogContext.NOTIFICATIONS
+      );
       const x = await this.buildAndSendEmailNotifications(eventPayload);
       if (x.length === 0) {
         this.logger.verbose?.(
