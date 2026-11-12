@@ -1,6 +1,9 @@
 import { Inject, Injectable, LoggerService } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
+import {
+  EmailSender,
+  NotificationStatus,
+} from '@src/services/notifme/email.sender';
 import {
   ConfigurationTypes,
   LogContext,
@@ -91,7 +94,7 @@ export class NotificationService {
     @Inject(WINSTON_MODULE_NEST_PROVIDER)
     private readonly logger: LoggerService,
     @Inject(NOTIFICATIONS_PROVIDER)
-    private readonly notifmeService: NotifmeSdk,
+    private readonly notifmeService: EmailSender,
     private readonly configService: ConfigService,
     private notificationTemplateBuilder: NotificationTemplateBuilder,
     private notificationEmailPayloadBuilderService: NotificationEmailPayloadBuilderService,
@@ -486,7 +489,9 @@ export class NotificationService {
     notification.channels.email.from = mailFromNameConfigured;
 
     try {
-      const res = await this.notifmeService.send(notification.channels);
+      const res = await this.notifmeService.send({
+        email: notification.channels.email,
+      });
       this.logger.verbose?.(
         `[${notification.name}] Notification sent from ${mailFromNameConfigured} - status: ${res.status}`,
         LogContext.NOTIFICATIONS

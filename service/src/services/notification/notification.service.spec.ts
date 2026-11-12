@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import * as eventPayload from '@test/data/event.application.created.payload.json';
-import NotifmeSdk, { NotificationStatus } from 'notifme-sdk';
+import {
+  EmailSender,
+  NotificationStatus,
+} from '@src/services/notifme/email.sender';
 import { NotificationService } from './notification.service';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -116,7 +119,7 @@ const createRmqContext = () => {
 
 describe('NotificationService', () => {
   let notificationService: NotificationService;
-  let notifmeService: NotifmeSdk;
+  let notifmeService: EmailSender;
   let configService: ConfigService;
   let builderService: NotificationEmailPayloadBuilderService;
   let templateBuilder: NotificationTemplateBuilder;
