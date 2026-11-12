@@ -104,8 +104,15 @@ export class NotificationTemplateBuilder {
         templatePayload
       );
     }
+    // An address object, not a string: nodemailer parses a string as an address
+    // list, so a quoted local part such as "x <v@t.org>"@a.org would deliver to
+    // v@t.org — a mailbox the blacklist never checked. notifme types `to` as a
+    // string, but its smtp provider passes the request to nodemailer unchanged.
     if (rawEmail?.to != null) {
-      email.to = plainTextEnv.renderString(rawEmail.to, templatePayload);
+      email.to = {
+        name: '',
+        address: plainTextEnv.renderString(rawEmail.to, templatePayload),
+      } as unknown as string;
     }
   }
 }

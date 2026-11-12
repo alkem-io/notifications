@@ -2053,11 +2053,11 @@ describe('NotificationService', () => {
       expect(res).toHaveLength(1);
       expect(send).toHaveBeenCalledTimes(1);
       const email = send.mock.calls[0][0].email as {
-        to: string;
+        to: unknown;
         subject: string;
         html: string;
       };
-      expect(email.to).toBe('member@example.org');
+      expect(email.to).toEqual({ name: '', address: 'member@example.org' });
       expect(email.subject).toBe(
         'Security alert: two-step verification on your Alkemio account was changed'
       );
