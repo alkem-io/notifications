@@ -47,6 +47,7 @@ import {
   NotificationEventPayloadOrganizationAssociateActor,
 } from './types/notifications.lib.organization.associate.bridge';
 import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from './types/notifications.lib.callout.form.response.bridge';
+import { NotificationEventPayloadUserSecondFactorChangeSecuritySignal } from './types/notifications.lib.second.factor.change.bridge';
 import { NotificationService } from './services/notification/notification.service';
 import { NotificationEvent } from './generated/alkemio-schema';
 
@@ -722,11 +723,9 @@ export class AppController {
     eventPayload: NotificationEventPayloadUserEmailChangeSecuritySignal,
     @Ctx() context: RmqContext
   ) {
-    return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawRecipientEmailEvent(
-        eventPayload,
-        NotificationEvent.UserEmailChangeSecuritySignal
-      ),
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserEmailChangeSecuritySignal,
       context
     );
   }
@@ -737,11 +736,9 @@ export class AppController {
     eventPayload: NotificationEventPayloadUserEmailChangeNewAddress,
     @Ctx() context: RmqContext
   ) {
-    return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawRecipientEmailEvent(
-        eventPayload,
-        NotificationEvent.UserEmailChangeNewAddressNotification
-      ),
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserEmailChangeNewAddressNotification,
       context
     );
   }
@@ -776,11 +773,22 @@ export class AppController {
     eventPayload: NotificationEventPayloadUserPasswordChangeSecuritySignal,
     @Ctx() context: RmqContext
   ) {
-    return this.notificationService.processNotificationEvent(
-      this.notificationService.normalizeRawRecipientEmailEvent(
-        eventPayload,
-        NotificationEvent.UserPasswordChangeSecuritySignal
-      ),
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserPasswordChangeSecuritySignal,
+      context
+    );
+  }
+
+  @EventPattern(NotificationEvent.UserSecondFactorChangeSecuritySignal)
+  async sendUserSecondFactorChangeSecuritySignalNotification(
+    @Payload()
+    eventPayload: NotificationEventPayloadUserSecondFactorChangeSecuritySignal,
+    @Ctx() context: RmqContext
+  ) {
+    return this.notificationService.processRawRecipientEmailEvent(
+      eventPayload,
+      NotificationEvent.UserSecondFactorChangeSecuritySignal,
       context
     );
   }

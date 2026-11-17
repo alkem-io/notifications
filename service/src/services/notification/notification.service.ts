@@ -50,6 +50,7 @@ import {
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
 import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from '@src/types/notifications.lib.callout.form.response.bridge';
+import { NotificationEventPayloadUserSecondFactorChangeSecuritySignal } from '@src/types/notifications.lib.second.factor.change.bridge';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { NotificationNoChannelsException } from '@src/common/exceptions';
 import { ConfigService } from '@nestjs/config';
@@ -101,22 +102,32 @@ export class NotificationService {
     private notificationBlacklistService: NotificationBlacklistService
   ) {}
 
-  public async processNotificationEvent(
+  public processNotificationEvent(
     @Payload() eventPayload: BaseEventPayload,
     @Ctx() context: RmqContext
   ) {
-    // Optional-chained: this read is outside the try below that owns the
-    // ack/nack, so a null/undefined body here would throw out of the
-    // `@EventPattern` handler and leave the message neither acked nor nacked
-    // — the unbounded redelivery loop described in the comment below. Let it
-    // reach the try instead, where it is caught and discarded like any other
-    // schema drift.
-    const eventName = eventPayload?.eventType;
-    this.logger.verbose?.(
-      `[Event received: ${eventName}]: ${JSON.stringify(eventPayload)}`,
-      LogContext.NOTIFICATIONS
-    );
+    return this.settleNotificationEvent(() => eventPayload, context);
+  }
 
+  /** Entry point for the raw `{ recipientEmail, ... }` events; see normalizeRawRecipientEmailEvent. */
+  public processRawRecipientEmailEvent(
+    rawPayload: { recipientEmail: string },
+    eventType: NotificationEvent,
+    context: RmqContext
+  ) {
+    return this.settleNotificationEvent(
+      () => this.normalizeRawRecipientEmailEvent(rawPayload, eventType),
+      context
+    );
+  }
+
+  // `resolvePayload` runs inside the try that owns the ack/nack, so a body that
+  // cannot be turned into a payload is discarded like any other schema drift
+  // instead of throwing out of the `@EventPattern` handler unsettled.
+  private async settleNotificationEvent(
+    resolvePayload: () => BaseEventPayload,
+    context: RmqContext
+  ) {
     const channel: Channel = context.getChannelRef();
     const originalMsg = context.getMessage() as Message;
 
@@ -136,6 +147,11 @@ export class NotificationService {
     // send path (e.g. an SMTP outage) is worth a few bounded retries.
     // https://www.squaremobius.net/amqp.node/channel_api.html#channel_nack
     try {
+      const eventPayload = resolvePayload();
+      this.logger.verbose?.(
+        `[Event received: ${eventPayload?.eventType}]: ${JSON.stringify(eventPayload)}`,
+        LogContext.NOTIFICATIONS
+      );
       const x = await this.buildAndSendEmailNotifications(eventPayload);
       if (x.length === 0) {
         this.logger.verbose?.(
@@ -247,7 +263,7 @@ export class NotificationService {
 
   /**
    * Some events (the email-change security signal + new-address, and the
-   * password-change security signal) are published raw — a flat
+   * password- and second-factor-change security signals) are published raw — a flat
    * `{ recipientEmail, ... }` body without the BaseEventPayload envelope —
    * because the publishing service does not have a triggering user it can
    * cite. This wrapper injects the envelope so the raw payload flows through
@@ -348,7 +364,7 @@ export class NotificationService {
       // BEFORE `processNotificationEvent`, i.e. outside the try that owns the
       // ack/nack — the exact placement whose last occurrence produced "the
       // unbounded implicit RabbitMQ redelivery loop observed live" (see the
-      // comment in processNotificationEvent). A payload whose `invitee`/
+      // comment in settleNotificationEvent). A payload whose `invitee`/
       // `organization` or `profile` is absent — a schema drift, an old
       // server mid rolling deploy, a hand-published message — would throw
       // out of the handler and leave the message neither acked nor nacked.
@@ -803,6 +819,12 @@ export class NotificationService {
             BaseEventPayload,
           recipient
         );
+      case NotificationEvent.UserSecondFactorChangeSecuritySignal:
+        return this.notificationEmailPayloadBuilderService.createEmailTemplatePayloadUserSecondFactorChangeSecuritySignal(
+          eventPayload as NotificationEventPayloadUserSecondFactorChangeSecuritySignal &
+            BaseEventPayload,
+          recipient
+        );
       default:
         throw new EventPayloadNotProvidedException(
           `EmailPayload: Unable to recognize event:  ${eventPayload.eventType}`,
@@ -940,6 +962,8 @@ export class NotificationService {
         return 'space.admin.user.email.change';
       case NotificationEvent.UserPasswordChangeSecuritySignal:
         return 'user.password.change.security.signal';
+      case NotificationEvent.UserSecondFactorChangeSecuritySignal:
+        return 'user.second.factor.change.security.signal';
       default:
         throw new EventPayloadNotProvidedException(
           `Email template: Unable to recognize event: ${event}`,

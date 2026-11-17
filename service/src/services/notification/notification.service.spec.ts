@@ -23,6 +23,7 @@ import {
   NotificationEventPayloadOrganizationAssociateInvitationPlatform,
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
+import { NotificationEventPayloadUserSecondFactorChangeSecuritySignal } from '@src/types/notifications.lib.second.factor.change.bridge';
 import { NotificationTemplateBuilder } from '@src/services/notifme';
 import { NotificationEmailPayloadBuilderService } from './notification.email.payload.builder.service';
 import { NotificationBlacklistService } from './notification.blacklist.service';
@@ -32,6 +33,7 @@ import { RmqContext } from '@nestjs/microservices';
 import { NotificationTemplateType } from '@src/types/notification.template.type';
 import { BaseEmailPayload } from '@src/services/notification/email-template-payload';
 import { LogContext } from '@common/enums';
+import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
 
 // ---------------------------------------------------------------------------
 // Shared fixtures
@@ -1095,7 +1097,7 @@ describe('NotificationService', () => {
       // `processNotificationEvent`, so a throw here escapes the message
       // handler entirely and leaves the message neither acked nor nacked —
       // the shape that produced the unbounded redelivery loop documented in
-      // `processNotificationEvent`. A schema-drifted payload (old server mid
+      // `settleNotificationEvent`. A schema-drifted payload (old server mid
       // rolling deploy, hand-published message) must degrade to a log line.
       jest.spyOn(blacklistService, 'isBlacklisted').mockReturnValue(true);
       const warnMock = notificationService['logger'].warn as jest.Mock;
@@ -1123,7 +1125,7 @@ describe('NotificationService', () => {
         // Same reasoning as the missing-invitee case one level up: a body that
         // is absent entirely (a malformed/hand-published message) must not
         // throw out of the `@EventPattern` handler before
-        // `processNotificationEvent` opens its try, or the message is left
+        // `settleNotificationEvent` opens its try, or the message is left
         // neither acked nor nacked and RabbitMQ redelivers it forever on this
         // single-replica consumer.
         expect(() =>
@@ -2025,6 +2027,112 @@ describe('NotificationService', () => {
         expect(html).toContain('Amara Associate');
         expect(html).toContain('No further action is needed');
       });
+    });
+  });
+
+  describe('second-factor change security signal', () => {
+    const event = NotificationEvent.UserSecondFactorChangeSecuritySignal;
+
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      mockSuccessConfig();
+    });
+
+    it('sends one email to the recipient address with the time and no factor details', async () => {
+      const send = jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
+      send.mockClear();
+
+      const raw: NotificationEventPayloadUserSecondFactorChangeSecuritySignal =
+        {
+          recipientEmail: 'member@example.org',
+          observedAtISO8601: '2026-11-11T10:00:00.000Z',
+        };
+      const res = await notificationService.buildAndSendEmailNotifications(
+        notificationService.normalizeRawRecipientEmailEvent(raw, event)
+      );
+
+      expect(res).toHaveLength(1);
+      expect(send).toHaveBeenCalledTimes(1);
+      const email = send.mock.calls[0][0].email as {
+        to: unknown;
+        subject: string;
+        html: string;
+      };
+      expect(email.to).toEqual({ name: '', address: 'member@example.org' });
+      expect(email.subject).toBe(
+        'Security alert: two-step verification on your Alkemio account was changed'
+      );
+      expect(email.html).toContain('11 November 2026, 10:00 UTC');
+      expect(email.html).toContain('Forgot your password?');
+      expect(email.html).toContain('contact Alkemio support');
+      const text = `${email.subject} ${email.html}`.toLowerCase();
+      for (const term of [
+        'totp',
+        'authenticator',
+        'security key',
+        'recovery code',
+      ]) {
+        expect(text).not.toContain(term);
+      }
+    });
+
+    it('refuses a payload with no recipientEmail', () => {
+      expect(() =>
+        notificationService.normalizeRawRecipientEmailEvent(
+          { observedAtISO8601: '2026-11-11T10:00:00.000Z' } as unknown as {
+            recipientEmail: string;
+          },
+          event
+        )
+      ).toThrow(EventPayloadNotProvidedException);
+    });
+
+    it.each([
+      ['an empty', {}],
+      ['a blank-recipient', { recipientEmail: '   ' }],
+      ['a non-string-recipient', { recipientEmail: 42 }],
+      ['a null', null],
+    ])(
+      'discards %s body exactly once (nack, no requeue) instead of leaving it unsettled',
+      async (_label, body) => {
+        const { context, channel } = createRmqContext();
+
+        await notificationService.processRawRecipientEmailEvent(
+          body as unknown as { recipientEmail: string },
+          event,
+          context
+        );
+
+        expect(channel.nack).toHaveBeenCalledTimes(1);
+        expect(channel.nack).toHaveBeenCalledWith(
+          context.getMessage(),
+          false,
+          false
+        );
+        expect(channel.ack).not.toHaveBeenCalled();
+        expect(channel.reject).not.toHaveBeenCalled();
+      }
+    );
+
+    it('acks a well-formed body once the email is sent', async () => {
+      jest
+        .spyOn(notifmeService, 'send')
+        .mockResolvedValue({ status: 'success' });
+      const { context, channel } = createRmqContext();
+
+      await notificationService.processRawRecipientEmailEvent(
+        {
+          recipientEmail: 'member@example.org',
+          observedAtISO8601: '2026-11-11T10:00:00.000Z',
+        } as NotificationEventPayloadUserSecondFactorChangeSecuritySignal,
+        event,
+        context
+      );
+
+      expect(channel.ack).toHaveBeenCalledTimes(1);
+      expect(channel.nack).not.toHaveBeenCalled();
     });
   });
 });

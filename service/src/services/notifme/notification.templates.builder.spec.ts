@@ -30,6 +30,24 @@ describe('NotificationTemplateBuilder', () => {
     },
   } as unknown as BaseEmailPayload;
 
+  // The SMTP envelope recipients nodemailer (notifme's smtp provider) derives
+  // from a built email: the mailboxes the message is actually delivered to.
+  const deliveredTo = async (email: string): Promise<string[]> => {
+    const result = await builder.buildTemplate(
+      'user.second.factor.change.security.signal',
+      {
+        ...payloadWithEntities,
+        recipient: { firstName: '', email },
+      } as unknown as BaseEmailPayload
+    );
+    // nodemailer arrives through notifme-sdk and ships no typings here.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const MailComposer = require('nodemailer/lib/mail-composer');
+    return new MailComposer({ ...result?.channels?.email, from: 'n@alkem.io' })
+      .compile()
+      .getEnvelope().to;
+  };
+
   it('does not HTML-escape the email subject (plain-text field)', async () => {
     const result = await builder.buildTemplate(
       'user.space.community.joined',
@@ -50,6 +68,21 @@ describe('NotificationTemplateBuilder', () => {
 
     expect(result?.title).toContain(DISPLAY_NAME);
     expect(result?.title).not.toContain(ESCAPED_DISPLAY_NAME);
+  });
+
+  // \u0027 is an apostrophe (o'brien@): the lint quote rule and prettier
+  // disagree on every plain literal of it.
+  it.each(['o\u0027brien@example.org', 'a&b@example.org', '"a b"@example.org'])(
+    'delivers the email to %s verbatim, not HTML-escaped',
+    async email => {
+      expect(await deliveredTo(email)).toEqual([email]);
+    }
+  );
+
+  it('delivers only to the recipient mailbox when its local part quotes another address', async () => {
+    expect(await deliveredTo('"x <victim@t.org>"@a.org')).toEqual([
+      expect.stringMatching(/"@a\.org$/),
+    ]);
   });
 
   it('still HTML-escapes display names in the email body (injection safety)', async () => {

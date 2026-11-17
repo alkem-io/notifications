@@ -7001,6 +7001,7 @@ export enum NotificationEvent {
   UserOrganizationAssociateApplicationDeclined = 'USER_ORGANIZATION_ASSOCIATE_APPLICATION_DECLINED',
   UserOrganizationAssociateInvitation = 'USER_ORGANIZATION_ASSOCIATE_INVITATION',
   UserPasswordChangeSecuritySignal = 'USER_PASSWORD_CHANGE_SECURITY_SIGNAL',
+  UserSecondFactorChangeSecuritySignal = 'USER_SECOND_FACTOR_CHANGE_SECURITY_SIGNAL',
   UserSignUpWelcome = 'USER_SIGN_UP_WELCOME',
   UserSpaceCommunityApplicationDeclined = 'USER_SPACE_COMMUNITY_APPLICATION_DECLINED',
   UserSpaceCommunityInvitation = 'USER_SPACE_COMMUNITY_INVITATION',
