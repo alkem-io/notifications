@@ -13,21 +13,9 @@
 # The result must be an `application/vnd.oci.image.index.v1+json` listing BOTH
 # linux/amd64 and linux/arm64.
 #
-# The BUILDER IS DELIBERATELY NON-SLIM: farmhash@3.3.1 (the one native module
-# this image ships) publishes prebuilds for linux-x64 only — no linux-arm64 —
-# so on the arm64 leg of build-release-docker-hub.yml its install falls
-# through to `node-gyp rebuild`, which needs gcc/g++/make/python3. A `-slim`
-# builder lacks a C toolchain entirely and breaks that build silently (every
-# PR check and the dev deploy build amd64 only, where a prebuild exists, so
-# the break surfaces only at GitHub Release publish time). Do not swap this
-# to a `-slim`/`-alpine` tag without first confirming an arm64 prebuild
-# exists for every native module in dependencies.
-#
-# Builder/runtime pairing: builder is Debian 13 "trixie" (glibc 2.41) and the
-# runtime is distroless debian13 (glibc 2.41) — an exact glibc match for
-# farmhash → build/Release/farmhash.node. Node major stays 22, so
-# NODE_MODULE_VERSION (127) is unchanged; the debian12 → debian13 runtime
-# move is CVE hygiene, not an ABI necessity.
+# Builder and runtime retain the same Debian 13 and Node 22 pairing.
+# Email delivery uses nodemailer directly; unused push providers and their
+# native Firebase dependencies are not part of the service runtime.
 #
 # @alkemio/notifications-lib is consumed from the npm registry (pinned 0.20.0,
 # integrity-locked in service/package-lock.json). No local lib build stage is
@@ -37,7 +25,7 @@
 # ======================
 # Builder stage (with dev deps)
 # ======================
-FROM node:22.23.3-trixie@sha256:def2655045ff1ee91b28a48cb3ec84feafef6d128bda0ff6903e7847ed0b27b4 AS builder
+FROM node:22.23.4-trixie@sha256:c46850e69b4fab3c4f225aa36b777c8cc001d1cd5b2136e1ea024796f6d3bbbb AS builder
 
 WORKDIR /app
 
@@ -54,7 +42,7 @@ RUN npm run build
 # ======================
 # Prod deps stage (NO dev deps)
 # ======================
-FROM node:22.23.3-trixie@sha256:def2655045ff1ee91b28a48cb3ec84feafef6d128bda0ff6903e7847ed0b27b4 AS prod-deps
+FROM node:22.23.4-trixie@sha256:c46850e69b4fab3c4f225aa36b777c8cc001d1cd5b2136e1ea024796f6d3bbbb AS prod-deps
 
 WORKDIR /app
 
@@ -65,7 +53,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 # ======================
 # Runtime stage (distroless)
 # ======================
-FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:ec2313763dd43931543bd03830466e0c409ce73a487e8d46f10db72d3b816c1c
+FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:1b90ca047c3a1046ad3527998c747c25b6a88dde91ba8c71b98669d5813aaa21
 
 WORKDIR /app
 ENV NODE_ENV=production

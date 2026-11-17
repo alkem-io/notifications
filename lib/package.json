@@ -21,9 +21,6 @@
     "lint:fix": "npm run typecheck:native && eslint src/**/*.ts{,x} --fix",
     "typecheck:native": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": {
-    "@alkemio/client-lib": "0.37.0"
-  },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.32.0",
