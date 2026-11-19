@@ -142,16 +142,14 @@ describe('NotificationEmailPayloadBuilderService — communication notifications
       expect(result.sender.firstName).toBe('Sam');
     });
 
-    it('converts markdown message to HTML', () => {
+    it('converts markdown message to plain text', () => {
       const service = createService();
       const result = service.createEmailTemplatePayloadSpaceCommunicationUpdate(
         basePayload,
         recipient
       );
 
-      // Markdown bold should be converted to HTML <strong> or <b>
-      expect(result.message).toContain('Hello');
-      expect(result.message).not.toBe('**Hello** world');
+      expect(result.message).toBe('Hello world');
     });
 
     it('uses empty string for missing message', () => {
