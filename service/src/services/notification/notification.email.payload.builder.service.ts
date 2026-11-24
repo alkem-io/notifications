@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { convertMarkdownToText } from '@src/services/notification/utils/markdown-to-text.util';
-import { convertMarkdownToHtml } from '@src/services/notification/utils/markdown-to-html.util';
 import {
   CommunityApplicationCreatedEmailPayload,
   CommunityApplicationDeclinedEmailPayload,
@@ -765,7 +764,7 @@ export class NotificationEmailPayloadBuilderService {
       sender: {
         firstName: eventPayload.triggeredBy.firstName,
       },
-      message: convertMarkdownToHtml(eventPayload.message ?? ''),
+      message: convertMarkdownToText(eventPayload.message ?? ''),
     };
   }
   public createEmailTemplatePayloadUserMessage(
