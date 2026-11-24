@@ -331,7 +331,10 @@ describe('conversation message digest templates (034-messaging-notifications)', 
       const rendered = JSON.stringify(result);
       const occurrences = rendered.split('@example.com').length - 1;
       expect(occurrences).toBe(1);
-      expect(result?.channels?.email?.to).toBe('rita@example.com');
+      expect(result?.channels?.email?.to).toEqual({
+        name: '',
+        address: 'rita@example.com',
+      });
     });
 
     it('renders the display name verbatim in the subject and escaped in the html', async () => {

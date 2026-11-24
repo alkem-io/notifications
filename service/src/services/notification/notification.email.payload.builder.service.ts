@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlatformUser, User } from '@core/models';
 import { convertMarkdownToText } from '@src/services/notification/utils/markdown-to-text.util';
-import { convertMarkdownToHtml } from '@src/services/notification/utils/markdown-to-html.util';
 import {
   CommunityApplicationCreatedEmailPayload,
   CommunityApplicationDeclinedEmailPayload,
@@ -42,6 +41,7 @@ import {
   PlatformAdminUserEmailChangeEmailPayload,
   SpaceAdminUserEmailChangeEmailPayload,
   UserPasswordChangeSecuritySignalEmailPayload,
+  UserSecondFactorChangeSecuritySignalEmailPayload,
   OrganizationSpaceCommunityInvitationCreatedEmailPayload,
   OrganizationSpaceCommunityInvitationOutcomeEmailPayload,
   UserSpaceCommunityInvitationOutcomeEmailPayload,
@@ -93,6 +93,7 @@ import {
   NotificationEventPayloadOrganizationAssociateActor,
 } from '@src/types/notifications.lib.organization.associate.bridge';
 import { NotificationEventPayloadSpaceCollaborationCalloutFormResponse } from '@src/types/notifications.lib.callout.form.response.bridge';
+import { NotificationEventPayloadUserSecondFactorChangeSecuritySignal } from '@src/types/notifications.lib.second.factor.change.bridge';
 import { ConfigurationTypes } from '@src/common/enums/configuration.type';
 import { ConfigService } from '@nestjs/config';
 import { EventPayloadNotProvidedException } from '@src/common/exceptions/event.payload.not.provided.exception';
@@ -599,6 +600,17 @@ export class NotificationEmailPayloadBuilderService {
     };
   }
 
+  public createEmailTemplatePayloadUserSecondFactorChangeSecuritySignal(
+    eventPayload: NotificationEventPayloadUserSecondFactorChangeSecuritySignal &
+      BaseEventPayload,
+    recipient: User
+  ): UserSecondFactorChangeSecuritySignalEmailPayload {
+    return {
+      ...this.createBaseEmailPayload(eventPayload, recipient),
+      changedAt: this.formatChangeTimestampUTC(eventPayload.observedAtISO8601),
+    };
+  }
+
   public createEmailTemplatePayloadUserEmailChangeNewAddress(
     eventPayload: NotificationEventPayloadUserEmailChangeNewAddress &
       BaseEventPayload,
@@ -752,7 +764,7 @@ export class NotificationEmailPayloadBuilderService {
       sender: {
         firstName: eventPayload.triggeredBy.firstName,
       },
-      message: convertMarkdownToHtml(eventPayload.message ?? ''),
+      message: convertMarkdownToText(eventPayload.message ?? ''),
     };
   }
   public createEmailTemplatePayloadUserMessage(

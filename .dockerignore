@@ -29,3 +29,5 @@ Dockerfile
 .env*
 coverage
 *.log
+
+.forge-evidence
