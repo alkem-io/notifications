@@ -10,7 +10,7 @@
   - TypeScript 5.8, NestJS 11, Jest, ESLint 9, Prettier 3.
   - Dockerfile at repo root builds the notifications service (CI builds and deploys containers from this).
 - **Size / layout**: Small monorepo with two Node projects:
-  - Root: `Dockerfile`, top-level `README.md`, `.travis.yml`, `.github/workflows/*.yml` (CI/CD), `package-lock.json` (primarily for `service/`).
+  - Root: `Dockerfile`, top-level `README.md`, `.github/workflows/*.yml` (CI/CD), `package-lock.json` (primarily for `service/`).
   - `service/`: main application.
   - `lib/`: shared types-only library.
 
@@ -21,7 +21,6 @@ Always prefer working inside `service/` for backend changes and `lib/` for DTO /
 - **Root**
   - `Dockerfile`: builds the NestJS notifications service for container deployment.
   - `README.md`: high-level description of service & library.
-  - `.travis.yml`: legacy CI (Travis) config; reference only.
   - `.github/workflows/*.yml`: GitHub Actions for building & deploying Docker images to Hetzner and Docker Hub.
 - **Service (`service/`)**
   - `package.json`: main scripts (`build`, `test`, `lint`, `start`, etc.), Jest config entry points.
