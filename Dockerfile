@@ -53,7 +53,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 # ======================
 # Runtime stage (distroless)
 # ======================
-FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:39c66687298417dbf3ff2fb8b6012c20554494e16414ef7afd07b9abbb45b501
+FROM gcr.io/distroless/nodejs22-debian13:nonroot@sha256:f991e86a080567b6ab7c3392e36f7a0a4f9300639e526b48ee81b92d523af62e
 
 WORKDIR /app
 ENV NODE_ENV=production
